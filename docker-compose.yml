@@ -1,0 +1,18 @@
+version: "3.9"
+services:
+  app:
+    build: .
+    env_file:
+      - .env
+    ports:
+      - "${APP_HOST_PORT}:80"
+
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "${MONGODB_HOST_PORT}:27017"
+    volumes:
+      - db_data:/data/db
+
+volumes:
+  db_data:
