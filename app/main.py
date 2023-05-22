@@ -4,13 +4,13 @@ from motor.motor_asyncio import AsyncIOMotorClient
 
 from app import __version__
 from app.config import settings
+from app.helpers import aiod_client_wrapper
 from app.models.experiment import Experiment
-from app.routers import experiments, metadata
-from app.routers.metadata import aiod_client_wrapper
+from app.routers import aiod, experiments
 
 app = FastAPI(title="AIOD - Practitioner's Portal", version=__version__)
 
-app.include_router(metadata.router, prefix="/v1", tags=["metadata"])
+app.include_router(aiod.router, prefix="/v1", tags=["metadata"])
 app.include_router(experiments.router, prefix="/v1", tags=["experiments"])
 
 
