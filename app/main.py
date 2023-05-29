@@ -1,5 +1,6 @@
 from beanie import init_beanie
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from app import __version__
@@ -12,6 +13,18 @@ app = FastAPI(title="AIOD - Practitioner's Portal", version=__version__)
 
 app.include_router(aiod.router, prefix="/v1", tags=["metadata"])
 app.include_router(experiments.router, prefix="/v1", tags=["experiments"])
+
+origins = [
+    "http://localhost:4200",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.on_event("startup")
