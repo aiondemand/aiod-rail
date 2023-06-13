@@ -2,12 +2,17 @@ from fastapi import APIRouter
 
 from app.config import settings
 from app.helpers import aiod_client_wrapper
+from app.schemas.dataset import Dataset
+from app.schemas.publication import Publication
 
 router = APIRouter()
 
 
 @router.get("/datasets")
-async def get_datasets(offset: int = 0, limit: int = settings.DEFAULT_RESPONSE_LIMIT):
+async def get_datasets(
+    offset: int = 0, 
+    limit: int = settings.DEFAULT_RESPONSE_LIMIT
+) -> list[Dataset]:
     async_client = aiod_client_wrapper()
     res = await async_client.get(
         f"{settings.AIOD_API.BASE_URL}/datasets/{settings.AIOD_API.DATASETS_VERSION}",
@@ -17,7 +22,7 @@ async def get_datasets(offset: int = 0, limit: int = settings.DEFAULT_RESPONSE_L
 
 
 @router.get("/datasets/{id}")
-async def get_datasets(id: int):
+async def get_datasets(id: int) -> Dataset:
     async_client = aiod_client_wrapper()
     res = await async_client.get(
         f"{settings.AIOD_API.BASE_URL}/datasets/{settings.AIOD_API.DATASETS_VERSION}/{id}",
@@ -28,7 +33,7 @@ async def get_datasets(id: int):
 @router.get("/publications")
 async def get_publications(
     offset: int = 0, limit: int = settings.DEFAULT_RESPONSE_LIMIT
-):
+) -> list[Publication]:
     async_client = aiod_client_wrapper()
     res = await async_client.get(
         f"{settings.AIOD_API.BASE_URL}/publications/{settings.AIOD_API.PUBLICATIONS_VERSION}",
@@ -38,7 +43,7 @@ async def get_publications(
 
 
 @router.get("/publications/{id}")
-async def get_datasets(id: int):
+async def get_datasets(id: int) -> Publication:
     async_client = aiod_client_wrapper()
     res = await async_client.get(
         f"{settings.AIOD_API.BASE_URL}/publications/{settings.AIOD_API.PUBLICATIONS_VERSION}/{id}",
