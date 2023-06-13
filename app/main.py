@@ -11,7 +11,7 @@ from app.routers import aiod, experiments
 
 app = FastAPI(title="AIOD - Practitioner's Portal", version=__version__)
 
-app.include_router(aiod.router, prefix="/v1", tags=["metadata"])
+app.include_router(aiod.router, prefix="/v1/assets", tags=["metadata"])
 app.include_router(experiments.router, prefix="/v1", tags=["experiments"])
 
 origins = [
