@@ -1,3 +1,5 @@
+from typing import Any
+
 from fastapi import APIRouter
 
 from app.config import settings
@@ -8,11 +10,10 @@ from app.schemas.publication import Publication
 router = APIRouter()
 
 
-@router.get("/datasets")
+@router.get("/datasets", response_model=list[Dataset])
 async def get_datasets(
-    offset: int = 0, 
-    limit: int = settings.DEFAULT_RESPONSE_LIMIT
-) -> list[Dataset]:
+    offset: int = 0, limit: int = settings.DEFAULT_RESPONSE_LIMIT
+) -> Any:
     async_client = aiod_client_wrapper()
     res = await async_client.get(
         f"{settings.AIOD_API.BASE_URL}/datasets/{settings.AIOD_API.DATASETS_VERSION}",
@@ -21,8 +22,17 @@ async def get_datasets(
     return res.json()
 
 
-@router.get("/datasets/{id}")
-async def get_datasets(id: int) -> Dataset:
+@router.get("/counts/datasets", response_model=int)
+async def get_datasets_count() -> Any:
+    async_client = aiod_client_wrapper()
+    res = await async_client.get(
+        f"{settings.AIOD_API.BASE_URL}/counts/datasets/{settings.AIOD_API.DATASETS_VERSION}",
+    )
+    return res.json()
+
+
+@router.get("/datasets/{id}", response_model=Dataset)
+async def get_dataset(id: int) -> Any:
     async_client = aiod_client_wrapper()
     res = await async_client.get(
         f"{settings.AIOD_API.BASE_URL}/datasets/{settings.AIOD_API.DATASETS_VERSION}/{id}",
@@ -30,10 +40,10 @@ async def get_datasets(id: int) -> Dataset:
     return res.json()
 
 
-@router.get("/publications")
+@router.get("/publications", response_model=list[Publication])
 async def get_publications(
     offset: int = 0, limit: int = settings.DEFAULT_RESPONSE_LIMIT
-) -> list[Publication]:
+) -> Any:
     async_client = aiod_client_wrapper()
     res = await async_client.get(
         f"{settings.AIOD_API.BASE_URL}/publications/{settings.AIOD_API.PUBLICATIONS_VERSION}",
@@ -42,10 +52,19 @@ async def get_publications(
     return res.json()
 
 
-@router.get("/publications/{id}")
-async def get_datasets(id: int) -> Publication:
+@router.get("/publications/{id}", response_model=Publication)
+async def get_publication(id: int) -> Any:
     async_client = aiod_client_wrapper()
     res = await async_client.get(
         f"{settings.AIOD_API.BASE_URL}/publications/{settings.AIOD_API.PUBLICATIONS_VERSION}/{id}",
+    )
+    return res.json()
+
+
+@router.get("/counts/publications", response_model=int)
+async def get_publications_count() -> Any:
+    async_client = aiod_client_wrapper()
+    res = await async_client.get(
+        f"{settings.AIOD_API.BASE_URL}/counts/publications/{settings.AIOD_API.DATASETS_VERSION}",
     )
     return res.json()
