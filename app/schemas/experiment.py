@@ -1,10 +1,21 @@
+from datetime import datetime
+
 from beanie import PydanticObjectId
 from pydantic import BaseModel
 
 
 class ExperimentBase(BaseModel):
-    dataset_ids: list[str]
-    publication_ids: list[str]
+    name: str
+    description: str
+    publication_ids: list[str] = []
+
+    experiment_type_id: str
+    dataset_id: str
+    model_id: str
+    metrics: list[str]
+
+    save_logs: bool = True
+    save_files: bool = True
 
 
 class ExperimentCreate(ExperimentBase):
@@ -13,3 +24,5 @@ class ExperimentCreate(ExperimentBase):
 
 class ExperimentResponse(ExperimentBase):
     id: PydanticObjectId
+    created_at: datetime
+    updated_at: datetime
