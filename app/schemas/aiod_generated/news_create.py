@@ -1,9 +1,9 @@
 # coding: utf-8
 
 from __future__ import annotations
-from datetime import date, datetime  # noqa: F401
 
 import re  # noqa: F401
+from datetime import date, datetime  # noqa: F401
 from typing import Any, Dict, List, Optional  # noqa: F401
 
 from pydantic import AnyUrl, BaseModel, EmailStr, Field, validator  # noqa: F401
@@ -33,7 +33,9 @@ class NewsCreate(BaseModel):
     """
 
     platform: Optional[str] = Field(alias="platform", default=None)
-    platform_identifier: Optional[str] = Field(alias="platform_identifier", default=None)
+    platform_identifier: Optional[str] = Field(
+        alias="platform_identifier", default=None
+    )
     title: str = Field(alias="title")
     date_modified: Optional[datetime] = Field(alias="date_modified", default=None)
     body: str = Field(alias="body")
@@ -41,7 +43,9 @@ class NewsCreate(BaseModel):
     headline: str = Field(alias="headline")
     word_count: int = Field(alias="word_count")
     source: Optional[str] = Field(alias="source", default=None)
-    alternative_headline: Optional[str] = Field(alias="alternative_headline", default=None)
+    alternative_headline: Optional[str] = Field(
+        alias="alternative_headline", default=None
+    )
     news_categories: List[str] = Field(alias="news_categories")
     media: List[str] = Field(alias="media")
     keywords: List[str] = Field(alias="keywords")
@@ -76,5 +80,6 @@ class NewsCreate(BaseModel):
     def alternative_headline_max_length(cls, value):
         assert len(value) <= 500
         return value
+
 
 NewsCreate.update_forward_refs()

@@ -1,13 +1,16 @@
 # coding: utf-8
 
 from __future__ import annotations
-from datetime import date, datetime  # noqa: F401
 
 import re  # noqa: F401
+from datetime import date, datetime  # noqa: F401
 from typing import Any, Dict, List, Optional  # noqa: F401
 
 from pydantic import AnyUrl, BaseModel, EmailStr, Field, validator  # noqa: F401
-from app.schemas.aiod_generated.schema_dot_org_data_download import SchemaDotOrgDataDownload
+
+from app.schemas.aiod_generated.schema_dot_org_data_download import (
+    SchemaDotOrgDataDownload,
+)
 
 
 class Distribution(BaseModel):
@@ -29,5 +32,6 @@ class Distribution(BaseModel):
     content_url: str = Field(alias="contentUrl")
     content_size: Optional[str] = Field(alias="contentSize", default=None)
     encoding_format: Optional[str] = Field(alias="encodingFormat", default=None)
+
 
 Distribution.update_forward_refs()

@@ -1,9 +1,9 @@
 # coding: utf-8
 
 from __future__ import annotations
-from datetime import date, datetime  # noqa: F401
 
 import re  # noqa: F401
+from datetime import date, datetime  # noqa: F401
 from typing import Any, Dict, List, Optional  # noqa: F401
 
 from pydantic import AnyUrl, BaseModel, EmailStr, Field, validator  # noqa: F401
@@ -39,7 +39,9 @@ class EventRead(BaseModel):
     """
 
     platform: Optional[str] = Field(alias="platform", default=None)
-    platform_identifier: Optional[str] = Field(alias="platform_identifier", default=None)
+    platform_identifier: Optional[str] = Field(
+        alias="platform_identifier", default=None
+    )
     name: str = Field(alias="name")
     description: str = Field(alias="description")
     registration_url: str = Field(alias="registration_url")
@@ -98,5 +100,6 @@ class EventRead(BaseModel):
     def type_max_length(cls, value):
         assert len(value) <= 500
         return value
+
 
 EventRead.update_forward_refs()

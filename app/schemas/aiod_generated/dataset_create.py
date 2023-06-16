@@ -1,12 +1,13 @@
 # coding: utf-8
 
 from __future__ import annotations
-from datetime import date, datetime  # noqa: F401
 
 import re  # noqa: F401
+from datetime import date, datetime  # noqa: F401
 from typing import Any, Dict, List, Optional  # noqa: F401
 
 from pydantic import AnyUrl, BaseModel, EmailStr, Field, validator  # noqa: F401
+
 from app.schemas.aiod_generated.data_download import DataDownload
 from app.schemas.aiod_generated.measured_value import MeasuredValue
 
@@ -47,7 +48,9 @@ class DatasetCreate(BaseModel):
     """
 
     platform: Optional[str] = Field(alias="platform", default=None)
-    platform_identifier: Optional[str] = Field(alias="platform_identifier", default=None)
+    platform_identifier: Optional[str] = Field(
+        alias="platform_identifier", default=None
+    )
     description: str = Field(alias="description")
     name: str = Field(alias="name")
     same_as: str = Field(alias="same_as")
@@ -57,12 +60,18 @@ class DatasetCreate(BaseModel):
     date_modified: Optional[datetime] = Field(alias="date_modified", default=None)
     date_published: Optional[datetime] = Field(alias="date_published", default=None)
     funder: Optional[str] = Field(alias="funder", default=None)
-    is_accessible_for_free: Optional[bool] = Field(alias="is_accessible_for_free", default=None)
+    is_accessible_for_free: Optional[bool] = Field(
+        alias="is_accessible_for_free", default=None
+    )
     issn: Optional[str] = Field(alias="issn", default=None)
     size: Optional[int] = Field(alias="size", default=None)
     spatial_coverage: Optional[str] = Field(alias="spatial_coverage", default=None)
-    temporal_coverage_from: Optional[datetime] = Field(alias="temporal_coverage_from", default=None)
-    temporal_coverage_to: Optional[datetime] = Field(alias="temporal_coverage_to", default=None)
+    temporal_coverage_from: Optional[datetime] = Field(
+        alias="temporal_coverage_from", default=None
+    )
+    temporal_coverage_to: Optional[datetime] = Field(
+        alias="temporal_coverage_to", default=None
+    )
     version: Optional[str] = Field(alias="version", default=None)
     alternate_names: List[str] = Field(alias="alternate_names")
     citations: List[int] = Field(alias="citations")
@@ -122,5 +131,6 @@ class DatasetCreate(BaseModel):
     def version_max_length(cls, value):
         assert len(value) <= 150
         return value
+
 
 DatasetCreate.update_forward_refs()

@@ -1,12 +1,13 @@
 # coding: utf-8
 
 from __future__ import annotations
-from datetime import date, datetime  # noqa: F401
 
 import re  # noqa: F401
+from datetime import date, datetime  # noqa: F401
 from typing import Any, Dict, List, Optional  # noqa: F401
 
 from pydantic import AnyUrl, BaseModel, EmailStr, Field, validator  # noqa: F401
+
 from app.schemas.aiod_generated.location_inner import LocationInner
 
 
@@ -25,5 +26,6 @@ class ValidationError(BaseModel):
     loc: List[LocationInner] = Field(alias="loc")
     msg: str = Field(alias="msg")
     type: str = Field(alias="type")
+
 
 ValidationError.update_forward_refs()

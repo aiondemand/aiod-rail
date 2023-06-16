@@ -1,9 +1,9 @@
 # coding: utf-8
 
 from __future__ import annotations
-from datetime import date, datetime  # noqa: F401
 
 import re  # noqa: F401
+from datetime import date, datetime  # noqa: F401
 from typing import Any, Dict, List, Optional  # noqa: F401
 
 from pydantic import AnyUrl, BaseModel, EmailStr, Field, validator  # noqa: F401
@@ -39,17 +39,25 @@ class ProjectRead(BaseModel):
     """
 
     platform: Optional[str] = Field(alias="platform", default=None)
-    platform_identifier: Optional[str] = Field(alias="platform_identifier", default=None)
+    platform_identifier: Optional[str] = Field(
+        alias="platform_identifier", default=None
+    )
     name: str = Field(alias="name")
     doi: Optional[str] = Field(alias="doi", default=None)
     start_date: Optional[datetime] = Field(alias="start_date", default=None)
     end_date: Optional[datetime] = Field(alias="end_date", default=None)
     founded_under: Optional[str] = Field(alias="founded_under", default=None)
     total_cost_euro: Optional[float] = Field(alias="total_cost_euro", default=None)
-    eu_contribution_euro: Optional[float] = Field(alias="eu_contribution_euro", default=None)
+    eu_contribution_euro: Optional[float] = Field(
+        alias="eu_contribution_euro", default=None
+    )
     coordinated_by: Optional[str] = Field(alias="coordinated_by", default=None)
-    project_description_title: Optional[str] = Field(alias="project_description_title", default=None)
-    project_description_text: Optional[str] = Field(alias="project_description_text", default=None)
+    project_description_title: Optional[str] = Field(
+        alias="project_description_title", default=None
+    )
+    project_description_text: Optional[str] = Field(
+        alias="project_description_text", default=None
+    )
     programmes_url: Optional[str] = Field(alias="programmes_url", default=None)
     topic_url: Optional[str] = Field(alias="topic_url", default=None)
     call_for_proposal: Optional[str] = Field(alias="call_for_proposal", default=None)
@@ -118,5 +126,6 @@ class ProjectRead(BaseModel):
     def url_max_length(cls, value):
         assert len(value) <= 250
         return value
+
 
 ProjectRead.update_forward_refs()

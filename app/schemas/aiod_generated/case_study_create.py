@@ -1,9 +1,9 @@
 # coding: utf-8
 
 from __future__ import annotations
-from datetime import date, datetime  # noqa: F401
 
 import re  # noqa: F401
+from datetime import date, datetime  # noqa: F401
 from typing import Any, Dict, List, Optional  # noqa: F401
 
 from pydantic import AnyUrl, BaseModel, EmailStr, Field, validator  # noqa: F401
@@ -34,7 +34,9 @@ class CaseStudyCreate(BaseModel):
     """
 
     platform: Optional[str] = Field(alias="platform", default=None)
-    platform_identifier: Optional[str] = Field(alias="platform_identifier", default=None)
+    platform_identifier: Optional[str] = Field(
+        alias="platform_identifier", default=None
+    )
     description: str = Field(alias="description")
     name: str = Field(alias="name")
     creator: Optional[str] = Field(alias="creator", default=None)
@@ -43,7 +45,9 @@ class CaseStudyCreate(BaseModel):
     date_published: Optional[datetime] = Field(alias="date_published", default=None)
     same_as: Optional[str] = Field(alias="same_as", default=None)
     url: Optional[str] = Field(alias="url", default=None)
-    is_accessible_for_free: Optional[bool] = Field(alias="is_accessible_for_free", default=None)
+    is_accessible_for_free: Optional[bool] = Field(
+        alias="is_accessible_for_free", default=None
+    )
     alternate_names: List[str] = Field(alias="alternate_names")
     keywords: List[str] = Field(alias="keywords")
     business_categories: List[str] = Field(alias="business_categories")
@@ -78,5 +82,6 @@ class CaseStudyCreate(BaseModel):
     def url_max_length(cls, value):
         assert len(value) <= 150
         return value
+
 
 CaseStudyCreate.update_forward_refs()

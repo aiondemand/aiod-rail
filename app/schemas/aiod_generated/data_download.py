@@ -1,12 +1,13 @@
 # coding: utf-8
 
 from __future__ import annotations
-from datetime import date, datetime  # noqa: F401
 
 import re  # noqa: F401
+from datetime import date, datetime  # noqa: F401
 from typing import Any, Dict, List, Optional  # noqa: F401
 
 from pydantic import AnyUrl, BaseModel, EmailStr, Field, validator  # noqa: F401
+
 from app.schemas.aiod_generated.checksum import Checksum
 
 
@@ -51,5 +52,6 @@ class DataDownload(BaseModel):
     def name_max_length(cls, value):
         assert len(value) <= 150
         return value
+
 
 DataDownload.update_forward_refs()

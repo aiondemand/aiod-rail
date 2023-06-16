@@ -1,9 +1,9 @@
 # coding: utf-8
 
 from __future__ import annotations
-from datetime import date, datetime  # noqa: F401
 
 import re  # noqa: F401
+from datetime import date, datetime  # noqa: F401
 from typing import Any, Dict, List, Optional  # noqa: F401
 
 from pydantic import AnyUrl, BaseModel, EmailStr, Field, validator  # noqa: F401
@@ -30,7 +30,9 @@ class PresentationRead(BaseModel):
     """
 
     platform: Optional[str] = Field(alias="platform", default=None)
-    platform_identifier: Optional[str] = Field(alias="platform_identifier", default=None)
+    platform_identifier: Optional[str] = Field(
+        alias="platform_identifier", default=None
+    )
     name: str = Field(alias="name")
     description: str = Field(alias="description")
     url: Optional[str] = Field(alias="url", default=None)
@@ -38,7 +40,9 @@ class PresentationRead(BaseModel):
     publisher: Optional[str] = Field(alias="publisher", default=None)
     author: Optional[str] = Field(alias="author", default=None)
     image: Optional[str] = Field(alias="image", default=None)
-    is_accessible_for_free: Optional[bool] = Field(alias="is_accessible_for_free", default=None)
+    is_accessible_for_free: Optional[bool] = Field(
+        alias="is_accessible_for_free", default=None
+    )
     identifier: int = Field(alias="identifier")
 
     @validator("name")
@@ -70,5 +74,6 @@ class PresentationRead(BaseModel):
     def image_max_length(cls, value):
         assert len(value) <= 250
         return value
+
 
 PresentationRead.update_forward_refs()

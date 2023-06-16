@@ -1,12 +1,13 @@
 # coding: utf-8
 
 from __future__ import annotations
-from datetime import date, datetime  # noqa: F401
 
 import re  # noqa: F401
+from datetime import date, datetime  # noqa: F401
 from typing import Any, Dict, List, Optional  # noqa: F401
 
 from pydantic import AnyUrl, BaseModel, EmailStr, Field, validator  # noqa: F401
+
 from app.schemas.aiod_generated.alternatename import Alternatename
 from app.schemas.aiod_generated.citation import Citation
 from app.schemas.aiod_generated.context import Context
@@ -73,7 +74,9 @@ class SchemaDotOrgDataset(BaseModel):
     creator: Optional[Creator] = Field(alias="creator", default=None)
     date_modified: Optional[Datemodified] = Field(alias="dateModified", default=None)
     date_published: Optional[Datepublished] = Field(alias="datePublished", default=None)
-    is_accessible_for_free: Optional[bool] = Field(alias="isAccessibleForFree", default=None)
+    is_accessible_for_free: Optional[bool] = Field(
+        alias="isAccessibleForFree", default=None
+    )
     keywords: Optional[Keywords] = Field(alias="keywords", default=None)
     same_as: Optional[str] = Field(alias="sameAs", default=None)
     version: Optional[str] = Field(alias="version", default=None)
@@ -84,10 +87,17 @@ class SchemaDotOrgDataset(BaseModel):
     is_part_of: Optional[Ispartof] = Field(alias="isPartOf", default=None)
     issn: Optional[Issn] = Field(alias="issn", default=None)
     license: Optional[License] = Field(alias="license", default=None)
-    measurement_technique: Optional[Measurementtechnique] = Field(alias="measurementTechnique", default=None)
+    measurement_technique: Optional[Measurementtechnique] = Field(
+        alias="measurementTechnique", default=None
+    )
     size: Optional[str] = Field(alias="size", default=None)
     spatial_coverage: Optional[str] = Field(alias="spatialCoverage", default=None)
-    temporal_coverage: Optional[Temporalcoverage] = Field(alias="temporalCoverage", default=None)
-    variable_measured: Optional[Variablemeasured] = Field(alias="variableMeasured", default=None)
+    temporal_coverage: Optional[Temporalcoverage] = Field(
+        alias="temporalCoverage", default=None
+    )
+    variable_measured: Optional[Variablemeasured] = Field(
+        alias="variableMeasured", default=None
+    )
+
 
 SchemaDotOrgDataset.update_forward_refs()

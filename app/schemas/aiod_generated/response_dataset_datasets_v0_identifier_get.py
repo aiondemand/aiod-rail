@@ -1,12 +1,13 @@
 # coding: utf-8
 
 from __future__ import annotations
-from datetime import date, datetime  # noqa: F401
 
 import re  # noqa: F401
+from datetime import date, datetime  # noqa: F401
 from typing import Any, Dict, List, Optional  # noqa: F401
 
 from pydantic import AnyUrl, BaseModel, EmailStr, Field, validator  # noqa: F401
+
 from app.schemas.aiod_generated.alternatename import Alternatename
 from app.schemas.aiod_generated.citation import Citation
 from app.schemas.aiod_generated.creator import Creator
@@ -86,7 +87,9 @@ class ResponseDatasetDatasetsV0IdentifierGet(BaseModel):
     """
 
     platform: Optional[str] = Field(alias="platform", default=None)
-    platform_identifier: Optional[str] = Field(alias="platform_identifier", default=None)
+    platform_identifier: Optional[str] = Field(
+        alias="platform_identifier", default=None
+    )
     description: str = Field(alias="description")
     name: str = Field(alias="name")
     same_as: str = Field(alias="same_as")
@@ -96,12 +99,18 @@ class ResponseDatasetDatasetsV0IdentifierGet(BaseModel):
     date_modified: Optional[datetime] = Field(alias="date_modified", default=None)
     date_published: Optional[datetime] = Field(alias="date_published", default=None)
     funder: Optional[Funder] = Field(alias="funder", default=None)
-    is_accessible_for_free: Optional[bool] = Field(alias="is_accessible_for_free", default=None)
+    is_accessible_for_free: Optional[bool] = Field(
+        alias="is_accessible_for_free", default=None
+    )
     issn: Optional[Issn] = Field(alias="issn", default=None)
     size: Optional[str] = Field(alias="size", default=None)
     spatial_coverage: Optional[str] = Field(alias="spatial_coverage", default=None)
-    temporal_coverage_from: Optional[datetime] = Field(alias="temporal_coverage_from", default=None)
-    temporal_coverage_to: Optional[datetime] = Field(alias="temporal_coverage_to", default=None)
+    temporal_coverage_from: Optional[datetime] = Field(
+        alias="temporal_coverage_from", default=None
+    )
+    temporal_coverage_to: Optional[datetime] = Field(
+        alias="temporal_coverage_to", default=None
+    )
     version: Optional[str] = Field(alias="version", default=None)
     alternate_names: List[str] = Field(alias="alternate_names")
     citations: List[int] = Field(alias="citations")
@@ -119,16 +128,24 @@ class ResponseDatasetDatasetsV0IdentifierGet(BaseModel):
     citation: Optional[Citation] = Field(alias="citation", default=None)
     date_modified: Optional[Datemodified] = Field(alias="dateModified", default=None)
     date_published: Optional[Datepublished] = Field(alias="datePublished", default=None)
-    is_accessible_for_free: Optional[bool] = Field(alias="isAccessibleForFree", default=None)
+    is_accessible_for_free: Optional[bool] = Field(
+        alias="isAccessibleForFree", default=None
+    )
     same_as: Optional[str] = Field(alias="sameAs", default=None)
     url: Optional[str] = Field(alias="url", default=None)
     distribution: Optional[Distribution] = Field(alias="distribution", default=None)
     has_part: Optional[Haspart] = Field(alias="hasPart", default=None)
     is_part_of: Optional[Ispartof] = Field(alias="isPartOf", default=None)
-    measurement_technique: Optional[Measurementtechnique] = Field(alias="measurementTechnique", default=None)
+    measurement_technique: Optional[Measurementtechnique] = Field(
+        alias="measurementTechnique", default=None
+    )
     spatial_coverage: Optional[str] = Field(alias="spatialCoverage", default=None)
-    temporal_coverage: Optional[Temporalcoverage] = Field(alias="temporalCoverage", default=None)
-    variable_measured: Optional[Variablemeasured] = Field(alias="variableMeasured", default=None)
+    temporal_coverage: Optional[Temporalcoverage] = Field(
+        alias="temporalCoverage", default=None
+    )
+    variable_measured: Optional[Variablemeasured] = Field(
+        alias="variableMeasured", default=None
+    )
     graph: List[GraphInner] = Field(alias="@graph")
 
     @validator("same_as")
@@ -150,5 +167,6 @@ class ResponseDatasetDatasetsV0IdentifierGet(BaseModel):
     def spatial_coverage_max_length(cls, value):
         assert len(value) <= 500
         return value
+
 
 ResponseDatasetDatasetsV0IdentifierGet.update_forward_refs()

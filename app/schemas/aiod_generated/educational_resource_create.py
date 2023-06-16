@@ -1,9 +1,9 @@
 # coding: utf-8
 
 from __future__ import annotations
-from datetime import date, datetime  # noqa: F401
 
 import re  # noqa: F401
+from datetime import date, datetime  # noqa: F401
 from typing import Any, Dict, List, Optional  # noqa: F401
 
 from pydantic import AnyUrl, BaseModel, EmailStr, Field, validator  # noqa: F401
@@ -51,7 +51,9 @@ class EducationalResourceCreate(BaseModel):
     """
 
     platform: Optional[str] = Field(alias="platform", default=None)
-    platform_identifier: Optional[str] = Field(alias="platform_identifier", default=None)
+    platform_identifier: Optional[str] = Field(
+        alias="platform_identifier", default=None
+    )
     title: str = Field(alias="title")
     date_modified: Optional[datetime] = Field(alias="date_modified", default=None)
     body: str = Field(alias="body")
@@ -62,19 +64,31 @@ class EducationalResourceCreate(BaseModel):
     interactivity_type: Optional[str] = Field(alias="interactivity_type", default=None)
     typical_age_range: Optional[str] = Field(alias="typical_age_range", default=None)
     accessibility_api: Optional[str] = Field(alias="accessibility_api", default=None)
-    accessibility_control: Optional[str] = Field(alias="accessibility_control", default=None)
+    accessibility_control: Optional[str] = Field(
+        alias="accessibility_control", default=None
+    )
     access_mode: Optional[str] = Field(alias="access_mode", default=None)
-    access_mode_sufficient: Optional[str] = Field(alias="access_mode_sufficient", default=None)
-    access_restrictions: Optional[str] = Field(alias="access_restrictions", default=None)
+    access_mode_sufficient: Optional[str] = Field(
+        alias="access_mode_sufficient", default=None
+    )
+    access_restrictions: Optional[str] = Field(
+        alias="access_restrictions", default=None
+    )
     citations: Optional[str] = Field(alias="citations", default=None)
     version: Optional[str] = Field(alias="version", default=None)
     number_of_weeks: Optional[int] = Field(alias="number_of_weeks", default=None)
-    field_prerequisites: Optional[str] = Field(alias="field_prerequisites", default=None)
+    field_prerequisites: Optional[str] = Field(
+        alias="field_prerequisites", default=None
+    )
     short_summary: Optional[str] = Field(alias="short_summary", default=None)
-    duration_minutes_and_hours: Optional[str] = Field(alias="duration_minutes_and_hours", default=None)
+    duration_minutes_and_hours: Optional[str] = Field(
+        alias="duration_minutes_and_hours", default=None
+    )
     hours_per_week: Optional[str] = Field(alias="hours_per_week", default=None)
     country: Optional[str] = Field(alias="country", default=None)
-    is_accessible_for_free: Optional[bool] = Field(alias="is_accessible_for_free", default=None)
+    is_accessible_for_free: Optional[bool] = Field(
+        alias="is_accessible_for_free", default=None
+    )
     credits: Optional[bool] = Field(alias="credits", default=None)
     duration_in_years: Optional[int] = Field(alias="duration_in_years", default=None)
     languages: List[str] = Field(alias="languages")
@@ -182,5 +196,6 @@ class EducationalResourceCreate(BaseModel):
     def country_max_length(cls, value):
         assert len(value) <= 500
         return value
+
 
 EducationalResourceCreate.update_forward_refs()

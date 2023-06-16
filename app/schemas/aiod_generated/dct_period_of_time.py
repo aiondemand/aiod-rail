@@ -1,12 +1,13 @@
 # coding: utf-8
 
 from __future__ import annotations
-from datetime import date, datetime  # noqa: F401
 
 import re  # noqa: F401
+from datetime import date, datetime  # noqa: F401
 from typing import Any, Dict, List, Optional  # noqa: F401
 
 from pydantic import AnyUrl, BaseModel, EmailStr, Field, validator  # noqa: F401
+
 from app.schemas.aiod_generated.xsd_date_time import XSDDateTime
 
 
@@ -27,5 +28,6 @@ class DctPeriodOfTime(BaseModel):
     type: Optional[str] = Field(alias="@type", default=None)
     dcatstart_date: Optional[XSDDateTime] = Field(alias="dcat:startDate", default=None)
     dcatend_date: Optional[XSDDateTime] = Field(alias="dcat:endDate", default=None)
+
 
 DctPeriodOfTime.update_forward_refs()

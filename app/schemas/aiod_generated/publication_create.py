@@ -1,9 +1,9 @@
 # coding: utf-8
 
 from __future__ import annotations
-from datetime import date, datetime  # noqa: F401
 
 import re  # noqa: F401
+from datetime import date, datetime  # noqa: F401
 from typing import Any, Dict, List, Optional  # noqa: F401
 
 from pydantic import AnyUrl, BaseModel, EmailStr, Field, validator  # noqa: F401
@@ -31,7 +31,9 @@ class PublicationCreate(BaseModel):
     """
 
     platform: Optional[str] = Field(alias="platform", default=None)
-    platform_identifier: Optional[str] = Field(alias="platform_identifier", default=None)
+    platform_identifier: Optional[str] = Field(
+        alias="platform_identifier", default=None
+    )
     title: str = Field(alias="title")
     doi: Optional[str] = Field(alias="doi", default=None)
     creators: Optional[str] = Field(alias="creators", default=None)
@@ -67,5 +69,6 @@ class PublicationCreate(BaseModel):
     def url_max_length(cls, value):
         assert len(value) <= 250
         return value
+
 
 PublicationCreate.update_forward_refs()

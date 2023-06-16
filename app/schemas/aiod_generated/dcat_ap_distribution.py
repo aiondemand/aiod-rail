@@ -1,12 +1,13 @@
 # coding: utf-8
 
 from __future__ import annotations
-from datetime import date, datetime  # noqa: F401
 
 import re  # noqa: F401
+from datetime import date, datetime  # noqa: F401
 from typing import Any, Dict, List, Optional  # noqa: F401
 
 from pydantic import AnyUrl, BaseModel, EmailStr, Field, validator  # noqa: F401
+
 from app.schemas.aiod_generated.dcat_ap_identifier import DcatAPIdentifier
 
 
@@ -33,11 +34,14 @@ class DcatAPDistribution(BaseModel):
     type: Optional[str] = Field(alias="@type", default=None)
     dcataccess_url: Optional[str] = Field(alias="dcat:accessURL", default=None)
     dcatbyte_size: Optional[int] = Field(alias="dcat:byteSize", default=None)
-    spdxchecksum: Optional[DcatAPIdentifier] = Field(alias="spdx:checksum", default=None)
+    spdxchecksum: Optional[DcatAPIdentifier] = Field(
+        alias="spdx:checksum", default=None
+    )
     dctdescription: Optional[str] = Field(alias="dct:description", default=None)
     dcatdownload_url: Optional[str] = Field(alias="dcat:downloadURL", default=None)
     dctformat: Optional[str] = Field(alias="dct:format", default=None)
     dctlicense: Optional[str] = Field(alias="dct:license", default=None)
     dcttitle: Optional[str] = Field(alias="dct:title", default=None)
+
 
 DcatAPDistribution.update_forward_refs()

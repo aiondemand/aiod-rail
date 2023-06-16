@@ -1,14 +1,17 @@
 # coding: utf-8
 
 from __future__ import annotations
-from datetime import date, datetime  # noqa: F401
 
 import re  # noqa: F401
+from datetime import date, datetime  # noqa: F401
 from typing import Any, Dict, List, Optional  # noqa: F401
 
 from pydantic import AnyUrl, BaseModel, EmailStr, Field, validator  # noqa: F401
+
 from app.schemas.aiod_generated.creator_any_of_inner import CreatorAnyOfInner
-from app.schemas.aiod_generated.schema_dot_org_organization import SchemaDotOrgOrganization
+from app.schemas.aiod_generated.schema_dot_org_organization import (
+    SchemaDotOrgOrganization,
+)
 from app.schemas.aiod_generated.schema_dot_org_person import SchemaDotOrgPerson
 
 
@@ -25,5 +28,6 @@ class Creator(BaseModel):
 
     type: Optional[str] = Field(alias="@type", default=None)
     name: str = Field(alias="name")
+
 
 Creator.update_forward_refs()
