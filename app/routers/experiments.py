@@ -11,6 +11,7 @@ from app.schemas.experiment import (
     ExperimentResponse,
     ExperimentRun,
     ExperimentRunDetails,
+    ExperimentRunExecute,
     ExperimentType,
 )
 
@@ -78,6 +79,26 @@ async def get_experiment_run(id: PydanticObjectId, run_id: PydanticObjectId) -> 
     async_client = eee_client_wrapper()
     res = await async_client.get(
         f"{settings.EEE_API.BASE_URL}/experiment-runs/{run_id}",
+    )
+
+    return res.json()
+
+
+@router.post("/experiments/{id}/execute", response_model=ExperimentRun)
+async def execute_experiment_run(id: PydanticObjectId, envs: dict[str, str]) -> Any:
+    experiment = await Experiment.get(id)
+    experiment_run = ExperimentRunExecute(
+        id=experiment.id,
+        experiment_type_id=experiment.experiment_type_id,
+        dataset_name="mtkinit/Example-Dataset-Super-2",
+        model_name="j-hartmann/sentiment-roberta-large-english-3-classes",
+        env_vars=envs,
+        metrics=experiment.metrics,
+    )
+
+    async_client = eee_client_wrapper()
+    res = await async_client.post(
+        f"{settings.EEE_API.BASE_URL}/experiment-runs/", data=experiment_run.json()
     )
 
     return res.json()

@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from beanie import Document
+from beanie import Document, PydanticObjectId
 
 
 class Experiment(Document):
@@ -10,7 +10,7 @@ class Experiment(Document):
     created_at: datetime = datetime.utcnow()
     updated_at: datetime = datetime.utcnow()
 
-    experiment_type_id: str
+    experiment_type_id: PydanticObjectId
     dataset_id: str
     model_id: str
     metrics: list[str]

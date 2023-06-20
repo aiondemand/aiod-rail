@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from beanie import PydanticObjectId
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 
 class ExperimentBase(BaseModel):
@@ -39,9 +39,17 @@ class ExperimentType(BaseModel):
 class ExperimentRunBase(BaseModel):
     id: PydanticObjectId
     created_at: datetime
-    # TODO: Unify with EEE
-    updated_at: datetime = Field(alias="changed_at")
+    updated_at: datetime
     status: str
+
+
+class ExperimentRunExecute(BaseModel):
+    id: PydanticObjectId
+    experiment_type_id: PydanticObjectId
+    dataset_name: str
+    model_name: str
+    env_vars: dict[str, str]
+    metrics: list[str]
 
 
 class ExperimentRun(ExperimentRunBase):
