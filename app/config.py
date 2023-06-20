@@ -9,11 +9,18 @@ class AIODApiSettings(BaseModel):
     PUBLICATIONS_VERSION: str = "v0"
 
 
+class AIODKeycloakSettings(BaseModel):
+    REALM: str
+    CLIENT_ID: str
+    CLIENT_SECRET: str
+    SERVER_URL: str
+
 class Settings(BaseSettings):
     MONGODB_URI: str
     MONGODB_DBNAME: str
 
     AIOD_API: AIODApiSettings
+    AIOD_KEYCLOAK: AIODKeycloakSettings
     DEFAULT_RESPONSE_LIMIT: int = 100
 
     class Config:
