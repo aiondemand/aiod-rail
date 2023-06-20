@@ -9,7 +9,7 @@ class ExperimentBase(BaseModel):
     description: str
     publication_ids: list[str] = []
 
-    experiment_type_id: str
+    experiment_type_id: PydanticObjectId
     dataset_id: str
     model_id: str
     metrics: list[str]
@@ -26,3 +26,11 @@ class ExperimentResponse(ExperimentBase):
     id: PydanticObjectId
     created_at: datetime
     updated_at: datetime
+
+
+class ExperimentType(BaseModel):
+    id: PydanticObjectId
+    name: str
+    description: str
+    available_metrics: list[str]
+    available_envs: list[str]

@@ -1,11 +1,12 @@
 from typing import Any
 
 from beanie import PydanticObjectId
-from fastapi import APIRouter, status
+from fastapi import APIRouter, Depends, status
 
 from app.config import settings
+from app.helpers import Pagination, eee_client_wrapper
 from app.models.experiment import Experiment
-from app.schemas.experiment import ExperimentCreate, ExperimentResponse
+from app.schemas.experiment import ExperimentCreate, ExperimentResponse, ExperimentType
 
 router = APIRouter()
 
@@ -14,10 +15,10 @@ router = APIRouter()
     "/experiments",
     response_model=list[ExperimentResponse],
 )
-async def get_experiments(
-    offset: int = 0, limit: int = settings.DEFAULT_RESPONSE_LIMIT
-) -> Any:
-    experiments = await Experiment.find_all(skip=offset, limit=limit).to_list()
+async def get_experiments(pagination: Pagination = Depends()) -> Any:
+    experiments = await Experiment.find_all(
+        skip=pagination.offset, limit=pagination.limit
+    ).to_list()
     return [experiment.dict() for experiment in experiments]
 
 
@@ -39,3 +40,12 @@ async def create_experiment(experiment: ExperimentCreate) -> Any:
     experiment = Experiment(**experiment.dict())
     await experiment.create()
     return experiment.dict()
+
+
+@router.get("/experiment/experiment-types", response_model=list[ExperimentType])
+async def get_experiment_types(pagination: Pagination = Depends()) -> Any:
+    async_client = eee_client_wrapper()
+    res = await async_client.get(
+        f"{settings.EEE_API.BASE_URL}/experiment-types/?offset={pagination.offset}&limit={pagination.limit}",
+    )
+    return res.json()
