@@ -1,7 +1,9 @@
 from typing import Any
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from pydantic import Json
 
+from app.authentication import get_current_user
 from app.config import settings
 from app.helpers import aiod_client_wrapper
 from app.schemas.dataset import Dataset
@@ -68,3 +70,11 @@ async def get_publications_count() -> Any:
         f"{settings.AIOD_API.BASE_URL}/counts/publications/{settings.AIOD_API.DATASETS_VERSION}",
     )
     return res.json()
+
+
+@router.get("/authentication_test")
+def test_authorization(user: Json = Depends(get_current_user)) -> dict:
+    """
+    Returns the user, if authenticated correctly.
+    """
+    return {"msg": "success", "user": user}
