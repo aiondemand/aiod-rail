@@ -6,7 +6,13 @@ from fastapi import APIRouter, Depends, status
 from app.config import settings
 from app.helpers import Pagination, eee_client_wrapper
 from app.models.experiment import Experiment
-from app.schemas.experiment import ExperimentCreate, ExperimentResponse, ExperimentType
+from app.schemas.experiment import (
+    ExperimentCreate,
+    ExperimentResponse,
+    ExperimentRun,
+    ExperimentRunDetails,
+    ExperimentType,
+)
 
 router = APIRouter()
 
@@ -48,4 +54,30 @@ async def get_experiment_types(pagination: Pagination = Depends()) -> Any:
     res = await async_client.get(
         f"{settings.EEE_API.BASE_URL}/experiment-types/?offset={pagination.offset}&limit={pagination.limit}",
     )
+    return res.json()
+
+
+@router.get("/experiments/{id}/runs", response_model=list[ExperimentRun])
+async def get_experiment_runs(
+    id: PydanticObjectId, pagination: Pagination = Depends()
+) -> Any:
+    async_client = eee_client_wrapper()
+
+    res = await async_client.get(
+        f"{settings.EEE_API.BASE_URL}/experiment-runs/?experiment_id={id}&"
+        f"offset={pagination.offset}&limit={pagination.limit}",
+    )
+
+    return res.json()
+
+
+@router.get(
+    "/experiments/{id}/runs/{run_id}", response_model=ExperimentRunDetails | None
+)
+async def get_experiment_run(id: PydanticObjectId, run_id: PydanticObjectId) -> Any:
+    async_client = eee_client_wrapper()
+    res = await async_client.get(
+        f"{settings.EEE_API.BASE_URL}/experiment-runs/{run_id}",
+    )
+
     return res.json()
