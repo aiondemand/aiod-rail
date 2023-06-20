@@ -1,13 +1,10 @@
 import logging
-import os
 
 from fastapi import HTTPException, Security, status
 from fastapi.security import OpenIdConnect
-
-from keycloak import KeycloakOpenID, KeycloakError
+from keycloak import KeycloakError, KeycloakOpenID
 
 from app.config import settings
-
 
 oidc = OpenIdConnect(
     openIdConnectUrl="https://test.openml.org/aiod-auth/realms/dev/.well-known/openidx"
@@ -24,8 +21,11 @@ keycloak_openid = KeycloakOpenID(
 )
 
 KEYCLOAK_PUBLIC_KEY = (
-    "-----BEGIN PUBLIC KEY-----\n" + keycloak_openid.public_key() + "\n-----END PUBLIC KEY-----"
+    "-----BEGIN PUBLIC KEY-----\n"
+    + keycloak_openid.public_key()
+    + "\n-----END PUBLIC KEY-----"
 )
+
 
 # function for getting token from Keycloak by using keycloak_openid and client_credentials flow
 def get_token():
@@ -35,8 +35,6 @@ def get_token():
         grant_type=["client_credentials"],
     )
     return token
-
-
 
 
 async def get_current_user(token=Security(oidc)) -> dict:

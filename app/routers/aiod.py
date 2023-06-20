@@ -2,8 +2,8 @@ from typing import Any
 
 from fastapi import APIRouter, Depends
 from pydantic import Json
-from app.authentication import get_current_user
 
+from app.authentication import get_current_user
 from app.config import settings
 from app.helpers import aiod_client_wrapper
 from app.schemas.dataset import Dataset

@@ -15,6 +15,7 @@ class AIODKeycloakSettings(BaseModel):
     CLIENT_SECRET: str
     SERVER_URL: str
 
+
 class Settings(BaseSettings):
     MONGODB_URI: str
     MONGODB_DBNAME: str
