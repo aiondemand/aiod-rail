@@ -1,10 +1,11 @@
 from typing import Any
 
 from beanie import PydanticObjectId
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import PlainTextResponse
 
 from app.config import settings
+from app.dummy_code import get_dataset_name, get_model_name
 from app.helpers import Pagination, eee_client_wrapper
 from app.models.experiment import Experiment
 from app.schemas.experiment import (
@@ -94,17 +95,27 @@ async def get_experiment_run_logs(
         f"{settings.EEE_API.BASE_URL}/experiment-runs/{run_id}/logs",
     )
 
-    return res.json()
+    if (text_response := res.json()) is not None:
+        return text_response
+    else:
+        return ""
 
 
 @router.post("/experiments/{id}/execute", response_model=ExperimentRun)
 async def execute_experiment_run(id: PydanticObjectId, envs: dict[str, str]) -> Any:
     experiment = await Experiment.get(id)
+
+    dataset_name = await get_dataset_name(experiment.dataset_id)
+    model_name = get_model_name(experiment.model_id)
+
+    if dataset_name is None or model_name is None:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
     experiment_run = ExperimentRunExecute(
         id=experiment.id,
         experiment_type_id=experiment.experiment_type_id,
-        dataset_name="mtkinit/Example-Dataset-Super-2",
-        model_name="j-hartmann/sentiment-roberta-large-english-3-classes",
+        dataset_name=dataset_name,
+        model_name=model_name,
         env_vars=envs,
         metrics=experiment.metrics,
     )

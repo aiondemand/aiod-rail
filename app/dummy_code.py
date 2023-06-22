@@ -1,5 +1,9 @@
 # TODO: All this code needs to be replaced by proper functionality when possible
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
+
+from app.config import settings
+from app.helpers import aiod_client_wrapper
+from app.schemas.dataset import Dataset
 
 
 class Model(BaseModel):
@@ -52,3 +56,23 @@ def get_dummy_model(id: int) -> Model | None:
 
 def get_dummy_model_count():
     return len(DUMMY_MODELS)
+
+
+def get_model_name(id: int) -> str | None:
+    if model := get_dummy_model(id):
+        return model.platform_identifier
+    else:
+        return None
+
+
+async def get_dataset_name(id: int) -> str:
+    async_client = aiod_client_wrapper()
+    res = await async_client.get(
+        f"{settings.AIOD_API.BASE_URL}/datasets/{settings.AIOD_API.DATASETS_VERSION}/{id}",
+    )
+
+    try:
+        dataset = Dataset(**res.json())
+        return dataset.platform_identifier
+    except ValidationError:
+        return "mtkinit/Example-Dataset-Super-2"

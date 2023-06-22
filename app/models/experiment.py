@@ -11,8 +11,8 @@ class Experiment(Document):
     updated_at: datetime = datetime.utcnow()
 
     experiment_type_id: PydanticObjectId
-    dataset_id: str
-    model_id: str
+    dataset_id: int
+    model_id: int
     metrics: list[str]
 
     save_logs: bool
