@@ -53,7 +53,7 @@ async def create_experiment(experiment: ExperimentCreate) -> Any:
 async def get_experiment_types(pagination: Pagination = Depends()) -> Any:
     async_client = eee_client_wrapper()
     res = await async_client.get(
-        f"{settings.EEE_API.BASE_URL}/experiment-types/?offset={pagination.offset}&limit={pagination.limit}",
+        f"{settings.EEE_API.BASE_URL}/experiment-types?offset={pagination.offset}&limit={pagination.limit}",
     )
     return res.json()
 
@@ -65,7 +65,7 @@ async def get_experiment_runs(
     async_client = eee_client_wrapper()
 
     res = await async_client.get(
-        f"{settings.EEE_API.BASE_URL}/experiment-runs/?experiment_id={id}&"
+        f"{settings.EEE_API.BASE_URL}/experiment-runs?experiment_id={id}&"
         f"offset={pagination.offset}&limit={pagination.limit}",
     )
 
@@ -98,7 +98,7 @@ async def execute_experiment_run(id: PydanticObjectId, envs: dict[str, str]) -> 
 
     async_client = eee_client_wrapper()
     res = await async_client.post(
-        f"{settings.EEE_API.BASE_URL}/experiment-runs/", data=experiment_run.json()
+        f"{settings.EEE_API.BASE_URL}/experiment-runs", data=experiment_run.json()
     )
 
     return res.json()
