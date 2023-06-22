@@ -1,9 +1,9 @@
 from typing import Any
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, UploadFile
 from pydantic import Json
 
-from app.authentication import get_current_user
+from app.authentication import get_current_user, get_current_uset_token
 from app.config import settings
 from app.dummy_code import (
     Model,
@@ -44,6 +44,64 @@ async def get_dataset(id: int) -> Any:
         f"{settings.AIOD_API.BASE_URL}/datasets/{settings.AIOD_API.DATASETS_VERSION}/{id}",
     )
     return res.json()
+
+
+@router.post("/datasets", response_model=Dataset)
+async def create_dataset(
+    dataset: Dataset,
+    token: str = Depends(get_current_uset_token),
+    user: Json = Depends(get_current_user),
+) -> Any:
+    async_client = aiod_client_wrapper()
+    # Create a new dataset in AIoD (just metadata)
+    res = await async_client.post(
+        f"{settings.AIOD_API.BASE_URL}/datasets/{settings.AIOD_API.DATASETS_VERSION}",
+        headers={"Authorization": f"{token}"},
+        json=dataset.dict(),
+    )
+
+    if res.status_code != 200:
+        raise HTTPException(
+            status_code=res.status_code,
+            detail=f"Failed to create the dataset on AIoD. {res.json()}",
+        )
+
+    # As the API only returns the ID of the new dataset as {identifier: id},
+    # we need to fetch it again
+    new_dataset_id = res.json()["identifier"]
+    dataset = await get_dataset(new_dataset_id)
+
+    return dataset
+
+
+@router.post("/datasets/{id}/upload-file", response_model=Dataset)
+async def dataset_upload_file(
+    id: int,
+    file: UploadFile,
+    huggingface_name: str,
+    huggingface_token: str,
+    token: str = Depends(get_current_uset_token),
+) -> Any:
+    async_client = aiod_client_wrapper()
+
+    res = await async_client.post(
+        f"{settings.AIOD_API.BASE_URL}/upload/datasets/{id}/huggingface?token={huggingface_token}&username={huggingface_name}",
+        headers={"Authorization": f"{token}"},
+        files={"file": (file.filename, file.file, file.content_type)},
+    )
+
+    if res.status_code != 200:
+        raise HTTPException(
+            status_code=res.status_code,
+            detail=f"Failed to upload the file to HuggingFace. {res.json()}",
+        )
+
+    # As the API only returns the ID as integer of the new dataset,
+    # we need to fetch it again
+    new_dataset_id = res.json()
+    dataset = await get_dataset(new_dataset_id)
+
+    return dataset
 
 
 @router.get("/publications", response_model=list[Publication])

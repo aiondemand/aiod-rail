@@ -37,9 +37,11 @@ def get_token():
     return token
 
 
+async def get_current_uset_token(token=Security(oidc)):
+    return token
+
+
 async def get_current_user(token=Security(oidc)) -> dict:
-    ctoken = keycloak_openid.get_token()
-    print(ctoken)
     if not token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
