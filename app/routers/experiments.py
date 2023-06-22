@@ -2,6 +2,7 @@ from typing import Any
 
 from beanie import PydanticObjectId
 from fastapi import APIRouter, Depends, status
+from fastapi.responses import PlainTextResponse
 
 from app.config import settings
 from app.helpers import Pagination, eee_client_wrapper
@@ -79,6 +80,18 @@ async def get_experiment_run(id: PydanticObjectId, run_id: PydanticObjectId) -> 
     async_client = eee_client_wrapper()
     res = await async_client.get(
         f"{settings.EEE_API.BASE_URL}/experiment-runs/{run_id}",
+    )
+
+    return res.json()
+
+
+@router.get("/experiments/{id}/runs/{run_id}/logs", response_class=PlainTextResponse)
+async def get_experiment_run_logs(
+    id: PydanticObjectId, run_id: PydanticObjectId
+) -> str:
+    async_client = eee_client_wrapper()
+    res = await async_client.get(
+        f"{settings.EEE_API.BASE_URL}/experiment-runs/{run_id}/logs",
     )
 
     return res.json()
