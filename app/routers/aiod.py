@@ -13,6 +13,7 @@ from app.dummy_code import (
 )
 from app.helpers import Pagination, aiod_client_wrapper
 from app.schemas.dataset import Dataset
+from app.schemas.platform import Platform
 from app.schemas.publication import Publication
 
 router = APIRouter()
@@ -169,7 +170,7 @@ async def get_models_count() -> Any:
     return get_dummy_model_count()
 
 
-@router.get("/platforms", response_model=list[str])
+@router.get("/platforms", response_model=list[Platform])
 async def get_platforms() -> Any:
     async_client = aiod_client_wrapper()
     res = await async_client.get(
