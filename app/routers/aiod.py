@@ -74,6 +74,24 @@ async def create_dataset(
     return dataset
 
 
+@router.delete("/datasets/{id}", response_model=bool)
+async def delete_dataset(id: int, token: str = Depends(get_current_uset_token)) -> Any:
+    async_client = aiod_client_wrapper()
+    res = await async_client.delete(
+        f"{settings.AIOD_API.BASE_URL}/datasets/{settings.AIOD_API.DATASETS_VERSION}/{id}",
+        headers={"Authorization": f"{token}"},
+    )
+
+    if res.status_code != 200:
+        print("ERROR", res.json())
+        raise HTTPException(
+            status_code=res.status_code,
+            detail=f"Failed to delete dataset on AIoD. {res.json()}",
+        )
+
+    return True
+
+
 @router.post("/datasets/{id}/upload-file", response_model=Dataset)
 async def dataset_upload_file(
     id: int,
@@ -91,6 +109,7 @@ async def dataset_upload_file(
     )
 
     if res.status_code != 200:
+        print(f"Failed to upload the file to HuggingFace. {res.json()}")
         raise HTTPException(
             status_code=res.status_code,
             detail=f"Failed to upload the file to HuggingFace. {res.json()}",
