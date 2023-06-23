@@ -92,8 +92,8 @@ async def delete_dataset(id: int, token: str = Depends(get_current_uset_token)) 
     return True
 
 
-@router.post("/datasets/{id}/upload-file", response_model=Dataset)
-async def dataset_upload_file(
+@router.post("/datasets/{id}/upload-file-to-huggingface", response_model=Dataset)
+async def dataset_upload_file_to_huggingface(
     id: int,
     file: UploadFile,
     huggingface_name: str,
