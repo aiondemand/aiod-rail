@@ -3,7 +3,7 @@ from typing import Any
 from fastapi import APIRouter, Depends, HTTPException, UploadFile
 from pydantic import Json
 
-from app.authentication import get_current_user, get_current_uset_token
+from app.authentication import get_current_user, get_current_user_token
 from app.config import settings
 from app.dummy_code import (
     Model,
@@ -50,7 +50,7 @@ async def get_dataset(id: int) -> Any:
 @router.post("/datasets", response_model=Dataset)
 async def create_dataset(
     dataset: Dataset,
-    token: str = Depends(get_current_uset_token),
+    token: str = Depends(get_current_user_token),
     user: Json = Depends(get_current_user),
 ) -> Any:
     async_client = aiod_client_wrapper()
@@ -76,7 +76,7 @@ async def create_dataset(
 
 
 @router.delete("/datasets/{id}", response_model=bool)
-async def delete_dataset(id: int, token: str = Depends(get_current_uset_token)) -> Any:
+async def delete_dataset(id: int, token: str = Depends(get_current_user_token)) -> Any:
     async_client = aiod_client_wrapper()
     res = await async_client.delete(
         f"{settings.AIOD_API.BASE_URL}/datasets/{settings.AIOD_API.DATASETS_VERSION}/{id}",
@@ -99,7 +99,7 @@ async def dataset_upload_file_to_huggingface(
     file: UploadFile,
     huggingface_name: str,
     huggingface_token: str,
-    token: str = Depends(get_current_uset_token),
+    token: str = Depends(get_current_user_token),
 ) -> Any:
     async_client = aiod_client_wrapper()
 
