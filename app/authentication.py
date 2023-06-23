@@ -1,6 +1,6 @@
 import logging
 
-from fastapi import HTTPException, Security, status
+from fastapi import Depends, HTTPException, Security, status
 from fastapi.security import OpenIdConnect
 from keycloak import KeycloakError, KeycloakOpenID
 
@@ -37,9 +37,11 @@ def get_token():
     return token
 
 
-async def get_current_user(token=Security(oidc)) -> dict:
-    ctoken = keycloak_openid.get_token()
-    print(ctoken)
+async def get_current_user_token(token=Security(oidc)):
+    return token
+
+
+async def get_current_user(token=Depends(get_current_user_token)) -> dict:
     if not token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
