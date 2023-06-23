@@ -7,6 +7,7 @@ class AIODApiConfig(BaseModel):
     BASE_URL: AnyHttpUrl
     DATASETS_VERSION: str = "v0"
     PUBLICATIONS_VERSION: str = "v0"
+    PLATFORMS_VERSION: str = "v0"
 
 
 class EEEApiConfig(BaseModel):

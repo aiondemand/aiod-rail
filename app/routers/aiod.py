@@ -169,9 +169,17 @@ async def get_models_count() -> Any:
     return get_dummy_model_count()
 
 
-@router.get("/authentication_test")
-def test_authorization(user: Json = Depends(get_current_user)) -> dict:
-    """
-    Returns the user, if authenticated correctly.
-    """
-    return {"msg": "success", "user": user}
+@router.get("/platforms", response_model=list[str])
+async def get_platforms() -> Any:
+    async_client = aiod_client_wrapper()
+    res = await async_client.get(
+        f"{settings.AIOD_API.BASE_URL}/platforms/{settings.AIOD_API.PLATFORMS_VERSION}",
+    )
+
+    if res.status_code != 200:
+        raise HTTPException(
+            status_code=res.status_code,
+            detail=f"Failed to get platforms from AIoD. {res.json()}",
+        )
+
+    return res.json()
