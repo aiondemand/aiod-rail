@@ -32,6 +32,14 @@ async def get_experiments(pagination: Pagination = Depends()) -> Any:
 
 
 @router.get(
+    "/count/experiments",
+    response_model=int,
+)
+async def get_experiments_count(pagination: Pagination = Depends()) -> Any:
+    return await Experiment.count()
+
+
+@router.get(
     "/experiments/{id}",
     response_model=ExperimentResponse,
 )
@@ -57,6 +65,13 @@ async def get_experiment_types(pagination: Pagination = Depends()) -> Any:
     res = await async_client.get(
         f"{settings.EEE_API.BASE_URL}/experiment-types?offset={pagination.offset}&limit={pagination.limit}",
     )
+
+    if res.status_code != status.HTTP_200_OK:
+        raise HTTPException(
+            status_code=res.status_code,
+            detail=f"Could not get experiments from EEE API: {res.json()}",
+        )
+
     return res.json()
 
 
