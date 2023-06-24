@@ -34,6 +34,9 @@ class ExperimentType(BaseModel):
     description: str
     available_metrics: list[str]
     available_envs: list[str]
+    dockerfile: str
+    script: str
+    pip_requirements: str
 
 
 class ExperimentRunBase(BaseModel):
