@@ -35,7 +35,7 @@ async def get_experiments(pagination: Pagination = Depends()) -> Any:
 
 @router.get("/experiments/my", response_model=list[ExperimentResponse])
 async def get_my_experiments(
-    pagination: Pagination = Depends(), user: Json = Depends(get_current_user)
+    user: Json = Depends(get_current_user), pagination: Pagination = Depends()
 ) -> Any:
     experiments = await Experiment.find(
         Experiment.user == user["email"], skip=pagination.offset, limit=pagination.limit
@@ -44,10 +44,21 @@ async def get_my_experiments(
 
 
 @router.get(
+    "/count/experiments/my",
+    response_model=int,
+)
+async def get_my_experiments_count(user: Json = Depends(get_current_user)) -> Any:
+    number_of_my_experiments = await Experiment.find(
+        Experiment.user == user["email"]
+    ).count()
+    return number_of_my_experiments
+
+
+@router.get(
     "/count/experiments",
     response_model=int,
 )
-async def get_experiments_count(pagination: Pagination = Depends()) -> Any:
+async def get_experiments_count() -> Any:
     return await Experiment.count()
 
 
