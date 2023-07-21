@@ -8,6 +8,7 @@ from app.config import settings
 from app.dummy_code import get_dataset_name, get_model_name
 from app.helpers import Pagination, eee_client_wrapper
 from app.models.experiment import Experiment
+from app.authentication import get_current_user
 from app.schemas.experiment import (
     ExperimentCreate,
     ExperimentResponse,
@@ -30,6 +31,10 @@ async def get_experiments(pagination: Pagination = Depends()) -> Any:
     ).to_list()
     return [experiment.dict() for experiment in experiments]
 
+@router.get( "/experiments/my", response_model=list[ExperimentResponse])
+async def get_my_experiments(user: str = Depends(get_current_user)) -> Any:
+    experiments = await Experiment.find(Experiment.user == user).to_list()
+    return [experiment.dict() for experiment in experiments]
 
 @router.get(
     "/experiments/{id}",
@@ -39,14 +44,10 @@ async def get_experiment(id: PydanticObjectId) -> Any:
     experiment = await Experiment.get(id)
     return experiment.dict()
 
-
-@router.post(
-    "/experiments",
-    status_code=status.HTTP_201_CREATED,
-    response_model=ExperimentResponse,
-)
-async def create_experiment(experiment: ExperimentCreate) -> Any:
+@router.post("/experiments", status_code=status.HTTP_201_CREATED, response_model=ExperimentResponse)
+async def create_experiment( experiment: ExperimentCreate, user: str = Depends(get_current_user)) -> Any:
     experiment = Experiment(**experiment.dict())
+    experiment.user = user
     await experiment.create()
     return experiment.dict()
 
