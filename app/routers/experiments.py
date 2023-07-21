@@ -4,6 +4,7 @@ from beanie import PydanticObjectId
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import PlainTextResponse
 
+from pydantic import Json
 from app.config import settings
 from app.dummy_code import get_dataset_name, get_model_name
 from app.helpers import Pagination, eee_client_wrapper
@@ -32,8 +33,8 @@ async def get_experiments(pagination: Pagination = Depends()) -> Any:
     return [experiment.dict() for experiment in experiments]
 
 @router.get( "/experiments/my", response_model=list[ExperimentResponse])
-async def get_my_experiments(user: str = Depends(get_current_user)) -> Any:
-    experiments = await Experiment.find(Experiment.user == user).to_list()
+async def get_my_experiments(user: Json = Depends(get_current_user))-> Any:
+    experiments = await Experiment.find(Experiment.user == user["email"]).to_list()
     return [experiment.dict() for experiment in experiments]
 
 @router.get(
@@ -53,9 +54,9 @@ async def get_experiment(id: PydanticObjectId) -> Any:
     return experiment.dict()
 
 @router.post("/experiments", status_code=status.HTTP_201_CREATED, response_model=ExperimentResponse)
-async def create_experiment( experiment: ExperimentCreate, user: str = Depends(get_current_user)) -> Any:
+async def create_experiment( experiment: ExperimentCreate, user: Json = Depends(get_current_user)) -> Any:
     experiment = Experiment(**experiment.dict())
-    experiment.user = user
+    experiment.user = user["email"]
     await experiment.create()
     return experiment.dict()
 
