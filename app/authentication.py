@@ -7,8 +7,7 @@ from keycloak import KeycloakError, KeycloakOpenID
 from app.config import settings
 
 oidc = OpenIdConnect(
-    openIdConnectUrl="https://test.openml.org/aiod-auth/realms/dev/.well-known/openidx"
-    "-configuration",
+    openIdConnectUrl=settings.AIOD_KEYCLOAK.OIDC_URL,
     auto_error=False,
 )
 
@@ -25,16 +24,6 @@ KEYCLOAK_PUBLIC_KEY = (
     + keycloak_openid.public_key()
     + "\n-----END PUBLIC KEY-----"
 )
-
-
-# function for getting token from Keycloak by using keycloak_openid and client_credentials flow
-def get_token():
-    token = keycloak_openid.token(
-        username=settings.AIOD_KEYCLOAK.CLIENT_ID,
-        password=settings.AIOD_KEYCLOAK.CLIENT_SECRET,
-        grant_type=["client_credentials"],
-    )
-    return token
 
 
 async def get_current_user_token(token=Security(oidc)):
