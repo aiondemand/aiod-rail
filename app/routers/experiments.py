@@ -38,7 +38,9 @@ async def get_my_experiments(
     user: Json = Depends(get_current_user), pagination: Pagination = Depends()
 ) -> Any:
     experiments = await Experiment.find(
-        Experiment.user == user["email"], skip=pagination.offset, limit=pagination.limit
+        Experiment.created_by == user["email"],
+        skip=pagination.offset,
+        limit=pagination.limit,
     ).to_list()
     return [experiment.dict() for experiment in experiments]
 
@@ -49,7 +51,7 @@ async def get_my_experiments(
 )
 async def get_my_experiments_count(user: Json = Depends(get_current_user)) -> Any:
     number_of_my_experiments = await Experiment.find(
-        Experiment.user == user["email"]
+        Experiment.created_by == user["email"]
     ).count()
     return number_of_my_experiments
 
@@ -79,7 +81,7 @@ async def get_experiment(id: PydanticObjectId) -> Any:
 async def create_experiment(
     experiment: ExperimentCreate, user: Json = Depends(get_current_user)
 ) -> Any:
-    experiment = Experiment(**(experiment.dict() | {"user": user["email"]}))
+    experiment = Experiment(**experiment.dict(), created_by=user["email"])
     await experiment.create()
     return experiment.dict()
 
