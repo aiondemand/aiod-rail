@@ -9,7 +9,7 @@ class Experiment(Document):
     publication_ids: list[str]
     created_at: datetime = datetime.utcnow()
     updated_at: datetime = datetime.utcnow()
-    created_by: str = ""
+    created_by: str
 
     experiment_type_id: PydanticObjectId
     dataset_id: int
