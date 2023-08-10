@@ -32,8 +32,12 @@ class ExperimentType(BaseModel):
     id: PydanticObjectId
     name: str
     description: str
+    task: str
+    datasets_schema: dict
+    models_schema: dict
+    envs_required: list[str]
+    envs_optional: list[str]
     available_metrics: list[str]
-    available_envs: list[str]
     dockerfile: str
     script: str
     pip_requirements: str
@@ -49,8 +53,8 @@ class ExperimentRunBase(BaseModel):
 class ExperimentRunExecute(BaseModel):
     id: PydanticObjectId
     experiment_type_id: PydanticObjectId
-    dataset_name: str
-    model_name: str
+    dataset_names: list[str]
+    model_names: list[str]
     env_vars: dict[str, str]
     metrics: list[str]
 

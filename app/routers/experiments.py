@@ -159,17 +159,17 @@ async def get_experiment_run_logs(id: PydanticObjectId) -> str:
 async def execute_experiment_run(id: PydanticObjectId, envs: dict[str, str]) -> Any:
     experiment = await Experiment.get(id)
 
-    dataset_name = await get_dataset_name(experiment.dataset_id)
-    model_name = get_model_name(experiment.model_id)
+    dataset_names = [await get_dataset_name(x) for x in experiment.dataset_ids]
+    model_names = [get_model_name(x) for x in experiment.model_ids]
 
-    if dataset_name is None or model_name is None:
+    if any(x is None for x in dataset_names) or any(x is None for x in model_names):
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     experiment_run = ExperimentRunExecute(
         id=experiment.id,
         experiment_type_id=experiment.experiment_type_id,
-        dataset_name=dataset_name,
-        model_name=model_name,
+        dataset_names=dataset_names,
+        model_names=model_names,
         env_vars=envs,
         metrics=experiment.metrics,
     )
