@@ -15,7 +15,7 @@ app.include_router(aiod.router, prefix="/v1/assets", tags=["assets"])
 app.include_router(experiments.router, prefix="/v1", tags=["experiments"])
 
 origins = [
-    "http://localhost:4200",
+    "*",
 ]
 
 app.add_middleware(
