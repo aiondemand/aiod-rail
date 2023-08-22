@@ -10,8 +10,8 @@ class ExperimentBase(BaseModel):
     publication_ids: list[str] = []
 
     experiment_type_id: PydanticObjectId
-    dataset_id: str
-    model_id: str
+    dataset_ids: list[str]
+    model_ids: list[str]
     metrics: list[str]
 
     save_logs: bool = True
