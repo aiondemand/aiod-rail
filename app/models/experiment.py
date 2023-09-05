@@ -12,8 +12,8 @@ class Experiment(Document):
     created_by: str
 
     experiment_type_id: PydanticObjectId
-    dataset_id: int
-    model_id: int
+    dataset_ids: list[int]
+    model_ids: list[int]
     metrics: list[str]
 
     save_logs: bool
