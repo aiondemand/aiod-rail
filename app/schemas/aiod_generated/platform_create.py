@@ -19,7 +19,7 @@ class PlatformCreate(BaseModel):
         name: The name of this PlatformCreate.
     """
 
-    name: str = Field(alias="name")
+    name: object = Field(alias="name")
 
 
 PlatformCreate.update_forward_refs()

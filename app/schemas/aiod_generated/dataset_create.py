@@ -8,8 +8,9 @@ from typing import Any, Dict, List, Optional  # noqa: F401
 
 from pydantic import AnyUrl, BaseModel, EmailStr, Field, validator  # noqa: F401
 
-from app.schemas.aiod_generated.data_download import DataDownload
-from app.schemas.aiod_generated.measured_value import MeasuredValue
+from app.schemas.aiod_generated.aio_d_entry_create import AIoDEntryCreate
+from app.schemas.aiod_generated.location import Location
+from app.schemas.aiod_generated.size import Size
 
 
 class DatasetCreate(BaseModel):
@@ -21,100 +22,106 @@ class DatasetCreate(BaseModel):
 
         platform: The platform of this DatasetCreate [Optional].
         platform_identifier: The platform_identifier of this DatasetCreate [Optional].
-        description: The description of this DatasetCreate.
         name: The name of this DatasetCreate.
-        same_as: The same_as of this DatasetCreate.
+        description: The description of this DatasetCreate [Optional].
+        same_as: The same_as of this DatasetCreate [Optional].
+        date_published: The date_published of this DatasetCreate [Optional].
+        is_accessible_for_free: The is_accessible_for_free of this DatasetCreate [Optional].
+        version: The version of this DatasetCreate [Optional].
+        issn: The issn of this DatasetCreate [Optional].
+        measurement_technique: The measurement_technique of this DatasetCreate [Optional].
+        temporal_coverage: The temporal_coverage of this DatasetCreate [Optional].
+        aiod_entry: The aiod_entry of this DatasetCreate [Optional].
+        alternate_name: The alternate_name of this DatasetCreate [Optional].
+        application_area: The application_area of this DatasetCreate [Optional].
+        citation: The citation of this DatasetCreate [Optional].
         contact: The contact of this DatasetCreate [Optional].
         creator: The creator of this DatasetCreate [Optional].
-        publisher: The publisher of this DatasetCreate [Optional].
-        date_modified: The date_modified of this DatasetCreate [Optional].
-        date_published: The date_published of this DatasetCreate [Optional].
+        distribution: The distribution of this DatasetCreate [Optional].
         funder: The funder of this DatasetCreate [Optional].
-        is_accessible_for_free: The is_accessible_for_free of this DatasetCreate [Optional].
-        issn: The issn of this DatasetCreate [Optional].
+        has_part: The has_part of this DatasetCreate [Optional].
+        industrial_sector: The industrial_sector of this DatasetCreate [Optional].
+        is_part_of: The is_part_of of this DatasetCreate [Optional].
+        keyword: The keyword of this DatasetCreate [Optional].
+        license: The license of this DatasetCreate [Optional].
+        media: The media of this DatasetCreate [Optional].
+        note: The note of this DatasetCreate [Optional].
+        research_area: The research_area of this DatasetCreate [Optional].
+        scientific_domain: The scientific_domain of this DatasetCreate [Optional].
         size: The size of this DatasetCreate [Optional].
         spatial_coverage: The spatial_coverage of this DatasetCreate [Optional].
-        temporal_coverage_from: The temporal_coverage_from of this DatasetCreate [Optional].
-        temporal_coverage_to: The temporal_coverage_to of this DatasetCreate [Optional].
-        version: The version of this DatasetCreate [Optional].
-        alternate_names: The alternate_names of this DatasetCreate.
-        citations: The citations of this DatasetCreate.
-        distributions: The distributions of this DatasetCreate.
-        is_part: The is_part of this DatasetCreate.
-        has_parts: The has_parts of this DatasetCreate.
-        license: The license of this DatasetCreate [Optional].
-        keywords: The keywords of this DatasetCreate.
-        measured_values: The measured_values of this DatasetCreate.
     """
 
-    platform: Optional[str] = Field(alias="platform", default=None)
-    platform_identifier: Optional[str] = Field(
+    platform: Optional[object] = Field(alias="platform", default=None)
+    platform_identifier: Optional[object] = Field(
         alias="platform_identifier", default=None
     )
-    description: str = Field(alias="description")
-    name: str = Field(alias="name")
-    same_as: str = Field(alias="same_as")
-    contact: Optional[str] = Field(alias="contact", default=None)
-    creator: Optional[str] = Field(alias="creator", default=None)
-    publisher: Optional[str] = Field(alias="publisher", default=None)
-    date_modified: Optional[datetime] = Field(alias="date_modified", default=None)
-    date_published: Optional[datetime] = Field(alias="date_published", default=None)
-    funder: Optional[str] = Field(alias="funder", default=None)
-    is_accessible_for_free: Optional[bool] = Field(
+    name: object = Field(alias="name")
+    description: Optional[object] = Field(alias="description", default=None)
+    same_as: Optional[object] = Field(alias="same_as", default=None)
+    date_published: Optional[object] = Field(alias="date_published", default=None)
+    is_accessible_for_free: Optional[object] = Field(
         alias="is_accessible_for_free", default=None
     )
-    issn: Optional[str] = Field(alias="issn", default=None)
-    size: Optional[int] = Field(alias="size", default=None)
-    spatial_coverage: Optional[str] = Field(alias="spatial_coverage", default=None)
-    temporal_coverage_from: Optional[datetime] = Field(
-        alias="temporal_coverage_from", default=None
+    version: Optional[object] = Field(alias="version", default=None)
+    issn: Optional[object] = Field(alias="issn", default=None)
+    measurement_technique: Optional[object] = Field(
+        alias="measurement_technique", default=None
     )
-    temporal_coverage_to: Optional[datetime] = Field(
-        alias="temporal_coverage_to", default=None
-    )
-    version: Optional[str] = Field(alias="version", default=None)
-    alternate_names: List[str] = Field(alias="alternate_names")
-    citations: List[int] = Field(alias="citations")
-    distributions: List[DataDownload] = Field(alias="distributions")
-    is_part: List[int] = Field(alias="is_part")
-    has_parts: List[int] = Field(alias="has_parts")
-    license: Optional[str] = Field(alias="license", default=None)
-    keywords: List[str] = Field(alias="keywords")
-    measured_values: List[MeasuredValue] = Field(alias="measured_values")
+    temporal_coverage: Optional[object] = Field(alias="temporal_coverage", default=None)
+    aiod_entry: Optional[AIoDEntryCreate] = Field(alias="aiod_entry", default=None)
+    alternate_name: Optional[object] = Field(alias="alternate_name", default=None)
+    application_area: Optional[object] = Field(alias="application_area", default=None)
+    citation: Optional[object] = Field(alias="citation", default=None)
+    contact: Optional[object] = Field(alias="contact", default=None)
+    creator: Optional[object] = Field(alias="creator", default=None)
+    distribution: Optional[object] = Field(alias="distribution", default=None)
+    funder: Optional[object] = Field(alias="funder", default=None)
+    has_part: Optional[object] = Field(alias="has_part", default=None)
+    industrial_sector: Optional[object] = Field(alias="industrial_sector", default=None)
+    is_part_of: Optional[object] = Field(alias="is_part_of", default=None)
+    keyword: Optional[object] = Field(alias="keyword", default=None)
+    license: Optional[object] = Field(alias="license", default=None)
+    media: Optional[object] = Field(alias="media", default=None)
+    note: Optional[object] = Field(alias="note", default=None)
+    research_area: Optional[object] = Field(alias="research_area", default=None)
+    scientific_domain: Optional[object] = Field(alias="scientific_domain", default=None)
+    size: Optional[Size] = Field(alias="size", default=None)
+    spatial_coverage: Optional[Location] = Field(alias="spatial_coverage", default=None)
 
-    @validator("description")
-    def description_max_length(cls, value):
-        assert len(value) <= 5000
+    @validator("platform")
+    def platform_max_length(cls, value):
+        assert len(value) <= 64
+        return value
+
+    @validator("platform_identifier")
+    def platform_identifier_max_length(cls, value):
+        assert len(value) <= 256
         return value
 
     @validator("name")
     def name_max_length(cls, value):
-        assert len(value) <= 150
+        assert len(value) <= 256
+        return value
+
+    @validator("description")
+    def description_max_length(cls, value):
+        assert len(value) <= 1800
         return value
 
     @validator("same_as")
     def same_as_max_length(cls, value):
-        assert len(value) <= 150
+        assert len(value) <= 256
         return value
 
-    @validator("contact")
-    def contact_max_length(cls, value):
-        assert len(value) <= 150
+    @validator("version")
+    def version_max_length(cls, value):
+        assert len(value) <= 256
         return value
 
-    @validator("creator")
-    def creator_max_length(cls, value):
-        assert len(value) <= 150
-        return value
-
-    @validator("publisher")
-    def publisher_max_length(cls, value):
-        assert len(value) <= 150
-        return value
-
-    @validator("funder")
-    def funder_max_length(cls, value):
-        assert len(value) <= 150
+    @validator("issn")
+    def issn_min_length(cls, value):
+        assert len(value) >= 8
         return value
 
     @validator("issn")
@@ -122,14 +129,14 @@ class DatasetCreate(BaseModel):
         assert len(value) <= 8
         return value
 
-    @validator("spatial_coverage")
-    def spatial_coverage_max_length(cls, value):
-        assert len(value) <= 500
+    @validator("measurement_technique")
+    def measurement_technique_max_length(cls, value):
+        assert len(value) <= 256
         return value
 
-    @validator("version")
-    def version_max_length(cls, value):
-        assert len(value) <= 150
+    @validator("temporal_coverage")
+    def temporal_coverage_max_length(cls, value):
+        assert len(value) <= 64
         return value
 
 

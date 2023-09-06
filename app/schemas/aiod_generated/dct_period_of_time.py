@@ -24,8 +24,8 @@ class DctPeriodOfTime(BaseModel):
         dcatend_date: The dcatend_date of this DctPeriodOfTime [Optional].
     """
 
-    id: str = Field(alias="@id")
-    type: Optional[str] = Field(alias="@type", default=None)
+    id: object = Field(alias="@id")
+    type: Optional[object] = Field(alias="@type", default=None)
     dcatstart_date: Optional[XSDDateTime] = Field(alias="dcat:startDate", default=None)
     dcatend_date: Optional[XSDDateTime] = Field(alias="dcat:endDate", default=None)
 

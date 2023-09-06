@@ -20,8 +20,8 @@ class SchemaDotOrgOrganization(BaseModel):
         name: The name of this SchemaDotOrgOrganization.
     """
 
-    type: Optional[str] = Field(alias="@type", default=None)
-    name: str = Field(alias="name")
+    type: Optional[object] = Field(alias="@type", default=None)
+    name: object = Field(alias="name")
 
 
 SchemaDotOrgOrganization.update_forward_refs()

@@ -21,9 +21,9 @@ class VCardIndividual(BaseModel):
         vcardfn: The vcardfn of this VCardIndividual.
     """
 
-    id: str = Field(alias="@id")
-    type: Optional[str] = Field(alias="@type", default=None)
-    vcardfn: str = Field(alias="vcard:fn")
+    id: object = Field(alias="@id")
+    type: Optional[object] = Field(alias="@type", default=None)
+    vcardfn: object = Field(alias="vcard:fn")
 
 
 VCardIndividual.update_forward_refs()

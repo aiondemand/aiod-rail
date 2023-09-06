@@ -9,7 +9,6 @@ from typing import Any, Dict, List, Optional  # noqa: F401
 from pydantic import AnyUrl, BaseModel, EmailStr, Field, validator  # noqa: F401
 
 from app.schemas.aiod_generated.dcat_ap_identifier import DcatAPIdentifier
-from app.schemas.aiod_generated.dct_publisher import DctPublisher
 from app.schemas.aiod_generated.xsd_date_time import XSDDateTime
 
 
@@ -28,9 +27,6 @@ class DcatAPDataset(BaseModel):
         dcatdistribution: The dcatdistribution of this DcatAPDataset [Optional].
         dcatkeyword: The dcatkeyword of this DcatAPDataset [Optional].
         dctpublisher: The dctpublisher of this DcatAPDataset [Optional].
-        dcttemporal: The dcttemporal of this DcatAPDataset [Optional].
-        dctspatial: The dctspatial of this DcatAPDataset [Optional].
-        dcattheme: The dcattheme of this DcatAPDataset [Optional].
         dcatcreator: The dcatcreator of this DcatAPDataset [Optional].
         foafpage: The foafpage of this DcatAPDataset [Optional].
         dcatlanding_page: The dcatlanding_page of this DcatAPDataset [Optional].
@@ -39,35 +35,22 @@ class DcatAPDataset(BaseModel):
         owlversion_info: The owlversion_info of this DcatAPDataset [Optional].
     """
 
-    id: str = Field(alias="@id")
-    type: Optional[str] = Field(alias="@type", default=None)
-    dctdescription: str = Field(alias="dct:description")
-    dcttitle: str = Field(alias="dct:title")
-    dcatcontact_point: Optional[List[DcatAPIdentifier]] = Field(
-        alias="dcat:contactPoint", default=None
+    id: object = Field(alias="@id")
+    type: Optional[object] = Field(alias="@type", default=None)
+    dctdescription: object = Field(alias="dct:description")
+    dcttitle: object = Field(alias="dct:title")
+    dcatcontact_point: Optional[object] = Field(alias="dcat:contactPoint", default=None)
+    dcatdistribution: Optional[object] = Field(alias="dcat:distribution", default=None)
+    dcatkeyword: Optional[object] = Field(alias="dcat:keyword", default=None)
+    dctpublisher: Optional[DcatAPIdentifier] = Field(
+        alias="dct:publisher", default=None
     )
-    dcatdistribution: Optional[List[DcatAPIdentifier]] = Field(
-        alias="dcat:distribution", default=None
-    )
-    dcatkeyword: Optional[List[str]] = Field(alias="dcat:keyword", default=None)
-    dctpublisher: Optional[DctPublisher] = Field(alias="dct:publisher", default=None)
-    dcttemporal: Optional[List[DcatAPIdentifier]] = Field(
-        alias="dct:temporal", default=None
-    )
-    dctspatial: Optional[List[DcatAPIdentifier]] = Field(
-        alias="dct:spatial", default=None
-    )
-    dcattheme: Optional[List[str]] = Field(alias="dcat:theme", default=None)
-    dcatcreator: Optional[List[DcatAPIdentifier]] = Field(
-        alias="dcat:creator", default=None
-    )
-    foafpage: Optional[List[str]] = Field(alias="foaf:page", default=None)
-    dcatlanding_page: Optional[List[str]] = Field(
-        alias="dcat:landingPage", default=None
-    )
+    dcatcreator: Optional[object] = Field(alias="dcat:creator", default=None)
+    foafpage: Optional[object] = Field(alias="foaf:page", default=None)
+    dcatlanding_page: Optional[object] = Field(alias="dcat:landingPage", default=None)
     dctissued: Optional[XSDDateTime] = Field(alias="dct:issued", default=None)
     dctmodified: Optional[XSDDateTime] = Field(alias="dct:modified", default=None)
-    owlversion_info: Optional[str] = Field(alias="owl:versionInfo", default=None)
+    owlversion_info: Optional[object] = Field(alias="owl:versionInfo", default=None)
 
 
 DcatAPDataset.update_forward_refs()
