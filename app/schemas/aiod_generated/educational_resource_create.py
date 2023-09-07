@@ -9,6 +9,7 @@ from typing import Any, Dict, List, Optional  # noqa: F401
 from pydantic import AnyUrl, BaseModel, EmailStr, Field, validator  # noqa: F401
 
 from app.schemas.aiod_generated.aio_d_entry_create import AIoDEntryCreate
+from app.schemas.aiod_generated.distribution import Distribution
 
 
 class EducationalResourceCreate(BaseModel):
@@ -39,27 +40,33 @@ class EducationalResourceCreate(BaseModel):
         type: The type of this EducationalResourceCreate [Optional].
     """
 
-    platform: Optional[object] = Field(alias="platform", default=None)
-    platform_identifier: Optional[object] = Field(
+    platform: Optional[str] = Field(alias="platform", default=None)
+    platform_identifier: Optional[str] = Field(
         alias="platform_identifier", default=None
     )
-    name: object = Field(alias="name")
-    description: Optional[object] = Field(alias="description", default=None)
-    same_as: Optional[object] = Field(alias="same_as", default=None)
-    level: Optional[object] = Field(alias="level", default=None)
+    name: str = Field(alias="name")
+    description: Optional[str] = Field(alias="description", default=None)
+    same_as: Optional[str] = Field(alias="same_as", default=None)
+    level: Optional[str] = Field(alias="level", default=None)
     aiod_entry: Optional[AIoDEntryCreate] = Field(alias="aiod_entry", default=None)
-    alternate_name: Optional[object] = Field(alias="alternate_name", default=None)
-    application_area: Optional[object] = Field(alias="application_area", default=None)
-    contact: Optional[object] = Field(alias="contact", default=None)
-    has_part: Optional[object] = Field(alias="has_part", default=None)
-    industrial_sector: Optional[object] = Field(alias="industrial_sector", default=None)
-    is_part_of: Optional[object] = Field(alias="is_part_of", default=None)
-    keyword: Optional[object] = Field(alias="keyword", default=None)
-    media: Optional[object] = Field(alias="media", default=None)
-    note: Optional[object] = Field(alias="note", default=None)
-    research_area: Optional[object] = Field(alias="research_area", default=None)
-    scientific_domain: Optional[object] = Field(alias="scientific_domain", default=None)
-    type: Optional[object] = Field(alias="type", default=None)
+    alternate_name: Optional[List[str]] = Field(alias="alternate_name", default=None)
+    application_area: Optional[List[str]] = Field(
+        alias="application_area", default=None
+    )
+    contact: Optional[List[int]] = Field(alias="contact", default=None)
+    has_part: Optional[List[int]] = Field(alias="has_part", default=None)
+    industrial_sector: Optional[List[str]] = Field(
+        alias="industrial_sector", default=None
+    )
+    is_part_of: Optional[List[int]] = Field(alias="is_part_of", default=None)
+    keyword: Optional[List[str]] = Field(alias="keyword", default=None)
+    media: Optional[List[Distribution]] = Field(alias="media", default=None)
+    note: Optional[List[str]] = Field(alias="note", default=None)
+    research_area: Optional[List[str]] = Field(alias="research_area", default=None)
+    scientific_domain: Optional[List[str]] = Field(
+        alias="scientific_domain", default=None
+    )
+    type: Optional[str] = Field(alias="type", default=None)
 
     @validator("platform")
     def platform_max_length(cls, value):

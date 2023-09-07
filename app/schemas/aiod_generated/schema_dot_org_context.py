@@ -19,7 +19,7 @@ class SchemaDotOrgContext(BaseModel):
         vocab: The vocab of this SchemaDotOrgContext [Optional].
     """
 
-    vocab: Optional[object] = Field(alias="@vocab", default=None)
+    vocab: Optional[str] = Field(alias="@vocab", default=None)
 
 
 SchemaDotOrgContext.update_forward_refs()

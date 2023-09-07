@@ -21,9 +21,9 @@ class DcatAPContext(BaseModel):
         vcard: The vcard of this DcatAPContext [Optional].
     """
 
-    dcat: Optional[object] = Field(alias="dcat", default=None)
-    dct: Optional[object] = Field(alias="dct", default=None)
-    vcard: Optional[object] = Field(alias="vcard", default=None)
+    dcat: Optional[str] = Field(alias="dcat", default=None)
+    dct: Optional[str] = Field(alias="dct", default=None)
+    vcard: Optional[str] = Field(alias="vcard", default=None)
 
 
 DcatAPContext.update_forward_refs()

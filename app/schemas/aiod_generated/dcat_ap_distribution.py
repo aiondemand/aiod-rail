@@ -30,18 +30,18 @@ class DcatAPDistribution(BaseModel):
         dcttitle: The dcttitle of this DcatAPDistribution [Optional].
     """
 
-    id: object = Field(alias="@id")
-    type: Optional[object] = Field(alias="@type", default=None)
-    dcataccess_url: Optional[object] = Field(alias="dcat:accessURL", default=None)
-    dcatbyte_size: Optional[object] = Field(alias="dcat:byteSize", default=None)
+    id: str = Field(alias="@id")
+    type: Optional[str] = Field(alias="@type", default=None)
+    dcataccess_url: Optional[str] = Field(alias="dcat:accessURL", default=None)
+    dcatbyte_size: Optional[int] = Field(alias="dcat:byteSize", default=None)
     spdxchecksum: Optional[DcatAPIdentifier] = Field(
         alias="spdx:checksum", default=None
     )
-    dctdescription: Optional[object] = Field(alias="dct:description", default=None)
-    dcatdownload_url: Optional[object] = Field(alias="dcat:downloadURL", default=None)
-    dctformat: Optional[object] = Field(alias="dct:format", default=None)
-    dctlicense: Optional[object] = Field(alias="dct:license", default=None)
-    dcttitle: Optional[object] = Field(alias="dct:title", default=None)
+    dctdescription: Optional[str] = Field(alias="dct:description", default=None)
+    dcatdownload_url: Optional[str] = Field(alias="dcat:downloadURL", default=None)
+    dctformat: Optional[str] = Field(alias="dct:format", default=None)
+    dctlicense: Optional[str] = Field(alias="dct:license", default=None)
+    dcttitle: Optional[str] = Field(alias="dct:title", default=None)
 
 
 DcatAPDistribution.update_forward_refs()

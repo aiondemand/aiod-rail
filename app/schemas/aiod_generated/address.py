@@ -24,12 +24,12 @@ class Address(BaseModel):
         country: The country of this Address [Optional].
     """
 
-    region: Optional[object] = Field(alias="region", default=None)
-    locality: Optional[object] = Field(alias="locality", default=None)
-    street: Optional[object] = Field(alias="street", default=None)
-    postal_code: Optional[object] = Field(alias="postal_code", default=None)
-    address: Optional[object] = Field(alias="address", default=None)
-    country: Optional[object] = Field(alias="country", default=None)
+    region: Optional[str] = Field(alias="region", default=None)
+    locality: Optional[str] = Field(alias="locality", default=None)
+    street: Optional[str] = Field(alias="street", default=None)
+    postal_code: Optional[str] = Field(alias="postal_code", default=None)
+    address: Optional[str] = Field(alias="address", default=None)
+    country: Optional[str] = Field(alias="country", default=None)
 
     @validator("region")
     def region_max_length(cls, value):

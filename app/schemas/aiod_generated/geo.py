@@ -21,9 +21,9 @@ class Geo(BaseModel):
         elevation_millimeters: The elevation_millimeters of this Geo [Optional].
     """
 
-    latitude: Optional[object] = Field(alias="latitude", default=None)
-    longitude: Optional[object] = Field(alias="longitude", default=None)
-    elevation_millimeters: Optional[object] = Field(
+    latitude: Optional[float] = Field(alias="latitude", default=None)
+    longitude: Optional[float] = Field(alias="longitude", default=None)
+    elevation_millimeters: Optional[int] = Field(
         alias="elevation_millimeters", default=None
     )
 

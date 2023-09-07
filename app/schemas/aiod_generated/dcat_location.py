@@ -23,11 +23,11 @@ class DcatLocation(BaseModel):
         dcatgeometry: The dcatgeometry of this DcatLocation [Optional].
     """
 
-    id: object = Field(alias="@id")
-    type: Optional[object] = Field(alias="@type", default=None)
-    dcatbbox: Optional[object] = Field(alias="dcat:bbox", default=None)
-    dcatcentroid: Optional[object] = Field(alias="dcat:centroid", default=None)
-    dcatgeometry: Optional[object] = Field(alias="dcat:geometry", default=None)
+    id: str = Field(alias="@id")
+    type: Optional[str] = Field(alias="@type", default=None)
+    dcatbbox: Optional[str] = Field(alias="dcat:bbox", default=None)
+    dcatcentroid: Optional[str] = Field(alias="dcat:centroid", default=None)
+    dcatgeometry: Optional[str] = Field(alias="dcat:geometry", default=None)
 
 
 DcatLocation.update_forward_refs()

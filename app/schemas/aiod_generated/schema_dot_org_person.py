@@ -22,10 +22,10 @@ class SchemaDotOrgPerson(BaseModel):
         family_name: The family_name of this SchemaDotOrgPerson [Optional].
     """
 
-    type: Optional[object] = Field(alias="@type", default=None)
-    name: object = Field(alias="name")
-    given_name: Optional[object] = Field(alias="givenName", default=None)
-    family_name: Optional[object] = Field(alias="familyName", default=None)
+    type: Optional[str] = Field(alias="@type", default=None)
+    name: str = Field(alias="name")
+    given_name: Optional[str] = Field(alias="givenName", default=None)
+    family_name: Optional[str] = Field(alias="familyName", default=None)
 
 
 SchemaDotOrgPerson.update_forward_refs()

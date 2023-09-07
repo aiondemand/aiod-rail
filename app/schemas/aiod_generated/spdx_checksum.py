@@ -22,10 +22,10 @@ class SpdxChecksum(BaseModel):
         checksum_value: The checksum_value of this SpdxChecksum.
     """
 
-    id: object = Field(alias="@id")
-    type: Optional[object] = Field(alias="@type", default=None)
-    algorithm: object = Field(alias="algorithm")
-    checksum_value: object = Field(alias="checksumValue")
+    id: str = Field(alias="@id")
+    type: Optional[str] = Field(alias="@type", default=None)
+    algorithm: str = Field(alias="algorithm")
+    checksum_value: str = Field(alias="checksumValue")
 
 
 SpdxChecksum.update_forward_refs()

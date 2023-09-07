@@ -20,8 +20,8 @@ class Size(BaseModel):
         value: The value of this Size [Optional].
     """
 
-    unit: Optional[object] = Field(alias="unit", default=None)
-    value: Optional[object] = Field(alias="value", default=None)
+    unit: Optional[str] = Field(alias="unit", default=None)
+    value: Optional[int] = Field(alias="value", default=None)
 
     @validator("unit")
     def unit_max_length(cls, value):

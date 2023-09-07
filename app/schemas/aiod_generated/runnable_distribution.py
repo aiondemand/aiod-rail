@@ -39,39 +39,37 @@ class RunnableDistribution(BaseModel):
         hardware_requirement: The hardware_requirement of this RunnableDistribution [Optional].
     """
 
-    platform: Optional[object] = Field(alias="platform", default=None)
-    platform_identifier: Optional[object] = Field(
+    platform: Optional[str] = Field(alias="platform", default=None)
+    platform_identifier: Optional[str] = Field(
         alias="platform_identifier", default=None
     )
-    checksum: Optional[object] = Field(alias="checksum", default=None)
-    checksum_algorithm: Optional[object] = Field(
-        alias="checksum_algorithm", default=None
-    )
-    copyright: Optional[object] = Field(alias="copyright", default=None)
-    content_url: object = Field(alias="content_url")
-    content_size_kb: Optional[object] = Field(alias="content_size_kb", default=None)
-    date_published: Optional[object] = Field(alias="date_published", default=None)
-    description: Optional[object] = Field(alias="description", default=None)
-    encoding_format: Optional[object] = Field(alias="encoding_format", default=None)
-    name: Optional[object] = Field(alias="name", default=None)
-    technology_readiness_level: Optional[object] = Field(
+    checksum: Optional[str] = Field(alias="checksum", default=None)
+    checksum_algorithm: Optional[str] = Field(alias="checksum_algorithm", default=None)
+    copyright: Optional[str] = Field(alias="copyright", default=None)
+    content_url: str = Field(alias="content_url")
+    content_size_kb: Optional[int] = Field(alias="content_size_kb", default=None)
+    date_published: Optional[datetime] = Field(alias="date_published", default=None)
+    description: Optional[str] = Field(alias="description", default=None)
+    encoding_format: Optional[str] = Field(alias="encoding_format", default=None)
+    name: Optional[str] = Field(alias="name", default=None)
+    technology_readiness_level: Optional[int] = Field(
         alias="technology_readiness_level", default=None
     )
-    installation_script: Optional[object] = Field(
+    installation_script: Optional[str] = Field(
         alias="installation_script", default=None
     )
-    installation: Optional[object] = Field(alias="installation", default=None)
-    installation_time_milliseconds: Optional[object] = Field(
+    installation: Optional[str] = Field(alias="installation", default=None)
+    installation_time_milliseconds: Optional[int] = Field(
         alias="installation_time_milliseconds", default=None
     )
-    deployment_script: Optional[object] = Field(alias="deployment_script", default=None)
-    deployment: Optional[object] = Field(alias="deployment", default=None)
-    deployment_time_milliseconds: Optional[object] = Field(
+    deployment_script: Optional[str] = Field(alias="deployment_script", default=None)
+    deployment: Optional[str] = Field(alias="deployment", default=None)
+    deployment_time_milliseconds: Optional[int] = Field(
         alias="deployment_time_milliseconds", default=None
     )
-    os_requirement: Optional[object] = Field(alias="os_requirement", default=None)
-    dependency: Optional[object] = Field(alias="dependency", default=None)
-    hardware_requirement: Optional[object] = Field(
+    os_requirement: Optional[str] = Field(alias="os_requirement", default=None)
+    dependency: Optional[str] = Field(alias="dependency", default=None)
+    hardware_requirement: Optional[str] = Field(
         alias="hardware_requirement", default=None
     )
 

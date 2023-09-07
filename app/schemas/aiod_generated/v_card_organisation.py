@@ -21,9 +21,9 @@ class VCardOrganisation(BaseModel):
         vcardfn: The vcardfn of this VCardOrganisation.
     """
 
-    id: object = Field(alias="@id")
-    type: Optional[object] = Field(alias="@type", default=None)
-    vcardfn: object = Field(alias="vcard:fn")
+    id: str = Field(alias="@id")
+    type: Optional[str] = Field(alias="@type", default=None)
+    vcardfn: str = Field(alias="vcard:fn")
 
 
 VCardOrganisation.update_forward_refs()

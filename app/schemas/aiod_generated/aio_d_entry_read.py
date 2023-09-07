@@ -22,10 +22,10 @@ class AIoDEntryRead(BaseModel):
         date_created: The date_created of this AIoDEntryRead [Optional].
     """
 
-    editor: Optional[object] = Field(alias="editor", default=None)
-    status: Optional[object] = Field(alias="status", default=None)
-    date_modified: Optional[object] = Field(alias="date_modified", default=None)
-    date_created: Optional[object] = Field(alias="date_created", default=None)
+    editor: Optional[List[int]] = Field(alias="editor", default=None)
+    status: Optional[str] = Field(alias="status", default=None)
+    date_modified: Optional[datetime] = Field(alias="date_modified", default=None)
+    date_created: Optional[datetime] = Field(alias="date_created", default=None)
 
 
 AIoDEntryRead.update_forward_refs()

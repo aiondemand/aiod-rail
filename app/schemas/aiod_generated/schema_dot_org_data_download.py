@@ -23,11 +23,11 @@ class SchemaDotOrgDataDownload(BaseModel):
         encoding_format: The encoding_format of this SchemaDotOrgDataDownload [Optional].
     """
 
-    type: Optional[object] = Field(alias="@type", default=None)
-    name: Optional[object] = Field(alias="name", default=None)
-    content_url: object = Field(alias="contentUrl")
-    content_size: Optional[object] = Field(alias="contentSize", default=None)
-    encoding_format: Optional[object] = Field(alias="encodingFormat", default=None)
+    type: Optional[str] = Field(alias="@type", default=None)
+    name: Optional[str] = Field(alias="name", default=None)
+    content_url: str = Field(alias="contentUrl")
+    content_size: Optional[str] = Field(alias="contentSize", default=None)
+    encoding_format: Optional[str] = Field(alias="encodingFormat", default=None)
 
 
 SchemaDotOrgDataDownload.update_forward_refs()

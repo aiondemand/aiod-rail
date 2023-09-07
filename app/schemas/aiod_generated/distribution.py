@@ -30,22 +30,20 @@ class Distribution(BaseModel):
         technology_readiness_level: The technology_readiness_level of this Distribution [Optional].
     """
 
-    platform: Optional[object] = Field(alias="platform", default=None)
-    platform_identifier: Optional[object] = Field(
+    platform: Optional[str] = Field(alias="platform", default=None)
+    platform_identifier: Optional[str] = Field(
         alias="platform_identifier", default=None
     )
-    checksum: Optional[object] = Field(alias="checksum", default=None)
-    checksum_algorithm: Optional[object] = Field(
-        alias="checksum_algorithm", default=None
-    )
-    copyright: Optional[object] = Field(alias="copyright", default=None)
-    content_url: object = Field(alias="content_url")
-    content_size_kb: Optional[object] = Field(alias="content_size_kb", default=None)
-    date_published: Optional[object] = Field(alias="date_published", default=None)
-    description: Optional[object] = Field(alias="description", default=None)
-    encoding_format: Optional[object] = Field(alias="encoding_format", default=None)
-    name: Optional[object] = Field(alias="name", default=None)
-    technology_readiness_level: Optional[object] = Field(
+    checksum: Optional[str] = Field(alias="checksum", default=None)
+    checksum_algorithm: Optional[str] = Field(alias="checksum_algorithm", default=None)
+    copyright: Optional[str] = Field(alias="copyright", default=None)
+    content_url: str = Field(alias="content_url")
+    content_size_kb: Optional[int] = Field(alias="content_size_kb", default=None)
+    date_published: Optional[datetime] = Field(alias="date_published", default=None)
+    description: Optional[str] = Field(alias="description", default=None)
+    encoding_format: Optional[str] = Field(alias="encoding_format", default=None)
+    name: Optional[str] = Field(alias="name", default=None)
+    technology_readiness_level: Optional[int] = Field(
         alias="technology_readiness_level", default=None
     )
 

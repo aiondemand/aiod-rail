@@ -20,8 +20,8 @@ class AIoDEntryCreate(BaseModel):
         status: The status of this AIoDEntryCreate [Optional].
     """
 
-    editor: Optional[object] = Field(alias="editor", default=None)
-    status: Optional[object] = Field(alias="status", default=None)
+    editor: Optional[List[int]] = Field(alias="editor", default=None)
+    status: Optional[str] = Field(alias="status", default=None)
 
 
 AIoDEntryCreate.update_forward_refs()

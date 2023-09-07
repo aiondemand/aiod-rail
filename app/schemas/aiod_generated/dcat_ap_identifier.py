@@ -19,7 +19,7 @@ class DcatAPIdentifier(BaseModel):
         id: The id of this DcatAPIdentifier.
     """
 
-    id: object = Field(alias="@id")
+    id: str = Field(alias="@id")
 
 
 DcatAPIdentifier.update_forward_refs()

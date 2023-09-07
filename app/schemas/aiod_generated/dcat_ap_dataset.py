@@ -35,22 +35,30 @@ class DcatAPDataset(BaseModel):
         owlversion_info: The owlversion_info of this DcatAPDataset [Optional].
     """
 
-    id: object = Field(alias="@id")
-    type: Optional[object] = Field(alias="@type", default=None)
-    dctdescription: object = Field(alias="dct:description")
-    dcttitle: object = Field(alias="dct:title")
-    dcatcontact_point: Optional[object] = Field(alias="dcat:contactPoint", default=None)
-    dcatdistribution: Optional[object] = Field(alias="dcat:distribution", default=None)
-    dcatkeyword: Optional[object] = Field(alias="dcat:keyword", default=None)
+    id: str = Field(alias="@id")
+    type: Optional[str] = Field(alias="@type", default=None)
+    dctdescription: str = Field(alias="dct:description")
+    dcttitle: str = Field(alias="dct:title")
+    dcatcontact_point: Optional[List[DcatAPIdentifier]] = Field(
+        alias="dcat:contactPoint", default=None
+    )
+    dcatdistribution: Optional[List[DcatAPIdentifier]] = Field(
+        alias="dcat:distribution", default=None
+    )
+    dcatkeyword: Optional[List[str]] = Field(alias="dcat:keyword", default=None)
     dctpublisher: Optional[DcatAPIdentifier] = Field(
         alias="dct:publisher", default=None
     )
-    dcatcreator: Optional[object] = Field(alias="dcat:creator", default=None)
-    foafpage: Optional[object] = Field(alias="foaf:page", default=None)
-    dcatlanding_page: Optional[object] = Field(alias="dcat:landingPage", default=None)
+    dcatcreator: Optional[List[DcatAPIdentifier]] = Field(
+        alias="dcat:creator", default=None
+    )
+    foafpage: Optional[List[str]] = Field(alias="foaf:page", default=None)
+    dcatlanding_page: Optional[List[str]] = Field(
+        alias="dcat:landingPage", default=None
+    )
     dctissued: Optional[XSDDateTime] = Field(alias="dct:issued", default=None)
     dctmodified: Optional[XSDDateTime] = Field(alias="dct:modified", default=None)
-    owlversion_info: Optional[object] = Field(alias="owl:versionInfo", default=None)
+    owlversion_info: Optional[str] = Field(alias="owl:versionInfo", default=None)
 
 
 DcatAPDataset.update_forward_refs()

@@ -9,6 +9,7 @@ from typing import Any, Dict, List, Optional  # noqa: F401
 from pydantic import AnyUrl, BaseModel, EmailStr, Field, validator  # noqa: F401
 
 from app.schemas.aiod_generated.aio_d_entry_read import AIoDEntryRead
+from app.schemas.aiod_generated.distribution import Distribution
 from app.schemas.aiod_generated.location import Location
 from app.schemas.aiod_generated.size import Size
 
@@ -55,49 +56,57 @@ class DatasetRead(BaseModel):
         identifier: The identifier of this DatasetRead.
     """
 
-    platform: Optional[object] = Field(alias="platform", default=None)
-    platform_identifier: Optional[object] = Field(
+    platform: Optional[str] = Field(alias="platform", default=None)
+    platform_identifier: Optional[str] = Field(
         alias="platform_identifier", default=None
     )
-    name: object = Field(alias="name")
-    description: Optional[object] = Field(alias="description", default=None)
-    same_as: Optional[object] = Field(alias="same_as", default=None)
-    date_published: Optional[object] = Field(alias="date_published", default=None)
-    is_accessible_for_free: Optional[object] = Field(
+    name: str = Field(alias="name")
+    description: Optional[str] = Field(alias="description", default=None)
+    same_as: Optional[str] = Field(alias="same_as", default=None)
+    date_published: Optional[datetime] = Field(alias="date_published", default=None)
+    is_accessible_for_free: Optional[bool] = Field(
         alias="is_accessible_for_free", default=None
     )
-    version: Optional[object] = Field(alias="version", default=None)
-    issn: Optional[object] = Field(alias="issn", default=None)
-    measurement_technique: Optional[object] = Field(
+    version: Optional[str] = Field(alias="version", default=None)
+    issn: Optional[str] = Field(alias="issn", default=None)
+    measurement_technique: Optional[str] = Field(
         alias="measurement_technique", default=None
     )
-    temporal_coverage: Optional[object] = Field(alias="temporal_coverage", default=None)
-    ai_asset_identifier: Optional[object] = Field(
+    temporal_coverage: Optional[str] = Field(alias="temporal_coverage", default=None)
+    ai_asset_identifier: Optional[int] = Field(
         alias="ai_asset_identifier", default=None
     )
-    ai_resource_identifier: Optional[object] = Field(
+    ai_resource_identifier: Optional[int] = Field(
         alias="ai_resource_identifier", default=None
     )
     aiod_entry: Optional[AIoDEntryRead] = Field(alias="aiod_entry", default=None)
-    alternate_name: Optional[object] = Field(alias="alternate_name", default=None)
-    application_area: Optional[object] = Field(alias="application_area", default=None)
-    citation: Optional[object] = Field(alias="citation", default=None)
-    contact: Optional[object] = Field(alias="contact", default=None)
-    creator: Optional[object] = Field(alias="creator", default=None)
-    distribution: Optional[object] = Field(alias="distribution", default=None)
-    funder: Optional[object] = Field(alias="funder", default=None)
-    has_part: Optional[object] = Field(alias="has_part", default=None)
-    industrial_sector: Optional[object] = Field(alias="industrial_sector", default=None)
-    is_part_of: Optional[object] = Field(alias="is_part_of", default=None)
-    keyword: Optional[object] = Field(alias="keyword", default=None)
-    license: Optional[object] = Field(alias="license", default=None)
-    media: Optional[object] = Field(alias="media", default=None)
-    note: Optional[object] = Field(alias="note", default=None)
-    research_area: Optional[object] = Field(alias="research_area", default=None)
-    scientific_domain: Optional[object] = Field(alias="scientific_domain", default=None)
+    alternate_name: Optional[List[str]] = Field(alias="alternate_name", default=None)
+    application_area: Optional[List[str]] = Field(
+        alias="application_area", default=None
+    )
+    citation: Optional[List[int]] = Field(alias="citation", default=None)
+    contact: Optional[List[int]] = Field(alias="contact", default=None)
+    creator: Optional[List[int]] = Field(alias="creator", default=None)
+    distribution: Optional[List[Distribution]] = Field(
+        alias="distribution", default=None
+    )
+    funder: Optional[List[int]] = Field(alias="funder", default=None)
+    has_part: Optional[List[int]] = Field(alias="has_part", default=None)
+    industrial_sector: Optional[List[str]] = Field(
+        alias="industrial_sector", default=None
+    )
+    is_part_of: Optional[List[int]] = Field(alias="is_part_of", default=None)
+    keyword: Optional[List[str]] = Field(alias="keyword", default=None)
+    license: Optional[str] = Field(alias="license", default=None)
+    media: Optional[List[Distribution]] = Field(alias="media", default=None)
+    note: Optional[List[str]] = Field(alias="note", default=None)
+    research_area: Optional[List[str]] = Field(alias="research_area", default=None)
+    scientific_domain: Optional[List[str]] = Field(
+        alias="scientific_domain", default=None
+    )
     size: Optional[Size] = Field(alias="size", default=None)
     spatial_coverage: Optional[Location] = Field(alias="spatial_coverage", default=None)
-    identifier: object = Field(alias="identifier")
+    identifier: int = Field(alias="identifier")
 
     @validator("platform")
     def platform_max_length(cls, value):

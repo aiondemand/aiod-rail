@@ -20,8 +20,8 @@ class PlatformRead(BaseModel):
         identifier: The identifier of this PlatformRead.
     """
 
-    name: object = Field(alias="name")
-    identifier: object = Field(alias="identifier")
+    name: str = Field(alias="name")
+    identifier: int = Field(alias="identifier")
 
 
 PlatformRead.update_forward_refs()

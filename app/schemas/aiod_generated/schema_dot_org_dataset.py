@@ -8,7 +8,19 @@ from typing import Any, Dict, List, Optional  # noqa: F401
 
 from pydantic import AnyUrl, BaseModel, EmailStr, Field, validator  # noqa: F401
 
+from app.schemas.aiod_generated.alternatename import Alternatename
+from app.schemas.aiod_generated.citation import Citation
+from app.schemas.aiod_generated.creator import Creator
+from app.schemas.aiod_generated.datemodified import Datemodified
+from app.schemas.aiod_generated.datepublished import Datepublished
+from app.schemas.aiod_generated.distribution1 import Distribution1
+from app.schemas.aiod_generated.funder import Funder
+from app.schemas.aiod_generated.issn import Issn
+from app.schemas.aiod_generated.keywords import Keywords
+from app.schemas.aiod_generated.license import License
+from app.schemas.aiod_generated.measurementtechnique import Measurementtechnique
 from app.schemas.aiod_generated.schema_dot_org_context import SchemaDotOrgContext
+from app.schemas.aiod_generated.temporalcoverage import Temporalcoverage
 
 
 class SchemaDotOrgDataset(BaseModel):
@@ -43,31 +55,33 @@ class SchemaDotOrgDataset(BaseModel):
     """
 
     context: Optional[SchemaDotOrgContext] = Field(alias="@context", default=None)
-    type: Optional[object] = Field(alias="@type", default=None)
-    name: object = Field(alias="name")
-    description: Optional[object] = Field(alias="description", default=None)
-    identifier: object = Field(alias="identifier")
-    alternate_name: Optional[object] = Field(alias="alternateName", default=None)
-    citation: Optional[object] = Field(alias="citation", default=None)
-    creator: Optional[object] = Field(alias="creator", default=None)
-    date_modified: Optional[object] = Field(alias="dateModified", default=None)
-    date_published: Optional[object] = Field(alias="datePublished", default=None)
-    is_accessible_for_free: Optional[object] = Field(
+    type: Optional[str] = Field(alias="@type", default=None)
+    name: str = Field(alias="name")
+    description: Optional[str] = Field(alias="description", default=None)
+    identifier: str = Field(alias="identifier")
+    alternate_name: Optional[Alternatename] = Field(alias="alternateName", default=None)
+    citation: Optional[Citation] = Field(alias="citation", default=None)
+    creator: Optional[Creator] = Field(alias="creator", default=None)
+    date_modified: Optional[Datemodified] = Field(alias="dateModified", default=None)
+    date_published: Optional[Datepublished] = Field(alias="datePublished", default=None)
+    is_accessible_for_free: Optional[bool] = Field(
         alias="isAccessibleForFree", default=None
     )
-    keywords: Optional[object] = Field(alias="keywords", default=None)
-    same_as: Optional[object] = Field(alias="sameAs", default=None)
-    version: Optional[object] = Field(alias="version", default=None)
-    url: Optional[object] = Field(alias="url", default=None)
-    distribution: Optional[object] = Field(alias="distribution", default=None)
-    funder: Optional[object] = Field(alias="funder", default=None)
-    issn: Optional[object] = Field(alias="issn", default=None)
-    license: Optional[object] = Field(alias="license", default=None)
-    measurement_technique: Optional[object] = Field(
+    keywords: Optional[Keywords] = Field(alias="keywords", default=None)
+    same_as: Optional[str] = Field(alias="sameAs", default=None)
+    version: Optional[str] = Field(alias="version", default=None)
+    url: Optional[str] = Field(alias="url", default=None)
+    distribution: Optional[Distribution1] = Field(alias="distribution", default=None)
+    funder: Optional[Funder] = Field(alias="funder", default=None)
+    issn: Optional[Issn] = Field(alias="issn", default=None)
+    license: Optional[License] = Field(alias="license", default=None)
+    measurement_technique: Optional[Measurementtechnique] = Field(
         alias="measurementTechnique", default=None
     )
-    size: Optional[object] = Field(alias="size", default=None)
-    temporal_coverage: Optional[object] = Field(alias="temporalCoverage", default=None)
+    size: Optional[str] = Field(alias="size", default=None)
+    temporal_coverage: Optional[Temporalcoverage] = Field(
+        alias="temporalCoverage", default=None
+    )
 
 
 SchemaDotOrgDataset.update_forward_refs()
