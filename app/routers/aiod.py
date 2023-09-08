@@ -58,7 +58,7 @@ async def create_dataset(
     res = await async_client.post(
         f"{settings.AIOD_API.BASE_URL}/datasets/{settings.AIOD_API.DATASETS_VERSION}",
         headers={"Authorization": f"{token}"},
-        json=dataset.dict(),
+        json=dataset.dict(exclude_unset=True),
     )
 
     if res.status_code != 200:
