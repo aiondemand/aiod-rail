@@ -6,6 +6,7 @@ from pydantic import AnyHttpUrl, BaseModel, BaseSettings
 class AIODApiConfig(BaseModel):
     BASE_URL: AnyHttpUrl
     DATASETS_VERSION: str = "v1"
+    ML_MODELS_VERSION: str = "v1"
     PUBLICATIONS_VERSION: str = "v1"
     PLATFORMS_VERSION: str = "v1"
 

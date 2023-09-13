@@ -7,9 +7,9 @@ from pydantic import Json
 
 from app.authentication import get_current_user
 from app.config import settings
-from app.dummy_code import get_dataset_name, get_model_name
 from app.helpers import Pagination, eee_client_wrapper
 from app.models.experiment import Experiment
+from app.routers.aiod import get_dataset_name, get_model_name
 from app.schemas.experiment import (
     ExperimentCreate,
     ExperimentResponse,
@@ -160,7 +160,7 @@ async def execute_experiment_run(id: PydanticObjectId, envs: dict[str, str]) -> 
     experiment = await Experiment.get(id)
 
     dataset_names = [await get_dataset_name(x) for x in experiment.dataset_ids]
-    model_names = [get_model_name(x) for x in experiment.model_ids]
+    model_names = [await get_model_name(x) for x in experiment.model_ids]
 
     if any(x is None for x in dataset_names) or any(x is None for x in model_names):
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
