@@ -8,8 +8,10 @@ from typing import Any, Dict, List, Optional  # noqa: F401
 
 from pydantic import AnyUrl, BaseModel, EmailStr, Field, validator  # noqa: F401
 
-from app.schemas.aiod_generated.data_download import DataDownload
-from app.schemas.aiod_generated.measured_value import MeasuredValue
+from app.schemas.aiod_generated.aio_d_entry_read import AIoDEntryRead
+from app.schemas.aiod_generated.distribution import Distribution
+from app.schemas.aiod_generated.location import Location
+from app.schemas.aiod_generated.size import Size
 
 
 class DatasetRead(BaseModel):
@@ -21,30 +23,36 @@ class DatasetRead(BaseModel):
 
         platform: The platform of this DatasetRead [Optional].
         platform_identifier: The platform_identifier of this DatasetRead [Optional].
-        description: The description of this DatasetRead.
         name: The name of this DatasetRead.
-        same_as: The same_as of this DatasetRead.
+        description: The description of this DatasetRead [Optional].
+        same_as: The same_as of this DatasetRead [Optional].
+        date_published: The date_published of this DatasetRead [Optional].
+        is_accessible_for_free: The is_accessible_for_free of this DatasetRead [Optional].
+        version: The version of this DatasetRead [Optional].
+        issn: The issn of this DatasetRead [Optional].
+        measurement_technique: The measurement_technique of this DatasetRead [Optional].
+        temporal_coverage: The temporal_coverage of this DatasetRead [Optional].
+        ai_asset_identifier: The ai_asset_identifier of this DatasetRead [Optional].
+        ai_resource_identifier: The ai_resource_identifier of this DatasetRead [Optional].
+        aiod_entry: The aiod_entry of this DatasetRead [Optional].
+        alternate_name: The alternate_name of this DatasetRead [Optional].
+        application_area: The application_area of this DatasetRead [Optional].
+        citation: The citation of this DatasetRead [Optional].
         contact: The contact of this DatasetRead [Optional].
         creator: The creator of this DatasetRead [Optional].
-        publisher: The publisher of this DatasetRead [Optional].
-        date_modified: The date_modified of this DatasetRead [Optional].
-        date_published: The date_published of this DatasetRead [Optional].
+        distribution: The distribution of this DatasetRead [Optional].
         funder: The funder of this DatasetRead [Optional].
-        is_accessible_for_free: The is_accessible_for_free of this DatasetRead [Optional].
-        issn: The issn of this DatasetRead [Optional].
+        has_part: The has_part of this DatasetRead [Optional].
+        industrial_sector: The industrial_sector of this DatasetRead [Optional].
+        is_part_of: The is_part_of of this DatasetRead [Optional].
+        keyword: The keyword of this DatasetRead [Optional].
+        license: The license of this DatasetRead [Optional].
+        media: The media of this DatasetRead [Optional].
+        note: The note of this DatasetRead [Optional].
+        research_area: The research_area of this DatasetRead [Optional].
+        scientific_domain: The scientific_domain of this DatasetRead [Optional].
         size: The size of this DatasetRead [Optional].
         spatial_coverage: The spatial_coverage of this DatasetRead [Optional].
-        temporal_coverage_from: The temporal_coverage_from of this DatasetRead [Optional].
-        temporal_coverage_to: The temporal_coverage_to of this DatasetRead [Optional].
-        version: The version of this DatasetRead [Optional].
-        alternate_names: The alternate_names of this DatasetRead.
-        citations: The citations of this DatasetRead.
-        distributions: The distributions of this DatasetRead.
-        is_part: The is_part of this DatasetRead.
-        has_parts: The has_parts of this DatasetRead.
-        license: The license of this DatasetRead [Optional].
-        keywords: The keywords of this DatasetRead.
-        measured_values: The measured_values of this DatasetRead.
         identifier: The identifier of this DatasetRead.
     """
 
@@ -52,71 +60,87 @@ class DatasetRead(BaseModel):
     platform_identifier: Optional[str] = Field(
         alias="platform_identifier", default=None
     )
-    description: str = Field(alias="description")
     name: str = Field(alias="name")
-    same_as: str = Field(alias="same_as")
-    contact: Optional[str] = Field(alias="contact", default=None)
-    creator: Optional[str] = Field(alias="creator", default=None)
-    publisher: Optional[str] = Field(alias="publisher", default=None)
-    date_modified: Optional[datetime] = Field(alias="date_modified", default=None)
+    description: Optional[str] = Field(alias="description", default=None)
+    same_as: Optional[str] = Field(alias="same_as", default=None)
     date_published: Optional[datetime] = Field(alias="date_published", default=None)
-    funder: Optional[str] = Field(alias="funder", default=None)
     is_accessible_for_free: Optional[bool] = Field(
         alias="is_accessible_for_free", default=None
     )
-    issn: Optional[str] = Field(alias="issn", default=None)
-    size: Optional[int] = Field(alias="size", default=None)
-    spatial_coverage: Optional[str] = Field(alias="spatial_coverage", default=None)
-    temporal_coverage_from: Optional[datetime] = Field(
-        alias="temporal_coverage_from", default=None
-    )
-    temporal_coverage_to: Optional[datetime] = Field(
-        alias="temporal_coverage_to", default=None
-    )
     version: Optional[str] = Field(alias="version", default=None)
-    alternate_names: List[str] = Field(alias="alternate_names")
-    citations: List[int] = Field(alias="citations")
-    distributions: List[DataDownload] = Field(alias="distributions")
-    is_part: List[int] = Field(alias="is_part")
-    has_parts: List[int] = Field(alias="has_parts")
+    issn: Optional[str] = Field(alias="issn", default=None)
+    measurement_technique: Optional[str] = Field(
+        alias="measurement_technique", default=None
+    )
+    temporal_coverage: Optional[str] = Field(alias="temporal_coverage", default=None)
+    ai_asset_identifier: Optional[int] = Field(
+        alias="ai_asset_identifier", default=None
+    )
+    ai_resource_identifier: Optional[int] = Field(
+        alias="ai_resource_identifier", default=None
+    )
+    aiod_entry: Optional[AIoDEntryRead] = Field(alias="aiod_entry", default=None)
+    alternate_name: Optional[List[str]] = Field(alias="alternate_name", default=None)
+    application_area: Optional[List[str]] = Field(
+        alias="application_area", default=None
+    )
+    citation: Optional[List[int]] = Field(alias="citation", default=None)
+    contact: Optional[List[int]] = Field(alias="contact", default=None)
+    creator: Optional[List[int]] = Field(alias="creator", default=None)
+    distribution: Optional[List[Distribution]] = Field(
+        alias="distribution", default=None
+    )
+    funder: Optional[List[int]] = Field(alias="funder", default=None)
+    has_part: Optional[List[int]] = Field(alias="has_part", default=None)
+    industrial_sector: Optional[List[str]] = Field(
+        alias="industrial_sector", default=None
+    )
+    is_part_of: Optional[List[int]] = Field(alias="is_part_of", default=None)
+    keyword: Optional[List[str]] = Field(alias="keyword", default=None)
     license: Optional[str] = Field(alias="license", default=None)
-    keywords: List[str] = Field(alias="keywords")
-    measured_values: List[MeasuredValue] = Field(alias="measured_values")
+    media: Optional[List[Distribution]] = Field(alias="media", default=None)
+    note: Optional[List[str]] = Field(alias="note", default=None)
+    research_area: Optional[List[str]] = Field(alias="research_area", default=None)
+    scientific_domain: Optional[List[str]] = Field(
+        alias="scientific_domain", default=None
+    )
+    size: Optional[Size] = Field(alias="size", default=None)
+    spatial_coverage: Optional[Location] = Field(alias="spatial_coverage", default=None)
     identifier: int = Field(alias="identifier")
 
-    @validator("description")
-    def description_max_length(cls, value):
-        assert len(value) <= 5000
+    @validator("platform")
+    def platform_max_length(cls, value):
+        assert len(value) <= 64
+        return value
+
+    @validator("platform_identifier")
+    def platform_identifier_max_length(cls, value):
+        assert len(value) <= 256
         return value
 
     @validator("name")
     def name_max_length(cls, value):
-        assert len(value) <= 150
+        assert len(value) <= 256
+        return value
+
+    @validator("description")
+    def description_max_length(cls, value):
+        assert len(value) <= 1800
         return value
 
     @validator("same_as")
     def same_as_max_length(cls, value):
-        assert len(value) <= 150
+        assert len(value) <= 256
         return value
 
-    @validator("contact")
-    def contact_max_length(cls, value):
-        assert len(value) <= 150
+    @validator("version")
+    def version_max_length(cls, value):
+        assert len(value) <= 256
         return value
 
-    @validator("creator")
-    def creator_max_length(cls, value):
-        assert len(value) <= 150
-        return value
-
-    @validator("publisher")
-    def publisher_max_length(cls, value):
-        assert len(value) <= 150
-        return value
-
-    @validator("funder")
-    def funder_max_length(cls, value):
-        assert len(value) <= 150
+    @validator("issn")
+    def issn_min_length(cls, value):
+        assert len(value) >= 8
         return value
 
     @validator("issn")
@@ -124,14 +148,14 @@ class DatasetRead(BaseModel):
         assert len(value) <= 8
         return value
 
-    @validator("spatial_coverage")
-    def spatial_coverage_max_length(cls, value):
-        assert len(value) <= 500
+    @validator("measurement_technique")
+    def measurement_technique_max_length(cls, value):
+        assert len(value) <= 256
         return value
 
-    @validator("version")
-    def version_max_length(cls, value):
-        assert len(value) <= 150
+    @validator("temporal_coverage")
+    def temporal_coverage_max_length(cls, value):
+        assert len(value) <= 64
         return value
 
 

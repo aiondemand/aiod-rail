@@ -10,21 +10,17 @@ from pydantic import AnyUrl, BaseModel, EmailStr, Field, validator  # noqa: F401
 
 from app.schemas.aiod_generated.alternatename import Alternatename
 from app.schemas.aiod_generated.citation import Citation
-from app.schemas.aiod_generated.context import Context
 from app.schemas.aiod_generated.creator import Creator
 from app.schemas.aiod_generated.datemodified import Datemodified
 from app.schemas.aiod_generated.datepublished import Datepublished
-from app.schemas.aiod_generated.distribution import Distribution
+from app.schemas.aiod_generated.distribution1 import Distribution1
 from app.schemas.aiod_generated.funder import Funder
-from app.schemas.aiod_generated.haspart import Haspart
-from app.schemas.aiod_generated.ispartof import Ispartof
 from app.schemas.aiod_generated.issn import Issn
 from app.schemas.aiod_generated.keywords import Keywords
 from app.schemas.aiod_generated.license import License
-from app.schemas.aiod_generated.maintainer import Maintainer
 from app.schemas.aiod_generated.measurementtechnique import Measurementtechnique
+from app.schemas.aiod_generated.schema_dot_org_context import SchemaDotOrgContext
 from app.schemas.aiod_generated.temporalcoverage import Temporalcoverage
-from app.schemas.aiod_generated.variablemeasured import Variablemeasured
 
 
 class SchemaDotOrgDataset(BaseModel):
@@ -39,7 +35,6 @@ class SchemaDotOrgDataset(BaseModel):
         name: The name of this SchemaDotOrgDataset.
         description: The description of this SchemaDotOrgDataset [Optional].
         identifier: The identifier of this SchemaDotOrgDataset.
-        maintainer: The maintainer of this SchemaDotOrgDataset.
         alternate_name: The alternate_name of this SchemaDotOrgDataset [Optional].
         citation: The citation of this SchemaDotOrgDataset [Optional].
         creator: The creator of this SchemaDotOrgDataset [Optional].
@@ -52,23 +47,18 @@ class SchemaDotOrgDataset(BaseModel):
         url: The url of this SchemaDotOrgDataset [Optional].
         distribution: The distribution of this SchemaDotOrgDataset [Optional].
         funder: The funder of this SchemaDotOrgDataset [Optional].
-        has_part: The has_part of this SchemaDotOrgDataset [Optional].
-        is_part_of: The is_part_of of this SchemaDotOrgDataset [Optional].
         issn: The issn of this SchemaDotOrgDataset [Optional].
         license: The license of this SchemaDotOrgDataset [Optional].
         measurement_technique: The measurement_technique of this SchemaDotOrgDataset [Optional].
         size: The size of this SchemaDotOrgDataset [Optional].
-        spatial_coverage: The spatial_coverage of this SchemaDotOrgDataset [Optional].
         temporal_coverage: The temporal_coverage of this SchemaDotOrgDataset [Optional].
-        variable_measured: The variable_measured of this SchemaDotOrgDataset [Optional].
     """
 
-    context: Optional[Context] = Field(alias="@context", default=None)
+    context: Optional[SchemaDotOrgContext] = Field(alias="@context", default=None)
     type: Optional[str] = Field(alias="@type", default=None)
     name: str = Field(alias="name")
     description: Optional[str] = Field(alias="description", default=None)
     identifier: str = Field(alias="identifier")
-    maintainer: Maintainer = Field(alias="maintainer")
     alternate_name: Optional[Alternatename] = Field(alias="alternateName", default=None)
     citation: Optional[Citation] = Field(alias="citation", default=None)
     creator: Optional[Creator] = Field(alias="creator", default=None)
@@ -81,22 +71,16 @@ class SchemaDotOrgDataset(BaseModel):
     same_as: Optional[str] = Field(alias="sameAs", default=None)
     version: Optional[str] = Field(alias="version", default=None)
     url: Optional[str] = Field(alias="url", default=None)
-    distribution: Optional[Distribution] = Field(alias="distribution", default=None)
+    distribution: Optional[Distribution1] = Field(alias="distribution", default=None)
     funder: Optional[Funder] = Field(alias="funder", default=None)
-    has_part: Optional[Haspart] = Field(alias="hasPart", default=None)
-    is_part_of: Optional[Ispartof] = Field(alias="isPartOf", default=None)
     issn: Optional[Issn] = Field(alias="issn", default=None)
     license: Optional[License] = Field(alias="license", default=None)
     measurement_technique: Optional[Measurementtechnique] = Field(
         alias="measurementTechnique", default=None
     )
     size: Optional[str] = Field(alias="size", default=None)
-    spatial_coverage: Optional[str] = Field(alias="spatialCoverage", default=None)
     temporal_coverage: Optional[Temporalcoverage] = Field(
         alias="temporalCoverage", default=None
-    )
-    variable_measured: Optional[Variablemeasured] = Field(
-        alias="variableMeasured", default=None
     )
 
 

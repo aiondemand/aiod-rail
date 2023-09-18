@@ -13,7 +13,6 @@ from app.schemas.aiod_generated.dcat_ap_distribution import DcatAPDistribution
 from app.schemas.aiod_generated.dcat_ap_identifier import DcatAPIdentifier
 from app.schemas.aiod_generated.dcat_location import DcatLocation
 from app.schemas.aiod_generated.dct_period_of_time import DctPeriodOfTime
-from app.schemas.aiod_generated.dct_publisher import DctPublisher
 from app.schemas.aiod_generated.spdx_checksum import SpdxChecksum
 from app.schemas.aiod_generated.v_card_individual import VCardIndividual
 from app.schemas.aiod_generated.v_card_organisation import VCardOrganisation
@@ -35,9 +34,6 @@ class GraphInner(BaseModel):
         dcatdistribution: The dcatdistribution of this GraphInner [Optional].
         dcatkeyword: The dcatkeyword of this GraphInner [Optional].
         dctpublisher: The dctpublisher of this GraphInner [Optional].
-        dcttemporal: The dcttemporal of this GraphInner [Optional].
-        dctspatial: The dctspatial of this GraphInner [Optional].
-        dcattheme: The dcattheme of this GraphInner [Optional].
         dcatcreator: The dcatcreator of this GraphInner [Optional].
         foafpage: The foafpage of this GraphInner [Optional].
         dcatlanding_page: The dcatlanding_page of this GraphInner [Optional].
@@ -71,14 +67,9 @@ class GraphInner(BaseModel):
         alias="dcat:distribution", default=None
     )
     dcatkeyword: Optional[List[str]] = Field(alias="dcat:keyword", default=None)
-    dctpublisher: Optional[DctPublisher] = Field(alias="dct:publisher", default=None)
-    dcttemporal: Optional[List[DcatAPIdentifier]] = Field(
-        alias="dct:temporal", default=None
+    dctpublisher: Optional[DcatAPIdentifier] = Field(
+        alias="dct:publisher", default=None
     )
-    dctspatial: Optional[List[DcatAPIdentifier]] = Field(
-        alias="dct:spatial", default=None
-    )
-    dcattheme: Optional[List[str]] = Field(alias="dcat:theme", default=None)
     dcatcreator: Optional[List[DcatAPIdentifier]] = Field(
         alias="dcat:creator", default=None
     )

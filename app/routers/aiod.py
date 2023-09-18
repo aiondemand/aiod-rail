@@ -5,18 +5,15 @@ from pydantic import Json
 
 from app.authentication import get_current_user, get_current_user_token
 from app.config import settings
-from app.dummy_code import (
-    Model,
-    get_dummy_model,
-    get_dummy_model_count,
-    get_dummy_models,
-)
 from app.helpers import Pagination, aiod_client_wrapper
 from app.schemas.dataset import Dataset
+from app.schemas.ml_model import MLModel
 from app.schemas.platform import Platform
 from app.schemas.publication import Publication
 
 router = APIRouter()
+
+""" Datasets """
 
 
 @router.get("/datasets", response_model=list[Dataset])
@@ -29,20 +26,20 @@ async def get_datasets(pagination: Pagination = Depends()) -> Any:
     return res.json()
 
 
-@router.get("/counts/datasets", response_model=int)
-async def get_datasets_count() -> Any:
-    async_client = aiod_client_wrapper()
-    res = await async_client.get(
-        f"{settings.AIOD_API.BASE_URL}/counts/datasets/{settings.AIOD_API.DATASETS_VERSION}",
-    )
-    return res.json()
-
-
 @router.get("/datasets/{id}", response_model=Dataset)
 async def get_dataset(id: int) -> Any:
     async_client = aiod_client_wrapper()
     res = await async_client.get(
         f"{settings.AIOD_API.BASE_URL}/datasets/{settings.AIOD_API.DATASETS_VERSION}/{id}",
+    )
+    return res.json()
+
+
+@router.get("/counts/datasets", response_model=int)
+async def get_datasets_count() -> Any:
+    async_client = aiod_client_wrapper()
+    res = await async_client.get(
+        f"{settings.AIOD_API.BASE_URL}/counts/datasets/{settings.AIOD_API.DATASETS_VERSION}",
     )
     return res.json()
 
@@ -58,7 +55,7 @@ async def create_dataset(
     res = await async_client.post(
         f"{settings.AIOD_API.BASE_URL}/datasets/{settings.AIOD_API.DATASETS_VERSION}",
         headers={"Authorization": f"{token}"},
-        json=dataset.dict(),
+        json=dataset.dict(exclude_unset=True),
     )
 
     if res.status_code != 200:
@@ -124,6 +121,50 @@ async def dataset_upload_file_to_huggingface(
     return dataset
 
 
+async def get_dataset_name(id: int) -> str:
+    dataset = Dataset(**await get_dataset(id))
+    return dataset.platform_identifier
+
+
+""" ML Models """
+
+
+@router.get("/models", response_model=list[MLModel])
+async def get_models(pagination: Pagination = Depends()) -> Any:
+    async_client = aiod_client_wrapper()
+    res = await async_client.get(
+        f"{settings.AIOD_API.BASE_URL}/ml_models/{settings.AIOD_API.ML_MODELS_VERSION}",
+        params={"offset": pagination.offset, "limit": pagination.limit},
+    )
+    return res.json()
+
+
+@router.get("/models/{id}", response_model=MLModel)
+async def get_model(id: int) -> Any:
+    async_client = aiod_client_wrapper()
+    res = await async_client.get(
+        f"{settings.AIOD_API.BASE_URL}/ml_models/{settings.AIOD_API.ML_MODELS_VERSION}/{id}",
+    )
+    return res.json()
+
+
+@router.get("/counts/models", response_model=int)
+async def get_models_count() -> Any:
+    async_client = aiod_client_wrapper()
+    res = await async_client.get(
+        f"{settings.AIOD_API.BASE_URL}/counts/ml_models/{settings.AIOD_API.ML_MODELS_VERSION}",
+    )
+    return res.json()
+
+
+async def get_model_name(id: int) -> str:
+    ml_model = MLModel(**await get_model(id))
+    return ml_model.platform_identifier
+
+
+""" Publications """
+
+
 @router.get("/publications", response_model=list[Publication])
 async def get_publications(pagination: Pagination = Depends()) -> Any:
     async_client = aiod_client_wrapper()
@@ -150,24 +191,6 @@ async def get_publications_count() -> Any:
         f"{settings.AIOD_API.BASE_URL}/counts/publications/{settings.AIOD_API.PUBLICATIONS_VERSION}",
     )
     return res.json()
-
-
-@router.get("/models", response_model=list[Model])
-async def get_models(pagination: Pagination = Depends()) -> Any:
-    # TODO: Replace this dummy response
-    return get_dummy_models()
-
-
-@router.get("/models/{id}", response_model=Model)
-async def get_model(id: int) -> Any:
-    # TODO: Replace this dummy response
-    return get_dummy_model(id=id)
-
-
-@router.get("/counts/models", response_model=int)
-async def get_models_count() -> Any:
-    # TODO: Replace this dummy response
-    return get_dummy_model_count()
 
 
 @router.get("/platforms", response_model=list[Platform])

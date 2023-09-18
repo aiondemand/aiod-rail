@@ -18,10 +18,14 @@ class SchemaDotOrgPerson(BaseModel):
 
         type: The type of this SchemaDotOrgPerson [Optional].
         name: The name of this SchemaDotOrgPerson.
+        given_name: The given_name of this SchemaDotOrgPerson [Optional].
+        family_name: The family_name of this SchemaDotOrgPerson [Optional].
     """
 
     type: Optional[str] = Field(alias="@type", default=None)
     name: str = Field(alias="name")
+    given_name: Optional[str] = Field(alias="givenName", default=None)
+    family_name: Optional[str] = Field(alias="familyName", default=None)
 
 
 SchemaDotOrgPerson.update_forward_refs()

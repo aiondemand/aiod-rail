@@ -5,7 +5,7 @@
 # Define a function to print a help message
 helpFunction() {
     echo ""
-    echo "First ensure you have installedopenapi-generator-cli: https://openapi-generator.tech/docs/installation/"
+    echo "First ensure you have installed openapi-generator-cli: https://openapi-generator.tech/docs/installation/"
     echo "Usage: $0 -o TEMP_OUT_DIR -a AIOD_API_BASE_PATH"
     echo -e "\t-o Temp directory for the generated models (will be deleted after). Default: temp-out-aiod-models"
     echo -e "\t-a Base directory of the aiod API."
