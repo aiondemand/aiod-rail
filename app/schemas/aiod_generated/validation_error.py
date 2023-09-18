@@ -8,7 +8,7 @@ from typing import Any, Dict, List, Optional  # noqa: F401
 
 from pydantic import AnyUrl, BaseModel, EmailStr, Field, validator  # noqa: F401
 
-from app.schemas.aiod_generated.location1_inner import Location1Inner
+from app.schemas.aiod_generated.location_inner import LocationInner
 
 
 class ValidationError(BaseModel):
@@ -23,7 +23,7 @@ class ValidationError(BaseModel):
         type: The type of this ValidationError.
     """
 
-    loc: List[Location1Inner] = Field(alias="loc")
+    loc: List[LocationInner] = Field(alias="loc")
     msg: str = Field(alias="msg")
     type: str = Field(alias="type")
 
