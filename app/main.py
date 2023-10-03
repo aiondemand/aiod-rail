@@ -5,7 +5,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 
 from app import __version__
 from app.config import settings
-from app.helpers import aiod_client_wrapper
+from app.helpers import aiod_client_wrapper, eee_client_wrapper
 from app.models.experiment import Experiment
 from app.routers import aiod, experiments
 
@@ -15,7 +15,7 @@ app.include_router(aiod.router, prefix="/v1/assets", tags=["assets"])
 app.include_router(experiments.router, prefix="/v1", tags=["experiments"])
 
 origins = [
-    "http://localhost:4200",
+    "*",
 ]
 
 app.add_middleware(
@@ -31,6 +31,7 @@ app.add_middleware(
 async def app_init():
     """Initialize application services"""
     aiod_client_wrapper.start()
+    eee_client_wrapper.start()
 
     app.db = AsyncIOMotorClient(settings.MONGODB_URI, uuidRepresentation="standard")[
         settings.MONGODB_DBNAME
@@ -45,3 +46,4 @@ async def app_init():
 @app.on_event("shutdown")
 async def shutdown_event():
     await aiod_client_wrapper.stop()
+    await eee_client_wrapper.stop()

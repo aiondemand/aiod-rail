@@ -23,10 +23,14 @@ class CreatorAnyOfInner(BaseModel):
 
         type: The type of this CreatorAnyOfInner [Optional].
         name: The name of this CreatorAnyOfInner.
+        given_name: The given_name of this CreatorAnyOfInner [Optional].
+        family_name: The family_name of this CreatorAnyOfInner [Optional].
     """
 
     type: Optional[str] = Field(alias="@type", default=None)
     name: str = Field(alias="name")
+    given_name: Optional[str] = Field(alias="givenName", default=None)
+    family_name: Optional[str] = Field(alias="familyName", default=None)
 
 
 CreatorAnyOfInner.update_forward_refs()
