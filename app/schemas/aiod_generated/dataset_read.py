@@ -99,7 +99,7 @@ class DatasetRead(BaseModel):
     keyword: Optional[List[str]] = Field(alias="keyword", default=None)
     license: Optional[str] = Field(alias="license", default=None)
     media: Optional[List[Distribution]] = Field(alias="media", default=None)
-    note: Optional[List[str]] = Field(alias="note", default=None)
+    note: Optional[List[object]] = Field(alias="note", default=None)
     research_area: Optional[List[str]] = Field(alias="research_area", default=None)
     scientific_domain: Optional[List[str]] = Field(
         alias="scientific_domain", default=None

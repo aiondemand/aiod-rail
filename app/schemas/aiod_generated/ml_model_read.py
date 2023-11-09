@@ -90,7 +90,7 @@ class MLModelRead(BaseModel):
     keyword: Optional[List[str]] = Field(alias="keyword", default=None)
     license: Optional[str] = Field(alias="license", default=None)
     media: Optional[List[Distribution]] = Field(alias="media", default=None)
-    note: Optional[List[str]] = Field(alias="note", default=None)
+    note: Optional[List[object]] = Field(alias="note", default=None)
     related_experiment: Optional[List[int]] = Field(
         alias="related_experiment", default=None
     )
