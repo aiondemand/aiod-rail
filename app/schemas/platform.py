@@ -1,4 +1,4 @@
-from app.schemas.aiod_generated.platform_read import PlatformRead
+from app.schemas.aiod_generated import PlatformRead
 
 
 class Platform(PlatformRead):

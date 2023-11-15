@@ -123,7 +123,7 @@ async def dataset_upload_file_to_huggingface(
 
 async def get_dataset_name(id: int) -> str:
     dataset = Dataset(**await get_dataset(id))
-    return dataset.platform_identifier
+    return dataset.name
 
 
 """ ML Models """
@@ -159,7 +159,7 @@ async def get_models_count() -> Any:
 
 async def get_model_name(id: int) -> str:
     ml_model = MLModel(**await get_model(id))
-    return ml_model.platform_identifier
+    return ml_model.name
 
 
 """ Publications """

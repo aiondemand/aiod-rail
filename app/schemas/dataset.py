@@ -1,4 +1,4 @@
-from app.schemas.aiod_generated.dataset_read import DatasetRead
+from app.schemas.aiod_generated import DatasetRead
 
 
 class Dataset(DatasetRead):
