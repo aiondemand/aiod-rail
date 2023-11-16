@@ -23,7 +23,7 @@ async def get_datasets(pagination: Pagination = Depends()) -> Any:
         f"{settings.AIOD_API.BASE_URL}/datasets/{settings.AIOD_API.DATASETS_VERSION}",
         params={"offset": pagination.offset, "limit": pagination.limit},
     )
-    return res.json()["resources"]
+    return res.json()
 
 
 @router.get("/datasets/search/{query}", response_model=list[Dataset])
@@ -38,7 +38,7 @@ async def search_datasets(query: str, pagination: Pagination = Depends()) -> Any
     res = await async_client.get(
         f"{settings.AIOD_API.BASE_URL}/search/datasets/{settings.AIOD_API.DATASETS_VERSION}?{params}",
     )
-    return res.json()
+    return res.json()["resources"]
 
 
 @router.get("/datasets/{id}", response_model=Dataset)
