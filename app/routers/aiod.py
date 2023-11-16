@@ -23,6 +23,21 @@ async def get_datasets(pagination: Pagination = Depends()) -> Any:
         f"{settings.AIOD_API.BASE_URL}/datasets/{settings.AIOD_API.DATASETS_VERSION}",
         params={"offset": pagination.offset, "limit": pagination.limit},
     )
+    return res.json()["resources"]
+
+
+@router.get("/datasets/search/{query}", response_model=list[Dataset])
+async def search_datasets(query: str, pagination: Pagination = Depends()) -> Any:
+    # TODO: Add support for offset
+    params = (
+        f"search_query={query}&search_fields=name"
+        f"&limit={pagination.limit}&page=1&get_all=true"
+    )
+
+    async_client = aiod_client_wrapper()
+    res = await async_client.get(
+        f"{settings.AIOD_API.BASE_URL}/search/datasets/{settings.AIOD_API.DATASETS_VERSION}?{params}",
+    )
     return res.json()
 
 
@@ -139,6 +154,21 @@ async def get_models(pagination: Pagination = Depends()) -> Any:
     return res.json()
 
 
+@router.get("/models/search/{query}", response_model=list[MLModel])
+async def search_models(query: str, pagination: Pagination = Depends()) -> Any:
+    # TODO: Add support for offset
+    params = (
+        f"search_query={query}&search_fields=name"
+        f"&limit={pagination.limit}&page=1&get_all=true"
+    )
+
+    async_client = aiod_client_wrapper()
+    res = await async_client.get(
+        f"{settings.AIOD_API.BASE_URL}/search/ml_models/{settings.AIOD_API.ML_MODELS_VERSION}?{params}",
+    )
+    return res.json()["resources"]
+
+
 @router.get("/models/{id}", response_model=MLModel)
 async def get_model(id: int) -> Any:
     async_client = aiod_client_wrapper()
@@ -173,6 +203,21 @@ async def get_publications(pagination: Pagination = Depends()) -> Any:
         params={"offset": pagination.offset, "limit": pagination.limit},
     )
     return res.json()
+
+
+@router.get("/publications/search/{query}", response_model=list[Publication])
+async def search_publications(query: str, pagination: Pagination = Depends()) -> Any:
+    # TODO: Add support for offset
+    params = (
+        f"search_query={query}&search_fields=name"
+        f"&limit={pagination.limit}&page=1&get_all=true"
+    )
+
+    async_client = aiod_client_wrapper()
+    res = await async_client.get(
+        f"{settings.AIOD_API.BASE_URL}/search/publications/{settings.AIOD_API.PUBLICATIONS_VERSION}?{params}",
+    )
+    return res.json()["resources"]
 
 
 @router.get("/publications/{id}", response_model=Publication)
