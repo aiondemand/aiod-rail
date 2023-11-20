@@ -1,4 +1,4 @@
-from app.schemas.aiod_generated.ml_model_read import MLModelRead
+from app.schemas.aiod_generated import MLModelRead
 
 
 class MLModel(MLModelRead):

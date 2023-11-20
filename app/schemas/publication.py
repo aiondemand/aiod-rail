@@ -1,4 +1,4 @@
-from app.schemas.aiod_generated.publication_read import PublicationRead
+from app.schemas.aiod_generated import PublicationRead
 
 
 class Publication(PublicationRead):
