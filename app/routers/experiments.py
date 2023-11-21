@@ -6,18 +6,12 @@ from fastapi.responses import PlainTextResponse
 from pydantic import Json
 
 from app.authentication import get_current_user
-from app.config import settings
-from app.helpers import Pagination, eee_client_wrapper
+from app.helpers import Pagination
 from app.models.experiment import Experiment
-from app.routers.aiod import get_dataset_name, get_model_name
-from app.schemas.experiment import (
-    ExperimentCreate,
-    ExperimentResponse,
-    ExperimentRun,
-    ExperimentRunDetails,
-    ExperimentRunExecute,
-    ExperimentType,
-)
+from app.models.experiment_run import ExperimentRun
+from app.schemas.experiment import ExperimentCreate, ExperimentResponse
+from app.schemas.experiment_run import ExperimentRunDetails, ExperimentRunResponse
+from app.services.experiment import ExperimentService
 
 router = APIRouter()
 
@@ -46,6 +40,14 @@ async def get_my_experiments(
 
 
 @router.get(
+    "/count/experiments",
+    response_model=int,
+)
+async def get_experiments_count() -> Any:
+    return await Experiment.count()
+
+
+@router.get(
     "/count/experiments/my",
     response_model=int,
 )
@@ -54,14 +56,6 @@ async def get_my_experiments_count(user: Json = Depends(get_current_user)) -> An
         Experiment.created_by == user["email"]
     ).count()
     return number_of_my_experiments
-
-
-@router.get(
-    "/count/experiments",
-    response_model=int,
-)
-async def get_experiments_count() -> Any:
-    return await Experiment.count()
 
 
 @router.get(
@@ -82,110 +76,74 @@ async def create_experiment(
     experiment: ExperimentCreate, user: Json = Depends(get_current_user)
 ) -> Any:
     experiment = Experiment(**experiment.dict(), created_by=user["email"])
+    if not await experiment.is_valid():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Experiment request does not match its ExperimentTemplate",
+        )
+
     await experiment.create()
     return experiment.dict()
 
 
-@router.get("/experiment/experiment-types", response_model=list[ExperimentType])
-async def get_experiment_types(pagination: Pagination = Depends()) -> Any:
-    async_client = eee_client_wrapper()
-    res = await async_client.get(
-        f"{settings.EEE_API.BASE_URL}/experiment-types?offset={pagination.offset}&limit={pagination.limit}",
-    )
+@router.get("/experiments/{id}/execute", response_model=ExperimentRunResponse)
+async def execute_experiment_run(
+    id: PydanticObjectId,
+    docker_service: ExperimentService = Depends(ExperimentService.get_docker_service),
+) -> Any:
+    experiment = await Experiment.get(id)
 
-    if res.status_code != status.HTTP_200_OK:
+    if not await experiment.uses_finished_template():
         raise HTTPException(
-            status_code=res.status_code,
-            detail=f"Could not get experiment types from EEE API: {res.json()}",
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="ExperimentTemplate of this experiment is yet to be finished",
         )
 
-    return res.json()
+    prev_experiment_runs = await ExperimentRun.find_many(
+        ExperimentRun.experiment_id == experiment.id
+    ).to_list()
 
-
-@router.get("/experiment/experiment-types/{id}", response_model=ExperimentType)
-async def get_experiment_type(id: PydanticObjectId) -> Any:
-    async_client = eee_client_wrapper()
-    res = await async_client.get(
-        f"{settings.EEE_API.BASE_URL}/experiment-types/{id}",
+    experiment_run = ExperimentRun(
+        experiment_id=experiment.id,
+        run_number=len(prev_experiment_runs),
     )
+    experiment_run = await experiment_run.create()
 
-    if res.status_code != status.HTTP_200_OK:
-        raise HTTPException(
-            status_code=res.status_code,
-            detail=f"Could not get experiment type from EEE API: {res.json()}",
-        )
+    await docker_service.add_run_to_execute(experiment_run.id)
 
-    return res.json()
+    return experiment_run.dict()
 
 
-@router.get("/experiments/{id}/runs", response_model=list[ExperimentRunDetails])
+@router.get("/experiments/{id}/runs", response_model=list[ExperimentRunResponse])
 async def get_experiment_runs(
     id: PydanticObjectId, pagination: Pagination = Depends()
 ) -> Any:
-    async_client = eee_client_wrapper()
+    runs = await ExperimentRun.find(
+        ExperimentRun.experiment_id == id,
+        skip=pagination.offset,
+        limit=pagination.limit,
+    ).to_list()
 
-    res = await async_client.get(
-        f"{settings.EEE_API.BASE_URL}/experiment-runs?experiment_id={id}&"
-        f"offset={pagination.offset}&limit={pagination.limit}",
-    )
+    return [run.dict() for run in runs]
 
-    return res.json()
+
+@router.get("/experiment-runs", response_model=list[ExperimentRunResponse])
+async def get_all_experiment_runs(pagination: Pagination = Depends()) -> Any:
+    runs = await ExperimentRun.find_all(
+        skip=pagination.offset, limit=pagination.limit
+    ).to_list()
+    return [run.dict() for run in runs]
 
 
 @router.get("/experiment-runs/{id}", response_model=ExperimentRunDetails | None)
 async def get_experiment_run(id: PydanticObjectId) -> Any:
-    async_client = eee_client_wrapper()
-    res = await async_client.get(
-        f"{settings.EEE_API.BASE_URL}/experiment-runs/{id}",
-    )
-
-    return res.json()
+    experiment_run = await ExperimentRun.get(id)
+    return experiment_run.map_to_response()
 
 
 @router.get("/experiment-runs/{id}/logs", response_class=PlainTextResponse)
 async def get_experiment_run_logs(id: PydanticObjectId) -> str:
-    async_client = eee_client_wrapper()
-    res = await async_client.get(
-        f"{settings.EEE_API.BASE_URL}/experiment-runs/{id}/logs",
+    # TODO
+    raise HTTPException(
+        status_code=status.HTTP_405_METHOD_NOT_ALLOWED, detail="Method not implemented"
     )
-
-    if (text_response := res.json()) is not None:
-        return text_response
-    else:
-        return ""
-
-
-@router.post("/experiments/{id}/execute", response_model=ExperimentRun)
-async def execute_experiment_run(id: PydanticObjectId, envs: dict[str, str]) -> Any:
-    experiment = await Experiment.get(id)
-
-    dataset_names = [await get_dataset_name(x) for x in experiment.dataset_ids]
-    model_names = [await get_model_name(x) for x in experiment.model_ids]
-
-    if any(x is None for x in dataset_names) or any(x is None for x in model_names):
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-    experiment_run = ExperimentRunExecute(
-        id=experiment.id,
-        experiment_type_id=experiment.experiment_type_id,
-        dataset_names=dataset_names,
-        model_names=model_names,
-        env_vars=envs,
-        metrics=experiment.metrics,
-    )
-
-    async_client = eee_client_wrapper()
-    res = await async_client.post(
-        f"{settings.EEE_API.BASE_URL}/experiment-runs", data=experiment_run.json()
-    )
-
-    if (
-        res.status_code != status.HTTP_201_CREATED
-        and res.status_code != status.HTTP_200_OK
-    ):
-        raise HTTPException(
-            status_code=res.status_code,
-            detail=f"Could not create experiment run in EEE API: {res.json()}",
-        )
-
-    return res.json()
