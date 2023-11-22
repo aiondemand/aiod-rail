@@ -349,7 +349,7 @@ class ExperimentService:
         if len(error_msg) > 0:
             logs = f"{error_msg}{logs}"
         log_filepath = exp_output_savepath / LOGS_FILENAME
-        with open(log_filepath, "w") as f:
+        with open(log_filepath, "w", encoding="utf-8") as f:
             f.write(logs)
 
         metrics_filepath = f"{RUN_OUTPUT_FOLDER}/{METRICS_FILENAME}"

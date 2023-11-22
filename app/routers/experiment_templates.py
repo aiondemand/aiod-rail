@@ -32,6 +32,11 @@ async def get_experiment_template(id: PydanticObjectId) -> Any:
     return experiment_template.map_to_response()
 
 
+@router.get("/count/experiment-templates", response_model=int)
+async def get_experiment_templates_count() -> Any:
+    return await ExperimentTemplate.count()
+
+
 @router.post(
     "/experiment-templates",
     status_code=status.HTTP_201_CREATED,

@@ -111,7 +111,7 @@ async def execute_experiment_run(
 
     await docker_service.add_run_to_execute(experiment_run.id)
 
-    return experiment_run.dict()
+    return experiment_run.map_to_response()
 
 
 @router.get("/experiments/{id}/runs", response_model=list[ExperimentRunResponse])
@@ -124,7 +124,15 @@ async def get_experiment_runs(
         limit=pagination.limit,
     ).to_list()
 
-    return [run.dict() for run in runs]
+    return [run.map_to_response() for run in runs]
+
+
+@router.get("/count/experiments/{id}/runs", response_model=int)
+async def get_experiment_runs_count(
+    id: PydanticObjectId
+) -> Any:
+    runs = await ExperimentRun.find(ExperimentRun.experiment_id == id)
+    return len(runs)
 
 
 @router.get("/experiment-runs", response_model=list[ExperimentRunResponse])
@@ -132,13 +140,13 @@ async def get_all_experiment_runs(pagination: Pagination = Depends()) -> Any:
     runs = await ExperimentRun.find_all(
         skip=pagination.offset, limit=pagination.limit
     ).to_list()
-    return [run.dict() for run in runs]
+    return [run.map_to_response() for run in runs]
 
 
 @router.get("/experiment-runs/{id}", response_model=ExperimentRunDetails | None)
 async def get_experiment_run(id: PydanticObjectId) -> Any:
     experiment_run = await ExperimentRun.get(id)
-    return experiment_run.map_to_response()
+    return experiment_run.map_to_detailed_response()
 
 
 @router.get("/experiment-runs/{id}/logs", response_class=PlainTextResponse)

@@ -4,7 +4,7 @@ from datetime import datetime
 from beanie import Document, PydanticObjectId
 
 from app.config import LOGS_FILENAME, METRICS_FILENAME, settings
-from app.schemas.experiment_run import ExperimentRunDetails
+from app.schemas.experiment_run import ExperimentRunDetails, ExperimentRunResponse
 from app.schemas.states import RunState
 
 
@@ -23,18 +23,26 @@ class ExperimentRun(Document):
         self.state = state
         self.updated_at = datetime.utcnow()
 
-    def map_to_response(self) -> ExperimentRunDetails:
+    def map_to_response(self) -> ExperimentRunResponse:
         run_path = settings.get_experiment_run_output_path(self.id)
         m_path = run_path / METRICS_FILENAME
-        log_path = run_path / LOGS_FILENAME
-
+    
         metrics = {}
         if m_path.exists():
             with open(m_path) as f:
                 metrics = json.load(f)
+        
+        return ExperimentRunResponse(**self.dict(), metrics=metrics)
+        
+
+    def map_to_detailed_response(self) -> ExperimentRunDetails:
+        response = self.map_to_response()
+        
+        run_path = settings.get_experiment_run_output_path(self.id)
+        log_path = run_path / LOGS_FILENAME
         logs = log_path.read_text() if log_path.is_file() else ""
 
-        return ExperimentRunDetails(**self.dict(), metrics=metrics, logs=logs)
+        return ExperimentRunDetails(**response.dict(), logs=logs)
 
     def create_following_run(self):
         return ExperimentRun(

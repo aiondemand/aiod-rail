@@ -12,6 +12,7 @@ class ExperimentRunBase(BaseModel):
     updated_at: datetime
     run_number: int
     state: RunState
+    metrics: dict[str, float]
 
 
 class ExperimentRunResponse(ExperimentRunBase):
