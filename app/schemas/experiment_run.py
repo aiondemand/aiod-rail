@@ -20,7 +20,6 @@ class ExperimentRunResponse(ExperimentRunBase):
 
 
 class ExperimentRunDetails(ExperimentRunBase):
-    metrics: dict[str, float]
     logs: str
 
 

@@ -5,8 +5,9 @@ services:
     env_file:
       - .env
     environment:
-      DOCKER_BASE_URL: unix:///var/run/docker.sock
-      EEE_DATA_PATH: /data/eee
+      - MONGODB_URI=mongodb://mongodb:27017
+      - DOCKER_BASE_URL=unix:///var/run/docker.sock
+      - EEE_DATA_PATH=/data/eee
     ports:
       - "${APP_HOST_PORT}:80"
     volumes:
