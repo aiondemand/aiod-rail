@@ -17,7 +17,9 @@ from app.services.experiment import ExperimentService
 app = FastAPI(title="AIOD - Practitioner's Portal", version=__version__)
 
 app.include_router(aiod.router, prefix="/v1/assets", tags=["assets"])
-app.include_router(experiment_templates.router, prefix="/v1", tags=["experiments"])
+app.include_router(
+    experiment_templates.router, prefix="/v1", tags=["experiment-templates"]
+)
 app.include_router(experiments.router, prefix="/v1", tags=["experiments"])
 
 app.add_middleware(
