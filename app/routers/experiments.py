@@ -88,25 +88,23 @@ async def create_experiment(
 
 @router.get("/experiments/{id}/execute", response_model=ExperimentRunResponse)
 async def execute_experiment_run(
-    id: PydanticObjectId,
+    experiment_id: PydanticObjectId,
     docker_service: ExperimentService = Depends(ExperimentService.get_docker_service),
 ) -> Any:
-    experiment = await Experiment.get(id)
+    experiment = await Experiment.get(experiment_id)
 
+    if experiment is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Such experiment doesn't exist",
+        )
     if not await experiment.uses_finished_template():
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="ExperimentTemplate of this experiment is yet to be finished",
         )
 
-    prev_experiment_runs = await ExperimentRun.find_many(
-        ExperimentRun.experiment_id == experiment.id
-    ).to_list()
-
-    experiment_run = ExperimentRun(
-        experiment_id=experiment.id,
-        run_number=len(prev_experiment_runs),
-    )
+    experiment_run = ExperimentRun(experiment_id=experiment.id)
     experiment_run = await experiment_run.create()
 
     await docker_service.add_run_to_execute(experiment_run.id)

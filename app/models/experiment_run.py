@@ -11,7 +11,7 @@ from app.schemas.states import RunState
 class ExperimentRun(Document):
     created_at: datetime = datetime.utcnow()
     updated_at: datetime = datetime.utcnow()
-    run_number: int
+    retry_number: int = 0
     state: RunState = RunState.CREATED
     experiment_id: PydanticObjectId
 
@@ -43,8 +43,8 @@ class ExperimentRun(Document):
 
         return ExperimentRunDetails(**response.dict(), logs=logs)
 
-    def create_following_run(self):
+    def retry_failed_run(self):
         return ExperimentRun(
             experiment_id=self.experiment_id,
-            run_number=self.run_number + 1,
+            retry_number=self.retry_number + 1,
         )

@@ -89,7 +89,7 @@ class ExperimentService:
             )
 
     async def init_image_build_queue(self) -> None:
-        run_ids = (
+        template_ids = (
             await ExperimentTemplate.find(
                 ExperimentTemplate.state != TemplateState.FINISHED,
                 ExperimentTemplate.state != TemplateState.CRASHED,
@@ -98,8 +98,8 @@ class ExperimentService:
             .project(ExperimentTemplateId)
             .to_list()
         )
-        for run_id in run_ids:
-            await self.add_image_to_build(run_id.id)
+        for template_id in template_ids:
+            await self.add_image_to_build(template_id.id)
 
         count = self.image_building_queue.qsize()
         if count > 0:
@@ -156,9 +156,9 @@ class ExperimentService:
             if not error_msg:
                 experiment_run.update_state(RunState.FINISHED)
                 await experiment_run.replace()
-            elif experiment_run.run_number < settings.MAX_EXPERIMENT_RUN_ATTEMPTS - 1:
+            elif experiment_run.retry_number < settings.MAX_EXPERIMENT_RUN_ATTEMPTS - 1:
                 experiment_run.update_state(RunState.CRASHED)
-                new_exp_run = experiment_run.create_following_run()
+                new_exp_run = experiment_run.retry_failed_run()
 
                 await new_exp_run.create()
                 await experiment_run.replace()
@@ -171,7 +171,7 @@ class ExperimentService:
 
             self.logger.info(
                 f"=== ExperimentRun id={experiment_run.id} "
-                + f"(run_number={experiment_run.run_number}) CONCLUDED ==="
+                + f"(retry_number={experiment_run.retry_number}) CONCLUDED ==="
             )
 
     async def init_run(
@@ -185,7 +185,7 @@ class ExperimentService:
 
         self.logger.info(
             f"=== ExperimentRun id={exp_run_id} "
-            + f"(run_number={experiment_run.run_number}) "
+            + f"(retry_number={experiment_run.retry_number}) "
             + f"- Experiment id={experiment.id} INITIALIZED ==="
         )
         return experiment_run, experiment
