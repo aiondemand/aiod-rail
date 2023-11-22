@@ -128,9 +128,7 @@ async def get_experiment_runs(
 
 
 @router.get("/count/experiments/{id}/runs", response_model=int)
-async def get_experiment_runs_count(
-    id: PydanticObjectId
-) -> Any:
+async def get_experiment_runs_count(id: PydanticObjectId) -> Any:
     runs = await ExperimentRun.find(ExperimentRun.experiment_id == id)
     return len(runs)
 

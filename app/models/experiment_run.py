@@ -26,18 +26,17 @@ class ExperimentRun(Document):
     def map_to_response(self) -> ExperimentRunResponse:
         run_path = settings.get_experiment_run_output_path(self.id)
         m_path = run_path / METRICS_FILENAME
-    
+
         metrics = {}
         if m_path.exists():
             with open(m_path) as f:
                 metrics = json.load(f)
-        
+
         return ExperimentRunResponse(**self.dict(), metrics=metrics)
-        
 
     def map_to_detailed_response(self) -> ExperimentRunDetails:
         response = self.map_to_response()
-        
+
         run_path = settings.get_experiment_run_output_path(self.id)
         log_path = run_path / LOGS_FILENAME
         logs = log_path.read_text() if log_path.is_file() else ""
