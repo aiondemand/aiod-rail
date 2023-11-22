@@ -88,10 +88,10 @@ async def create_experiment(
 
 @router.get("/experiments/{id}/execute", response_model=ExperimentRunResponse)
 async def execute_experiment_run(
-    experiment_id: PydanticObjectId,
+    id: PydanticObjectId,
     docker_service: ExperimentService = Depends(ExperimentService.get_docker_service),
 ) -> Any:
-    experiment = await Experiment.get(experiment_id)
+    experiment = await Experiment.get(id)
 
     if experiment is None:
         raise HTTPException(

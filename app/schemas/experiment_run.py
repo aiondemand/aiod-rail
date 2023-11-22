@@ -10,7 +10,7 @@ class ExperimentRunBase(BaseModel):
     id: PydanticObjectId
     created_at: datetime
     updated_at: datetime
-    run_number: int
+    retry_number: int
     state: RunState
     metrics: dict[str, float]
 
