@@ -156,7 +156,7 @@ class ExperimentService:
             if not error_msg:
                 experiment_run.update_state(RunState.FINISHED)
                 await experiment_run.replace()
-            elif experiment_run.retry_number < settings.MAX_EXPERIMENT_RUN_ATTEMPTS - 1:
+            elif experiment_run.retry_count < settings.MAX_EXPERIMENT_RUN_ATTEMPTS - 1:
                 experiment_run.update_state(RunState.CRASHED)
                 new_exp_run = experiment_run.retry_failed_run()
 
@@ -171,7 +171,7 @@ class ExperimentService:
 
             self.logger.info(
                 f"=== ExperimentRun id={experiment_run.id} "
-                + f"(retry_number={experiment_run.retry_number}) CONCLUDED ==="
+                + f"(retry_count={experiment_run.retry_count}) CONCLUDED ==="
             )
 
     async def init_run(
@@ -185,7 +185,7 @@ class ExperimentService:
 
         self.logger.info(
             f"=== ExperimentRun id={exp_run_id} "
-            + f"(retry_number={experiment_run.retry_number}) "
+            + f"(retry_count={experiment_run.retry_count}) "
             + f"- Experiment id={experiment.id} INITIALIZED ==="
         )
         return experiment_run, experiment
