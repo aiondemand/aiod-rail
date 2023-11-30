@@ -13,6 +13,10 @@ INTERVAL_5SEC = 5
 RUN_TEMP_OUTPUT_FOLDER = "output-temp"
 RUN_OUTPUT_FOLDER = "output"
 
+# necessary for building beanie search queries
+# while also satisfying pre-commit checks
+TRUE = True
+
 
 class AIODApiConfig(BaseModel):
     BASE_URL: AnyHttpUrl
@@ -32,7 +36,7 @@ class AIODKeycloakConfig(BaseModel):
 
 class Settings(BaseSettings):
     PASSWORD_FOR_APPROVAL: str
-    
+
     MONGODB_URI: str
     MONGODB_DBNAME: str
 

@@ -10,6 +10,7 @@ from app.config import (
     EXPERIMENT_RUN_DIR_PREFIX,
     EXPERIMENT_TEMPLATE_DIR_PREFIX,
     INTERVAL_5SEC,
+    TRUE,
     settings,
 )
 from app.models.experiment import Experiment
@@ -91,6 +92,7 @@ class ExperimentService:
     async def init_image_build_queue(self) -> None:
         template_ids = (
             await ExperimentTemplate.find(
+                ExperimentTemplate.approved == TRUE,
                 ExperimentTemplate.state != TemplateState.FINISHED,
                 ExperimentTemplate.state != TemplateState.CRASHED,
             )
