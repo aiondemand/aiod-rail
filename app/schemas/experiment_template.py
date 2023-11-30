@@ -57,6 +57,7 @@ class ExperimentTemplateResponse(ExperimentTemplateBase):
     created_at: datetime
     updated_at: datetime
     state: TemplateState
+    approved: bool
 
 
 class ExperimentTemplateId(BaseModel):

@@ -31,6 +31,8 @@ class AIODKeycloakConfig(BaseModel):
 
 
 class Settings(BaseSettings):
+    PASSWORD_FOR_APPROVAL: str
+    
     MONGODB_URI: str
     MONGODB_DBNAME: str
 

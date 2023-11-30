@@ -25,6 +25,7 @@ class ExperimentTemplate(Document):
     created_at: datetime = datetime.utcnow()
     updated_at: datetime = datetime.utcnow()
     state: TemplateState = TemplateState.CREATED
+    approved: bool = False
 
     class Settings:
         name = "experimentTemplates"
