@@ -1,0 +1,7 @@
+transformers==4.30.2
+datasets==2.14.6
+numpy==1.25.0
+scikit-learn==1.2.2
+wandb==0.15.4
+
+# pip install torch==2.0.0+cpu --index-url https://download.pytorch.org/whl/cpu

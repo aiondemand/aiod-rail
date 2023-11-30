@@ -1,0 +1,19 @@
+version: 0.6.0
+inputs:
+  files:
+    - script.py
+    - .env
+outputs:
+  directories:
+    - "<TEMP_OUTPUT_FOLDER>"
+workflow:
+  type: serial
+  specification:
+    steps:
+      - name: Execute Python script
+        environment: "<IMAGE_REPOSITORY_PLACEHOLDER>"
+        commands:
+          - set -a && source .env && set +a && python script.py
+workspace:
+  retention_days:
+    "**/*": 7

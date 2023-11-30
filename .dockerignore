@@ -1,0 +1,5 @@
+__pychache__
+.gitignore
+db
+eee-data
+.env
