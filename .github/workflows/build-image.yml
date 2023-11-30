@@ -12,7 +12,7 @@ permissions:
   contents: read    # This is required for actions/checkout
 
 jobs:
-  build:
+  backend:
     name: Build & push docker image
     runs-on: ubuntu-latest
     steps:
@@ -45,5 +45,6 @@ jobs:
           REPOSITORY: ${{ env.IMAGE_NAME }}
           IMAGE_TAG: ${{ steps.get-image-tag.outputs.image_tag }}
         run: |
+          cd backend
           docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG      
