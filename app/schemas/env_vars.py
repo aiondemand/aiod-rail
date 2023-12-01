@@ -1,11 +1,11 @@
-from pydantic import BaseModel, constr
+from pydantic import BaseModel
 
 
 class EnvironmentVarDef(BaseModel):
-    name: constr(to_upper=True)
+    name: str
     description: str
 
 
-class EnvironmentVarValue(BaseModel):
-    name: constr(to_upper=True)
+class EnvironmentVar(BaseModel):
+    key: str
     value: str

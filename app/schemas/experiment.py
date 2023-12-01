@@ -3,7 +3,7 @@ from datetime import datetime
 from beanie import PydanticObjectId
 from pydantic import BaseModel
 
-from app.schemas.env_vars import EnvironmentVarValue
+from app.schemas.env_vars import EnvironmentVar
 
 
 class ExperimentBase(BaseModel):
@@ -14,7 +14,7 @@ class ExperimentBase(BaseModel):
     experiment_template_id: PydanticObjectId
     dataset_ids: list[str]
     model_ids: list[str]
-    env_vars: list[EnvironmentVarValue]
+    env_vars: list[EnvironmentVar]
     metrics: list[str]
 
 

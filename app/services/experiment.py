@@ -6,14 +6,7 @@ import logging
 from beanie import PydanticObjectId
 from docker import DockerClient
 
-from app.config import (
-    EXPERIMENT_RUN_DIR_PREFIX,
-    EXPERIMENT_TEMPLATE_DIR_PREFIX,
-    INTERVAL_5SEC,
-    REPOSITORY_NAME,
-    TRUE,
-    settings,
-)
+from app.config import EXPERIMENT_RUN_DIR_PREFIX, INTERVAL_5SEC, TRUE, settings
 from app.models.experiment import Experiment
 from app.models.experiment_run import ExperimentRun
 from app.models.experiment_template import ExperimentTemplate
@@ -199,10 +192,7 @@ class ExperimentService:
         async with semaphore:
             experiment_template = await ExperimentTemplate.get(template_id)
 
-            tag_name = f"{EXPERIMENT_TEMPLATE_DIR_PREFIX}{template_id}"
-            whole_image_name = (
-                f"{settings.DOCKER_REGISTRY_URL}/{REPOSITORY_NAME}:{tag_name}"
-            )
+            image_name = experiment_template.get_image_name()
             exp_template_savepath = settings.get_experiment_template_path(
                 template_id=template_id
             )
@@ -221,7 +211,7 @@ class ExperimentService:
                 await asyncio.to_thread(
                     self.docker_client.images.build,
                     path=str(exp_template_savepath),
-                    tag=f"{whole_image_name}",
+                    tag=f"{image_name}",
                     pull=True,
                     rm=True,
                     nocache=False,
@@ -234,9 +224,9 @@ class ExperimentService:
                     + f"for ExperimentTemplate id={template_id}"
                 )
                 await asyncio.to_thread(
-                    self.docker_client.images.push, repository=whole_image_name
+                    self.docker_client.images.push, repository=image_name
                 )
-                self.docker_client.images.remove(whole_image_name)
+                self.docker_client.images.remove(image_name)
 
                 experiment_template.update_state(TemplateState.FINISHED)
                 await experiment_template.replace()
@@ -267,9 +257,3 @@ class ExperimentService:
     @staticmethod
     def get_docker_service() -> ExperimentService:
         return ExperimentService.DOCKER_SERVICE
-
-    @staticmethod
-    def get_image_name(experiment: Experiment) -> str:
-        exp_template_id = experiment.experiment_template_id
-        tag_name = f"{EXPERIMENT_TEMPLATE_DIR_PREFIX}{exp_template_id}"
-        return f"{REPOSITORY_NAME}:{tag_name}"

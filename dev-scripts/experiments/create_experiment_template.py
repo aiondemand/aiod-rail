@@ -13,7 +13,10 @@ template_to_create = {
     "task": "TEXT_CLASSIFICATION",
     "datasets_schema": {"cardinality": "1-1"},
     "models_schema": {"cardinality": "1-1"},
-    "envs_required": [{"name": "SPLIT_NAME", "description": "split name descr"}],
+    "envs_required": [
+        {"name": "SPLIT_NAME", "description": "split name descr"},
+        {"name": "HF_HOME", "description": "hf home descr"},
+    ],
     "envs_optional": [
         {"name": "WANDB_API_KEY", "description": "wandb api key descr"},
         {"name": "WANDB_BASE_URL", "description": "wandb base url descr"},

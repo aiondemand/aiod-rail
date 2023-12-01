@@ -149,7 +149,7 @@ async def create_experiment_template(
     return experiment_template.map_to_response()
 
 
-@router.patch("/experiment-templates/{id}/approve", response_model=bool)
+@router.patch("/experiment-templates/{id}/approve", response_model=None)
 async def approve_experiment_template(
     id: PydanticObjectId,
     password: str,
@@ -174,4 +174,3 @@ async def approve_experiment_template(
 
     await ExperimentTemplate.replace(experiment_template)
     await docker_service.add_image_to_build(experiment_template.id)
-    return True
