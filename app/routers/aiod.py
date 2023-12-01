@@ -28,15 +28,16 @@ async def get_datasets(pagination: Pagination = Depends()) -> Any:
 
 @router.get("/datasets/search/{query}", response_model=list[Dataset])
 async def search_datasets(query: str, pagination: Pagination = Depends()) -> Any:
-    # TODO: Add support for offset
-    params = (
-        f"search_query={query}&search_fields=name"
-        f"&limit={pagination.limit}&page=1&get_all=true"
-    )
-
     async_client = aiod_client_wrapper()
     res = await async_client.get(
-        f"{settings.AIOD_API.BASE_URL}/search/datasets/{settings.AIOD_API.DATASETS_VERSION}?{params}",
+        f"{settings.AIOD_API.BASE_URL}/search/datasets/{settings.AIOD_API.DATASETS_VERSION}",
+        params={
+            "search_query": query,
+            "search_fields": "name",
+            "limit": pagination.limit,
+            "offset": pagination.offset,
+            "get_all": True,
+        },
     )
     return res.json()["resources"]
 
@@ -57,6 +58,16 @@ async def get_datasets_count() -> Any:
         f"{settings.AIOD_API.BASE_URL}/counts/datasets/{settings.AIOD_API.DATASETS_VERSION}",
     )
     return res.json()
+
+
+@router.get("/counts/datasets/search/{query}", response_model=int)
+async def get_filtered_datasets_count(query: str) -> Any:
+    async_client = aiod_client_wrapper()
+    res = await async_client.get(
+        f"{settings.AIOD_API.BASE_URL}/search/datasets/{settings.AIOD_API.DATASETS_VERSION}",
+        params={"search_query": query, "search_fields": "name", "limit": 1},
+    )
+    return res.json()["total_hits"]
 
 
 @router.post("/datasets", response_model=Dataset)
@@ -156,15 +167,16 @@ async def get_models(pagination: Pagination = Depends()) -> Any:
 
 @router.get("/models/search/{query}", response_model=list[MLModel])
 async def search_models(query: str, pagination: Pagination = Depends()) -> Any:
-    # TODO: Add support for offset
-    params = (
-        f"search_query={query}&search_fields=name"
-        f"&limit={pagination.limit}&page=1&get_all=true"
-    )
-
     async_client = aiod_client_wrapper()
     res = await async_client.get(
-        f"{settings.AIOD_API.BASE_URL}/search/ml_models/{settings.AIOD_API.ML_MODELS_VERSION}?{params}",
+        f"{settings.AIOD_API.BASE_URL}/search/ml_models/{settings.AIOD_API.ML_MODELS_VERSION}",
+        params={
+            "search_query": query,
+            "search_fields": "name",
+            "limit": pagination.limit,
+            "offset": pagination.offset,
+            "get_all": True,
+        },
     )
     return res.json()["resources"]
 
@@ -187,6 +199,16 @@ async def get_models_count() -> Any:
     return res.json()
 
 
+@router.get("/counts/models/search/{query}", response_model=int)
+async def get_filtered_models_count(query: str) -> Any:
+    async_client = aiod_client_wrapper()
+    res = await async_client.get(
+        f"{settings.AIOD_API.BASE_URL}/search/ml_models/{settings.AIOD_API.ML_MODELS_VERSION}",
+        params={"search_query": query, "search_fields": "name", "limit": 1},
+    )
+    return res.json()["total_hits"]
+
+
 async def get_model_name(id: int) -> str:
     ml_model = MLModel(**await get_model(id))
     return ml_model.name
@@ -207,15 +229,16 @@ async def get_publications(pagination: Pagination = Depends()) -> Any:
 
 @router.get("/publications/search/{query}", response_model=list[Publication])
 async def search_publications(query: str, pagination: Pagination = Depends()) -> Any:
-    # TODO: Add support for offset
-    params = (
-        f"search_query={query}&search_fields=name"
-        f"&limit={pagination.limit}&page=1&get_all=true"
-    )
-
     async_client = aiod_client_wrapper()
     res = await async_client.get(
-        f"{settings.AIOD_API.BASE_URL}/search/publications/{settings.AIOD_API.PUBLICATIONS_VERSION}?{params}",
+        f"{settings.AIOD_API.BASE_URL}/search/publications/{settings.AIOD_API.PUBLICATIONS_VERSION}",
+        params={
+            "search_query": query,
+            "search_fields": "name",
+            "limit": pagination.limit,
+            "offset": pagination.offset,
+            "get_all": True,
+        },
     )
     return res.json()["resources"]
 
@@ -236,6 +259,16 @@ async def get_publications_count() -> Any:
         f"{settings.AIOD_API.BASE_URL}/counts/publications/{settings.AIOD_API.PUBLICATIONS_VERSION}",
     )
     return res.json()
+
+
+@router.get("/counts/publications/search/{query}", response_model=int)
+async def get_filtered_publications_count(query: str) -> Any:
+    async_client = aiod_client_wrapper()
+    res = await async_client.get(
+        f"{settings.AIOD_API.BASE_URL}/search/publications/{settings.AIOD_API.PUBLICATIONS_VERSION}",
+        params={"search_query": query, "search_fields": "name", "limit": 1},
+    )
+    return res.json()["total_hits"]
 
 
 @router.get("/platforms", response_model=list[Platform])

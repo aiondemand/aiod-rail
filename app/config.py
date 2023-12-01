@@ -12,6 +12,7 @@ LOGS_FILENAME = "logs.txt"
 INTERVAL_5SEC = 5
 RUN_TEMP_OUTPUT_FOLDER = "output-temp"
 RUN_OUTPUT_FOLDER = "output"
+REPOSITORY_NAME = "rail-exp-templates"
 
 # necessary for building beanie search queries
 # while also satisfying pre-commit checks

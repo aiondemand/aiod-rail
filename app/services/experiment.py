@@ -10,6 +10,7 @@ from app.config import (
     EXPERIMENT_RUN_DIR_PREFIX,
     EXPERIMENT_TEMPLATE_DIR_PREFIX,
     INTERVAL_5SEC,
+    REPOSITORY_NAME,
     TRUE,
     settings,
 )
@@ -198,8 +199,10 @@ class ExperimentService:
         async with semaphore:
             experiment_template = await ExperimentTemplate.get(template_id)
 
-            image_name = f"{EXPERIMENT_TEMPLATE_DIR_PREFIX}{template_id}"
-            repository_name = f"{settings.DOCKER_REGISTRY_URL}/{image_name}"
+            tag_name = f"{EXPERIMENT_TEMPLATE_DIR_PREFIX}{template_id}"
+            whole_image_name = (
+                f"{settings.DOCKER_REGISTRY_URL}/{REPOSITORY_NAME}:{tag_name}"
+            )
             exp_template_savepath = settings.get_experiment_template_path(
                 template_id=template_id
             )
@@ -218,7 +221,7 @@ class ExperimentService:
                 await asyncio.to_thread(
                     self.docker_client.images.build,
                     path=str(exp_template_savepath),
-                    tag=f"{repository_name}",
+                    tag=f"{whole_image_name}",
                     pull=True,
                     rm=True,
                     nocache=False,
@@ -231,9 +234,9 @@ class ExperimentService:
                     + f"for ExperimentTemplate id={template_id}"
                 )
                 await asyncio.to_thread(
-                    self.docker_client.images.push, repository=repository_name
+                    self.docker_client.images.push, repository=whole_image_name
                 )
-                self.docker_client.images.remove(repository_name)
+                self.docker_client.images.remove(whole_image_name)
 
                 experiment_template.update_state(TemplateState.FINISHED)
                 await experiment_template.replace()
@@ -268,4 +271,5 @@ class ExperimentService:
     @staticmethod
     def get_image_name(experiment: Experiment) -> str:
         exp_template_id = experiment.experiment_template_id
-        return f"{EXPERIMENT_TEMPLATE_DIR_PREFIX}{exp_template_id}"
+        tag_name = f"{EXPERIMENT_TEMPLATE_DIR_PREFIX}{exp_template_id}"
+        return f"{REPOSITORY_NAME}:{tag_name}"

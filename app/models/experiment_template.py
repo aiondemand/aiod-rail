@@ -3,8 +3,14 @@ from datetime import datetime
 import yaml
 from beanie import Document
 
-from app.config import EXPERIMENT_TEMPLATE_DIR_PREFIX, RUN_TEMP_OUTPUT_FOLDER, settings
+from app.config import (
+    EXPERIMENT_TEMPLATE_DIR_PREFIX,
+    REPOSITORY_NAME,
+    RUN_TEMP_OUTPUT_FOLDER,
+    settings,
+)
 from app.routers.aiod import get_dataset_name, get_model_name
+from app.schemas.env_vars import EnvironmentVarDef, EnvironmentVarValue
 from app.schemas.experiment_template import (
     AssetSchema,
     ExperimentTemplateResponse,
@@ -19,8 +25,8 @@ class ExperimentTemplate(Document):
     task: TaskType
     datasets_schema: AssetSchema
     models_schema: AssetSchema
-    envs_required: list[str]
-    envs_optional: list[str]
+    envs_required: list[EnvironmentVarDef]
+    envs_optional: list[EnvironmentVarDef]
     available_metrics: list[str]
     created_at: datetime = datetime.utcnow()
     updated_at: datetime = datetime.utcnow()
@@ -40,13 +46,15 @@ class ExperimentTemplate(Document):
         base_path.joinpath("script.py").write_text(script)
 
         # REANA
-        image_name = f"{EXPERIMENT_TEMPLATE_DIR_PREFIX}{self.id}"
-        repository_name = f"{settings.DOCKER_REGISTRY_URL}/{image_name}"
+        tag_name = f"{EXPERIMENT_TEMPLATE_DIR_PREFIX}{self.id}"
+        whole_image_name = (
+            f"{settings.DOCKER_REGISTRY_URL}/{REPOSITORY_NAME}:{tag_name}"
+        )
 
         reana_cfg = yaml.safe_load(open("app/data/template-reana.yaml"))
         reana_cfg["workflow"]["specification"]["steps"][0][
             "environment"
-        ] = repository_name
+        ] = whole_image_name
         reana_cfg["outputs"]["directories"][0] = RUN_TEMP_OUTPUT_FOLDER
 
         with base_path.joinpath("reana.yaml").open("w") as fp:
@@ -90,5 +98,7 @@ class ExperimentTemplate(Document):
 
         return all(checks)
 
-    def validate_env_vars(self, env_vars: dict[str, str]) -> bool:
-        return set(self.envs_required).issubset(env_vars)
+    def validate_env_vars(self, env_vars: list[EnvironmentVarValue]) -> bool:
+        exp_env_vars = set([env.name for env in env_vars])
+        req_env_vars = set([env.name for env in self.envs_required])
+        return req_env_vars.issubset(exp_env_vars)

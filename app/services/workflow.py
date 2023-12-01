@@ -57,8 +57,11 @@ class ReanaService:
             "MODEL_NAMES": ",".join(model_names),
             "DATASET_NAMES": ",".join(dataset_names),
             "METRICS": ",".join(experiment.metrics),
+            "HF_HOME": ".",  # TODO not sure whether i should define it here...
         }
-        environment_variables.update(experiment.env_vars)
+        environment_variables.update(
+            {env.name: env.value for env in experiment.env_vars}
+        )
 
         exp_run_folder = settings.get_experiment_run_path(exp_run_id)
         exp_template_folder = settings.get_experiment_template_path(
