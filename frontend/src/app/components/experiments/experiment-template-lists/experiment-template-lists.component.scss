@@ -1,0 +1,27 @@
+@import '../../../../variables.scss';
+
+.header {
+    display: flex;
+    flex-direction: row;
+    // justify-content: space-between;
+    justify-content: flex-end;
+}
+
+.filterOpened {
+    background-color: #E0E0E0;
+}
+
+.template-filters {
+    display: flex;
+    justify-content: flex-start;
+    gap: $margin-default;
+
+    .additional-selection {
+        opacity: 0.75;
+        font-size: 0.75em;
+    }
+}
+
+.template-list {
+    margin-top: $margin-double;
+}

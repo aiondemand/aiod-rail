@@ -1,0 +1,33 @@
+<mat-card appearance="outlined">
+    <mat-card-header [routerLink]="['/experiments', experiment.id]">
+        <mat-card-subtitle>{{experiment.id}}</mat-card-subtitle>
+        <mat-card-title>
+            <h3>{{experiment.name}}</h3>
+        </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+        {{experiment.description | ellipsis:300}}
+        <div *ngIf="model && dataset" class="experiment-information">
+            <div>
+                <span class="material-symbols-outlined">database</span>
+                {{dataset.name}}
+            </div>
+            <div>
+                <span class="material-symbols-outlined">neurology</span>
+                {{model.name}}
+            </div>
+            <div>
+                <span class="material-symbols-outlined">bar_chart</span>
+                <span *ngFor="let metric of experiment.metrics">{{metric}},</span>
+            </div>
+        </div>
+        <div matTooltip="Dataset(s)">
+        </div>
+    </mat-card-content>
+    <mat-card-actions>
+        <a [routerLink]="['/experiments', experiment.id]">
+            <button mat-stroked-button >Go to detail</button>
+        </a>
+        <button mat-stroked-button *ngIf="!model" (click)="onShowMore()">Show more</button>
+    </mat-card-actions>
+</mat-card>
