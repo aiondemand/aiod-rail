@@ -14,10 +14,6 @@ RUN_TEMP_OUTPUT_FOLDER = "output-temp"
 RUN_OUTPUT_FOLDER = "output"
 REPOSITORY_NAME = "rail-exp-templates"
 
-# necessary for building beanie search queries
-# while also satisfying pre-commit checks
-TRUE = True
-
 
 class AIODApiConfig(BaseModel):
     BASE_URL: AnyHttpUrl

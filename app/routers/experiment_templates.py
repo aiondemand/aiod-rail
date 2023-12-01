@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import Json
 
 from app.authentication import get_current_user
-from app.config import TRUE, settings
+from app.config import settings
 from app.helpers import Pagination
 from app.models.experiment_template import ExperimentTemplate
 from app.schemas.experiment_template import (
@@ -35,7 +35,7 @@ async def get_experiment_templates(pagination: Pagination = Depends()) -> Any:
 )
 async def get_approved_templates(pagination: Pagination = Depends()) -> Any:
     experiment_templates = await ExperimentTemplate.find(
-        ExperimentTemplate.approved == TRUE,
+        ExperimentTemplate.approved == True,  # noqa: E712
         skip=pagination.offset,
         limit=pagination.limit,
     ).to_list()
@@ -73,7 +73,7 @@ async def get_experiment_templates_all_view(
     all approved templates and all current user templates
     """
     search_query = operators.Or(
-        ExperimentTemplate.approved == TRUE,
+        ExperimentTemplate.approved == True,  # noqa: E712
         ExperimentTemplate.created_by == user["email"],
     )
     experiment_templates = await ExperimentTemplate.find(
@@ -100,7 +100,7 @@ async def get_experiment_templates_count() -> Any:
 @router.get("/count/experiment-templates/approved", response_model=int)
 async def get_approved_experiment_templates_count() -> Any:
     num_templates = await ExperimentTemplate.find(
-        ExperimentTemplate.approved == TRUE
+        ExperimentTemplate.approved == True  # noqa: E712
     ).count()
     return num_templates
 
@@ -120,7 +120,7 @@ async def get_experiment_templates_all_view_count(
     user: Json = Depends(get_current_user),
 ) -> Any:
     search_query = operators.Or(
-        ExperimentTemplate.approved == TRUE,
+        ExperimentTemplate.approved == True,  # noqa: E712
         ExperimentTemplate.created_by == user["email"],
     )
     num_templates = await ExperimentTemplate.find(search_query).count()
