@@ -127,7 +127,6 @@ async def get_experiment_templates_all_view_count(
     return num_templates
 
 
-# TODO v1 uncomment
 @router.post(
     "/experiment-templates",
     status_code=status.HTTP_201_CREATED,
