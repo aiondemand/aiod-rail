@@ -12,9 +12,6 @@ As a database we use a containerized MongoDB server (through Docker), the REST A
 ### Using docker compose [RECOMMENDED]
 
 1. Create `.env` file containing relevant ENV variables required for the service defined in `.env.sample`.
-    - `APP_HOST_PORT`: The port on host machine on which the API service will be accessible
-    - `MONGODB_HOST_PORT`: The port on host machine on which the underlying database will be accessible (optional as not
-      always needed)
     - `MONGODB_DBNAME`: Name of the database - do not change it unless you need to
     - `AIOD_API__BASE_URL`: URL of the running AIoD API
     - `MAX_PARALLEL_IMAGE_BUILDS`: Define a maximum number of Python (asyncio) tasks that build and push docker images
@@ -34,6 +31,9 @@ As a database we use a containerized MongoDB server (through Docker), the REST A
     - `AIOD_KEYCLOAK__*`: Variables related to authentication using Keycloak
 1. Start the service using the following command: `docker compose up -d --build`
 
+**IMPORTANT**: Make sure you check and potentially modify the host port mappings for specific components
+in [docker-compose.yml](docker-compose.yml) file.
+
 ### Locally installation
 
 1. Create two arbitrarily located folders that will be used to store:
@@ -49,8 +49,6 @@ As a database we use a containerized MongoDB server (through Docker), the REST A
     - Check "Expose daemon on tcp://localhost:2375 without TLS" if its unchecked
 1. Create `.env` file containing relevant ENV variables required for the service defined in `.env.sample`. The required
    variables are described in greater detail in the previous section.
-
-   **Note**: Variables `APP_HOST_PORT` and `MONGODB_HOST_PORT` are not used in the local setup
 1. Install Python >= 3.10 if you haven't done so already. We recommend using Python version 3.10 as this particular
    version has been tested and used for the development of this project.
 1. Install dependencies by executing following command: `pip install -r requirements.txt`.
