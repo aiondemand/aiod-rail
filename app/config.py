@@ -12,6 +12,7 @@ LOGS_FILENAME = "logs.txt"
 INTERVAL_5SEC = 5
 RUN_TEMP_OUTPUT_FOLDER = "output-temp"
 RUN_OUTPUT_FOLDER = "output"
+REPOSITORY_NAME = "rail-exp-templates"
 
 
 class AIODApiConfig(BaseModel):
@@ -31,6 +32,8 @@ class AIODKeycloakConfig(BaseModel):
 
 
 class Settings(BaseSettings):
+    PASSWORD_FOR_APPROVAL: str
+
     MONGODB_URI: str
     MONGODB_DBNAME: str
 

@@ -2,8 +2,9 @@ from datetime import datetime
 from enum import Enum
 
 from beanie import PydanticObjectId
-from pydantic import BaseModel, constr
+from pydantic import BaseModel
 
+from app.schemas.env_vars import EnvironmentVarDef
 from app.schemas.states import TemplateState
 
 
@@ -39,8 +40,8 @@ class ExperimentTemplateBase(BaseModel):
     task: TaskType
     datasets_schema: AssetSchema
     models_schema: AssetSchema
-    envs_required: list[constr(to_upper=True)]
-    envs_optional: list[constr(to_upper=True)]
+    envs_required: list[EnvironmentVarDef]
+    envs_optional: list[EnvironmentVarDef]
     # TODO: Rethink the metrics logic
     available_metrics: list[str]
     dockerfile: str
@@ -57,6 +58,7 @@ class ExperimentTemplateResponse(ExperimentTemplateBase):
     created_at: datetime
     updated_at: datetime
     state: TemplateState
+    approved: bool
 
 
 class ExperimentTemplateId(BaseModel):
