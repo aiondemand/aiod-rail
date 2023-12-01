@@ -62,6 +62,9 @@ async def get_my_experiment_templates(
     ]
 
 
+# TODO rethink whether this functionality shouldnt be under /experiment-templates route
+# since current /experiment-templates route (that returns ALL templates) is not being
+# used on frontend
 @router.get(
     "/experiment-templates/all-view", response_model=list[ExperimentTemplateResponse]
 )
