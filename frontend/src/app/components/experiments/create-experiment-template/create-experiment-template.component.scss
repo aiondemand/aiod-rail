@@ -33,3 +33,34 @@ mat-form-field {
     margin-top: 0;
     margin-bottom: 0;
 }
+
+.add-env-controls {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1em;
+
+    .empty-space {
+        flex-grow: 1;
+    }
+    
+    mat-form-field {
+        width: 35%;
+    }
+
+    button {
+        margin-bottom: 20px;
+        width: 126px;
+        height: 56px;
+    }
+}
+
+table {
+    td:last-child {
+        width: 50px;
+      }
+}
+
+.req-env-table {
+    margin-bottom: 3em;
+}

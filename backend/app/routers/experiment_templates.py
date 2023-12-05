@@ -145,7 +145,7 @@ async def create_experiment_template(
     experiment_template = await experiment_template.create()
 
     experiment_template.initialize_files(
-        dockerfile=experiment_template_req.dockerfile,
+        base_image=experiment_template_req.base_image,
         pip_requirements=experiment_template_req.pip_requirements,
         script=experiment_template_req.script,
     )
