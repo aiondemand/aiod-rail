@@ -83,6 +83,6 @@ jobs:
           REPOSITORY: ${{ env.IMAGE_NAME_FRONTEND }}
           IMAGE_TAG: ${{ steps.get-image-tag.outputs.image_tag }}
         run: |
-          cd backend
+          cd frontend
           docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG      
