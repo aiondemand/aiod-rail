@@ -1,0 +1,90 @@
+
+// Custom Theming for Angular Material
+// For more information: https://material.angular.io/guide/theming
+@use '@angular/material' as mat;
+// Plus imports for other components in your app.
+
+// Include the common styles for Angular Material. We include this here so that you only
+// have to load a single css file for Angular Material in your app.
+// Be sure that you only ever include this mixin once!
+@include mat.core();
+
+// Define the palettes for your theme using the Material Design palettes available in palette.scss
+// (imported above). For each palette, you can optionally specify a default, lighter, and darker
+// hue. Available color palettes: https://material.io/design/color/
+$aiod-practitioners-portal-frontend-primary: mat.define-palette(mat.$indigo-palette);
+$aiod-practitioners-portal-frontend-accent: mat.define-palette(mat.$pink-palette, A200, A100, A400);
+
+// The warn palette is optional (defaults to red).
+$aiod-practitioners-portal-frontend-warn: mat.define-palette(mat.$red-palette);
+
+// Create the theme object. A theme consists of configurations for individual
+// theming systems such as "color" or "typography".
+$aiod-practitioners-portal-frontend-theme: mat.define-light-theme((
+  color: (
+    primary: $aiod-practitioners-portal-frontend-primary,
+    accent: $aiod-practitioners-portal-frontend-accent,
+    warn: $aiod-practitioners-portal-frontend-warn,
+  )
+));
+
+// Include theme styles for core and each component used in your app.
+// Alternatively, you can import and @include the theme mixins for each component
+// that you are using.
+@include mat.all-component-themes($aiod-practitioners-portal-frontend-theme);
+
+/* You can add global styles to this file, and also import other style files */
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+
+/* ================== */
+/* ====== APP ======= */
+/* ================== */
+@import './variables.scss';
+
+/* Container used for layout of sections like Experiments, Datasets or Publications */
+.section-container {
+  display: flex;
+  flex-direction: row;
+
+  .left-panel {
+      width: 200px;
+      flex-shrink: 0;
+      padding: $margin-default;
+  
+      a {
+          width: 100%;
+          justify-content: left;
+      }
+  }
+  
+  .content-panel {
+      flex: 1;
+      flex-shrink: 1;
+      padding: $margin-default;
+  }
+  
+  .active {
+      background-color: lightgray;
+  }
+}
+
+mat-divider {
+  margin-top: $margin-default !important;
+  margin-bottom: $margin-default !important;
+}
+
+.form-error-message {
+  color: $color-error;
+  font-size: 1em;
+  margin-top: 5px;
+}
+
+.loading-screen {
+  position: relative;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}

@@ -5,15 +5,16 @@ on: workflow_dispatch
 env:
   AWS_REGION: ${{ vars.AWS_REGION }}
   AWS_ROLE: ${{ vars.AWS_ROLE_TO_ASSUME }}
-  IMAGE_NAME: ${{ vars.DOCKER_IMAGE_NAME }}
+  IMAGE_NAME_BACKEND: ${{ vars.DOCKER_IMAGE_NAME_BACKEND }}
+  IMAGE_NAME_FRONTEND: ${{ vars.DOCKER_IMAGE_NAME_FRONTEND }}
 
 permissions:
   id-token: write   # This is required for requesting the JWT
   contents: read    # This is required for actions/checkout
 
 jobs:
-  build:
-    name: Build & push docker image
+  backend:
+    name: Backend - Build & push docker image
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
@@ -42,8 +43,46 @@ jobs:
       - name: Build, tag, and push docker image to Amazon ECR
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          REPOSITORY: ${{ env.IMAGE_NAME }}
+          REPOSITORY: ${{ env.IMAGE_NAME_FRONTEND }}
           IMAGE_TAG: ${{ steps.get-image-tag.outputs.image_tag }}
         run: |
+          cd backend
+          docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
+          docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG      
+
+  frontend:
+    name: Frontend - Build & push docker image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ env.AWS_ROLE }}
+          role-session-name: GitHub_to_AWS_via_FederatedOIDC
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+        with:
+          mask-password: 'true'
+
+      - name: Get image tag
+        id: get-image-tag
+        run: |
+          REF_NAME=$(git rev-parse --abbrev-ref HEAD | tr '/' '-')
+          RSA_SHORT=$(git rev-parse --short HEAD)
+          echo "image_tag=${REF_NAME}-${RSA_SHORT}" >> "$GITHUB_OUTPUT"
+
+      - name: Build, tag, and push docker image to Amazon ECR
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REPOSITORY: ${{ env.IMAGE_NAME_FRONTEND }}
+          IMAGE_TAG: ${{ steps.get-image-tag.outputs.image_tag }}
+        run: |
+          cd frontend
           docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG      

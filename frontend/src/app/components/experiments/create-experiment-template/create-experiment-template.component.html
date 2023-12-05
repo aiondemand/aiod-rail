@@ -1,0 +1,100 @@
+<form class="create-experiment-template-form" [formGroup]="experimentTemplateForm" (ngSubmit)="onSubmit()">
+    <h1>Create an Experiment template</h1>
+
+    
+    <div class="basic-data-section">
+        <h2>Basic information</h2>
+
+        <mat-form-field>
+            <mat-label>Name</mat-label>
+            <input matInput placeholder="Name" formControlName="name">
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label>Description</mat-label>
+            <textarea [rows]="10" matInput placeholder="Description" formControlName="description"></textarea>
+        </mat-form-field>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <div class="runtime-details-section">
+        <h2>Template details and runtime</h2>
+
+        <div class="header-with-info">
+            <h4>Base Docker image (experiment execution environment)</h4>
+            <mat-icon matTooltip="The script will be executed within this base Docker image.">info</mat-icon>
+        </div>
+
+        <mat-form-field>
+            <mat-label>Base Docker image</mat-label>
+            <mat-select (selectionChange)="onSelectBaseImage($event)" formControlName="baseImage">
+                <mat-option *ngFor="let image of base_images" [value]="image">
+                    {{ image }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <div class="header-with-info">
+            <h4>Dependencies (libraries)</h4>
+            <mat-icon matTooltip="The libraries defined in requirements.txt are installed as a part of the buliding phase of the final Docker image corresponding to a specific experiment template...">info</mat-icon>
+        </div>
+
+        <p class="italic-editor-name"><i>requirements.txt</i></p>
+        <mat-form-field>
+            <textarea matInput [rows]="10" placeholder="Python libraries necessary for the experiment execution" formControlName="pipRequirements"></textarea>
+        </mat-form-field>
+
+        <div class="header-with-info">
+            <h4>Executable (script)</h4>
+            <mat-icon matTooltip="This script.py will be executed within the Docker container with installed dependencies. 
+            The script may save outputs (models, data) and results (metrics) during its execution. 
+            These will be available in the detail of Experiment Run.">info</mat-icon>
+        </div>
+
+        <p class="italic-editor-name"><i>script.py</i></p>
+        <mat-form-field>
+            <textarea matInput [rows]="30" placeholder="Executable script" formControlName="script"></textarea>
+        </mat-form-field>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <div class="env-vars-section">
+        <h2>Supported environment variables</h2>
+        <p>
+            The environment variables that can be set by the user in an Experiment derived 
+            from this ExperimentTemplate. These variables are used in script.py and can 
+            influence the execution of the script. The meaning of the variables is fully 
+            determined by script.py and its author.
+        </p>
+
+        <h4>Required environment variables</h4>
+        TODO table with 2 textfields that fill the table
+
+        <h4>Optional environment variables</h4>
+        TODO table with 2 textfields that fill the table
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <div class="metrics-section">
+        <h2>Metrics to measure</h2>
+        <p>
+            Define names of metrics that your executable script computes and further saves in JSON format.
+            The defined metrics need to be saved on path <b>output-temp/metrics.json</b> if our application
+            were to read them properly. For now, we only support logging of metrics that have simple numerical value.
+        </p>
+
+        TODO tags?
+    </div>
+
+    <button mat-raised-button color="primary" type="submit" [disabled]="!experimentTemplateForm.valid">
+        Submit
+    </button>
+</form>
+
+<button mat-button (click)="debug()">
+    DEBUG ME!
+</button>
+
