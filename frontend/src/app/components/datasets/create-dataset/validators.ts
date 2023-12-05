@@ -12,7 +12,7 @@ export function nameValidator(control: FormControl) {
     if (platformValue == 'huggingface') {
         // check if nameValue is compliant with huggingface dataset name
         // it can only contain alphanumerics, _, - and .
-        if (!/^[a-zA-Z0-9_\.-]+$/.test(nameValue)) {
+        if (!/^[a-zA-Z0-9_]+$/.test(nameValue)) {
             return { nameValidation: true };
         }
     }

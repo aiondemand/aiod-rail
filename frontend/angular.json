@@ -30,7 +30,8 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles.scss"
+              "src/styles.scss",
+              "node_modules/highlight.js/styles/vs.css"
             ],
             "scripts": [
               "node_modules/marked/marked.min.js"
@@ -101,7 +102,8 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles.scss"
+              "src/styles.scss",
+              "node_modules/highlight.js/styles/vs.css"
             ],
             "scripts": [
               "node_modules/marked/marked.min.js"

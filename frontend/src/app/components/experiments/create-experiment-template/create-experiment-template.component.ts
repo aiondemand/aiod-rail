@@ -8,6 +8,7 @@ import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { ExperimentTemplateCreate } from 'src/app/models/experiment-template';
 import { TaskType } from 'src/app/models/backend-generated/task-type';
 import { AssetCardinality } from 'src/app/models/backend-generated/asset-cardinality';
+import { CodeModel } from '@ngstack/code-editor';
 
 
 @Component({
@@ -21,7 +22,6 @@ export class CreateExperimentTemplateComponent {
     description: ['', Validators.required],
     baseImage: ['', Validators.required],
     pipRequirements: [''],
-    script: ['', Validators.required],
   });
   newRequiredEnvForm = this.fb.group({
     name: [''],
@@ -34,6 +34,8 @@ export class CreateExperimentTemplateComponent {
   metricForm = this.fb.group({
     name: ['']
   })
+
+  scriptCode: string = "";
 
   base_images: string[] = [
     "python:3.9",
@@ -80,7 +82,7 @@ export class CreateExperimentTemplateComponent {
 
     var experimentTemplate: ExperimentTemplateCreate = {
       name: String(formValue.name?.trim()),
-      description: String(formValue.description),
+      description: String(formValue.description?.trim()),
       task: fixedTask,
       datasets_schema: fixedDatasetSchema,
       models_schema: fixedModelSchema,
@@ -88,7 +90,7 @@ export class CreateExperimentTemplateComponent {
       envs_optional: this.optionalVarsData,
       available_metrics: this.metrics,
       base_image: String(formValue.baseImage),
-      script: String(formValue.script),
+      script: String(this.scriptCode),
       pip_requirements: String(formValue.pipRequirements)
     };
 
@@ -143,4 +145,18 @@ export class CreateExperimentTemplateComponent {
   removeMetric(index: number): void {
     this.metrics.splice(index, 1);
   }
+
+  editorTheme = 'vs';
+  editorModel: CodeModel = {
+    language: 'python',
+    uri: '',
+    value: '',
+  };
+  editorOptions = {
+    linenumbers: true,
+    contextmenu: true,
+    minimap: {
+      enabled: false,
+    },
+  };
 }

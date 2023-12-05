@@ -42,7 +42,7 @@
         </div>
 
         <p class="italic-editor-name"><i>requirements.txt</i></p>
-        <mat-form-field>
+        <mat-form-field appearance="outline">
             <mat-label>Pip dependencies</mat-label>
             <textarea matInput [rows]="10" placeholder="Python libraries necessary for the experiment execution"
                 formControlName="pipRequirements"></textarea>
@@ -56,10 +56,19 @@
         </div>
 
         <p class="italic-editor-name"><i>script.py</i></p>
-        <mat-form-field>
+        <div class="code-editor-wrapper">
+            <ngs-code-editor
+                [theme]="editorTheme"
+                [codeModel]="editorModel"
+                [options]="editorOptions"
+                (valueChanged)="scriptCode = $event">
+            </ngs-code-editor>
+        </div>
+
+        <!-- <mat-form-field>
             <mat-label>Python script</mat-label>
             <textarea matInput [rows]="30" placeholder="Executable script" formControlName="script"></textarea>
-        </mat-form-field>
+        </mat-form-field> -->
 
     </div>
 
@@ -208,7 +217,7 @@
 
     <mat-divider></mat-divider>
 
-    <button mat-raised-button color="primary" type="submit" [disabled]="!experimentTemplateForm.valid">
+    <button mat-raised-button color="primary" type="submit" [disabled]="!(experimentTemplateForm.valid && scriptCode)">
         Submit
     </button>
 </form>

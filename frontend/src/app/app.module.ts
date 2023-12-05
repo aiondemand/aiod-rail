@@ -56,6 +56,8 @@ import { MyExperimentTemplateList } from './components/experiments/experiment-te
 import { ExperimentTemplateListItemComponent } from './components/experiments/experiment-template-list-item/experiment-template-list-item.component';
 import { ExperimentTemplateDetailComponent } from './components/experiments/experiment-template-detail/experiment-template-detail.component';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { HIGHLIGHT_OPTIONS, HighlightModule, HighlightOptions } from 'ngx-highlightjs';
+import { CodeEditorModule } from '@ngstack/code-editor';
 
 
 @NgModule({
@@ -117,7 +119,9 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
     MatCheckboxModule,
     TextFieldModule,
     MatAutocompleteModule,
+    HighlightModule,
     MarkdownModule.forRoot(),
+    CodeEditorModule.forRoot(),
     OAuthModule.forRoot({
       resourceServer: {
         allowedUrls: [environment.BACKEND_API_URL],
@@ -126,7 +130,20 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
     })
   ],
   providers: [
-    { provide: OAuthStorage, useFactory: () => localStorage }
+    { provide: OAuthStorage, useFactory: () => localStorage },
+    {
+      provide: HIGHLIGHT_OPTIONS,
+      useValue: <HighlightOptions>{
+        lineNumbers: true,
+        coreLibraryLoader: () => import('highlight.js/lib/core'),
+        lineNumbersLoader: () => import('ngx-highlightjs/line-numbers'),
+        languages: {
+          python: () => import('highlight.js/lib/languages/python'),
+          dockerfile: () => import('highlight.js/lib/languages/dockerfile'),
+          bash: () => import('highlight.js/lib/languages/bash')
+        }
+      }
+    }
   ],
   bootstrap: [AppComponent]
 })

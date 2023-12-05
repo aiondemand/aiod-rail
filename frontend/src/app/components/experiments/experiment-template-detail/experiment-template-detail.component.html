@@ -2,7 +2,6 @@
     <h1>{{experimentTemplate.name}} <span>(template)</span></h1> 
 
     <div class="description-section">
-        <h2>Description</h2>
         <pre>{{experimentTemplate.description}}</pre>
     </div>
 
@@ -13,15 +12,15 @@
 
         <!-- Docker image -->
         <div class="header-with-info">
-            <h4>Base Docker image (experiment execution environment)</h4>
-            <mat-icon matTooltip="The script will be executed within this base Docker image.">info</mat-icon>
+            <h4>Docker image (experiment execution environment)</h4>
+            <mat-icon matTooltip="The script will be executed within this Docker image.">info</mat-icon>
         </div>
-        
-        <div class="data docker-image-link-wrapper">
-            <img src="../assets/docker-icon.png" alt="" width="36">
-            <span>{{getBaseDockerImage(experimentTemplate.dockerfile)}}</span>
+
+        <div class="data">
+            <p class="italic-editor-name"><i>Dockerfile</i></p>
+            <pre class="code"><code [highlight]="experimentTemplate.dockerfile" [lineNumbers]="true" [languages]="['dockerfile']"></code></pre>
         </div>
-        
+
 
         <!-- Dependencies -->
         <div class="header-with-info">
@@ -30,13 +29,10 @@
         </div>
 
         <div class="data">
-        <p class="italic-editor-name"><i>requirements.txt</i></p>
-        <mat-form-field class="requirements-field" appearance="outline">
-            <textarea matInput [rows]="10"  [readonly]="true" >{{experimentTemplate.pip_requirements}}</textarea>
-        </mat-form-field>
+            <p class="italic-editor-name"><i>requirements.txt</i></p>
+            <pre class="code"><code [highlight]="experimentTemplate.pip_requirements" [lineNumbers]="true" [languages]="['bash']"></code></pre>
         </div>
 
-        
         <!-- Script -->
         <div class="header-with-info">
             <h4>Executable (script)</h4>
@@ -47,9 +43,7 @@
 
         <div class="data">
             <p class="italic-editor-name"><i>script.py</i></p>
-            <mat-form-field class="script-field" appearance="outline">
-                <textarea matInput [rows]="30" [readonly]="true" >{{experimentTemplate.script}}</textarea>
-            </mat-form-field>
+            <pre class="code"><code [highlight]="experimentTemplate.script" [lineNumbers]="true" [languages]="['python']"></code></pre>
         </div>
 
     </div>    

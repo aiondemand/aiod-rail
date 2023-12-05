@@ -90,10 +90,10 @@ export class CreateDatasetComponent implements OnInit, OnDestroy {
     // }
     
     let dataset = createDatasetFromFormData({
-      name: String(datasetFormValue.name),
-      description: String(datasetFormValue.description),
+      name: String(datasetFormValue.name).trim(),
+      description: String(datasetFormValue.description).trim(),
       platform: String(datasetFormValue.platform),
-      version: String(datasetFormValue.version),
+      version: String(datasetFormValue.version).trim(),
       alternateNames: String(datasetFormValue.alternateNames),
       keywords: String(datasetFormValue.keywords),
       huggingface: { username: String(datasetFormValue.huggingface?.username) }

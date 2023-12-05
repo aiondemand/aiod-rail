@@ -8,21 +8,19 @@ h1 {
     }
 }
 
-.docker-image-link-wrapper {
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    gap: 0.25em;
-}
+.code {
+    margin-top: 0;
+    margin-bottom: 2em;
 
-.requirements-field {
+    border: 1px #ccc solid;
     display: block;
+    
     width: 100%;
-}
+    max-height: 495px;
 
-.script-field {
-    display: block;
-    width: 100%;    
+    white-space: pre-wrap;
+    overflow-y: auto;
+    
 }
 
 .description-section {
@@ -52,7 +50,9 @@ h1 {
 }
 
 .italic-editor-name {
+    color: #ccc;
     text-align: right;
+
     padding-right: 1em;
     margin-top: 0;
     margin-bottom: 0;

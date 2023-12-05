@@ -64,3 +64,12 @@ table {
 .req-env-table {
     margin-bottom: 3em;
 }
+
+.code-editor-wrapper {
+    border: 1px #ccc solid;
+    padding: 5px;
+
+    ngs-code-editor {
+        height: 605px;
+    }
+}

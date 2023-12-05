@@ -167,8 +167,8 @@ export class CreateExperimentComponent implements OnInit {
     }
 
     const experiment: ExperimentCreate = {
-      name: String(this.experimentForm.value.name),
-      description: String(this.experimentForm.value.description),
+      name: String(this.experimentForm.value.name?.trim()),
+      description: String(this.experimentForm.value.description?.trim()),
       publication_ids: publicationIds,
       experiment_template_id: String(this.experimentTemplate?.value?.id),
       dataset_ids: [String((this.experimentForm?.value?.dataset as Dataset)?.identifier)],
