@@ -17,6 +17,7 @@ REPOSITORY_NAME = "rail-exp-templates"
 
 class AIODApiConfig(BaseModel):
     BASE_URL: AnyHttpUrl
+    VERIFY_SSL: bool = True
     DATASETS_VERSION: str = "v1"
     ML_MODELS_VERSION: str = "v1"
     PUBLICATIONS_VERSION: str = "v1"

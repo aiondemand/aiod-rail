@@ -14,7 +14,7 @@ class AIoDClientWrapper:
 
     def start(self):
         """Instantiate the client. Call from the FastAPI startup hook."""
-        self.async_client = httpx.AsyncClient()
+        self.async_client = httpx.AsyncClient(verify=settings.AIOD_API.VERIFY_SSL)
 
     async def stop(self):
         """Gracefully shutdown. Call from FastAPI shutdown hook."""
