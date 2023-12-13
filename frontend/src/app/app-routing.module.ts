@@ -17,9 +17,11 @@ import { ExperimentTemplateDetailComponent } from './components/experiments/expe
 import { CreateExperimentTemplateComponent } from './components/experiments/create-experiment-template/create-experiment-template.component';
 import { AllExperimentTemplateList } from './components/experiments/experiment-template-lists/all-experiment-template-list.component';
 import { MyExperimentTemplateList } from './components/experiments/experiment-template-lists/my-experiment-template-list.component';
+import { AboutComponent } from './components/general/about/about.component';
 
 const routes: Routes = [
-  { path: '', redirectTo: 'experiments/all', pathMatch: 'full' },
+  { path: '', redirectTo: 'about', pathMatch: 'full' },
+  { path: 'about', component: AboutComponent },
   {
     path: 'experiments',
     component: ExperimentsComponent,

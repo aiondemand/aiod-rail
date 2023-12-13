@@ -56,6 +56,8 @@ import { MyExperimentTemplateList } from './components/experiments/experiment-te
 import { ExperimentTemplateListItemComponent } from './components/experiments/experiment-template-list-item/experiment-template-list-item.component';
 import { ExperimentTemplateDetailComponent } from './components/experiments/experiment-template-detail/experiment-template-detail.component';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { FeedbackComponent } from './components/general/feedback/feedback.component';
+import { AboutComponent } from './components/general/about/about.component';
 
 
 @NgModule({
@@ -87,6 +89,8 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
     MyExperimentTemplateList,
     ExperimentTemplateListItemComponent,
     ExperimentTemplateDetailComponent,
+    FeedbackComponent,
+    AboutComponent
   ],
   imports: [
     BrowserModule,
