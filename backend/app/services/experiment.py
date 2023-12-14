@@ -6,7 +6,7 @@ import logging
 from beanie import PydanticObjectId
 from docker import DockerClient
 
-from app.config import EXPERIMENT_RUN_DIR_PREFIX, INTERVAL_5SEC, settings
+from app.config import EXPERIMENT_RUN_DIR_PREFIX, INTERVAL_1MIN, INTERVAL_5SEC, settings
 from app.models.experiment import Experiment
 from app.models.experiment_run import ExperimentRun
 from app.models.experiment_template import ExperimentTemplate
@@ -22,6 +22,9 @@ class ExperimentService:
     def __init__(self) -> None:
         self.docker_client = DockerClient(base_url=settings.DOCKER_BASE_URL)
         self.logger = logging.getLogger("uvicorn")
+
+        self.experiment_semaphore = asyncio.Semaphore(settings.MAX_PARALLEL_CONTAINERS)
+        self.image_semaphore = asyncio.Semaphore(settings.MAX_PARALLEL_IMAGE_BUILDS)
 
         self.experiment_run_queue = asyncio.Queue()
         self.image_building_queue = asyncio.Queue()
@@ -64,17 +67,23 @@ class ExperimentService:
         for run_id in run_ids:
             await self.add_run_to_execute(run_id.id)
             workflow_name = f"{EXPERIMENT_RUN_DIR_PREFIX}{str(run_id.id)}"
-            try:
-                ReanaService.stop_workflow(workflow_name, force_stop=True)
-                ReanaService.delete_workflow(
-                    workflow_name, all_runs=True, workspace=True
-                )
-            except Exception as e:
-                self.logger.warning(
-                    f"REANA Workflow of ExperimentRun id={run_id.id} "
-                    + "was not successfully deleted",
-                    exc_info=e,
-                )
+
+            workflow_runs = ReanaService.get_workflows(
+                type="batch", workflow=workflow_name
+            )
+            if len(workflow_runs) > 0:
+                try:
+                    if workflow_runs[0]["status"] == "running":
+                        ReanaService.stop_workflow(workflow_name, force_stop=True)
+                    ReanaService.delete_workflow(
+                        workflow_name, all_runs=True, workspace=True
+                    )
+                except Exception as e:
+                    self.logger.warning(
+                        f"REANA Workflow of ExperimentRun id={run_id.id} "
+                        + "was not successfully deleted",
+                        exc_info=e,
+                    )
 
         count = self.experiment_run_queue.qsize()
         if count > 0:
@@ -120,7 +129,13 @@ class ExperimentService:
         await self.experiment_run_queue.put(er_id)
 
     async def get_run_to_execute(self) -> PydanticObjectId:
-        return await self.experiment_run_queue.get()
+        while True:
+            if not self.experiment_run_queue.empty():
+                # check whether REANA is accessible
+                while not ReanaService.has_access():
+                    await asyncio.sleep(INTERVAL_1MIN)
+                return self.experiment_run_queue.get_nowait()
+            await asyncio.sleep(INTERVAL_5SEC)
 
     async def add_image_to_build(self, temp_id: PydanticObjectId) -> None:
         await self.image_building_queue.put(temp_id)
@@ -129,21 +144,21 @@ class ExperimentService:
         return await self.image_building_queue.get()
 
     async def schedule_experiment_runs(self) -> None:
-        semaphore = asyncio.Semaphore(settings.MAX_PARALLEL_CONTAINERS)
         while True:
-            er_id = await self.get_run_to_execute()
-            asyncio.create_task(self.execute_experiment_run(er_id, semaphore))
+            if self.experiment_semaphore._value > 0:
+                er_id = await self.get_run_to_execute()
+                asyncio.create_task(self.execute_experiment_run(er_id))
+            await asyncio.sleep(INTERVAL_5SEC)
 
     async def schedule_image_building(self) -> None:
-        semaphore = asyncio.Semaphore(settings.MAX_PARALLEL_CONTAINERS)
         while True:
-            temp_id = await self.get_image_to_build()
-            asyncio.create_task(self.build_and_push_image(temp_id, semaphore))
+            if self.image_semaphore._value > 0:
+                temp_id = await self.get_image_to_build()
+                asyncio.create_task(self.build_and_push_image(temp_id))
+            await asyncio.sleep(INTERVAL_5SEC)
 
-    async def execute_experiment_run(
-        self, exp_run_id: PydanticObjectId, semaphore: asyncio.Semaphore
-    ) -> None:
-        async with semaphore:
+    async def execute_experiment_run(self, exp_run_id: PydanticObjectId) -> None:
+        async with self.experiment_semaphore:
             experiment_run, experiment = await self.init_run(exp_run_id)
 
             error_msg = await ReanaService.run_workflow(experiment_run, experiment)
@@ -186,10 +201,8 @@ class ExperimentService:
         )
         return experiment_run, experiment
 
-    async def build_and_push_image(
-        self, template_id: PydanticObjectId, semaphore: asyncio.Semaphore
-    ) -> None:
-        async with semaphore:
+    async def build_and_push_image(self, template_id: PydanticObjectId) -> None:
+        async with self.image_semaphore:
             experiment_template = await ExperimentTemplate.get(template_id)
 
             image_name = experiment_template.get_image_name()

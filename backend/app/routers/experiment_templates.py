@@ -93,7 +93,7 @@ async def approve_experiment_template(
     approve_value: bool = True,
     docker_service: ExperimentService = Depends(ExperimentService.get_docker_service),
 ) -> Any:
-    if password != settings.PASSWORD_FOR_APPROVAL:
+    if password != settings.PASSWORD_FOR_TEMPLATE_APPROVAL:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Wrong password given",
