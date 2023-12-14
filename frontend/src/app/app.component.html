@@ -8,6 +8,7 @@
     <div class="beta-disclaimer">Beta version</div>
     <div class="delimiter"></div>
     <app-login-logout></app-login-logout>
+    <app-feedback></app-feedback>
   </div>
   <div class="main-content">
     <nav mat-tab-nav-bar [tabPanel]="tabPanel" mat-stretch-tabs="false" animationDuration="0">
@@ -16,6 +17,9 @@
       </a>
       <a mat-tab-link [routerLink]="['/datasets', 'all']" #rlb="routerLinkActive" routerLinkActive="active" [active]="rlb.isActive">
         Datasets
+      </a>
+      <a mat-tab-link [routerLink]="['/']" #rlc="routerLinkActive" routerLinkActive="active" [active]="rlc.isActive">
+        About
       </a>
     </nav>
     <mat-tab-nav-panel #tabPanel>

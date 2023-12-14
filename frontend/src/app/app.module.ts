@@ -58,6 +58,8 @@ import { ExperimentTemplateDetailComponent } from './components/experiments/expe
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { HIGHLIGHT_OPTIONS, HighlightModule, HighlightOptions } from 'ngx-highlightjs';
 import { CodeEditorModule } from '@ngstack/code-editor';
+import { FeedbackComponent } from './components/general/feedback/feedback.component';
+import { AboutComponent } from './components/general/about/about.component';
 
 
 @NgModule({
@@ -89,6 +91,8 @@ import { CodeEditorModule } from '@ngstack/code-editor';
     MyExperimentTemplateList,
     ExperimentTemplateListItemComponent,
     ExperimentTemplateDetailComponent,
+    FeedbackComponent,
+    AboutComponent
   ],
   imports: [
     BrowserModule,
