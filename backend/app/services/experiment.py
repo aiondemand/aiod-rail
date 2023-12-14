@@ -6,14 +6,14 @@ import logging
 from beanie import PydanticObjectId
 from docker import DockerClient
 
-from app.config import EXPERIMENT_RUN_DIR_PREFIX, INTERVAL_1MIN, INTERVAL_5SEC, settings
+from app.config import INTERVAL_1MIN, INTERVAL_5SEC, settings
 from app.models.experiment import Experiment
 from app.models.experiment_run import ExperimentRun
 from app.models.experiment_template import ExperimentTemplate
 from app.schemas.experiment_run import ExperimentRunId
 from app.schemas.experiment_template import ExperimentTemplateId
 from app.schemas.states import RunState, TemplateState
-from app.services.workflow import ReanaService
+from app.services.workflow import ReanaNotConnectedException, ReanaService
 
 
 class ExperimentService:
@@ -32,11 +32,6 @@ class ExperimentService:
         if not self.docker_registry_login():
             raise SystemExit(
                 f"Unable to log in to Docker registry '{settings.DOCKER_REGISTRY_URL}'. Exiting..."
-            )
-
-        if not ReanaService.has_access():
-            raise SystemExit(
-                f"Unable to connect to REANA server '{settings.REANA_SERVER_URL}'. Exiting..."
             )
 
     def docker_registry_login(self) -> bool:
@@ -66,24 +61,6 @@ class ExperimentService:
         )
         for run_id in run_ids:
             await self.add_run_to_execute(run_id.id)
-            workflow_name = f"{EXPERIMENT_RUN_DIR_PREFIX}{str(run_id.id)}"
-
-            workflow_runs = ReanaService.get_workflows(
-                type="batch", workflow=workflow_name
-            )
-            if len(workflow_runs) > 0:
-                try:
-                    if workflow_runs[0]["status"] == "running":
-                        ReanaService.stop_workflow(workflow_name, force_stop=True)
-                    ReanaService.delete_workflow(
-                        workflow_name, all_runs=True, workspace=True
-                    )
-                except Exception as e:
-                    self.logger.warning(
-                        f"REANA Workflow of ExperimentRun id={run_id.id} "
-                        + "was not successfully deleted",
-                        exc_info=e,
-                    )
 
         count = self.experiment_run_queue.qsize()
         if count > 0:
@@ -159,37 +136,76 @@ class ExperimentService:
 
     async def execute_experiment_run(self, exp_run_id: PydanticObjectId) -> None:
         async with self.experiment_semaphore:
-            experiment_run, experiment = await self.init_run(exp_run_id)
+            try:
+                experiment_run, experiment = await self.init_run(exp_run_id)
 
-            error_msg = await ReanaService.run_workflow(experiment_run, experiment)
-            await ReanaService.postprocess_workflow(experiment_run, error_msg)
+                error_msg = await ReanaService.run_workflow(experiment_run, experiment)
+                await ReanaService.postprocess_workflow(experiment_run, error_msg)
+                if not error_msg:
+                    # everything went smoothly
+                    experiment_run.update_state(RunState.FINISHED)
+                    await experiment_run.replace()
+                elif (
+                    experiment_run.retry_count
+                    < settings.MAX_EXPERIMENT_RUN_ATTEMPTS - 1
+                ):
+                    # if an error occured retry for X amount of times
+                    # we use a new experiment run object for retries
+                    experiment_run.update_state(RunState.CRASHED)
+                    new_exp_run = experiment_run.retry_failed_run()
 
-            if not error_msg:
-                experiment_run.update_state(RunState.FINISHED)
-                await experiment_run.replace()
-            elif experiment_run.retry_count < settings.MAX_EXPERIMENT_RUN_ATTEMPTS - 1:
-                experiment_run.update_state(RunState.CRASHED)
-                new_exp_run = experiment_run.retry_failed_run()
+                    await new_exp_run.create()
+                    await experiment_run.replace()
+                    await self.add_run_to_execute(new_exp_run.id)
+                else:
+                    # if an error occured and we have spent all the retries
+                    # we dont bother with retrying the experiment again
+                    experiment_run.update_state(RunState.CRASHED)
+                    await experiment_run.replace()
 
-                await new_exp_run.create()
-                await experiment_run.replace()
-
-                await asyncio.sleep(INTERVAL_5SEC)
-                await self.add_run_to_execute(new_exp_run.id)
-            else:
-                experiment_run.update_state(RunState.CRASHED)
-                await experiment_run.replace()
-
-            self.logger.info(
-                f"=== ExperimentRun id={experiment_run.id} "
-                + f"(retry_count={experiment_run.retry_count}) CONCLUDED ==="
-            )
+                self.logger.info(
+                    f"=== ExperimentRun id={experiment_run.id} "
+                    + f"(retry_count={experiment_run.retry_count}) CONCLUDED ==="
+                )
+            except ReanaNotConnectedException as e:
+                # during the execution of the experiment we lost the connection
+                # to the REANA server
+                # to delete potentially existing workflow of the current
+                # experiment run, we will use the same experiment run object
+                self.logger.error(str(e))
+                await self.add_run_to_execute(exp_run_id)
 
     async def init_run(
         self, exp_run_id: PydanticObjectId
     ) -> tuple[ExperimentRun, Experiment]:
         experiment_run = await ExperimentRun.get(exp_run_id)
         experiment = await Experiment.get(experiment_run.experiment_id)
+
+        workflow_name = ReanaService.get_workflow_name(experiment_run)
+
+        try:
+            workflow_runs = ReanaService.call_reana_function(
+                "get_workflows", type="batch", workflow=workflow_name
+            )
+            if len(workflow_runs) > 0:
+                if workflow_runs[0]["status"] == "running":
+                    ReanaService.call_reana_function(
+                        "stop_workflow", workflow=workflow_name, force_stop=True
+                    )
+                ReanaService.call_reana_function(
+                    "delete_workflow",
+                    workflow=workflow_name,
+                    all_runs=True,
+                    workspace=True,
+                )
+        except ReanaNotConnectedException as e:
+            raise e
+        except Exception as e:
+            self.logger.warning(
+                f"REANA Workflow of ExperimentRun id={experiment_run.id} "
+                + "was not successfully deleted",
+                exc_info=e,
+            )
 
         experiment_run.update_state(RunState.IN_PROGRESS)
         await experiment_run.replace()
@@ -216,7 +232,6 @@ class ExperimentService:
                 "=== Creation of an environment for "
                 + f"ExperimentTemplate id={template_id} INITIALIZED ==="
             )
-
             try:
                 self.logger.info(
                     f"\tBuilding image for ExperimentTemplate id={template_id}"

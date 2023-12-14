@@ -19,7 +19,17 @@ from app.models.experiment import Experiment
 from app.models.experiment_run import ExperimentRun
 from app.routers.aiod import get_dataset_name, get_model_name
 
+uvicorn_formatter = logging.getLogger("uvicorn").handlers[0].formatter
+console_handler = logging.StreamHandler()
+console_handler.setFormatter(uvicorn_formatter)
+
 logger = logging.getLogger("reana")
+logger.setLevel(logging.INFO)
+logger.addHandler(console_handler)
+
+
+class ReanaNotConnectedException(Exception):
+    pass
 
 
 class ReanaService:
@@ -33,20 +43,10 @@ class ReanaService:
         return False
 
     @staticmethod
-    def stop_workflow(*args, **kwargs):
-        return client.stop_workflow(
-            *args, **kwargs, access_token=settings.REANA_ACCESS_TOKEN
-        )
-
-    @staticmethod
-    def delete_workflow(*args, **kwargs):
-        return client.delete_workflow(
-            *args, **kwargs, access_token=settings.REANA_ACCESS_TOKEN
-        )
-
-    @staticmethod
-    def get_workflows(*args, **kwargs):
-        return client.get_workflows(
+    def call_reana_function(function_name, *args, **kwargs):
+        if not ReanaService.has_access():
+            raise ReanaNotConnectedException("Unable to connect to REANA server")
+        return getattr(client, function_name)(
             *args, **kwargs, access_token=settings.REANA_ACCESS_TOKEN
         )
 
@@ -107,28 +107,27 @@ class ReanaService:
         return None
 
     @classmethod
-    async def postprocess_workflow(
-        cls, experiment_run: ExperimentRun, msg_to_log: str
-    ) -> None:
+    async def postprocess_workflow(cls, experiment_run: ExperimentRun, msg_to_log: str):
         workflow_name = cls.get_workflow_name(experiment_run)
-        client.prune_workspace(
-            workflow_name,
-            include_inputs=False,
-            include_outputs=False,
-            access_token=settings.REANA_ACCESS_TOKEN,
-        )
         try:
-            client.mv_files(
-                RUN_TEMP_OUTPUT_FOLDER,
-                RUN_OUTPUT_FOLDER,
-                workflow_name,
-                access_token=settings.REANA_ACCESS_TOKEN,
+            cls.call_reana_function(
+                "prune_workspace",
+                workflow=workflow_name,
+                include_inputs=False,
+                include_outputs=False,
             )
+            cls.call_reana_function(
+                "mv_files",
+                source=RUN_TEMP_OUTPUT_FOLDER,
+                target=RUN_OUTPUT_FOLDER,
+                workflow=workflow_name,
+            )
+            cls.save_metadata(experiment_run, msg_to_log)
+        except ReanaNotConnectedException as e:
+            raise e
         except Exception:
             # TODO: Handle exception properly
             pass
-
-        cls.save_metadata(experiment_run, msg_to_log)
 
     @classmethod
     def save_metadata(

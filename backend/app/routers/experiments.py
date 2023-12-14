@@ -13,6 +13,7 @@ from app.models.experiment_run import ExperimentRun
 from app.schemas.experiment import ExperimentCreate, ExperimentResponse
 from app.schemas.experiment_run import ExperimentRunDetails, ExperimentRunResponse
 from app.services.experiment import ExperimentService
+from app.services.workflow import ReanaService
 
 router = APIRouter()
 
@@ -97,6 +98,11 @@ async def execute_experiment_run(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="ExperimentTemplate of this experiment is yet to be finished",
+        )
+    if not ReanaService.has_access():
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="REANA server is currently unavailable",
         )
 
     experiment_run = ExperimentRun(experiment_id=experiment.id)
