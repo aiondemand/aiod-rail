@@ -22,6 +22,24 @@
         <p>
             <b>Important note:</b> RAIL is currently in the beta version. It is likely that you will encounter bugs and other issues. Please, report them to us using the feedback button on the left.
         </p>
+
+
+        <!-- ============================================================ -->
+        <h2>Example workflow</h2>
+        <p>Before digging deeper, let's have a look at a specific workflow you are able to achieve with RAIL.</p>
+        <p>
+            Let's say you are a data scientist working on a project that requires you to find a well performing pretrained sentiment classification model available in HuggingFace.
+            You want to test different models on your dataset to estimate which model will perform the best and based on the results, you want to select the best model for your project.
+        </p>
+        <p>In rail, you can accomplish this quite complex task by accomplishing these steps:</p>
+        <ol>
+            <li>As running Experiments and uploading datasets requires you to be logged in, you need to log in. RAIL uses AI on Demand login mechanism based on OAUTH2 and it supports multiple identity providers.</li>
+            <li>
+                <a [routerLink]="['/datasets', 'create']">Upload your dataset</a> to HuggingFace directly in RAIL. It will be immediately available in RAIL and in the AI on Demand platform. <b>[available soon]</b>
+            </li>
+            <li>Create an Experiment, link your dataset and a model you want to evaluate to it. An Experiment must be linked to a particular Experiment template, which is a combination of <i>runtime environment</i>, <i>software dependencies</i> and <i>code</i> - in your case, you need an Experiment template that takes HuggingFace dataset and model and perform a classification task. If no such Experiment template is available in the <a [routerLink]="['/experiments', 'templates', 'all']">list of all templates</a>, you can <a [routerLink]="['/experiments', 'templates', 'create']">create your own</a> (and share it with others or reuse it on your own).</li>
+            <li>Execute the Experiment. The Experiment will be executed in the AI on Demand platform and the results will be available in RAIL on the detail of the Experiment.</li>
+        </ol>
         
 
         <!-- ============================================================ -->
