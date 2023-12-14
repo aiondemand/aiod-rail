@@ -41,6 +41,8 @@ class ExperimentTemplate(Document):
         base_path = settings.get_experiment_template_path(template_id=self.id)
         base_path.mkdir(exist_ok=True, parents=True)
 
+        # TODO check https://docs.bentoml.org/en/latest/guides/containerization.html#dockerfile-template
+        # for working with dockerfile templates
         with open("app/data/template-Dockerfile") as f:
             dockerfile_template_lines = f.readlines()
             dockerfile_template_lines[0] = f"FROM {base_image}\n"
