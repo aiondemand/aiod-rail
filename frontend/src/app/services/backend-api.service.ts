@@ -9,6 +9,7 @@ import { Model } from '../models/model';
 import { ExperimentTemplateCreate, ExperimentTemplate } from '../models/experiment-template';
 import { Publication } from '../models/publication';
 import { ExperimentRun, ExperimentRunDetails } from '../models/experiment-run';
+import { ExperimentQueries, ExperimentTemplateQueries, PageQueries, QueryOperator } from '../models/queries';
 
 
 @Injectable({
@@ -27,14 +28,13 @@ export class BackendApiService {
 
   ////////////////////////////// DATASETS //////////////////////////////
 
-  getDatasets(query: string = "", offset: number = 0, limit: number = environment.DEFAULT_PAGE_SIZE): Observable<Dataset[]> {
+  getDatasets(query: string = "", pageQueries?: PageQueries): Observable<Dataset[]> {
     // TODO: handle the "is_in_my_saved" property on backend
-
     var backend_route = `${environment.BACKEND_API_URL}/assets/datasets`;
     if (query?.length > 0) {
       backend_route += `/search/${query}`
     }
-    backend_route += `?offset=${offset}&limit=${limit}`
+    backend_route += `?${this._buildPageQueries(pageQueries)}`;
 
     return this.http.get<Dataset[]>(backend_route)
       .pipe(tap(datasets => {
@@ -120,9 +120,12 @@ export class BackendApiService {
     return of(true);
   }
 
-  getSavedDatasets(offset: number = 0, limit: number = environment.DEFAULT_PAGE_SIZE): Observable<Dataset[]> {
+  getSavedDatasets(pageQueries?: PageQueries): Observable<Dataset[]> {
     // TODO: call the backend API to get the saved datasets once we have the endpoint
     // TODO: handle the "is_in_my_saved" property on backend
+    let offset = pageQueries?.offset ?? 0;
+    let limit = pageQueries?.limit ?? environment.DEFAULT_PAGE_SIZE;
+
     return of(this.mockedSavedDatasets.slice(offset, offset + limit))
       .pipe(tap(datasets => {
         datasets.forEach(dataset => dataset.is_in_my_saved = true);
@@ -143,12 +146,12 @@ export class BackendApiService {
    * @param offset
    * @param limit
    */
-  getModels(query: string = "", offset: number = 0, limit: number = environment.DEFAULT_PAGE_SIZE): Observable<Model[]> {
+  getModels(query: string = "", pageQueries?: PageQueries): Observable<Model[]> {
     var backend_route = `${environment.BACKEND_API_URL}/assets/models`;
     if (query?.length > 0) {
       backend_route += `/search/${query}`
     }
-    backend_route += `?offset=${offset}&limit=${limit}`
+    backend_route += `?${this._buildPageQueries(pageQueries)}`;
 
     return this.http.get<Model[]>(backend_route);
   }
@@ -191,12 +194,12 @@ export class BackendApiService {
    * @param offset
    * @param limit
    */
-   getPublications(query: string = "", offset: number = 0, limit: number = environment.DEFAULT_PAGE_SIZE): Observable<Publication[]> {
+   getPublications(query: string = "", pageQueries?: PageQueries): Observable<Publication[]> {
     var backend_route = `${environment.BACKEND_API_URL}/assets/publications`;
     if (query?.length > 0) {
       backend_route += `/search/${query}`
     }
-    backend_route += `?offset=${offset}&limit=${limit}`
+    backend_route += `?${this._buildPageQueries(pageQueries)}`;
 
     return this.http.get<Publication[]>(backend_route);
   }
@@ -244,16 +247,12 @@ export class BackendApiService {
    * Get list of experiments
    * @returns Observable<Experiment[]>
    */
-  getExperiments(offset: number = 0, limit: number = environment.DEFAULT_PAGE_SIZE): Observable<Experiment[]> {
-    return this.http.get<Experiment[]>(`${environment.BACKEND_API_URL}/experiments`);
-  }
-
-  /**
- * Get list of user experiments
- * @returns Observable<Experiment[]>
- */
-  getMyExperiments(offset: number = 0, limit: number = environment.DEFAULT_PAGE_SIZE): Observable<Experiment[]> {
-    return this.http.get<Experiment[]>(`${environment.BACKEND_API_URL}/experiments/my`);
+  getExperiments(
+    pageQueries?: PageQueries,
+    experimentQueries?: ExperimentQueries
+  ): Observable<Experiment[]> {
+    var queries = `?${this._buildPageQueries(pageQueries)}&${this._buildExperimentQueries(experimentQueries)}`;
+    return this.http.get<Experiment[]>(`${environment.BACKEND_API_URL}/experiments${queries}`);
   }
 
   /**
@@ -269,16 +268,9 @@ export class BackendApiService {
    * Get count of experiments
    * @returns Observable<number> (count)
    */
-  getExperimentsCount(): Observable<number> {
-    return this.http.get<number>(`${environment.BACKEND_API_URL}/count/experiments`);
-  }
-
-  /**
-  * Get count of experiments
-  * @returns Observable<number> (count)
-  */
-  getMyExperimentsCount(): Observable<number> {
-    return this.http.get<number>(`${environment.BACKEND_API_URL}/count/experiments/my`);
+  getExperimentsCount(experimentQueries?: ExperimentQueries): Observable<number> {
+    var queries = `?${this._buildExperimentQueries(experimentQueries)}`;
+    return this.http.get<number>(`${environment.BACKEND_API_URL}/count/experiments${queries}`);
   }
 
   /**
@@ -296,24 +288,12 @@ export class BackendApiService {
    * Get list of experiment templates
    * @returns Observable<ExperimentTemplate[]>
    */
-  getExperimentTemplates(offset: number = 0, limit: number = environment.DEFAULT_PAGE_SIZE): Observable<ExperimentTemplate[]> {
-    return this.http.get<ExperimentTemplate[]>(`${environment.BACKEND_API_URL}/experiment-templates`
-      + `?offset=${offset}&limit=${limit}`);
-  }
-
-  getApprovedExperimentTemplates(offset: number = 0, limit: number = environment.DEFAULT_PAGE_SIZE): Observable<ExperimentTemplate[]> {
-    return this.http.get<ExperimentTemplate[]>(`${environment.BACKEND_API_URL}/experiment-templates/approved`
-      + `?offset=${offset}&limit=${limit}`);
-  }
-
-  getMyExperimentTemplates(offset: number = 0, limit: number = environment.DEFAULT_PAGE_SIZE): Observable<ExperimentTemplate[]> {
-    return this.http.get<ExperimentTemplate[]>(`${environment.BACKEND_API_URL}/experiment-templates/my`
-      + `?offset=${offset}&limit=${limit}`);
-  }
-
-  getExperimentTemplatesAllView(offset: number = 0, limit: number = environment.DEFAULT_PAGE_SIZE): Observable<ExperimentTemplate[]> {
-    return this.http.get<ExperimentTemplate[]>(`${environment.BACKEND_API_URL}/experiment-templates/all-view`
-      + `?offset=${offset}&limit=${limit}`);
+  getExperimentTemplates(
+    pageQueries?: PageQueries,
+    templateQueries?: ExperimentTemplateQueries
+  ): Observable<ExperimentTemplate[]> {
+    var queries = `?${this._buildPageQueries(pageQueries)}&${this._buildExperimentTemplateQueries(templateQueries)}`;
+    return this.http.get<ExperimentTemplate[]>(`${environment.BACKEND_API_URL}/experiment-templates${queries}`);
   }
 
   /**
@@ -329,20 +309,11 @@ export class BackendApiService {
    * Get count of experiment templates
    * @returns Observable<number> (count)
    */
-  getExperimentTemplatesCount(): Observable<number> {
-    return this.http.get<number>(`${environment.BACKEND_API_URL}/count/experiment-templates`);
-  }
-
-  getApprovedExperimentTemplatesCount(): Observable<number> {
-    return this.http.get<number>(`${environment.BACKEND_API_URL}/count/experiment-templates`);
-  }
-
-  getMyExperimentTemplatesCount(): Observable<number> {
-    return this.http.get<number>(`${environment.BACKEND_API_URL}/count/experiment-templates/my`);
-  }
-
-  getExperimentTemplatesAllViewCount(): Observable<number> {
-    return this.http.get<number>(`${environment.BACKEND_API_URL}/count/experiment-templates/all-view`);
+  getExperimentTemplatesCount(
+    templateQueries?: ExperimentTemplateQueries
+  ): Observable<number> {
+    var queries = `?${this._buildExperimentTemplateQueries(templateQueries)}`;
+    return this.http.get<number>(`${environment.BACKEND_API_URL}/count/experiment-templates${queries}`);
   }
 
   /**
@@ -362,11 +333,13 @@ export class BackendApiService {
    * @param limit
    * @param experimentId
    */
-  getExperimentRuns(experimentId: string = "", offset: number = 0, limit: number = environment.DEFAULT_PAGE_SIZE): Observable<ExperimentRun[]> {
+  getExperimentRuns(experimentId: string = "", pageQueries?: PageQueries): Observable<ExperimentRun[]> {
+    let pageQueriesStr = `?${this._buildPageQueries(pageQueries)}`;
+    
     if (experimentId == "") {
-      return this.http.get<ExperimentRun[]>(`${environment.BACKEND_API_URL}/experiment-runs?offset=${offset}&limit=${limit}`);
+      return this.http.get<ExperimentRun[]>(`${environment.BACKEND_API_URL}/experiment-runs${pageQueriesStr}`);
     }    
-    return this.http.get<ExperimentRun[]>(`${environment.BACKEND_API_URL}/experiments/${experimentId}/runs?offset=${offset}&limit=${limit}`);
+    return this.http.get<ExperimentRun[]>(`${environment.BACKEND_API_URL}/experiments/${experimentId}/runs${pageQueriesStr}`);
   }
 
   getExperimentRunsCount(experimentId: string): Observable<number> {
@@ -399,5 +372,59 @@ export class BackendApiService {
    */
   executeExperimentRun(experimentId: string): Observable<ExperimentRun> {
     return this.http.get<ExperimentRun>(`${environment.BACKEND_API_URL}/experiments/${experimentId}/execute`);
+  }
+
+  _buildPageQueries(pageQueries?: PageQueries): string {
+    if (pageQueries == null) {
+      pageQueries = {};
+    }
+    if (pageQueries.limit == null) {
+      pageQueries.limit = environment.DEFAULT_PAGE_SIZE;
+    }
+    if (pageQueries.offset == null) {
+      pageQueries.offset = 0;
+    }
+    return `offset=${pageQueries.offset}&limit=${pageQueries.limit}`
+  }
+
+  _buildExperimentQueries(experimentQueries?: ExperimentQueries): string {
+    if (experimentQueries == null) {
+      experimentQueries = {};
+    }
+    if (experimentQueries.include_mine == null) {
+      experimentQueries.include_mine = false;
+    }
+    if (experimentQueries.query_operator == null) {
+      experimentQueries.query_operator = QueryOperator.And;
+    }
+
+    let q: string = "";
+    let key: keyof ExperimentQueries
+    for (key in experimentQueries) {
+      q += `${key}=${experimentQueries[key]}&`;
+    }
+    return q.slice(0, q.length - 1);
+  }
+
+  _buildExperimentTemplateQueries(templateQueries?: ExperimentTemplateQueries): string {
+    if (templateQueries == null) {
+      templateQueries = {};
+    }
+    if (templateQueries.include_mine == null) {
+      templateQueries.include_mine = false;
+    }
+    if (templateQueries.include_approved == null) {
+      templateQueries.include_approved = false;
+    }
+    if (templateQueries.query_operator == null) {
+      templateQueries.query_operator = QueryOperator.And;
+    }
+
+    let q: string = "";
+    let key: keyof ExperimentTemplateQueries
+    for (key in templateQueries) {
+      q += `${key}=${templateQueries[key]}&`;
+    }
+    return q.slice(0, q.length - 1);
   }
 }

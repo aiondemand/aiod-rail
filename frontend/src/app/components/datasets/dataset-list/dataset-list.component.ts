@@ -81,8 +81,10 @@ export class DatasetListComponent implements OnInit {
 
     this.datasets$ = this.backend.getDatasets(
       this.searchQuery,
-      this.pagination.pageIndex * this.pagination.pageSize,
-      this.pagination.pageSize
+      {
+        offset: this.pagination.pageIndex * this.pagination.pageSize,
+        limit: this.pagination.pageSize
+      }
     );
 
     firstValueFrom(this.backend.getDatasetsCount(this.searchQuery))

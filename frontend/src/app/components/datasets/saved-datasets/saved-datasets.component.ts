@@ -59,9 +59,9 @@ export class SavedDatasetsComponent {
   }
 
   private updateDatasets() {
-    this.datasets$ = this.backend.getSavedDatasets(
-      this.pagination.pageIndex * this.pagination.pageSize,
-      this.pagination.pageSize
-    );
+    this.datasets$ = this.backend.getSavedDatasets({
+      offset: this.pagination.pageIndex * this.pagination.pageSize,
+      limit: this.pagination.pageSize
+    });
   }
 }

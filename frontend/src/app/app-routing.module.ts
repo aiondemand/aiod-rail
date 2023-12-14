@@ -25,7 +25,7 @@ const routes: Routes = [
     component: ExperimentsComponent,
     children: [
       // experiments
-      { path: 'all', component: AllExperimentListComponent },
+      { path: 'all', component: AllExperimentListComponent},
       { path: 'my',  component: MyExperimentListComponent, canActivate: [authGuard]  },
       { path: 'create', component: CreateExperimentComponent, canActivate: [authGuard] },
       { 
@@ -42,7 +42,7 @@ const routes: Routes = [
       {
         path: 'templates', 
         children: [
-          { path: "all", component: AllExperimentTemplateList },
+          { path: "all", component: AllExperimentTemplateList},
           { path: "my", component: MyExperimentTemplateList, canActivate: [authGuard] },
           { path: 'create', component: CreateExperimentTemplateComponent, canActivate: [authGuard] },
           { path: ':id', component: ExperimentTemplateDetailComponent }

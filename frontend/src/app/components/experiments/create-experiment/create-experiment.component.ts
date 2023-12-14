@@ -9,6 +9,7 @@ import { ExperimentCreate, Experiment } from 'src/app/models/experiment';
 import { ExperimentTemplate } from 'src/app/models/experiment-template';
 import { Model } from 'src/app/models/model';
 import { Publication } from 'src/app/models/publication';
+import { QueryOperator } from 'src/app/models/queries';
 import { BackendApiService } from 'src/app/services/backend-api.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
 
@@ -45,14 +46,16 @@ export class CreateExperimentComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.experimentTemplates$ = this.backend.getApprovedExperimentTemplates(0, 100)
-      .pipe(
-        catchError(err => {
-          this.error = err.message;
-          this.snackBar.showError("Couldn't load experiment types");
-          return of([]);
-        })
-      );
+    this.experimentTemplates$ = this.backend.getExperimentTemplates({}, { 
+      include_approved: true, 
+      query_operator: QueryOperator.Or 
+    }).pipe(
+      catchError(err => {
+        this.error = err.message;
+        this.snackBar.showError("Couldn't load experiment types");
+        return of([]);
+      })
+    );
 
 
     this.models$ = this.model?.valueChanges.pipe(
@@ -77,7 +80,7 @@ export class CreateExperimentComponent implements OnInit {
       })
     );
 
-    this.publications$ = this.backend.getPublications("", 0, 100)
+    this.publications$ = this.backend.getPublications()
       .pipe(
         catchError(err => {
           this.error = "Couldn't load publications." + err.message;
@@ -127,14 +130,14 @@ export class CreateExperimentComponent implements OnInit {
     if (typeof query != "string") {
       return this.models$ ? this.models$ : of([]);
     }
-    return this.backend.getModels(query, 0, 10)
+    return this.backend.getModels(query)
   }
 
   datasetAutocompleteFilter(query: string | Dataset | null): Observable<Dataset[]> {
     if (typeof query != "string") {
       return this.datasets$ ? this.datasets$ : of([]);;
     }
-    return this.backend.getDatasets(query, 0, 10);
+    return this.backend.getDatasets(query);
   }
 
   displayChosenModel(model: Model) {

@@ -15,8 +15,6 @@ export class AllExperimentListComponent extends ExperimentListBaseComponent {
   }
   
   protected override updateExperiments(): Observable<Experiment[]> {
-    return this.backend.getExperiments(this.pagination.pageIndex * this.pagination.pageSize,
-      this.pagination.pageSize
-    );
+    return this.backend.getExperiments();
   }
 }

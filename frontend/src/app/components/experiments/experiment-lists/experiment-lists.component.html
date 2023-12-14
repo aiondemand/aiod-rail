@@ -9,10 +9,11 @@
                aria-label="Select page">
 </mat-paginator>
 
-
-<div class="no-experiments" *ngIf="(experiments$ | async)?.length == 0">
-    <h2>There are currently no experiments.</h2>
+<div *ngIf="(experiments$ | async) as experiments">
+    <div class="no-experiments" *ngIf="experiments.length == 0">
+        <h2>There are currently no experiments.</h2>
+    </div>
+    
+    <app-experiment-list-item *ngFor="let experiment of experiments" [experiment]="experiment">
+    </app-experiment-list-item>
 </div>
-
-<app-experiment-list-item *ngFor="let experiment of (experiments$ | async)" [experiment]="experiment">
-</app-experiment-list-item>
