@@ -1,6 +1,8 @@
 <h1>Create dataset</h1>
 
-<form class="create-dataset-form" [formGroup]="datasetForm" (ngSubmit)="onSubmit()">
+Functionality for creating datasets is currently under development. Stay tuned!
+
+<!-- <form class="create-dataset-form" [formGroup]="datasetForm" (ngSubmit)="onSubmit()">
     <div class="form-error-message" *ngIf="error">
         {{error}}
     </div>
@@ -54,7 +56,6 @@
             <app-huggingface-form [formGroup]="huggingfaceFormGroup"></app-huggingface-form>
         </div>
         <div *ngIf="platformValue == 'aiod'">
-            <!-- Nothing specific for AIoD datasets -->
         </div>
         <div *ngIf="!isPlatformSupported(platformValue)">
             <h2>
@@ -67,4 +68,4 @@
     <button mat-raised-button color="primary" type="submit" [disabled]="!datasetForm.valid || submitButtonDisabled">
         Submit
     </button>
-</form>
+</form> -->
