@@ -106,7 +106,17 @@ export class CreateExperimentTemplateComponent {
       });
   }
 
-  addVariable(form: FormGroup, table: MatTable<EnvironmentVarDef>, dataTable: EnvironmentVarDef[]) {
+  addVariableReq(form: FormGroup, dataTable: EnvironmentVarDef[]) {
+    this.addVariable(form, dataTable);
+    this.requiredVarsTable?.renderRows();
+  }
+
+  addVariableOpt(form: FormGroup, dataTable: EnvironmentVarDef[]) {
+    this.addVariable(form, dataTable);
+    this.optionalVarsTable?.renderRows();
+  }
+
+  addVariable(form: FormGroup, dataTable: EnvironmentVarDef[]) {
     var newEnvName = String(form.value.name.trim());
     var alreadyExists = this.requiredVarsData
       .concat(...this.optionalVarsData)
@@ -123,7 +133,6 @@ export class CreateExperimentTemplateComponent {
     });
 
     form.reset();
-    table?.renderRows();
   }
 
   removeVariable(table: MatTable<EnvironmentVarDef>, dataTable: EnvironmentVarDef[], index: number) {

@@ -231,6 +231,12 @@ class ExperimentService:
             experiment_template.state = TemplateState.CREATED
             await experiment_template.replace()
 
+            # TODO this implementation is flawed as if our application crashes
+            # while the image is being built in this stage, we end up with 1 unfinished
+            # experiment template image building and 1 experiment run,
+            # hence once we start up the application again, both processes will
+            # run in parallel and effectively we will build the same image twice
+            # in the same time, which is not ideal...
             successful_image_build = await self.build_and_push_image(
                 experiment_template.id
             )

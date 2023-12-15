@@ -13,7 +13,8 @@ LITTLE_NAP = 5
 CHECK_REANA_CONNECTION_INTERVAL = 60
 RUN_TEMP_OUTPUT_FOLDER = "output-temp"
 RUN_OUTPUT_FOLDER = "output"
-REPOSITORY_NAME = "rail-exp-templates"
+# REPOSITORY_NAME = "rail-exp-templates" #TODO
+REPOSITORY_NAME = "rail-exp-templates2"
 
 
 class AIODApiConfig(BaseModel):

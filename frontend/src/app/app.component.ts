@@ -12,8 +12,7 @@ import { BackendApiService } from './services/backend-api.service';
 })
 export class AppComponent {
   private breakpointObserver = inject(BreakpointObserver);
-  links = ['experiments', 'datasets', 'publications'];
-
+  
   constructor(private oauthService: OAuthService, private backend: BackendApiService) { 
     this.oauthService.events
       .pipe(filter((e) => e.type === 'token_received'))

@@ -1,6 +1,9 @@
+import os
+
+os.environ["HF_HOME"] = "."
+
 import json
 import logging
-import os
 
 import numpy as np
 import sklearn.metrics as m

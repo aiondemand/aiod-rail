@@ -19,20 +19,14 @@ from app.models.experiment import Experiment
 from app.models.experiment_run import ExperimentRun
 from app.routers.aiod import get_dataset_name, get_model_name
 
-uvicorn_formatter = logging.getLogger("uvicorn").handlers[0].formatter
-console_handler = logging.StreamHandler()
-console_handler.setFormatter(uvicorn_formatter)
-
-logger = logging.getLogger("reana")
-logger.setLevel(logging.INFO)
-logger.addHandler(console_handler)
-
 
 class ReanaNotConnectedException(Exception):
     pass
 
 
 class ReanaService:
+    _logger = None
+
     @staticmethod
     def has_access() -> bool:
         for _ in range(5):
@@ -81,7 +75,7 @@ class ReanaService:
         shutil.copy(exp_template_folder / "script.py", exp_run_folder / "script.py")
         workflow_name = cls.get_workflow_name(experiment_run)
 
-        logger.info(f"\tRunning REANA workflow for ExperimentRun id={exp_run_id}")
+        cls.logger.info(f"\tRunning REANA workflow for ExperimentRun id={exp_run_id}")
         error_log_msg = (
             "\tThere was an error when running REANA workflow "
             + f"for ExperimentRun id={exp_run_id}"
@@ -98,10 +92,10 @@ class ReanaService:
                 text=True,
             )
             if result.returncode != 0:
-                logger.error(error_log_msg)
+                cls.logger.error(error_log_msg)
                 return error_return_msg
         except Exception as e:
-            logger.error(error_log_msg, exc_info=e)
+            cls.logger.error(error_log_msg, exc_info=e)
             return error_return_msg
 
         return None
@@ -169,6 +163,20 @@ class ReanaService:
     @staticmethod
     def get_workflow_name(experiment_run: ExperimentRun) -> str:
         return f"{EXPERIMENT_RUN_DIR_PREFIX}{str(experiment_run.id)}"
+
+    @classmethod
+    @property
+    def logger(cls) -> logging.Logger:
+        if cls._logger is None:
+            uvicorn_formatter = logging.getLogger("uvicorn").handlers[0].formatter
+            console_handler = logging.StreamHandler()
+            console_handler.setFormatter(uvicorn_formatter)
+
+            cls._logger = logging.getLogger("reana")
+            cls._logger.setLevel(logging.INFO)
+            cls._logger.addHandler(console_handler)
+
+        return cls._logger
 
 
 def create_env_file(env_vars: dict[str, str], path: Path) -> None:

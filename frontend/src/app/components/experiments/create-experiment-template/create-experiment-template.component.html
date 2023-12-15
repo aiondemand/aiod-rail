@@ -101,7 +101,7 @@
                 </span>
 
                 <button mat-raised-button type="submit" [disabled]="!newRequiredEnvForm.get('name')?.value"
-                    (click)="addVariable(newRequiredEnvForm, requiredVarsTable, requiredVarsData)">
+                    (click)="addVariableReq(newRequiredEnvForm, requiredVarsData)">
                     Add variable
                 </button>
             </form>
@@ -150,7 +150,7 @@
                 <span class="empty-space"></span>
 
                 <button mat-raised-button type="submit" [disabled]="!newOptionalEnvForm.get('name')?.value"
-                    (click)="addVariable(newOptionalEnvForm, optionalVarsTable, optionalVarsData)">
+                    (click)="addVariableOpt(newOptionalEnvForm, optionalVarsData)">
                     Add variable
                 </button>
             </form>
