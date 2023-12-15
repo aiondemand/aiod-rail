@@ -55,6 +55,7 @@ class Settings(BaseSettings):
     EEE_DATA_PATH: DirectoryPath
     MAX_PARALLEL_IMAGE_BUILDS: int = 2
     MAX_PARALLEL_CONTAINERS: int = 2
+    MAX_IMAGE_BUILDS_ATTEMPTS: int = 1
     MAX_EXPERIMENT_RUN_ATTEMPTS: int = 1
 
     class Config:

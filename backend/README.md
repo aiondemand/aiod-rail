@@ -17,6 +17,7 @@ As a database we use a containerized MongoDB server (through Docker), the REST A
     - `MAX_PARALLEL_IMAGE_BUILDS`: Define a maximum number of Python (asyncio) tasks that build and push docker images
       in parallel
     - `MAX_PARALLEL_CONTAINERS`: Define a maximum number of Python (asyncio) tasks that run REANA workflows in parallel
+    - `MAX_IMAGE_BUILDS_ATTEMPTS`: Define a maximum number of ATTEMPTS that are executed for each failing process of building a docker image
     - `MAX_EXPERIMENT_RUN_ATTEMPTS`: Define a maximum number of ATTEMPTS that are executed for each failing experiment
       run
     - `REANA_SERVER_URL`: Define the URL used for connecting to REANA server

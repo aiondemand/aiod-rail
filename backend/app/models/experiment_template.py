@@ -31,6 +31,7 @@ class ExperimentTemplate(Document):
     created_at: datetime = datetime.utcnow()
     updated_at: datetime = datetime.utcnow()
     state: TemplateState = TemplateState.CREATED
+    retry_count: int = 0
     approved: bool = False
     created_by: str
 

@@ -5,6 +5,7 @@ import logging
 
 from beanie import PydanticObjectId
 from docker import DockerClient
+from docker.errors import APIError
 
 from app.config import INTERVAL_1MIN, INTERVAL_5SEC, settings
 from app.models.experiment import Experiment
@@ -75,6 +76,7 @@ class ExperimentService:
                 ExperimentTemplate.approved == True,  # noqa: E712
                 ExperimentTemplate.state != TemplateState.FINISHED,
                 ExperimentTemplate.state != TemplateState.CRASHED,
+                ExperimentTemplate.retry_count < settings.MAX_IMAGE_BUILDS_ATTEMPTS,
             )
             .sort(+ExperimentTemplate.updated_at)
             .project(ExperimentTemplateId)
@@ -138,9 +140,14 @@ class ExperimentService:
         async with self.experiment_semaphore:
             try:
                 experiment_run, experiment = await self.init_run(exp_run_id)
+                if experiment_run is None:
+                    return
 
+                # run the experiment by executing REANA workflow
                 error_msg = await ReanaService.run_workflow(experiment_run, experiment)
+                # process the workflow output
                 await ReanaService.postprocess_workflow(experiment_run, error_msg)
+
                 if not error_msg:
                     # everything went smoothly
                     experiment_run.update_state(RunState.FINISHED)
@@ -207,6 +214,33 @@ class ExperimentService:
                 exc_info=e,
             )
 
+        # check whether docker image exists, and if not, rebuild it again
+        experiment_template = await ExperimentTemplate.get(
+            experiment.experiment_template_id
+        )
+        image_name = experiment_template.get_image_name()
+        try:
+            self.docker_client.images.get_registry_data(image_name)
+        except APIError:
+            self.logger.warning(
+                "Docker image for ExperimentTemplate "
+                + f"id={experiment_template.id} was not found. "
+                + "Rebuilding the image..."
+            )
+            experiment_template.retry_count = 0
+            experiment_template.state = TemplateState.CREATED
+            await experiment_template.replace()
+
+            successful_image_build = await self.build_and_push_image(
+                experiment_template.id
+            )
+            if not successful_image_build:
+                # since we were not able to rebuild an image, we conclude this
+                # experiment run -> we dont even attempt to retry it
+                experiment_run.update_state(RunState.CRASHED)
+                await experiment_run.replace()
+                return None, None
+
         experiment_run.update_state(RunState.IN_PROGRESS)
         await experiment_run.replace()
 
@@ -217,63 +251,78 @@ class ExperimentService:
         )
         return experiment_run, experiment
 
-    async def build_and_push_image(self, template_id: PydanticObjectId) -> None:
+    async def build_and_push_image(self, template_id: PydanticObjectId) -> bool:
         async with self.image_semaphore:
             experiment_template = await ExperimentTemplate.get(template_id)
 
+            successful_image_build = True
             image_name = experiment_template.get_image_name()
             exp_template_savepath = settings.get_experiment_template_path(
                 template_id=template_id
             )
-
-            experiment_template.update_state(TemplateState.BUILDING_IMAGE)
-            await experiment_template.replace()
             self.logger.info(
                 "=== Creation of an environment for "
-                + f"ExperimentTemplate id={template_id} INITIALIZED ==="
+                + f"ExperimentTemplate id={template_id} "
+                + "INITIALIZED ==="
             )
-            try:
-                self.logger.info(
-                    f"\tBuilding image for ExperimentTemplate id={template_id}"
-                )
-                await asyncio.to_thread(
-                    self.docker_client.images.build,
-                    path=str(exp_template_savepath),
-                    tag=f"{image_name}",
-                    pull=True,
-                    rm=True,
-                    nocache=False,
-                )
 
-                experiment_template.update_state(TemplateState.PUSHING_IMAGE)
+            while True:
+                experiment_template.update_state(TemplateState.IN_PROGRESS)
                 await experiment_template.replace()
-                self.logger.info(
-                    "\tPushing docker image to a remote repository "
-                    + f"for ExperimentTemplate id={template_id}"
-                )
-                await asyncio.to_thread(
-                    self.docker_client.images.push, repository=image_name
-                )
-                self.docker_client.images.remove(image_name)
 
-                experiment_template.update_state(TemplateState.FINISHED)
-                await experiment_template.replace()
+                try:
+                    self.logger.info(
+                        f"\tBuilding image (attempt={experiment_template.retry_count}) "
+                        + f"for ExperimentTemplate id={template_id}"
+                    )
+                    await asyncio.to_thread(
+                        self.docker_client.images.build,
+                        path=str(exp_template_savepath),
+                        tag=f"{image_name}",
+                        pull=True,
+                        rm=True,
+                        nocache=False,
+                    )
+
+                    self.logger.info(
+                        "\tPushing docker image to a remote repository "
+                        + f"for ExperimentTemplate id={template_id}"
+                    )
+                    await asyncio.to_thread(
+                        self.docker_client.images.push, repository=image_name
+                    )
+                    self.docker_client.images.remove(image_name)
+
+                    experiment_template.update_state(TemplateState.FINISHED)
+                    await experiment_template.replace()
+                    self.logger.info(
+                        "\tDocker image has been successfully uploaded "
+                        + f"for ExperimentTemplate id={template_id}"
+                    )
+                except Exception as e:
+                    self.logger.error(
+                        "\tThere was an error when building/pushing an image "
+                        + f"for ExperimentTemplate id={template_id}",
+                        exc_info=e,
+                    )
+                    if (
+                        experiment_template.retry_count
+                        < settings.MAX_IMAGE_BUILDS_ATTEMPTS - 1
+                    ):
+                        experiment_template.retry_count += 1
+                        await experiment_template.replace()
+                        continue
+
+                    successful_image_build = False
+                    experiment_template.update_state(TemplateState.CRASHED)
+                    await experiment_template.replace()
+
                 self.logger.info(
-                    "\tDocker image has been successfully uploaded "
-                    + f"for ExperimentTemplate id={template_id}"
+                    "=== Creation of an environment "
+                    + f"for ExperimentTemplate id={template_id} "
+                    + "CONCLUDED ==="
                 )
-            except Exception as e:
-                experiment_template.update_state(TemplateState.CRASHED)
-                await experiment_template.replace()
-                self.logger.error(
-                    "\tThere was an error when building/pushing an image "
-                    + f"for ExperimentTemplate id={template_id}",
-                    exc_info=e,
-                )
-            self.logger.info(
-                "=== Creation of an environment "
-                + f"for ExperimentTemplate id={template_id} CONCLUDED ==="
-            )
+                return successful_image_build
 
     @staticmethod
     async def init_docker_service() -> ExperimentService:
