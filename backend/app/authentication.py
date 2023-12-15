@@ -34,6 +34,9 @@ async def get_current_user(token=Depends(get_current_user_token)) -> dict:
     return await _get_current_user(token)
 
 
+# TODO find a better way how to have an optional authentication
+# The only reason for implementing this optional auth is for one route to have
+# two different behaviours based on whether the user is logged in or not...
 async def get_current_user_optional(token=Depends(get_current_user_token)) -> dict:
     if not token:
         return {}

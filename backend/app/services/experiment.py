@@ -7,7 +7,7 @@ from beanie import PydanticObjectId
 from docker import DockerClient
 from docker.errors import APIError
 
-from app.config import INTERVAL_1MIN, INTERVAL_5SEC, settings
+from app.config import CHECK_REANA_CONNECTION_INTERVAL, LITTLE_NAP, settings
 from app.models.experiment import Experiment
 from app.models.experiment_run import ExperimentRun
 from app.models.experiment_template import ExperimentTemplate
@@ -110,11 +110,11 @@ class ExperimentService:
     async def get_run_to_execute(self) -> PydanticObjectId:
         while True:
             if not self.experiment_run_queue.empty():
-                # check whether REANA is accessible
+                # check whether REANA is available
                 while not ReanaService.has_access():
-                    await asyncio.sleep(INTERVAL_1MIN)
+                    await asyncio.sleep(CHECK_REANA_CONNECTION_INTERVAL)
                 return self.experiment_run_queue.get_nowait()
-            await asyncio.sleep(INTERVAL_5SEC)
+            await asyncio.sleep(LITTLE_NAP)
 
     async def add_image_to_build(self, temp_id: PydanticObjectId) -> None:
         await self.image_building_queue.put(temp_id)
@@ -127,14 +127,14 @@ class ExperimentService:
             if self.experiment_semaphore._value > 0:
                 er_id = await self.get_run_to_execute()
                 asyncio.create_task(self.execute_experiment_run(er_id))
-            await asyncio.sleep(INTERVAL_5SEC)
+            await asyncio.sleep(LITTLE_NAP)
 
     async def schedule_image_building(self) -> None:
         while True:
             if self.image_semaphore._value > 0:
                 temp_id = await self.get_image_to_build()
                 asyncio.create_task(self.build_and_push_image(temp_id))
-            await asyncio.sleep(INTERVAL_5SEC)
+            await asyncio.sleep(LITTLE_NAP)
 
     async def execute_experiment_run(self, exp_run_id: PydanticObjectId) -> None:
         async with self.experiment_semaphore:

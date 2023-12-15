@@ -8,12 +8,12 @@
     <mat-card-content>
         <div class="state" *ngIf="template.state != 'FINISHED'">
             <ng-container *ngIf="!template.approved">
-                <span class="red"><mat-icon matTooltip="Experiment templates created by users are manually reviewed and then approved for use">search</mat-icon>Waiting for approval</span>
+                <span class="crashed"><mat-icon matTooltip="Experiment templates created by users are manually reviewed and then approved for use">search</mat-icon>Waiting for approval</span>
             </ng-container>
             <ng-container *ngIf="template.approved">
                 <span *ngIf="template.state == 'CREATED'"><mat-icon>schedule</mat-icon>Scheduled</span>
-                <span class="green" *ngIf="template.state == 'IN_PROGRESS'"><mat-icon>rotate_right</mat-icon>Building image</span>
-                <span class="red" *ngIf="template.state == 'CRASHED'"><mat-icon>error</mat-icon>Crashed</span>
+                <span class="in-progress" *ngIf="template.state == 'IN_PROGRESS'"><mat-icon>rotate_right</mat-icon>Building image</span>
+                <span class="crashed" *ngIf="template.state == 'CRASHED'"><mat-icon>error</mat-icon>Crashed</span>
             </ng-container>
             
         </div>
