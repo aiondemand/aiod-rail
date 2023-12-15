@@ -48,8 +48,8 @@ export class CreateExperimentTemplateComponent {
   optionalVarsData: EnvironmentVarDef[] = [];
   displayedEnvVarColumns: string[] = ['name', 'description', 'remove-btn'];
 
-  @ViewChild(MatTable) requiredVarsTable: MatTable<EnvironmentVarDef>;
-  @ViewChild(MatTable) optionalVarsTable: MatTable<EnvironmentVarDef>;
+  @ViewChild("requiredVarsTable") requiredVarsTable: MatTable<EnvironmentVarDef>;
+  @ViewChild("optionalVarsTable") optionalVarsTable: MatTable<EnvironmentVarDef>;
 
   metrics: string[] = [];
 
@@ -137,7 +137,7 @@ export class CreateExperimentTemplateComponent {
 
   removeVariable(table: MatTable<EnvironmentVarDef>, dataTable: EnvironmentVarDef[], index: number) {
     dataTable.splice(index, 1);
-    table?.renderRows();
+    table.renderRows();
   }
 
   addMetric(): void {

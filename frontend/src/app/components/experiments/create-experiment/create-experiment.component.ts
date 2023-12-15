@@ -30,6 +30,7 @@ export class CreateExperimentComponent implements OnInit {
     envs_optional: this.fb.group({}),
     experimentTemplate: new FormControl<ExperimentTemplate | null>(null, Validators.required)
   });
+  
 
   error: string = '';
 
