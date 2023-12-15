@@ -141,6 +141,10 @@ class ExperimentService:
             try:
                 experiment_run, experiment = await self.init_run(exp_run_id)
                 if experiment_run is None:
+                    self.logger.info(
+                        f"ExperimentRun id={exp_run_id} has not started "
+                        + "as the corresponding docker image was not built"
+                    )
                     return
 
                 # run the experiment by executing REANA workflow

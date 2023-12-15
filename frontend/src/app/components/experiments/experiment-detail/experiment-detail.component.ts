@@ -99,7 +99,10 @@ export class ExperimentDetailComponent {
     this.backend.executeExperimentRun(this.experiment.id)
       .pipe(
         catchError(err => {
-          if (err.status == 500) {
+          if (err.status == 401) {
+            this.snackBar.showError("An authorization error occured. Try logging out and then logging in again.");
+          }
+          else if (err.status == 500) {
             this.snackBar.showError(`Failed to create run: ${err.message}. ${err.error.detail}`);
           }
           else {

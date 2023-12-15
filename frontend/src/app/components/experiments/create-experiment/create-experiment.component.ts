@@ -52,8 +52,13 @@ export class CreateExperimentComponent implements OnInit {
       query_operator: QueryOperator.Or 
     }).pipe(
       catchError(err => {
-        this.error = err.message;
-        this.snackBar.showError("Couldn't load experiment types");
+        if (err.status == 401) {
+          this.snackBar.showError("An authorization error occured. Try logging out and then logging in again.");
+        }
+        else {
+          this.error = err.message;
+          this.snackBar.showError("Couldn't load experiment types");
+        }
         return of([]);
       })
     );

@@ -1,14 +1,15 @@
 import { Injectable } from '@angular/core';
 import { PageEvent } from '@angular/material/paginator';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable } from 'rxjs';
+import { Observable, catchError, of } from 'rxjs';
 import { Experiment } from 'src/app/models/experiment';
 import { BackendApiService } from 'src/app/services/backend-api.service';
+import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { environment } from 'src/environments/environment';
 
 @Injectable()
 export  abstract class ExperimentListBaseComponent {
-  protected experiments$: Observable<Experiment[]>;
+  protected experiments$: Observable<Experiment[] | null>;
   protected pagination = {
     pageSize: environment.DEFAULT_PAGE_SIZE,
     pageIndex: 0,
@@ -18,7 +19,8 @@ export  abstract class ExperimentListBaseComponent {
   constructor(
     protected backend: BackendApiService,
     protected route: ActivatedRoute,
-    protected router: Router
+    protected router: Router,
+    private snackBar: SnackBarService,
   ) { }
 
   ngOnInit(): void {
@@ -28,7 +30,7 @@ export  abstract class ExperimentListBaseComponent {
       this.pagination.pageIndex = params['pageIndex']
         ? parseInt(params['pageIndex']) : 0;
 
-        this.experiments$ = this.updateExperiments();
+        this._updateExperiments();
     });
 
     this.getExperimentsCount().subscribe(count => {
@@ -51,7 +53,18 @@ export  abstract class ExperimentListBaseComponent {
       queryParamsHandling: 'merge'
     });
 
-    this.experiments$  = this.updateExperiments();
+    this._updateExperiments();
+  }
+
+  _updateExperiments() {
+    this.experiments$  = this.updateExperiments().pipe(
+      catchError(error => {
+        if (error.status == 401) {
+          this.snackBar.showError("An authorization error occured. Try logging out and then logging in again.");
+        }
+        return of(null);
+      })
+    );
   }
 
   protected abstract updateExperiments(): Observable<Experiment[]>;

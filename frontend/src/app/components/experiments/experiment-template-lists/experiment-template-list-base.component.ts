@@ -2,14 +2,15 @@ import { Injectable } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { PageEvent } from '@angular/material/paginator';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable } from 'rxjs';
+import { Observable, catchError, of } from 'rxjs';
 import { ExperimentTemplate } from 'src/app/models/experiment-template';
 import { BackendApiService } from 'src/app/services/backend-api.service';
+import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { environment } from 'src/environments/environment';
 
 @Injectable()
 export  abstract class ExperimentTemplateListBaseComponent {
-  protected experimentTemplates$: Observable<ExperimentTemplate[]>;
+  protected experimentTemplates$: Observable<ExperimentTemplate[] | null>;
   protected pagination = {
     pageSize: environment.DEFAULT_PAGE_SIZE,
     pageIndex: 0,
@@ -34,7 +35,8 @@ export  abstract class ExperimentTemplateListBaseComponent {
   constructor(
     protected backend: BackendApiService,
     protected route: ActivatedRoute,
-    protected router: Router
+    protected router: Router,
+    private snackBar: SnackBarService,
   ) { }
 
   ngOnInit(): void {
@@ -44,7 +46,7 @@ export  abstract class ExperimentTemplateListBaseComponent {
       this.pagination.pageIndex = params['pageIndex']
         ? parseInt(params['pageIndex']) : 0;
 
-        this.experimentTemplates$ = this.updateExperimentTemplates();
+        this.updateTemplates();
     });
 
     this.getExperimentTemplatesCount().subscribe(count => {
@@ -66,8 +68,19 @@ export  abstract class ExperimentTemplateListBaseComponent {
       },
       queryParamsHandling: 'merge'
     });
+    
+    this.updateTemplates();    
+  }
 
-    this.experimentTemplates$ = this.updateExperimentTemplates();
+  updateTemplates() {
+    this.experimentTemplates$ = this.updateExperimentTemplates().pipe(
+      catchError((error) => {
+        if (error.status == 401) {
+          this.snackBar.showError("An authorization error occured. Try logging out and then logging in again.");
+        }
+        return of(null);
+      })
+    );
   }
 
   protected abstract updateExperimentTemplates(): Observable<ExperimentTemplate[]>;
