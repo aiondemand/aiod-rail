@@ -48,8 +48,8 @@ export class CreateExperimentTemplateComponent {
   optionalVarsData: EnvironmentVarDef[] = [];
   displayedEnvVarColumns: string[] = ['name', 'description', 'remove-btn'];
 
-  @ViewChild(MatTable) requiredVarsTable: MatTable<EnvironmentVarDef>;
-  @ViewChild(MatTable) optionalVarsTable: MatTable<EnvironmentVarDef>;
+  @ViewChild("requiredVarsTable") requiredVarsTable: MatTable<EnvironmentVarDef>;
+  @ViewChild("optionalVarsTable") optionalVarsTable: MatTable<EnvironmentVarDef>;
 
   metrics: string[] = [];
 
@@ -59,6 +59,10 @@ export class CreateExperimentTemplateComponent {
     private snackBar: SnackBarService,
     private router: Router
   ) { }
+
+  reserved_environment_variables: string[] = [
+    "MODEL_NAMES", "DATASET_NAMES", "METRICS"
+  ]
 
   debug() {
     console.log(this.experimentTemplateForm.value);
@@ -101,19 +105,38 @@ export class CreateExperimentTemplateComponent {
           this.router.navigate(['/experiments', 'templates', experimentTemplate.id]);
         },
         error: err => {
-          this.snackBar.showError("Couldn't create experiment");
+          if (err.status == 401) {
+            this.snackBar.showError("An authorization error occured. Try logging out and then logging in again.");
+          }
+          else {
+            this.snackBar.showError("Couldn't create experiment");
+          }
         }
       });
   }
 
-  addVariable(form: FormGroup, table: MatTable<EnvironmentVarDef>, dataTable: EnvironmentVarDef[]) {
-    var newEnvName = String(form.value.name.trim());
+  addVariableReq(form: FormGroup, dataTable: EnvironmentVarDef[]) {
+    this.addVariable(form, dataTable);
+    this.requiredVarsTable?.renderRows();
+  }
+
+  addVariableOpt(form: FormGroup, dataTable: EnvironmentVarDef[]) {
+    this.addVariable(form, dataTable);
+    this.optionalVarsTable?.renderRows();
+  }
+
+  addVariable(form: FormGroup, dataTable: EnvironmentVarDef[]) {
+    var newEnvName = String(form.value.name.trim().toUpperCase());
     var alreadyExists = this.requiredVarsData
       .concat(...this.optionalVarsData)
       .some(env => env.name == newEnvName);
 
     if (alreadyExists) {
       this.snackBar.show(`Environment variable ${newEnvName} has already been defined.`)
+      return;
+    }
+    if (this.reserved_environment_variables.includes(newEnvName)) {
+      this.snackBar.show(`Environment variable ${newEnvName} is one of the RESERVED ENVIRONMENT VARIABLES.`)
       return;
     }
 
@@ -123,12 +146,11 @@ export class CreateExperimentTemplateComponent {
     });
 
     form.reset();
-    table?.renderRows();
   }
 
   removeVariable(table: MatTable<EnvironmentVarDef>, dataTable: EnvironmentVarDef[], index: number) {
     dataTable.splice(index, 1);
-    table?.renderRows();
+    table.renderRows();
   }
 
   addMetric(): void {

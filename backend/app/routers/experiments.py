@@ -13,6 +13,7 @@ from app.models.experiment_run import ExperimentRun
 from app.schemas.experiment import ExperimentCreate, ExperimentResponse
 from app.schemas.experiment_run import ExperimentRunDetails, ExperimentRunResponse
 from app.services.experiment import ExperimentService
+from app.services.workflow import ReanaService
 
 router = APIRouter()
 
@@ -84,6 +85,7 @@ async def create_experiment(
 @router.get("/experiments/{id}/execute", response_model=ExperimentRunResponse)
 async def execute_experiment_run(
     id: PydanticObjectId,
+    user: Json = Depends(get_current_user),
     docker_service: ExperimentService = Depends(ExperimentService.get_docker_service),
 ) -> Any:
     experiment = await Experiment.get(id)
@@ -97,6 +99,16 @@ async def execute_experiment_run(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="ExperimentTemplate of this experiment is yet to be finished",
+        )
+    if experiment.created_by != user["email"]:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="You cannot execute experiments of other users.",
+        )
+    if not ReanaService.has_access():
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="REANA server is currently unavailable",
         )
 
     experiment_run = ExperimentRun(experiment_id=experiment.id)

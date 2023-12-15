@@ -3,8 +3,7 @@ from enum import Enum
 
 class TemplateState(str, Enum):
     CREATED = "CREATED"
-    BUILDING_IMAGE = "BUILDING_IMAGE"
-    PUSHING_IMAGE = "PUSHING_IMAGE"
+    IN_PROGRESS = "IN_PROGRESS"
     FINISHED = "FINISHED"
     CRASHED = "CRASHED"
 

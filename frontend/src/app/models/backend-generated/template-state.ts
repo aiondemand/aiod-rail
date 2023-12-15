@@ -14,12 +14,11 @@
 /**
  * An enumeration.
  */
-export type TemplateState = 'CREATED' | 'BUILDING_IMAGE' | 'PUSHING_IMAGE' | 'FINISHED' | 'CRASHED';
+export type TemplateState = 'CREATED' | 'IN_PROGRESS' | 'FINISHED' | 'CRASHED';
 
 export const TemplateState = {
     Created: 'CREATED' as TemplateState,
-    BuildingImage: 'BUILDING_IMAGE' as TemplateState,
-    PushingImage: 'PUSHING_IMAGE' as TemplateState,
+    InProgress: 'IN_PROGRESS' as TemplateState,
     Finished: 'FINISHED' as TemplateState,
     Crashed: 'CRASHED' as TemplateState
 };

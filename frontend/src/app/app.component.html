@@ -12,13 +12,23 @@
   </div>
   <div class="main-content">
     <nav mat-tab-nav-bar [tabPanel]="tabPanel" mat-stretch-tabs="false" animationDuration="0">
-      <a mat-tab-link [routerLink]="['/experiments', 'all']" #rla="routerLinkActive" routerLinkActive="active" [active]="rla.isActive">
+      <!-- <a mat-tab-link [routerLink]="['/experiments', 'all']" #rla="routerLinkActive" routerLinkActive="active" [active]="rla.isActive">
         Experiments
       </a>
       <a mat-tab-link [routerLink]="['/datasets', 'all']" #rlb="routerLinkActive" routerLinkActive="active" [active]="rlb.isActive">
         Datasets
       </a>
-      <a mat-tab-link [routerLink]="['/']" #rlc="routerLinkActive" routerLinkActive="active" [active]="rlc.isActive">
+      <a mat-tab-link [routerLink]="['/about']" #rlc="routerLinkActive" routerLinkActive="active" [active]="rlc.isActive">
+        About
+      </a> -->
+
+      <a mat-tab-link [routerLink]="['/experiments']"  #rla="routerLinkActive" routerLinkActive="active" [active]="rla.isActive">
+        Experiments
+      </a>
+      <a mat-tab-link [routerLink]="['/datasets']"  #rlb="routerLinkActive" routerLinkActive="active" [active]="rlb.isActive">
+        Datasets
+      </a>
+      <a mat-tab-link [routerLink]="['/about']"  #rlc="routerLinkActive" routerLinkActive="active" [active]="rlc.isActive">
         About
       </a>
     </nav>

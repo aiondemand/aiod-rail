@@ -12,8 +12,7 @@
             </ng-container>
             <ng-container *ngIf="template.approved">
                 <span *ngIf="template.state == 'CREATED'"><mat-icon>schedule</mat-icon>Scheduled</span>
-                <span class="in-progress" *ngIf="template.state == 'BUILDING_IMAGE'"><mat-icon>rotate_right</mat-icon>Building image</span>
-                <span class="in-progress" *ngIf="template.state == 'PUSHING_IMAGE'"><mat-icon>rotate_right</mat-icon>Pushing image</span>
+                <span class="in-progress" *ngIf="template.state == 'IN_PROGRESS'"><mat-icon>rotate_right</mat-icon>Building image</span>
                 <span class="crashed" *ngIf="template.state == 'CRASHED'"><mat-icon>error</mat-icon>Crashed</span>
             </ng-container>
             

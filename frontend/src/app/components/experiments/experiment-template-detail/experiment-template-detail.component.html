@@ -84,42 +84,68 @@
         influence the execution of the script. The meaning of the variables is fully 
         determined by script.py and its author.
     </p>
+
+    <div *ngIf="experimentTemplate.envs_required.length > 0 && experimentTemplate.envs_optional.length > 0">
+        No environment variables were set in this Experiment Template.
+    </div>
+
+    <div *ngIf="experimentTemplate.envs_required.length > 0">
+        <h4>Required environment variables</h4>
+        <div class="data">
+            <table mat-table [dataSource]="experimentTemplate.envs_required" class="mat-elevation-z8">
+                <ng-container matColumnDef="name">
+                    <th mat-header-cell *matHeaderCellDef>Name</th>
+                    <td mat-cell *matCellDef="let env"> {{env.name}}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="description">
+                    <th mat-header-cell *matHeaderCellDef>Description</th>
+                    <td mat-cell *matCellDef="let env"> {{env.description}} </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedEnvVarColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedEnvVarColumns;"></tr>
+            </table>
+        </div>
+    </div>
+
+    <div *ngIf="experimentTemplate.envs_optional.length > 0">
+        <h4 class="upper-margin">Optional environment variables</h4>
+        <div class="data">
+            <table mat-table [dataSource]="experimentTemplate.envs_optional" class="mat-elevation-z8">
+                <ng-container matColumnDef="name">
+                    <th mat-header-cell *matHeaderCellDef>Name</th>
+                    <td mat-cell *matCellDef="let env"> {{env.name}}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="description">
+                    <th mat-header-cell *matHeaderCellDef>Description</th>
+                    <td mat-cell *matCellDef="let env"> {{env.description}} </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedEnvVarColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedEnvVarColumns;"></tr>
+            </table>
+        </div>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <div *ngIf="experimentTemplate.available_metrics.length > 0">
+        <h2>Supported metrics</h2>
+        <p>
+            TODO Metrics that were defined to be saved.
+        </p>
+
+        <mat-chip-listbox>
+            <mat-chip class="metric-chip" *ngFor="let metric of experimentTemplate.available_metrics" [disabled]="true">
+                {{metric}}
+            </mat-chip>
+        </mat-chip-listbox>
+    </div>
     
-    <h4>Required environment variables</h4>
-    <div class="data">
-        <table mat-table [dataSource]="experimentTemplate.envs_required" class="mat-elevation-z8">
-            <ng-container matColumnDef="name">
-                <th mat-header-cell *matHeaderCellDef>Name</th>
-                <td mat-cell *matCellDef="let env"> {{env.name}}</td>
-            </ng-container>
 
-            <ng-container matColumnDef="description">
-                <th mat-header-cell *matHeaderCellDef>Description</th>
-                <td mat-cell *matCellDef="let env"> {{env.description}} </td>
-            </ng-container>
-
-            <tr mat-header-row *matHeaderRowDef="displayedEnvVarColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedEnvVarColumns;"></tr>
-        </table>
-    </div>
-
-    <h4 class="upper-margin">Optional environment variables</h4>
-    <div class="data">
-        <table mat-table [dataSource]="experimentTemplate.envs_optional" class="mat-elevation-z8">
-            <ng-container matColumnDef="name">
-                <th mat-header-cell *matHeaderCellDef>Name</th>
-                <td mat-cell *matCellDef="let env"> {{env.name}}</td>
-            </ng-container>
-
-            <ng-container matColumnDef="description">
-                <th mat-header-cell *matHeaderCellDef>Description</th>
-                <td mat-cell *matCellDef="let env"> {{env.description}} </td>
-            </ng-container>
-
-            <tr mat-header-row *matHeaderRowDef="displayedEnvVarColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedEnvVarColumns;"></tr>
-        </table>
-    </div>
+    
 
     <!-- TODO later related experiments, datasets, models... -->
 </div>

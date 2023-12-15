@@ -27,23 +27,23 @@ const routes: Routes = [
     component: ExperimentsComponent,
     children: [
       // experiments
+      { path: '', redirectTo: 'all', pathMatch: 'full' },
       { path: 'all', component: AllExperimentListComponent},
-      { path: 'my',  component: MyExperimentListComponent, canActivate: [authGuard]  },
+      { path: 'my',  component: MyExperimentListComponent, canActivate: [authGuard] },
       { path: 'create', component: CreateExperimentComponent, canActivate: [authGuard] },
       { 
         path: ':id', 
         component: ExperimentDetailComponent
       },
 
-      
       // experiment runs
       { path: 'runs/:runId', component: ExperimentRunDetailComponent },
       
-
       // experiment templates
       {
         path: 'templates', 
         children: [
+          { path: '', redirectTo: 'all', pathMatch: 'full' },
           { path: "all", component: AllExperimentTemplateList},
           { path: "my", component: MyExperimentTemplateList, canActivate: [authGuard] },
           { path: 'create', component: CreateExperimentTemplateComponent, canActivate: [authGuard] },
@@ -55,17 +55,21 @@ const routes: Routes = [
   {
     path: 'datasets', component: DatasetsComponent,
     children: [
+      { path: '', redirectTo: 'all', pathMatch: 'full' }, 
       { path: 'all', component: DatasetListComponent },
       { path: 'saved', component: SavedDatasetsComponent },
-      { path: 'create', component: CreateDatasetComponent, canActivate: [authGuard] },
+      { path: 'create', component: CreateDatasetComponent },
       { path: ':id', component: DatasetDetailComponent }
     ]
   },
-  { path: 'publications', component: PublicationsComponent }
+  // { path: 'publications', component: PublicationsComponent }
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, { bindToComponentInputs: true })],
+  imports: [RouterModule.forRoot(routes, { 
+    bindToComponentInputs: true, 
+    anchorScrolling: 'enabled', 
+  })],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }
