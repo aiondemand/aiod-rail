@@ -1,0 +1,98 @@
+<div class="section-container">
+    <div class="content-panel">
+        <h1>RAIL: Research and Innovation AI Lab</h1>
+        
+        <p>
+            RAIL is a tool that allows AI practitioners to explore and use AI assets directly in AIoD.
+            RAIL is developed within the <a href="https://ai4europe.eu" target="_blank">AI4Europe project</a> as one of the core services of the <a href="https://ai4europe.eu" target="_blank">AI on Demand platform.</a>
+        </p>
+
+        <p>
+            More extensively, RAIL:
+        </p>
+        <ul>
+            <li>Is a web application</li>
+            <li>… that enables <b>AI practitioners</b></li>
+            <li>… to <b>work with AIoD AI Assets</b> (explore, search, compare, …)</li>
+            <li>… and <b>create experiments</b> that are reproducible and reusable</li>
+            <li>… that are <b>executable directly in the AIoD platform</b> supported by its infrastructure</li>
+            <li>… and that <b>make use of AIoD AI Assets</b>.</li>
+        </ul>
+
+        <p>
+            <b>Important note:</b> RAIL is currently in the beta version. It is likely that you will encounter bugs and other issues. Please, report them to us using the feedback button on the left.
+        </p>
+
+
+        <!-- ============================================================ -->
+        <h2>Example workflow</h2>
+        <p>Before digging deeper, let's have a look at a specific workflow you are able to achieve with RAIL.</p>
+        <p>
+            Let's say you are a data scientist working on a project that requires you to find a well performing pretrained sentiment classification model available in HuggingFace.
+            You want to test different models on your dataset to estimate which model will perform the best and based on the results, you want to select the best model for your project.
+        </p>
+        <p>In RAIL, you can accomplish this quite complex task by performing these steps:</p>
+        <ol>
+            <li>As running Experiments and uploading datasets requires you to be logged in, you need to log in first. RAIL uses AI on Demand login mechanism based on OAuth2 and it supports multiple identity providers.</li>
+            <li>
+                <a [routerLink]="['/datasets', 'create']">Upload your dataset</a> to HuggingFace directly in RAIL. It will be then immediately available in RAIL and in the AI on Demand platform. <b>[available soon]</b>
+            </li>
+            <li><a [routerLink]="['/experiments', 'create']">Create an Experiment</a> that links your dataset and a model you want to evaluate the data on. An Experiment must be linked to a particular Experiment template, 
+                that represents a definition of <i>runtime environment</i>, <i>software dependencies</i> and <i>code</i> - in your case, you need an Experiment template 
+                that takes HuggingFace dataset and model and perform a classification task. If no such Experiment template is available in the 
+                <a [routerLink]="['/experiments', 'templates', 'all']">list of all templates</a>, you can <a [routerLink]="['/experiments', 'templates', 'create']">
+                    create your own</a> (and share it with others or reuse it on your own).</li>
+            <li>Execute the Experiment. The Experiment will be executed by creating an instance of your experiment called Experiment Run that will be run in the AI on Demand platform and the results will be available in RAIL.</li>
+        </ol>
+        
+
+        <!-- ============================================================ -->
+        <h2>Explore AI Assets available in AIoD</h2>
+        <p>
+            Currently, RAIL supports the exploration of <a [routerLink]="['/datasets', 'all']" routerLinkActive="router-link-active"> AI Datasets</a> that are available in the AI on Demand platform.
+            In the future releases, we will further allow users to also explore AI Publications as well as AI Models that are available in the AI on Demand platform.
+        </p>
+
+
+        <!-- ============================================================ -->
+        <h2>Compose AI assets available in AIoD into executable experiments</h2>
+        <p>
+            RAIL allows AI practitioners to compose AI assets available in AIoD into executable experiments that are reproducible and reusable by introducing two main concepts:
+        </p>
+    
+        <h3>Experiment template</h3>
+        <p>
+            <a [routerLink]="['/experiments', 'templates', 'all']">Experiment template</a> is a combination of <i>runtime environment</i>, <i>software dependencies</i> and <i>code</i>.
+        </p>
+        <ul>
+            <li><b>Runtime environment</b> is a specification of the environment in which the experiment is executed. It includes the specification of the hardware and software environment.</li>
+            <li><b>Software dependencies</b> are the software packages that are required to execute the experiment.</li>
+            <li><b>Code</b> is the code that is executed in the experiment.</li>
+        </ul>
+        <p>See "<a [routerLink]="['/experiments', 'templates', 'create']">Create a template</a>" section for more details.</p>
+        <p>
+            Experiment template on its own is not executable. You need to create an Experiment based on a specific template to be able to execute it.
+            The Experiment defines particular parameters that are injected into the Template through Environment variables to make it executable.
+            These include AI Assets, environment variables supported by the author of the template (they are defined by the author), and other parameters.
+        </p>
+
+        <h3>Experiment</h3>
+        <p>
+            <a [routerLink]="['/experiments', 'all']">Experiment</a> is a particular executable instance of an Experiment template. Experiments are composed of AI assets and are executed in the AIoD platform. Experiments are reproducible and reusable.
+        </p>
+        <p>
+            When you create an experiment, you select an Experiment template that you want to use as a basis for your experiment. Then, you select particular AI assets and values of environment variables that you want to use in your experiment.
+        </p>
+        <p>
+            When you execute an experiment, the following happens under the hood:
+        </p>
+        <ol>
+            <li>An instance of Experiment Run is created (it is available in the Experiment detail page).</li>
+            <li>A Docker image specified by the linked Experiment template with all the software dependencies installed is built.</li>
+            <li>A Docker container is started. AI Assets and environment variables are available globally in the container.</li>
+            <li>A file called script.py is executed.</li>
+            <li>After the Experiment Run finishes, the Docker logs and metrics (if any) are available on the detail of the Run.</li>
+        </ol>
+        <p>See "<a [routerLink]="['/experiments', 'create']">Create an experiment</a>" section for more details.</p>
+    </div>
+</div>

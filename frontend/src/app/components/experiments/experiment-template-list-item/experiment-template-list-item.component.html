@@ -8,7 +8,7 @@
     <mat-card-content>
         <div class="state" *ngIf="template.state != 'FINISHED'">
             <ng-container *ngIf="!template.approved">
-                <span><mat-icon matTooltip="Experiment templates created by users are manually reviewed and then approved for use">search</mat-icon>Waiting for approval</span>
+                <span class="crashed"><mat-icon matTooltip="Experiment templates created by users are manually reviewed and then approved for use">search</mat-icon>Waiting for approval</span>
             </ng-container>
             <ng-container *ngIf="template.approved">
                 <span *ngIf="template.state == 'CREATED'"><mat-icon>schedule</mat-icon>Scheduled</span>

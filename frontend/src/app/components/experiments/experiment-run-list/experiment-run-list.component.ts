@@ -31,7 +31,7 @@ export class ExperimentRunListComponent implements OnInit {
   }
 
   updateRuns(): void {
-    this.runs$ = this.backend.getExperimentRuns(this.experiment.id, 0, 1000)
+    this.runs$ = this.backend.getExperimentRuns(this.experiment.id)
       .pipe(
         map(runs => runs.sort((a, b) => Date.parse(b.created_at) - Date.parse(a.created_at))),
         catchError(err => {

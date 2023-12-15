@@ -2,12 +2,13 @@ from datetime import datetime
 from typing import Any
 
 from beanie import PydanticObjectId, operators
+from beanie.odm.queries.find import FindMany
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import Json
 
-from app.authentication import get_current_user
+from app.authentication import get_current_user, get_current_user_optional
 from app.config import settings
-from app.helpers import Pagination
+from app.helpers import Pagination, QueryOperator
 from app.models.experiment_template import ExperimentTemplate
 from app.schemas.experiment_template import (
     ExperimentTemplateCreate,
@@ -19,69 +20,21 @@ router = APIRouter()
 
 
 @router.get("/experiment-templates", response_model=list[ExperimentTemplateResponse])
-async def get_experiment_templates(pagination: Pagination = Depends()) -> Any:
-    experiment_templates = await ExperimentTemplate.find_all(
-        skip=pagination.offset, limit=pagination.limit
-    ).to_list()
-
-    return [
-        experiment_template.map_to_response()
-        for experiment_template in experiment_templates
-    ]
-
-
-@router.get(
-    "/experiment-templates/approved", response_model=list[ExperimentTemplateResponse]
-)
-async def get_approved_templates(pagination: Pagination = Depends()) -> Any:
-    experiment_templates = await ExperimentTemplate.find(
-        ExperimentTemplate.approved == True,  # noqa: E712
-        skip=pagination.offset,
-        limit=pagination.limit,
-    ).to_list()
-
-    return [
-        experiment_template.map_to_response()
-        for experiment_template in experiment_templates
-    ]
-
-
-@router.get("/experiment-templates/my", response_model=list[ExperimentTemplateResponse])
-async def get_my_experiment_templates(
-    user: Json = Depends(get_current_user), pagination: Pagination = Depends()
+async def get_experiment_templates(
+    user: Json = Depends(get_current_user_optional),
+    pagination: Pagination = Depends(),
+    include_mine: bool = False,
+    include_approved: bool = False,
+    query_operator: QueryOperator = QueryOperator.AND,
 ) -> Any:
-    experiment_templates = await ExperimentTemplate.find(
-        ExperimentTemplate.created_by == user["email"],
-        skip=pagination.offset,
-        limit=pagination.limit,
-    ).to_list()
-
-    return [
-        experiment_template.map_to_response()
-        for experiment_template in experiment_templates
-    ]
-
-
-# TODO rethink whether this functionality shouldnt be under /experiment-templates route
-# since current /experiment-templates route (that returns ALL templates) is not being
-# used on frontend
-@router.get(
-    "/experiment-templates/all-view", response_model=list[ExperimentTemplateResponse]
-)
-async def get_experiment_templates_all_view(
-    user: Json = Depends(get_current_user), pagination: Pagination = Depends()
-) -> Any:
-    """
-    a custom view of experiment templates that returns
-    all approved templates and all current user templates
-    """
-    search_query = operators.Or(
-        ExperimentTemplate.approved == True,  # noqa: E712
-        ExperimentTemplate.created_by == user["email"],
+    result_set = find_specific_experiment_templates(
+        include_mine=include_mine,
+        include_approved=include_approved,
+        query_operator=query_operator,
+        user=user,
+        pagination=pagination,
     )
-    experiment_templates = await ExperimentTemplate.find(
-        search_query, skip=pagination.offset, limit=pagination.limit
-    ).to_list()
+    experiment_templates = await result_set.to_list()
 
     return [
         experiment_template.map_to_response()
@@ -96,38 +49,19 @@ async def get_experiment_template(id: PydanticObjectId) -> Any:
 
 
 @router.get("/count/experiment-templates", response_model=int)
-async def get_experiment_templates_count() -> Any:
-    return await ExperimentTemplate.count()
-
-
-@router.get("/count/experiment-templates/approved", response_model=int)
-async def get_approved_experiment_templates_count() -> Any:
-    num_templates = await ExperimentTemplate.find(
-        ExperimentTemplate.approved == True  # noqa: E712
-    ).count()
-    return num_templates
-
-
-@router.get("/count/experiment-templates/my", response_model=int)
-async def get_my_experiment_templates_count(
-    user: Json = Depends(get_current_user),
+async def get_experiment_templates_count(
+    user: Json = Depends(get_current_user_optional),
+    include_mine: bool = False,
+    include_approved: bool = False,
+    query_operator: QueryOperator = QueryOperator.AND,
 ) -> Any:
-    num_templates = await ExperimentTemplate.find(
-        ExperimentTemplate.created_by == user["email"]
-    ).count()
-    return num_templates
-
-
-@router.get("/count/experiment-templates/all-view", response_model=int)
-async def get_experiment_templates_all_view_count(
-    user: Json = Depends(get_current_user),
-) -> Any:
-    search_query = operators.Or(
-        ExperimentTemplate.approved == True,  # noqa: E712
-        ExperimentTemplate.created_by == user["email"],
+    result_set = find_specific_experiment_templates(
+        include_mine=include_mine,
+        include_approved=include_approved,
+        query_operator=query_operator,
+        user=user,
     )
-    num_templates = await ExperimentTemplate.find(search_query).count()
-    return num_templates
+    return await result_set.count()
 
 
 @router.post(
@@ -145,7 +79,7 @@ async def create_experiment_template(
     experiment_template = await experiment_template.create()
 
     experiment_template.initialize_files(
-        dockerfile=experiment_template_req.dockerfile,
+        base_image=experiment_template_req.base_image,
         pip_requirements=experiment_template_req.pip_requirements,
         script=experiment_template_req.script,
     )
@@ -159,7 +93,7 @@ async def approve_experiment_template(
     approve_value: bool = True,
     docker_service: ExperimentService = Depends(ExperimentService.get_docker_service),
 ) -> Any:
-    if password != settings.PASSWORD_FOR_APPROVAL:
+    if password != settings.PASSWORD_FOR_TEMPLATE_APPROVAL:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Wrong password given",
@@ -177,3 +111,42 @@ async def approve_experiment_template(
 
     await ExperimentTemplate.replace(experiment_template)
     await docker_service.add_image_to_build(experiment_template.id)
+
+
+def find_specific_experiment_templates(
+    include_mine: bool,
+    include_approved: bool,
+    query_operator: QueryOperator,
+    user: Json,
+    pagination: Pagination = None,
+) -> FindMany[ExperimentTemplate]:
+    search_condtions = []
+    page_kwargs = (
+        {"skip": pagination.offset, "limit": pagination.limit}
+        if pagination is not None
+        else {}
+    )
+
+    if len(user) == 0 and include_mine and not include_approved:
+        # You need to be authorized to see only your experiment templates
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="This endpoint requires authorization. You need to be logged in.",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    if len(user) == 0:
+        include_mine = False
+    if include_mine:
+        search_condtions.append(ExperimentTemplate.created_by == user["email"])
+    if include_approved:
+        search_condtions.append(ExperimentTemplate.approved == True)  # noqa: E712
+
+    if len(search_condtions) > 0:
+        multi_query = (
+            operators.Or(*search_condtions)
+            if query_operator == QueryOperator.OR
+            else operators.And(*search_condtions)
+        )
+        return ExperimentTemplate.find(multi_query, **page_kwargs)
+
+    return ExperimentTemplate.find_all(**page_kwargs)

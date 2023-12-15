@@ -1,3 +1,5 @@
+from enum import Enum
+
 import httpx
 from pydantic import BaseModel
 
@@ -7,6 +9,11 @@ from app.config import settings
 class Pagination(BaseModel):
     offset: int = 0
     limit: int = settings.DEFAULT_RESPONSE_LIMIT
+
+
+class QueryOperator(str, Enum):
+    OR = "OR"
+    AND = "AND"
 
 
 class AIoDClientWrapper:

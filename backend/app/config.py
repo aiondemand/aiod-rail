@@ -9,7 +9,8 @@ EXPERIMENT_RUN_DIR_PREFIX = "run-"
 EXPERIMENT_TEMPLATE_DIR_PREFIX = "template-"
 METRICS_FILENAME = "metrics.json"
 LOGS_FILENAME = "logs.txt"
-INTERVAL_5SEC = 5
+LITTLE_NAP = 5
+CHECK_REANA_CONNECTION_INTERVAL = 60
 RUN_TEMP_OUTPUT_FOLDER = "output-temp"
 RUN_OUTPUT_FOLDER = "output"
 REPOSITORY_NAME = "rail-exp-templates"
@@ -33,7 +34,7 @@ class AIODKeycloakConfig(BaseModel):
 
 
 class Settings(BaseSettings):
-    PASSWORD_FOR_APPROVAL: str
+    PASSWORD_FOR_TEMPLATE_APPROVAL: str
 
     MONGODB_URI: str
     MONGODB_DBNAME: str

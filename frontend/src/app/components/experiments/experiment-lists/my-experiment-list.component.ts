@@ -11,12 +11,20 @@ import { Experiment } from 'src/app/models/experiment';
 export class MyExperimentListComponent extends ExperimentListBaseComponent {
 
   protected override getExperimentsCount(): Observable<number> {
-    return this.backend.getMyExperimentsCount();
+    return this.backend.getExperimentsCount({
+      include_mine: true
+    });
   }
 
   protected override updateExperiments(): Observable<Experiment[]>  {
-    return this.backend.getMyExperiments(this.pagination.pageIndex * this.pagination.pageSize,
-      this.pagination.pageSize
+    return this.backend.getExperiments(
+      {
+        offset: this.pagination.pageIndex * this.pagination.pageSize,
+        limit: this.pagination.pageSize
+      },
+      {
+        include_mine: true
+      }
     );
   }
 }

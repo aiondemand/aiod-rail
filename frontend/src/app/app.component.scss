@@ -74,7 +74,11 @@
   }
 
   app-login-logout {
-    margin-bottom: $margin-double;
+    width: 90%;
+  }
+
+  app-feedback {
+    margin-bottom: $margin-default;
     width: 90%;
   }
 }
@@ -87,8 +91,4 @@
 
 .selected-route {
   text-decoration: underline;
-}
-
-app-login-logout {
-  width: 100%;
 }

@@ -9,7 +9,7 @@ import { environment } from 'src/environments/environment';
 
 @Injectable()
 export  abstract class ExperimentTemplateListBaseComponent {
-  protected experiment_templates$: Observable<ExperimentTemplate[]>;
+  protected experimentTemplates$: Observable<ExperimentTemplate[]>;
   protected pagination = {
     pageSize: environment.DEFAULT_PAGE_SIZE,
     pageIndex: 0,
@@ -44,7 +44,7 @@ export  abstract class ExperimentTemplateListBaseComponent {
       this.pagination.pageIndex = params['pageIndex']
         ? parseInt(params['pageIndex']) : 0;
 
-        this.experiment_templates$  = this.updateExperimentTemplates();
+        this.experimentTemplates$ = this.updateExperimentTemplates();
     });
 
     this.getExperimentTemplatesCount().subscribe(count => {
@@ -67,7 +67,7 @@ export  abstract class ExperimentTemplateListBaseComponent {
       queryParamsHandling: 'merge'
     });
 
-    this.experiment_templates$  = this.updateExperimentTemplates();
+    this.experimentTemplates$ = this.updateExperimentTemplates();
   }
 
   protected abstract updateExperimentTemplates(): Observable<ExperimentTemplate[]>;

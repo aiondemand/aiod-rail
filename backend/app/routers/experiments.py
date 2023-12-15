@@ -1,12 +1,13 @@
 from typing import Any
 
-from beanie import PydanticObjectId
+from beanie import PydanticObjectId, operators
+from beanie.odm.queries.find import FindMany
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import PlainTextResponse
 from pydantic import Json
 
-from app.authentication import get_current_user
-from app.helpers import Pagination
+from app.authentication import get_current_user, get_current_user_optional
+from app.helpers import Pagination, QueryOperator
 from app.models.experiment import Experiment
 from app.models.experiment_run import ExperimentRun
 from app.schemas.experiment import ExperimentCreate, ExperimentResponse
@@ -20,22 +21,20 @@ router = APIRouter()
     "/experiments",
     response_model=list[ExperimentResponse],
 )
-async def get_experiments(pagination: Pagination = Depends()) -> Any:
-    experiments = await Experiment.find_all(
-        skip=pagination.offset, limit=pagination.limit
-    ).to_list()
-    return [experiment.dict() for experiment in experiments]
-
-
-@router.get("/experiments/my", response_model=list[ExperimentResponse])
-async def get_my_experiments(
-    user: Json = Depends(get_current_user), pagination: Pagination = Depends()
+async def get_experiments(
+    user: Json = Depends(get_current_user_optional),
+    pagination: Pagination = Depends(),
+    include_mine: bool = False,
+    query_operator: QueryOperator = QueryOperator.AND,
 ) -> Any:
-    experiments = await Experiment.find(
-        Experiment.created_by == user["email"],
-        skip=pagination.offset,
-        limit=pagination.limit,
-    ).to_list()
+    result_set = find_specific_experiments(
+        include_mine=include_mine,
+        query_operator=query_operator,
+        user=user,
+        pagination=pagination,
+    )
+    experiments = await result_set.to_list()
+
     return [experiment.dict() for experiment in experiments]
 
 
@@ -43,19 +42,15 @@ async def get_my_experiments(
     "/count/experiments",
     response_model=int,
 )
-async def get_experiments_count() -> Any:
-    return await Experiment.count()
-
-
-@router.get(
-    "/count/experiments/my",
-    response_model=int,
-)
-async def get_my_experiments_count(user: Json = Depends(get_current_user)) -> Any:
-    number_of_my_experiments = await Experiment.find(
-        Experiment.created_by == user["email"]
-    ).count()
-    return number_of_my_experiments
+async def get_experiments_count(
+    user: Json = Depends(get_current_user_optional),
+    include_mine: bool = False,
+    query_operator: QueryOperator = QueryOperator.AND,
+) -> Any:
+    result_set = find_specific_experiments(
+        include_mine=include_mine, query_operator=query_operator, user=user
+    )
+    return await result_set.count()
 
 
 @router.get(
@@ -151,3 +146,41 @@ async def get_experiment_run_logs(id: PydanticObjectId) -> str:
     raise HTTPException(
         status_code=status.HTTP_405_METHOD_NOT_ALLOWED, detail="Method not implemented"
     )
+
+
+def find_specific_experiments(
+    include_mine: bool,
+    query_operator: QueryOperator,
+    user: Json,
+    pagination: Pagination = None,
+) -> FindMany[Experiment]:
+    search_condtions = []
+    page_kwargs = (
+        {"skip": pagination.offset, "limit": pagination.limit}
+        if pagination is not None
+        else {}
+    )
+
+    if len(user) == 0 and include_mine:
+        # You need to be authorized to see only your experiments
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="This endpoint requires authorization. You need to be logged in.",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    if len(user) == 0:
+        # for now this if block is redundant, but once there is more
+        # queries, it might be relevant
+        include_mine = False
+    if include_mine:
+        search_condtions.append(Experiment.created_by == user["email"])
+
+    if len(search_condtions) > 0:
+        multi_query = (
+            operators.Or(*search_condtions)
+            if query_operator == QueryOperator.OR
+            else operators.And(*search_condtions)
+        )
+        return Experiment.find(multi_query, **page_kwargs)
+
+    return Experiment.find_all(**page_kwargs)

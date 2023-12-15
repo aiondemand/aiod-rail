@@ -44,13 +44,12 @@ class ExperimentTemplateBase(BaseModel):
     envs_optional: list[EnvironmentVarDef]
     # TODO: Rethink the metrics logic
     available_metrics: list[str]
-    dockerfile: str
     script: str
     pip_requirements: str
 
 
 class ExperimentTemplateCreate(ExperimentTemplateBase):
-    pass
+    base_image: str
 
 
 class ExperimentTemplateResponse(ExperimentTemplateBase):
@@ -58,6 +57,7 @@ class ExperimentTemplateResponse(ExperimentTemplateBase):
     created_at: datetime
     updated_at: datetime
     state: TemplateState
+    dockerfile: str
     approved: bool
 
 

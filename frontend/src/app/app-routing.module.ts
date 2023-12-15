@@ -17,15 +17,17 @@ import { ExperimentTemplateDetailComponent } from './components/experiments/expe
 import { CreateExperimentTemplateComponent } from './components/experiments/create-experiment-template/create-experiment-template.component';
 import { AllExperimentTemplateList } from './components/experiments/experiment-template-lists/all-experiment-template-list.component';
 import { MyExperimentTemplateList } from './components/experiments/experiment-template-lists/my-experiment-template-list.component';
+import { AboutComponent } from './components/general/about/about.component';
 
 const routes: Routes = [
-  { path: '', redirectTo: 'experiments/all', pathMatch: 'full' },
+  { path: '', redirectTo: 'about', pathMatch: 'full' },
+  { path: 'about', component: AboutComponent },
   {
     path: 'experiments',
     component: ExperimentsComponent,
     children: [
       // experiments
-      { path: 'all', component: AllExperimentListComponent },
+      { path: 'all', component: AllExperimentListComponent},
       { path: 'my',  component: MyExperimentListComponent, canActivate: [authGuard]  },
       { path: 'create', component: CreateExperimentComponent, canActivate: [authGuard] },
       { 
@@ -42,7 +44,7 @@ const routes: Routes = [
       {
         path: 'templates', 
         children: [
-          { path: "all", component: AllExperimentTemplateList },
+          { path: "all", component: AllExperimentTemplateList},
           { path: "my", component: MyExperimentTemplateList, canActivate: [authGuard] },
           { path: 'create', component: CreateExperimentTemplateComponent, canActivate: [authGuard] },
           { path: ':id', component: ExperimentTemplateDetailComponent }

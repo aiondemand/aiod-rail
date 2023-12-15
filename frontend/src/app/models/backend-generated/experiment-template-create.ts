@@ -23,7 +23,7 @@ export interface ExperimentTemplateCreate {
     envs_required: Array<EnvironmentVarDef>;
     envs_optional: Array<EnvironmentVarDef>;
     available_metrics: Array<string>;
-    dockerfile: string;
+    base_image: string;
     script: string;
     pip_requirements: string;
 }

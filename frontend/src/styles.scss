@@ -43,6 +43,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 /* ====== APP ======= */
 /* ================== */
 @import './variables.scss';
+// @import '~highlight.js/style/a11y-dark.css';
 
 /* Container used for layout of sections like Experiments, Datasets or Publications */
 .section-container {
@@ -87,4 +88,14 @@ mat-divider {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+}
+
+td.hljs-ln-numbers {
+  color: #ccc;
+  border-right: 1px solid #CCC;
+  padding-right: 10px !important;
+}
+
+td.hljs-ln-code {
+  padding-left: 10px !important;
 }

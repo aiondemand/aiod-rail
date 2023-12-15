@@ -77,14 +77,16 @@
 </mat-card>
 
 
-<div class="no-experiment-templates" *ngIf="(experiment_templates$ | async)?.length == 0">
-    <h2>There are currently no experiment templates.</h2>
-</div>
-
-<div class="template-list">
-    <app-experiment-template-list-item 
-    *ngFor="let template of (experiment_templates$ | async)" 
-    [template]="template"
-    ></app-experiment-template-list-item>
+<div *ngIf="(experimentTemplates$ | async) as experimentTemplates">
+    <div class="no-experiment-templates" *ngIf="experimentTemplates.length == 0">
+        <h2>There are currently no experiment templates.</h2>
+    </div>
+    
+    <div class="template-list">
+        <app-experiment-template-list-item 
+        *ngFor="let template of experimentTemplates" 
+        [template]="template"
+        ></app-experiment-template-list-item>
+    </div>
 </div>
 

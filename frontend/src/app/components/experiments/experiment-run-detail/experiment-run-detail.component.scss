@@ -1,8 +1,18 @@
 @import '../../../../variables.scss';
 
-.experiment-run-logs {
+
+.logs {
+    // margin-top: 0;
+    // margin-bottom: 2em;
+
+    border: 1px #ccc solid;
+    display: block;
+    
+    max-width: 100%;
+    max-height: 495px;
+
     white-space: pre-wrap;
-    // font-family: Roboto, "Helvetica Neue", sans-serif;
+    overflow-y: auto;
 }
 
 .experiment-run-details {

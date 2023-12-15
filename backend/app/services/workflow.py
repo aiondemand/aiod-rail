@@ -44,6 +44,12 @@ class ReanaService:
             *args, **kwargs, access_token=settings.REANA_ACCESS_TOKEN
         )
 
+    @staticmethod
+    def get_workflows(*args, **kwargs):
+        return client.get_workflows(
+            *args, **kwargs, access_token=settings.REANA_ACCESS_TOKEN
+        )
+
     @classmethod
     async def run_workflow(
         cls, experiment_run: ExperimentRun, experiment: Experiment

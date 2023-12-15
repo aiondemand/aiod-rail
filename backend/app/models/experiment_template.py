@@ -37,9 +37,16 @@ class ExperimentTemplate(Document):
     class Settings:
         name = "experimentTemplates"
 
-    def initialize_files(self, dockerfile, pip_requirements, script):
+    def initialize_files(self, base_image, pip_requirements, script):
         base_path = settings.get_experiment_template_path(template_id=self.id)
         base_path.mkdir(exist_ok=True, parents=True)
+
+        # TODO check https://docs.bentoml.org/en/latest/guides/containerization.html#dockerfile-template
+        # for working with dockerfile templates
+        with open("app/data/template-Dockerfile") as f:
+            dockerfile_template_lines = f.readlines()
+            dockerfile_template_lines[0] = f"FROM {base_image}\n"
+            dockerfile = "".join(dockerfile_template_lines)
 
         base_path.joinpath("Dockerfile").write_text(dockerfile)
         base_path.joinpath("requirements.txt").write_text(pip_requirements)
