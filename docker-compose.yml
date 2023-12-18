@@ -9,11 +9,8 @@ services:
     restart: always
     ports:
       - "80:80"
-#      - "443:443"
     volumes:
       - ./nginx:/etc/nginx/conf.d:ro
-#      - /data/certbot/conf:/etc/letsencrypt
-#      - /data/certbot/www:/var/www/certbot
     networks:
       - app
 
@@ -44,6 +41,9 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - eee_data:/data/eee
+    command: >
+      --port 80
+      --root-path /api
     depends_on:
       backend-db:
         condition: service_started
