@@ -1,0 +1,34 @@
+@import '../../../../variables.scss';
+
+mat-card {
+    margin: $margin-default;
+
+    mat-card-header {
+        cursor: pointer;
+    }
+
+    mat-card-actions {
+        button {
+            margin-right: $margin-half;
+        }
+    }
+}
+
+.experiment-information {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    align-items: center;
+    padding-bottom: $margin-default;
+    margin-top: $margin-default;
+
+    div {
+        display: flex;
+        align-items: center;
+        margin-right: $margin-default;
+
+        span {
+            margin-right: $margin-half;
+        }
+    }
+}

@@ -1,7 +1,0 @@
-beanie==1.19.0
-fastapi==0.95.1
-httpx==0.24.0
-python-dotenv==1.0.0
-python-keycloak==3.0.0
-python-multipart==0.0.6
-uvicorn==0.22.0

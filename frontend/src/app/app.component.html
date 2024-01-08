@@ -1,0 +1,39 @@
+<div class="root">
+  <div class="left-sidebar">
+    <div class="aiod-logo" [routerLink]="['/']">
+      <img [routerLink]="['/']" src="../assets/Main_logo_RGB_colors.png">
+      <span class="rail-text-1">RAIL: Research and</span>
+      <span class="rail-text-2">Innovation AI Lab</span>
+    </div>
+    <div class="beta-disclaimer">Beta version</div>
+    <div class="delimiter"></div>
+    <app-login-logout></app-login-logout>
+    <app-feedback></app-feedback>
+  </div>
+  <div class="main-content">
+    <nav mat-tab-nav-bar [tabPanel]="tabPanel" mat-stretch-tabs="false" animationDuration="0">
+      <!-- <a mat-tab-link [routerLink]="['/experiments', 'all']" #rla="routerLinkActive" routerLinkActive="active" [active]="rla.isActive">
+        Experiments
+      </a>
+      <a mat-tab-link [routerLink]="['/datasets', 'all']" #rlb="routerLinkActive" routerLinkActive="active" [active]="rlb.isActive">
+        Datasets
+      </a>
+      <a mat-tab-link [routerLink]="['/about']" #rlc="routerLinkActive" routerLinkActive="active" [active]="rlc.isActive">
+        About
+      </a> -->
+
+      <a mat-tab-link [routerLink]="['/experiments']"  #rla="routerLinkActive" routerLinkActive="active" [active]="rla.isActive">
+        Experiments
+      </a>
+      <a mat-tab-link [routerLink]="['/datasets']"  #rlb="routerLinkActive" routerLinkActive="active" [active]="rlb.isActive">
+        Datasets
+      </a>
+      <a mat-tab-link [routerLink]="['/about']"  #rlc="routerLinkActive" routerLinkActive="active" [active]="rlc.isActive">
+        About
+      </a>
+    </nav>
+    <mat-tab-nav-panel #tabPanel>
+      <router-outlet></router-outlet>
+    </mat-tab-nav-panel>
+  </div>
+</div>

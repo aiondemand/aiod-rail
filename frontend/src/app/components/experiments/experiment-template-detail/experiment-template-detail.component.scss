@@ -1,0 +1,68 @@
+@import '../../../../variables.scss';
+
+h1 {
+    span {
+        font-size: 0.5em;
+        opacity: 0.75;
+        font-weight: normal;
+    }
+}
+
+.code {
+    margin-top: 0;
+    margin-bottom: 2em;
+
+    border: 1px #ccc solid;
+    display: block;
+    
+    width: 100%;
+    max-height: 495px;
+
+    white-space: pre-wrap;
+    overflow-y: auto;
+    
+}
+
+.description-section {
+    pre {
+        white-space: pre-wrap;
+        font-family: Roboto, "Helvetica Neue", sans-serif;
+    }
+}
+
+.header-with-info {
+    h4 {
+        margin-top: 0;
+        margin-bottom: 0;
+    }
+    display: flex;
+    align-items: center;
+    gap: 0.25em;
+    margin-top: 1em;
+    
+    mat-icon {
+        color: grey;
+    }
+}
+
+.data {
+    padding-left: 1em;
+}
+
+.italic-editor-name {
+    color: #ccc;
+    text-align: right;
+
+    padding-right: 1em;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.upper-margin {
+    margin-top: 3em;
+}
+
+.metric-chip {
+    background-color: rgb(161, 170, 222) !important;
+    opacity: 1 !important;
+}

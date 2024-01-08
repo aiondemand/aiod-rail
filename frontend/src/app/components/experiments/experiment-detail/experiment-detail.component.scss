@@ -1,0 +1,65 @@
+@import '../../../../variables.scss';
+
+
+.experiment-short-description {
+    // show maximally 2 lines of text
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.experiment-description {
+    padding-top: $margin-half;
+
+    pre {
+        white-space: pre-wrap;
+        font-family: Roboto, "Helvetica Neue", sans-serif;
+    }
+}
+
+.experiment-metrics {
+    display: flex;
+    align-items: center;
+
+    span {
+        flex-wrap: wrap;
+        margin-right: $margin-half;
+    }
+
+    .icon {
+        display: flex;
+        align-items: center;
+    }
+}
+
+.experiment-basic-information {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: left;
+
+    .detail {
+        display: flex;
+        align-items: center;
+        margin-right: $margin-default;
+        margin-bottom: $margin-default;
+        width: fit-content;
+
+        .icon {
+            margin-right: $margin-half;
+        }
+    }
+}
+
+.experiment-run-create-btn-wrapper {
+    display: flex;
+    gap: 1em;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.metric-chip {
+    background-color: rgb(161, 170, 222) !important;
+    opacity: 1 !important;
+}

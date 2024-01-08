@@ -1,0 +1,94 @@
+@import '../variables.scss';
+
+.root {
+  display: flex;
+  min-height: 100vh;
+}
+
+.beta-disclaimer  {
+  margin-top: -2em;
+  font-style: italic;
+  font-size: 1em;
+  letter-spacing: 1px
+}
+
+.left-sidebar {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  border: 1px solid gray;
+  height: calc(100vh - 2 * $margin-double);
+  align-items: center;
+  margin: $margin-double;
+
+  // Stick the sidebar to the top of the page
+  position: sticky;
+  top: $margin-double;
+
+  div {
+    margin-bottom: $margin-default;
+  }
+
+  .aiod-logo {
+    display: flex;
+    position: relative;
+    cursor: pointer;
+
+    a:visited {
+      text-decoration: none;
+    }
+    text-decoration: none;
+
+    img {
+      width: 100%;
+      // width: 320px;
+    }
+
+    .rail-text-1 {
+      position: absolute;
+      bottom: 52px;
+      right: 35px;
+      font-size: 11px;
+      z-index: -1;
+    }
+
+    .rail-text-2 {
+      position: absolute;
+      bottom: 40px;
+      right: 35px;
+      font-size: 11px;
+      z-index: -1;
+    }
+    
+    .rail-text-3 {
+      position: absolute;
+      bottom: 46px;
+      right: 44px;
+      font-size: 11px;
+      z-index: -1;
+    }
+  }
+
+  .delimiter {
+    flex-grow: 1;
+  }
+
+  app-login-logout {
+    width: 90%;
+  }
+
+  app-feedback {
+    margin-bottom: $margin-default;
+    width: 90%;
+  }
+}
+
+.main-content {
+  flex: 1;
+  overflow: auto;
+  margin: $margin-double;
+}
+
+.selected-route {
+  text-decoration: underline;
+}

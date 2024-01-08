@@ -1,0 +1,42 @@
+@import '../../../../variables.scss';
+
+
+.logs {
+    // margin-top: 0;
+    // margin-bottom: 2em;
+
+    border: 1px #ccc solid;
+    display: block;
+    
+    max-width: 100%;
+    max-height: 495px;
+
+    white-space: pre-wrap;
+    overflow-y: auto;
+}
+
+.experiment-run-details {
+    table {
+        tr {
+            th, td {
+                text-align: left;
+                padding-right: $margin-default;
+                padding-bottom: $margin-half;
+                vertical-align: top;
+            }
+        }
+    }
+}
+
+.status {
+    display: flex;
+    align-items: center;
+    vertical-align: top;
+    margin-right: $margin-default;
+    margin-bottom: $margin-default;
+    width: fit-content;
+
+    .icon {
+        margin-left: $margin-default;
+    }
+}

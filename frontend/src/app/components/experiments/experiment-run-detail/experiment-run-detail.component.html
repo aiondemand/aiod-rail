@@ -1,0 +1,47 @@
+<mat-spinner *ngIf="!experimentRun"></mat-spinner>
+
+<ng-container *ngIf="experimentRun">
+    <h1>Experiment run - {{experimentRun.id}}</h1>
+
+    <div class="experiment-run-details">
+        <h2>Details</h2>
+        <table>
+            <tr>
+                <th>Created at</th>
+                <td>{{experimentRun.created_at | date:'medium'}}</td>
+            </tr>
+            <tr>
+                <th>Updated at</th>
+                <td>{{experimentRun.updated_at | date:'medium'}}</td>
+            </tr>
+            <tr>
+                <th>State</th>
+                <td class="state">{{experimentRun.state}}
+                    <span *ngIf="experimentRun.state == 'CREATED'" class="material-symbols-outlined icon">schedule</span>
+                    <span *ngIf="experimentRun.state == 'IN_PROGRESS'" class="material-symbols-outlined">rotate_right</span>
+                    <span *ngIf="experimentRun.state == 'FINISHED'" class="material-symbols-outlined icon">check_circle</span>
+                    <span *ngIf="experimentRun.state == 'CRASHED'" class="material-symbols-outlined">error</span>
+                </td>
+            </tr>
+            <tr>
+                <th>Metrics</th>
+                <td>
+                    <div *ngFor="let metric of experimentRun.metrics | keyvalue">{{metric.key}}: {{metric.value}}</div>
+                </td>
+            </tr>
+            <tr *ngIf="wandbLink(logs) as wandbRunLink">
+                <!-- TODO - demo hack. If ExperimentTemplate doesn't support WandB, it will work, but it will be unnecessary (will always show nothing).-->
+                <th>WandB link</th>
+                <td>
+                    <a [href]="wandbRunLink" target="_blank">Open run {{getRunNameFromWandBLink(wandbRunLink)}} in WandB</a>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div>
+        <h2>Logs</h2>
+        <pre class="logs"><code [highlight]="logs" [languages]="['plaintext']" [lineNumbers]="true"></code></pre>
+    </div>
+</ng-container>
+

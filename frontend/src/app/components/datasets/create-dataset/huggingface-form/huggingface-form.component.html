@@ -1,0 +1,17 @@
+<div [formGroup]="formGroup">
+    <div class="note">
+        AIoD will not permanently store these credentials. They will be used to create the dataset in HuggingFace and then discarded.
+    </div>
+    <mat-form-field>
+        <mat-label>Huggingface username</mat-label>
+        <input matInput placeholder="Username" formControlName="username">
+    </mat-form-field>
+
+    <mat-form-field>
+        <mat-label>Huggingface token</mat-label>
+        <input matInput placeholder="Token" type="password" formControlName="secretToken">
+    </mat-form-field>
+
+    <!-- File upload form -->
+    <input type="file" placeholder="File" formControlName="file" (change)="onFileChange($event)">
+</div>

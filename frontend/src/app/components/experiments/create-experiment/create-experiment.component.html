@@ -1,0 +1,121 @@
+<h1>Create an experiment</h1>
+
+<form class="create-experiment-form" [formGroup]="experimentForm" (ngSubmit)="onSubmit()">
+    <div class="form-error-message" *ngIf="error">
+        {{error}}
+    </div>
+
+    <div class="basic-information">
+        <h2>Basic information</h2>
+    </div>
+
+    <mat-form-field>
+        <mat-label>Name</mat-label>
+        <input matInput placeholder="Name" formControlName="name">
+    </mat-form-field>
+
+    <mat-form-field>
+        <mat-label>Description</mat-label>
+        <textarea [rows]="10" matInput placeholder="Description" formControlName="description"></textarea>
+    </mat-form-field>
+
+    <mat-divider></mat-divider>
+
+    <h2>Link related AI assets</h2>
+    <div class="related-publications">
+        <h3>Publications</h3>
+        <mat-form-field>
+            <mat-label>Related publications</mat-label>
+            <mat-select (selectionChange)="onSelectPublication($event)">
+                <mat-option *ngFor="let publication of (publications$ | async)" [value]="publication">
+                    {{ publication.name }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-chip-listbox>
+            <mat-chip *ngFor="let publication of publications.controls" (removed)="onRemovePublication(publication)">
+                {{ publication.value?.name | ellipsis: 40 }}
+                <mat-icon matChipRemove>cancel</mat-icon>
+            </mat-chip>
+        </mat-chip-listbox>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <h2>Experiment template specific information</h2>
+    <i>Only approved experiment templates are visible</i>
+    <mat-form-field>
+        <mat-label>Experiment template</mat-label>
+        <mat-select id="experiment-type" formControlName="experimentTemplate">
+            <mat-select-trigger>{{experimentTemplate?.value?.name}}</mat-select-trigger>
+            <mat-option *ngFor="let type of (experimentTemplates$ | async)" [value]="type">
+                {{ type.name }}
+                <a class="show-experiment-type-detail" [routerLink]="['/experiments', 'templates', type.id]" target="_blank"><button color="primary" mat-button>[details]</button></a>
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <div class="experiment-type-specific-inputs" *ngIf="experimentTemplate?.value as experimentTemplateValue">
+        <ng-container *ngIf="experimentTemplateValue.id">
+            <div class="metrics" *ngIf="experimentTemplateValue.available_metrics.length > 0">
+                <h3>Select metrics that will be calculated and shown on RAIL</h3>
+                <div class="metrics-list" *ngIf="metrics" formGroupName="metrics">
+                    <mat-checkbox *ngFor="let metric of experimentTemplateValue.available_metrics" [formControlName]="metric">
+                        {{ metric }}
+                    </mat-checkbox>
+                </div>
+            </div>
+            <div class="models">
+                <h3>Select a model</h3>
+                <mat-form-field>
+                    <input matInput placeholder="Model" [matAutocomplete]="autoModel" formControlName="model">
+                    <mat-autocomplete #autoModel="matAutocomplete" [displayWith]="displayChosenModel">
+                        <mat-option *ngFor="let m of models$ | async" [value]="m">
+                            {{ m.name }}
+                        </mat-option>
+                    </mat-autocomplete>
+                </mat-form-field>
+            </div>
+            <div class="datasets">
+                <h3>Select a dataset</h3>
+                <mat-form-field>
+                    <input matInput placeholder="Dataset" [matAutocomplete]="autoDataset" formControlName="dataset">
+                    <mat-autocomplete #autoDataset="matAutocomplete" [displayWith]="displayChosenDataset">
+                        <mat-option *ngFor="let ds of datasets$ | async" [value]="ds">
+                            {{ ds.name }}
+                        </mat-option>
+                    </mat-autocomplete>
+                </mat-form-field>
+            </div>
+        </ng-container>
+
+        <div class="create-experiment-run-form">
+            <h3>Specify environment variables</h3>
+            
+            <div *ngIf="experimentTemplateValue.envs_required.length > 0 && experimentTemplateValue.envs_optional.length > 0">
+                No environment variables were set in this Experiment Template.
+            </div>
+
+            <div formGroupName="envs_required" *ngIf="experimentTemplateValue.envs_required.length > 0">
+                <b>Required environment variables</b>
+                <mat-form-field *ngFor="let env of experimentTemplateValue.envs_required">
+                    <mat-label>{{env.name}}</mat-label>
+                    <input [type]="'text'" matInput placeholder="{{env.name}}" [formControlName]="env.name" />
+                </mat-form-field>
+            </div>
+    
+            <div formGroupName="envs_optional" *ngIf="experimentTemplateValue.envs_optional.length > 0">
+                <b>Optional environment variables</b>
+                <mat-form-field *ngFor="let env of experimentTemplateValue.envs_optional">
+                    <mat-label>{{env.name}}</mat-label>
+                    <input matInput placeholder="{{env.name}}" [formControlName]="env.name" />
+                </mat-form-field>
+            </div>
+        </div>
+    </div>
+
+
+    <button mat-raised-button color="primary" type="submit" [disabled]="!experimentForm.valid">
+        Submit
+    </button>
+</form>
