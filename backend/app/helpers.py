@@ -1,4 +1,5 @@
 from enum import Enum
+from pathlib import Path
 
 import httpx
 from pydantic import BaseModel
@@ -14,6 +15,11 @@ class Pagination(BaseModel):
 class QueryOperator(str, Enum):
     OR = "OR"
     AND = "AND"
+
+
+class WorkflowState(BaseModel):
+    success: bool
+    error_message: str = ""
 
 
 class AIoDClientWrapper:
@@ -35,3 +41,8 @@ class AIoDClientWrapper:
 
 
 aiod_client_wrapper = AIoDClientWrapper()
+
+
+def create_env_file(env_vars: dict[str, str], path: Path) -> None:
+    lines = [f"{k}={v}" for k, v in env_vars.items()]
+    path.write_text("\n".join(lines))

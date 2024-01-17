@@ -12,8 +12,8 @@ from app.models.experiment import Experiment
 from app.models.experiment_run import ExperimentRun
 from app.schemas.experiment import ExperimentCreate, ExperimentResponse
 from app.schemas.experiment_run import ExperimentRunDetails, ExperimentRunResponse
-from app.services.experiment import ExperimentService
-from app.services.workflow import ReanaService
+from app.services.scheduling import ExperimentScheduling
+from app.services.workflow_engines.reana import ReanaService
 
 router = APIRouter()
 
@@ -86,7 +86,10 @@ async def create_experiment(
 async def execute_experiment_run(
     id: PydanticObjectId,
     user: Json = Depends(get_current_user),
-    docker_service: ExperimentService = Depends(ExperimentService.get_docker_service),
+    exp_scheduling: ExperimentScheduling = Depends(ExperimentScheduling.get_service),
+    reana_service: ReanaService = Depends(
+        ReanaService.get_service
+    ),  # TODO I want to use dependency injection in here (polymorphism?) so that we would use WorkflowBaseEngine instead
 ) -> Any:
     experiment = await Experiment.get(id)
 
@@ -105,7 +108,7 @@ async def execute_experiment_run(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="You cannot execute experiments of other users.",
         )
-    if not ReanaService.has_access():
+    if not await reana_service.ping():
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="REANA server is currently unavailable",
@@ -114,8 +117,7 @@ async def execute_experiment_run(
     experiment_run = ExperimentRun(experiment_id=experiment.id)
     experiment_run = await experiment_run.create()
 
-    await docker_service.add_run_to_execute(experiment_run.id)
-
+    await exp_scheduling.add_run_to_execute(experiment_run.id)
     return experiment_run.map_to_response()
 
 

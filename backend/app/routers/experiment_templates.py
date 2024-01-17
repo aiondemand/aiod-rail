@@ -14,7 +14,7 @@ from app.schemas.experiment_template import (
     ExperimentTemplateCreate,
     ExperimentTemplateResponse,
 )
-from app.services.experiment import ExperimentService
+from app.services.scheduling import ExperimentScheduling
 
 router = APIRouter()
 
@@ -91,7 +91,7 @@ async def approve_experiment_template(
     id: PydanticObjectId,
     password: str,
     approve_value: bool = True,
-    docker_service: ExperimentService = Depends(ExperimentService.get_docker_service),
+    exp_scheduling: ExperimentScheduling = Depends(ExperimentScheduling.get_service),
 ) -> Any:
     if password != settings.PASSWORD_FOR_TEMPLATE_APPROVAL:
         raise HTTPException(
@@ -110,7 +110,7 @@ async def approve_experiment_template(
     experiment_template.updated_at = datetime.utcnow()
 
     await ExperimentTemplate.replace(experiment_template)
-    await docker_service.add_image_to_build(experiment_template.id)
+    await exp_scheduling.add_image_to_build(experiment_template.id)
 
 
 def find_specific_experiment_templates(
