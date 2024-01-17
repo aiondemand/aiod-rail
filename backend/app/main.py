@@ -67,7 +67,7 @@ async def shutdown_event():
     if getattr(app, "db", None) is not None:
         app.db.client.close()
 
-    await DockerService.get_service().terminate()
+    await ContainerBasePlatform.get_service().terminate()
 
     await aiod_client_wrapper.stop()
 

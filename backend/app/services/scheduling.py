@@ -6,12 +6,8 @@ import shutil
 
 from beanie import PydanticObjectId
 
-from app.config import (
-    CHECK_REANA_CONNECTION_INTERVAL,
-    LITTLE_NAP,
-    RUN_OUTPUT_FOLDER,
-    settings,
-)
+from app.config import CHECK_REANA_CONNECTION_INTERVAL, LITTLE_NAP, settings
+from app.helpers import WorkflowState
 from app.models.experiment import Experiment
 from app.models.experiment_run import ExperimentRun
 from app.models.experiment_template import ExperimentTemplate
@@ -34,7 +30,7 @@ class ExperimentScheduling:
         container_platform: ContainerBasePlatform,
         workflow_engine: WorkflowBaseEngine,
     ) -> None:
-        self.logger = logging.getLogger("uvicorn")  # TODO should have its own logger?
+        self.logger = logging.getLogger("uvicorn")
 
         self.container_platform = container_platform
         self.workflow_engine = workflow_engine
@@ -115,64 +111,106 @@ class ExperimentScheduling:
         while True:
             if self.image_semaphore._value > 0:
                 temp_id = await self.get_image_to_build()
-                asyncio.create_task(self.build_and_push_image(temp_id))
+                asyncio.create_task(self.build_experiment_environment(temp_id))
             await asyncio.sleep(LITTLE_NAP)
 
-    async def execute_experiment_run(
-        self, exp_run_id: PydanticObjectId
-    ) -> None:  # TODO test whether it works
+    async def execute_experiment_run(self, exp_run_id: PydanticObjectId) -> None:
         async with self.experiment_semaphore:
+            experiment_run = await ExperimentRun.get(exp_run_id)
+            experiment = await Experiment.get(experiment_run.experiment_id)
+            experiment_template = await ExperimentTemplate.get(
+                experiment.experiment_template_id
+            )
+
+            if (
+                await self._rebuild_image_if_necessary(
+                    experiment_run, experiment_template
+                )
+                is False
+            ):
+                return
+
+            experiment_run.update_state(RunState.IN_PROGRESS)
+            await experiment_run.replace()
+            self.logger.info(
+                f"=== ExperimentRun id={experiment_run.id} "
+                + f"(retry_count={experiment_run.retry_count}) "
+                + f"- Experiment id={experiment.id} INITIALIZED ==="
+            )
+
             try:
-                experiment_run = await ExperimentRun.get(exp_run_id)
-                experiment = await Experiment.get(experiment_run.experiment_id)
-
-                environment_variables = await self.general_workflow_preparation(
-                    experiment_run, experiment
-                )
-                await self.workflow_engine.preprocess_workflow(
-                    experiment_run, experiment, environment_variables
-                )
-                experiment_run.update_state(RunState.IN_PROGRESS)
-                await experiment_run.replace()
-
-                # TODO
-                # if experiment_run is None:
-                #     self.logger.info(
-                #         f"ExperimentRun id={exp_run_id} has not started "
-                #         + "as the corresponding docker image was not built"
-                #     )
-                #     return
-
-                workflow_state = await self.workflow_engine.run_workflow(experiment_run)
-                await self.workflow_engine.postprocess_workflow(experiment_run)
-                await self.workflow_engine.save_metadata(experiment_run, workflow_state)
-
-                if workflow_state.success:
-                    experiment_run.update_state(RunState.FINISHED)
-                    await experiment_run.replace()
-                elif (
-                    experiment_run.retry_count
-                    < settings.MAX_EXPERIMENT_RUN_ATTEMPTS - 1
-                ):
-                    experiment_run.update_state(RunState.CRASHED)
-                    new_exp_run = experiment_run.retry_failed_run()
-
-                    await new_exp_run.create()
-                    await experiment_run.replace()
-                    await self.add_run_to_execute(new_exp_run.id)
-                else:
-                    experiment_run.update_state(RunState.CRASHED)
-                    await experiment_run.replace()
-
-                self.logger.info(
-                    f"=== ExperimentRun id={experiment_run.id} "
-                    + f"(retry_count={experiment_run.retry_count}) CONCLUDED ==="
-                )
+                workflow_state = await self._exec_experiment(experiment_run, experiment)
             except WorkflowConnectionExcpetion as e:
                 self.logger.error(str(e))
                 await self.add_run_to_execute(exp_run_id)
+                return
 
-    async def general_workflow_preparation(
+            should_retry = (
+                experiment_run.retry_count < settings.MAX_EXPERIMENT_RUN_ATTEMPTS - 1
+                and workflow_state.success is False
+            )
+            if workflow_state.success:
+                new_state = RunState.FINISHED
+            elif should_retry:
+                new_state = RunState.IN_PROGRESS
+            else:
+                new_state = RunState.CRASHED
+
+            experiment_run.update_state(new_state)
+            await experiment_run.replace()
+            if should_retry:
+                new_exp_run = experiment_run.retry_failed_run()
+                await new_exp_run.create()
+                await self.add_run_to_execute(new_exp_run.id)
+
+            self.logger.info(
+                f"=== ExperimentRun id={experiment_run.id} "
+                + f"(retry_count={experiment_run.retry_count}) CONCLUDED ==="
+            )
+
+    async def _exec_experiment(
+        self, experiment_run: ExperimentRun, experiment: Experiment
+    ) -> WorkflowState:
+        environment_variables = await self._general_workflow_preparation(
+            experiment_run, experiment
+        )
+        await self.workflow_engine.preprocess_workflow(
+            experiment_run, experiment, environment_variables
+        )
+        workflow_state = await self.workflow_engine.run_workflow(experiment_run)
+        await self.workflow_engine.postprocess_workflow(experiment_run)
+        await self.workflow_engine.save_metadata(experiment_run, workflow_state)
+
+        return workflow_state
+
+    async def _rebuild_image_if_necessary(
+        self, experiment_run: ExperimentRun, experiment_template: ExperimentTemplate
+    ) -> bool:
+        image_exists = await self.container_platform.check_image(experiment_template)
+        if image_exists:
+            return True
+
+        # image rebuilding
+        experiment_template.update_state(TemplateState.CREATED)
+        experiment_template.retry_count = 0
+        await experiment_template.replace()
+
+        successful_image_rebuild = self._build_image_multiple_attempts(
+            experiment_template
+        )
+        if successful_image_rebuild is False:
+            self.logger.error(
+                f"ExperimentRun id={experiment_run.id} has not started "
+                + "as the corresponding image was not successfully rebuilt"
+            )
+            experiment_run.update_state(RunState.CRASHED)
+            await experiment_run.replace()
+
+        return successful_image_rebuild
+
+        pass
+
+    async def _general_workflow_preparation(
         self, experiment_run: ExperimentRun, experiment: Experiment
     ) -> dict[str, str]:
         model_names = [await get_model_name(x) for x in experiment.model_ids]
@@ -190,11 +228,11 @@ class ExperimentScheduling:
         exp_run_folder = settings.get_experiment_run_path(experiment_run.id)
         if exp_run_folder.exists():
             shutil.rmtree(exp_run_folder)
-        (exp_run_folder / RUN_OUTPUT_FOLDER).mkdir(parents=True)
+        exp_run_folder.mkdir(parents=True)
 
         return environment_variables
 
-    async def build_and_push_image(self, template_id: PydanticObjectId) -> bool:
+    async def build_experiment_environment(self, template_id: PydanticObjectId) -> bool:
         async with self.image_semaphore:
             experiment_template = await ExperimentTemplate.get(template_id)
 
@@ -203,41 +241,44 @@ class ExperimentScheduling:
                 + f"ExperimentTemplate id={template_id} "
                 + "INITIALIZED ==="
             )
-
-            while True:
-                experiment_template.update_state(TemplateState.IN_PROGRESS)
-                await experiment_template.replace()
-
-                image_build_state = await self.container_platform.build_image(
-                    experiment_template
-                )
-
-                should_retry = (
-                    experiment_template.retry_count
-                    < settings.MAX_IMAGE_BUILDS_ATTEMPTS - 1
-                    and image_build_state is False
-                )
-
-                if image_build_state:
-                    new_state = TemplateState.FINISHED
-                elif should_retry:
-                    new_state = TemplateState.IN_PROGRESS
-                else:
-                    new_state = TemplateState.CRASHED
-
-                experiment_template.update_state(new_state)
-                experiment_template.retry_count += int(should_retry)
-                await experiment_template.replace()
-
-                if should_retry:
-                    continue
-                break
-
+            image_build_state = await self._build_image_multiple_attempts(
+                experiment_template
+            )
             self.logger.info(
                 "=== Creation of an environment "
                 + f"for ExperimentTemplate id={template_id} "
                 + "CONCLUDED ==="
             )
+            return image_build_state
+
+    async def _build_image_multiple_attempts(
+        self, experiment_template: ExperimentTemplate
+    ) -> bool:
+        while True:
+            experiment_template.update_state(TemplateState.IN_PROGRESS)
+            await experiment_template.replace()
+
+            image_build_state = await self.container_platform.build_image(
+                experiment_template
+            )
+            should_retry = (
+                experiment_template.retry_count < settings.MAX_IMAGE_BUILDS_ATTEMPTS - 1
+                and image_build_state is False
+            )
+
+            if image_build_state:
+                new_state = TemplateState.FINISHED
+            elif should_retry:
+                new_state = TemplateState.IN_PROGRESS
+            else:
+                new_state = TemplateState.CRASHED
+
+            experiment_template.update_state(new_state)
+            experiment_template.retry_count += int(should_retry)
+            await experiment_template.replace()
+
+            if should_retry:
+                continue
             return image_build_state
 
     @staticmethod

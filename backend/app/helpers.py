@@ -1,3 +1,4 @@
+import logging
 from enum import Enum
 from pathlib import Path
 
@@ -46,3 +47,15 @@ aiod_client_wrapper = AIoDClientWrapper()
 def create_env_file(env_vars: dict[str, str], path: Path) -> None:
     lines = [f"{k}={v}" for k, v in env_vars.items()]
     path.write_text("\n".join(lines))
+
+
+def setup_logging(logger_name: str) -> logging.Logger:
+    uvicorn_formatter = logging.getLogger("uvicorn").handlers[0].formatter
+    console_handler = logging.StreamHandler()
+    console_handler.setFormatter(uvicorn_formatter)
+
+    logger = logging.getLogger(logger_name)
+    logger.setLevel(logging.INFO)
+    logger.addHandler(console_handler)
+
+    return logger

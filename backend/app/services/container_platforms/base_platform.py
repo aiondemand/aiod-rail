@@ -6,8 +6,14 @@ from app.models.experiment_template import ExperimentTemplate
 
 
 class ContainerBasePlatform(ABC):
+    SERVICE: ContainerBasePlatform | None = None
+
     @abstractmethod
     async def login_to_registry(self) -> bool:
+        pass
+
+    @abstractmethod
+    async def check_image(self, experiment_template: ExperimentTemplate) -> bool:
         pass
 
     @abstractmethod
@@ -22,6 +28,10 @@ class ContainerBasePlatform(ABC):
     async def init() -> ContainerBasePlatform:
         pass
 
-    @abstractstaticmethod
+    @staticmethod
+    def set_service(service: ContainerBasePlatform) -> None:
+        ContainerBasePlatform.SERVICE = service
+
+    @staticmethod
     def get_service() -> ContainerBasePlatform:
-        pass
+        return ContainerBasePlatform.SERVICE

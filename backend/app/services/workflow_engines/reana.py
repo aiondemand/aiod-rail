@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 import asyncio
-import json
 import logging
+import os
 import shutil
 import subprocess
+from pathlib import Path
 
 from reana_client.api import client
 
@@ -30,10 +31,9 @@ class ReanaConnectionException(WorkflowConnectionExcpetion):
 
 
 class ReanaService(WorkflowBaseEngine):
-    REANA_SERVICE: ReanaService | None = None
-
     def __init__(self) -> None:
-        self.logger = logging.getLogger("uvicorn")  # TODO should have its own logger?
+        # self.logger = setup_logging("reana")
+        self.logger = logging.getLogger("uvicorn")
 
     async def ping(self) -> bool:
         for _ in range(5):
@@ -49,10 +49,9 @@ class ReanaService(WorkflowBaseEngine):
         experiment: Experiment,
         environment_variables: dict[str, str],
     ) -> bool:
-        workflow_name = self.get_workflow_name(experiment_run)
-
-        # delete existing workflows tied to this experiment run if any exists
         try:
+            # delete existing workflows tied to this experiment run if any exists
+            workflow_name = self.get_workflow_name(experiment_run)
             workflow_runs = await self._call_reana_function(
                 "get_workflows", type="batch", workflow=workflow_name
             )
@@ -80,51 +79,10 @@ class ReanaService(WorkflowBaseEngine):
         exp_template_folder = settings.get_experiment_template_path(
             experiment.experiment_template_id
         )
-
         create_env_file(environment_variables, exp_run_folder / ".env")
         shutil.copy(exp_template_folder / "reana.yaml", exp_run_folder / "reana.yaml")
         shutil.copy(exp_template_folder / "script.py", exp_run_folder / "script.py")
 
-        # TODO this needs to be covered later on
-
-        # # check whether docker image exists, and if not, rebuild it again
-        # experiment_template = await ExperimentTemplate.get(
-        #     experiment.experiment_template_id
-        # )
-        # image_name = experiment_template.get_image_name()
-        # try:
-        #     self.docker_client.images.get_registry_data(image_name)
-        # except APIError:
-        #     self.logger.warning(
-        #         "Docker image for ExperimentTemplate "
-        #         + f"id={experiment_template.id} was not found. "
-        #         + "Rebuilding the image..."
-        #     )
-        #     experiment_template.retry_count = 0
-        #     experiment_template.state = TemplateState.CREATED
-        #     await experiment_template.replace()
-
-        #     # TODO this implementation is flawed as if our application crashes
-        #     # while the image is being built in this stage, we end up with 1 unfinished
-        #     # experiment template image building and 1 experiment run,
-        #     # hence once we start up the application again, both processes will
-        #     # run in parallel and effectively we will build the same image twice
-        #     # in the same time, which is not ideal...
-        #     successful_image_build = await self.build_and_push_image(
-        #         experiment_template.id
-        #     )
-        #     if not successful_image_build:
-        #         # since we were not able to rebuild an image, we conclude this
-        #         # experiment run -> we dont even attempt to retry it
-        #         experiment_run.update_state(RunState.CRASHED)
-        #         await experiment_run.replace()
-        #         return None, None
-
-        self.logger.info(
-            f"=== ExperimentRun id={experiment_run.id} "
-            + f"(retry_count={experiment_run.retry_count}) "
-            + f"- Experiment id={experiment.id} INITIALIZED ==="
-        )
         return True
 
     async def run_workflow(self, experiment_run: ExperimentRun) -> WorkflowState:
@@ -148,11 +106,12 @@ class ReanaService(WorkflowBaseEngine):
                 shell=True,
                 text=True,
             )
-            if result.returncode != 0:
-                self.logger.error(error_log_msg)
-                return WorkflowState(success=False, error_message=error_return_msg)
         except Exception as e:
             self.logger.error(error_log_msg, exc_info=e)
+            return WorkflowState(success=False, error_message=error_return_msg)
+
+        if result.returncode != 0:
+            self.logger.error(error_log_msg)
             return WorkflowState(success=False, error_message=error_return_msg)
         return WorkflowState(success=True)
 
@@ -177,30 +136,48 @@ class ReanaService(WorkflowBaseEngine):
             # TODO: Handle exception properly
             pass
 
-    # TODO later
     async def download_files(
-        self, experiment_run: ExperimentRun, filepath: str, is_directory: bool = False
+        self,
+        experiment_run: ExperimentRun,
+        workflow_filepath: str,
+        local_save_dirpath: Path,
     ) -> bool:
-        # workflow_name = self.get_workflow_name(experiment_run)
+        workflow_name = self.get_workflow_name(experiment_run)
+
         try:
-            pass
+            matched_files = await self._call_reana_function(
+                "list_files", workflow=workflow_name, file_name=workflow_filepath
+            )
+            for matched_file in matched_files:
+                if matched_file["name"].startswith(workflow_filepath) is False:
+                    continue
+                binary, _, _ = await self._call_reana_function(
+                    "download_file",
+                    workflow=workflow_name,
+                    file_name=matched_file["name"],
+                )
+
+                savepath_file = os.path.join(
+                    local_save_dirpath, *matched_file["name"].split("/")
+                )
+                os.makedirs(os.path.dirname(savepath_file), exist_ok=True)
+                with open(savepath_file, "wb") as f:
+                    f.write(binary)
+
         except ReanaConnectionException as e:
             raise e
         except Exception:
             # TODO: Handle exception properly
             pass
-        return True
 
     async def save_metadata(
         self, experiment_run: ExperimentRun, workflow_state: WorkflowState
     ) -> bool:
         workflow_name = self.get_workflow_name(experiment_run)
-        exp_output_savepath = settings.get_experiment_run_output_path(
-            run_id=experiment_run.id
-        )
+        experiment_dirpath = settings.get_experiment_run_path(run_id=experiment_run.id)
 
-        # retrieve logs
         try:
+            # retrieve logs
             logs = (
                 await self._call_reana_function(
                     "get_workflow_logs", workflow=workflow_name
@@ -209,7 +186,7 @@ class ReanaService(WorkflowBaseEngine):
 
             if workflow_state.success is False:
                 logs = f"{workflow_state.error_message}{logs}"
-            exp_output_savepath.joinpath(LOGS_FILENAME).write_text(
+            experiment_dirpath.joinpath(LOGS_FILENAME).write_text(
                 logs, encoding="utf-8"
             )
         except ReanaConnectionException as e:
@@ -218,26 +195,12 @@ class ReanaService(WorkflowBaseEngine):
             # TODO: Handle exception properly
             pass
 
-        # save metrics.json
-        try:
-            metrics_filepath = f"{RUN_OUTPUT_FOLDER}/{METRICS_FILENAME}"
-            matched_files = await self._call_reana_function(
-                "list_files", workflow=workflow_name, file_name=metrics_filepath
-            )
-            if len(matched_files) > 0 and matched_files[0]["name"] == metrics_filepath:
-                binary, _, _ = await self._call_reana_function(
-                    "download_file", workflow=workflow_name, file_name=metrics_filepath
-                )
-                metrics = json.loads(binary.decode())
-                with open(exp_output_savepath / METRICS_FILENAME, "w") as f:
-                    json.dump(metrics, f)
-
-        except ReanaConnectionException as e:
-            raise e
-        except Exception:
-            # TODO: Handle exception properly
-            pass
-
+        metrics_filepath = f"{RUN_OUTPUT_FOLDER}/{METRICS_FILENAME}"
+        await self.download_files(
+            experiment_run,
+            workflow_filepath=metrics_filepath,
+            local_save_dirpath=experiment_dirpath,
+        )
         return True
 
     async def _call_reana_function(self, function_name, *args, **kwargs):
@@ -253,14 +216,11 @@ class ReanaService(WorkflowBaseEngine):
 
     @staticmethod
     async def init() -> ReanaService:
-        ReanaService.REANA_SERVICE = ReanaService()
+        service = ReanaService()
 
-        if not await ReanaService.REANA_SERVICE.ping():
+        if not await service.ping():
             raise SystemExit(
                 f"Unable to log in to Docker registry '{settings.DOCKER_REGISTRY_URL}'. Exiting..."
             )
-        return ReanaService.REANA_SERVICE
-
-    @staticmethod
-    def get_service() -> ReanaService:
-        return ReanaService.REANA_SERVICE
+        WorkflowBaseEngine.set_service(service)
+        return service
