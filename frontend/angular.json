@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "aiod-practitioners-portal-frontend": {
+    "aiod-rail-frontend": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/aiod-practitioners-portal-frontend",
+            "outputPath": "dist/aiod-rail-frontend",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": [
@@ -74,10 +74,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "aiod-practitioners-portal-frontend:build:production"
+              "browserTarget": "aiod-rail-frontend:build:production"
             },
             "development": {
-              "browserTarget": "aiod-practitioners-portal-frontend:build:development"
+              "browserTarget": "aiod-rail-frontend:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -85,7 +85,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "aiod-practitioners-portal-frontend:build"
+            "browserTarget": "aiod-rail-frontend:build"
           }
         },
         "test": {

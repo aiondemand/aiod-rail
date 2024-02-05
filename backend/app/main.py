@@ -14,7 +14,7 @@ from app.models.experiment_template import ExperimentTemplate
 from app.routers import aiod, experiment_templates, experiments
 from app.services.experiment import ExperimentService
 
-app = FastAPI(title="AIOD - Practitioner's Portal", version=__version__)
+app = FastAPI(title="AIoD - RAIL", version=__version__)
 
 app.include_router(aiod.router, prefix="/v1/assets", tags=["assets"])
 app.include_router(

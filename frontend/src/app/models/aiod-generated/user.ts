@@ -11,14 +11,14 @@
  */
 
 
-/**
- * An organization such as a school, NGO, corporation, club, etc.  See: https://schema.org/Organization
- */
-export interface SchemaDotOrgOrganization {
-    type?: any | null;
+export interface User {
     /**
-     * The name of the item.
+     * The username.
      */
     name: any | null;
+    /**
+     * The roles.
+     */
+    roles: any | null;
 }
 
