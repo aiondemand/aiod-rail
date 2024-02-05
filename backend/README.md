@@ -1,8 +1,7 @@
-# AIOD - Practitioner's Portal
+# AIoD - RAIL Backend
 
-## Architecture
-
-Practitioner's Portal consists of a REST API service (FastAPI) and a non-relational database (MongoDB).
+_RAIL Backend_ serves as a backend application for [RAIL service](../README.md).
+This backend consists of a REST API service (FastAPI) and a non-relational database (MongoDB).
 
 ## Setup
 
@@ -35,7 +34,7 @@ As a database we use a containerized MongoDB server (through Docker), the REST A
 **IMPORTANT**: Make sure you check and potentially modify the host port mappings for specific components
 in [docker-compose.yml](docker-compose.yml) file.
 
-### Locally installation
+### Local installation
 
 1. Create two arbitrarily located folders that will be used to store:
     1. MongoDB database, e.g. `./db`
