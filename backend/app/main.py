@@ -12,10 +12,10 @@ from app.models.experiment import Experiment
 from app.models.experiment_run import ExperimentRun
 from app.models.experiment_template import ExperimentTemplate
 from app.routers import aiod, experiment_templates, experiments
-from app.services.container_platforms.base_platform import ContainerBasePlatform
+from app.services.container_platforms.base import ContainerPlatformBase
 from app.services.container_platforms.docker import DockerService
-from app.services.scheduling import ExperimentScheduling
-from app.services.workflow_engines.base_engine import WorkflowBaseEngine
+from app.services.experiment_scheduler import ExperimentScheduler
+from app.services.workflow_engines.base import WorkflowEngineBase
 from app.services.workflow_engines.reana import ReanaService
 
 app = FastAPI(title="AIOD - Practitioner's Portal", version=__version__)
@@ -49,11 +49,11 @@ async def app_init():
     )
 
     # initialize container platform and worfklow engine
-    container_platform: ContainerBasePlatform = await DockerService.init()
-    workflow_engine: WorkflowBaseEngine = await ReanaService.init()
+    container_platform: ContainerPlatformBase = await DockerService.init()
+    workflow_engine: WorkflowEngineBase = await ReanaService.init()
 
     # Setup ExperimentScheduling and create queues of experiments and images to execute
-    experiment_scheduling = await ExperimentScheduling.init(
+    experiment_scheduling = await ExperimentScheduler.init(
         container_platform, workflow_engine
     )
 
@@ -67,7 +67,7 @@ async def shutdown_event():
     if getattr(app, "db", None) is not None:
         app.db.client.close()
 
-    await ContainerBasePlatform.get_service().terminate()
+    await ContainerPlatformBase.get_service().terminate()
 
     await aiod_client_wrapper.stop()
 

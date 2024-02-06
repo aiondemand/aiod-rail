@@ -15,20 +15,20 @@ from app.routers.aiod import get_dataset_name, get_model_name
 from app.schemas.experiment_run import ExperimentRunId
 from app.schemas.experiment_template import ExperimentTemplateId
 from app.schemas.states import RunState, TemplateState
-from app.services.container_platforms.base_platform import ContainerBasePlatform
-from app.services.workflow_engines.base_engine import (
-    WorkflowBaseEngine,
+from app.services.container_platforms.base import ContainerPlatformBase
+from app.services.workflow_engines.base import (
     WorkflowConnectionExcpetion,
+    WorkflowEngineBase,
 )
 
 
-class ExperimentScheduling:
-    EXPERIMENT_SCHEDULING: ExperimentScheduling | None = None
+class ExperimentScheduler:
+    EXPERIMENT_SCHEDULING: ExperimentScheduler | None = None
 
     def __init__(
         self,
-        container_platform: ContainerBasePlatform,
-        workflow_engine: WorkflowBaseEngine,
+        container_platform: ContainerPlatformBase,
+        workflow_engine: WorkflowEngineBase,
     ) -> None:
         self.logger = logging.getLogger("uvicorn")
 
@@ -283,16 +283,16 @@ class ExperimentScheduling:
 
     @staticmethod
     async def init(
-        container_platform: ContainerBasePlatform, workflow_engine: WorkflowBaseEngine
-    ) -> ExperimentScheduling:
-        ExperimentScheduling.EXPERIMENT_SCHEDULING = ExperimentScheduling(
+        container_platform: ContainerPlatformBase, workflow_engine: WorkflowEngineBase
+    ) -> ExperimentScheduler:
+        ExperimentScheduler.EXPERIMENT_SCHEDULING = ExperimentScheduler(
             container_platform, workflow_engine
         )
-        await ExperimentScheduling.EXPERIMENT_SCHEDULING.init_image_build_queue()
-        await ExperimentScheduling.EXPERIMENT_SCHEDULING.init_run_queue()
+        await ExperimentScheduler.EXPERIMENT_SCHEDULING.init_image_build_queue()
+        await ExperimentScheduler.EXPERIMENT_SCHEDULING.init_run_queue()
 
-        return ExperimentScheduling.EXPERIMENT_SCHEDULING
+        return ExperimentScheduler.EXPERIMENT_SCHEDULING
 
     @staticmethod
-    def get_service() -> ExperimentScheduling:
-        return ExperimentScheduling.EXPERIMENT_SCHEDULING
+    def get_service() -> ExperimentScheduler:
+        return ExperimentScheduler.EXPERIMENT_SCHEDULING

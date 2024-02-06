@@ -5,8 +5,8 @@ from abc import ABC, abstractmethod, abstractstaticmethod
 from app.models.experiment_template import ExperimentTemplate
 
 
-class ContainerBasePlatform(ABC):
-    SERVICE: ContainerBasePlatform | None = None
+class ContainerPlatformBase(ABC):
+    SERVICE: ContainerPlatformBase | None = None
 
     @abstractmethod
     async def login_to_registry(self) -> bool:
@@ -25,13 +25,13 @@ class ContainerBasePlatform(ABC):
         pass
 
     @abstractstaticmethod
-    async def init() -> ContainerBasePlatform:
+    async def init() -> ContainerPlatformBase:
         pass
 
     @staticmethod
-    def set_service(service: ContainerBasePlatform) -> None:
-        ContainerBasePlatform.SERVICE = service
+    def set_service(service: ContainerPlatformBase) -> None:
+        ContainerPlatformBase.SERVICE = service
 
     @staticmethod
-    def get_service() -> ContainerBasePlatform:
-        return ContainerBasePlatform.SERVICE
+    def get_service() -> ContainerPlatformBase:
+        return ContainerPlatformBase.SERVICE

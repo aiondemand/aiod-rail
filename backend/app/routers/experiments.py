@@ -12,8 +12,8 @@ from app.models.experiment import Experiment
 from app.models.experiment_run import ExperimentRun
 from app.schemas.experiment import ExperimentCreate, ExperimentResponse
 from app.schemas.experiment_run import ExperimentRunDetails, ExperimentRunResponse
-from app.services.scheduling import ExperimentScheduling
-from app.services.workflow_engines.base_engine import WorkflowBaseEngine
+from app.services.experiment_scheduler import ExperimentScheduler
+from app.services.workflow_engines.base import WorkflowEngineBase
 
 router = APIRouter()
 
@@ -86,8 +86,8 @@ async def create_experiment(
 async def execute_experiment_run(
     id: PydanticObjectId,
     user: Json = Depends(get_current_user),
-    exp_scheduling: ExperimentScheduling = Depends(ExperimentScheduling.get_service),
-    workflow_engine: WorkflowBaseEngine = Depends(WorkflowBaseEngine.get_service),
+    exp_scheduling: ExperimentScheduler = Depends(ExperimentScheduler.get_service),
+    workflow_engine: WorkflowEngineBase = Depends(WorkflowEngineBase.get_service),
 ) -> Any:
     experiment = await Experiment.get(id)
 

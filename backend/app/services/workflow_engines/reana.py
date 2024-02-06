@@ -20,9 +20,9 @@ from app.config import (
 from app.helpers import WorkflowState, create_env_file
 from app.models.experiment import Experiment
 from app.models.experiment_run import ExperimentRun
-from app.services.workflow_engines.base_engine import (
-    WorkflowBaseEngine,
+from app.services.workflow_engines.base import (
     WorkflowConnectionExcpetion,
+    WorkflowEngineBase,
 )
 
 
@@ -30,7 +30,7 @@ class ReanaConnectionException(WorkflowConnectionExcpetion):
     pass
 
 
-class ReanaService(WorkflowBaseEngine):
+class ReanaService(WorkflowEngineBase):
     def __init__(self) -> None:
         # self.logger = setup_logging("reana")
         self.logger = logging.getLogger("uvicorn")
@@ -222,5 +222,5 @@ class ReanaService(WorkflowBaseEngine):
             raise SystemExit(
                 f"Unable to log in to Docker registry '{settings.DOCKER_REGISTRY_URL}'. Exiting..."
             )
-        WorkflowBaseEngine.set_service(service)
+        WorkflowEngineBase.set_service(service)
         return service

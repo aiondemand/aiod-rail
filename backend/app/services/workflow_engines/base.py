@@ -11,8 +11,8 @@ class WorkflowConnectionExcpetion(Exception):
     pass
 
 
-class WorkflowBaseEngine(ABC):
-    SERVICE: WorkflowBaseEngine | None = None
+class WorkflowEngineBase(ABC):
+    SERVICE: WorkflowEngineBase | None = None
 
     @abstractmethod
     async def ping(self) -> bool:
@@ -52,13 +52,13 @@ class WorkflowBaseEngine(ABC):
         pass
 
     @abstractstaticmethod
-    async def init() -> WorkflowBaseEngine:
+    async def init() -> WorkflowEngineBase:
         pass
 
     @staticmethod
-    def set_service(service: WorkflowBaseEngine) -> None:
-        WorkflowBaseEngine.SERVICE = service
+    def set_service(service: WorkflowEngineBase) -> None:
+        WorkflowEngineBase.SERVICE = service
 
     @staticmethod
-    def get_service() -> WorkflowBaseEngine:
-        return WorkflowBaseEngine.SERVICE
+    def get_service() -> WorkflowEngineBase:
+        return WorkflowEngineBase.SERVICE

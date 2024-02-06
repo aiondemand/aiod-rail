@@ -14,7 +14,7 @@ from app.schemas.experiment_template import (
     ExperimentTemplateCreate,
     ExperimentTemplateResponse,
 )
-from app.services.scheduling import ExperimentScheduling
+from app.services.experiment_scheduler import ExperimentScheduler
 
 router = APIRouter()
 
@@ -91,7 +91,7 @@ async def approve_experiment_template(
     id: PydanticObjectId,
     password: str,
     approve_value: bool = True,
-    exp_scheduling: ExperimentScheduling = Depends(ExperimentScheduling.get_service),
+    exp_scheduling: ExperimentScheduler = Depends(ExperimentScheduler.get_service),
 ) -> Any:
     if password != settings.PASSWORD_FOR_TEMPLATE_APPROVAL:
         raise HTTPException(

@@ -8,10 +8,10 @@ from docker.errors import APIError
 
 from app.config import settings
 from app.models.experiment_template import ExperimentTemplate
-from app.services.container_platforms.base_platform import ContainerBasePlatform
+from app.services.container_platforms.base import ContainerPlatformBase
 
 
-class DockerService(ContainerBasePlatform):
+class DockerService(ContainerPlatformBase):
     def __init__(self) -> None:
         self.docker_client = DockerClient(base_url=settings.DOCKER_BASE_URL)
         # self.logger = setup_logging("docker")
@@ -100,5 +100,5 @@ class DockerService(ContainerBasePlatform):
             raise SystemExit(
                 f"Unable to log in to Docker registry '{settings.DOCKER_REGISTRY_URL}'. Exiting..."
             )
-        ContainerBasePlatform.set_service(service)
+        ContainerPlatformBase.set_service(service)
         return service
