@@ -31,6 +31,10 @@ export class LoginLogoutComponent {
     this.oauthService.logOut();
   }
 
+  get isLoggedIn(): boolean {
+    return this.oauthService.hasValidIdToken();
+  }
+
   get userName(): string {
     const claims = this.oauthService.getIdentityClaims();
     if (!claims) return "";

@@ -1,15 +1,15 @@
-import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { Observable, catchError, combineLatest, of, switchMap, tap, throwError } from 'rxjs';
-import { Dataset } from '../models/dataset';
-import { environment } from 'src/environments/environment';
-import { Platform } from '../models/platform';
-import { ExperimentCreate, Experiment } from '../models/experiment';
-import { Model } from '../models/model';
-import { ExperimentTemplateCreate, ExperimentTemplate } from '../models/experiment-template';
-import { Publication } from '../models/publication';
-import { ExperimentRun, ExperimentRunDetails } from '../models/experiment-run';
-import { ExperimentQueries, ExperimentTemplateQueries, PageQueries, QueryOperator } from '../models/queries';
+import {HttpClient} from '@angular/common/http';
+import {Injectable} from '@angular/core';
+import {catchError, combineLatest, Observable, of, switchMap, tap, throwError} from 'rxjs';
+import {Dataset} from '../models/dataset';
+import {environment} from 'src/environments/environment';
+import {Platform} from '../models/platform';
+import {Experiment, ExperimentCreate} from '../models/experiment';
+import {Model} from '../models/model';
+import {ExperimentTemplate, ExperimentTemplateCreate} from '../models/experiment-template';
+import {Publication} from '../models/publication';
+import {ExperimentRun, ExperimentRunDetails} from '../models/experiment-run';
+import {ExperimentQueries, ExperimentTemplateQueries, PageQueries, QueryOperator} from '../models/queries';
 
 
 @Injectable({
@@ -30,7 +30,7 @@ export class BackendApiService {
 
   getDatasets(query: string = "", pageQueries?: PageQueries): Observable<Dataset[]> {
     // TODO: handle the "is_in_my_saved" property on backend
-    var backend_route = `${environment.BACKEND_API_URL}/assets/datasets`;
+    let backend_route = `${environment.BACKEND_API_URL}/assets/datasets`;
     if (query?.length > 0) {
       backend_route += `/search/${query}`
     }
@@ -45,7 +45,7 @@ export class BackendApiService {
   }
 
   getDatasetsCount(query: string = ""): Observable<number> {
-    var backend_route = `${environment.BACKEND_API_URL}/assets/counts/datasets`;
+    let backend_route = `${environment.BACKEND_API_URL}/assets/counts/datasets`;
     if (query?.length > 0) {
       backend_route += `/search/${query}`
     }
@@ -143,11 +143,10 @@ export class BackendApiService {
    * Get list of models
    * @returns Observable<Model[]>
    * @param query
-   * @param offset
-   * @param limit
+   * @param pageQueries
    */
   getModels(query: string = "", pageQueries?: PageQueries): Observable<Model[]> {
-    var backend_route = `${environment.BACKEND_API_URL}/assets/models`;
+    let backend_route = `${environment.BACKEND_API_URL}/assets/models`;
     if (query?.length > 0) {
       backend_route += `/search/${query}`
     }
@@ -165,11 +164,11 @@ export class BackendApiService {
   }
 
   getModelsCount(query: string = ""): Observable<number> {
-    var backend_route = `${environment.BACKEND_API_URL}/assets/counts/models`;
+    let backend_route = `${environment.BACKEND_API_URL}/assets/counts/models`;
     if (query?.length > 0) {
       backend_route += `/search/${query}`
     }
-    
+
     return this.http.get<number>(backend_route);
   }
 
@@ -187,15 +186,14 @@ export class BackendApiService {
     return combineLatest(experiment.publication_ids.map(id => this.getPublication(id)));
   }
 
-   /**
+  /**
    * Get list of publications
    * @returns Observable<Publication[]>
    * @param query
-   * @param offset
-   * @param limit
+   * @param pageQueries
    */
-   getPublications(query: string = "", pageQueries?: PageQueries): Observable<Publication[]> {
-    var backend_route = `${environment.BACKEND_API_URL}/assets/publications`;
+  getPublications(query: string = "", pageQueries?: PageQueries): Observable<Publication[]> {
+    let backend_route = `${environment.BACKEND_API_URL}/assets/publications`;
     if (query?.length > 0) {
       backend_route += `/search/${query}`
     }
@@ -214,7 +212,7 @@ export class BackendApiService {
   }
 
   getPublicationsCount(query: string = ""): Observable<number> {
-    var backend_route = `${environment.BACKEND_API_URL}/assets/counts/publications`;
+    let backend_route = `${environment.BACKEND_API_URL}/assets/counts/publications`;
     if (query?.length > 0) {
       backend_route += `/search/${query}`
     }
@@ -251,7 +249,7 @@ export class BackendApiService {
     pageQueries?: PageQueries,
     experimentQueries?: ExperimentQueries
   ): Observable<Experiment[]> {
-    var queries = `?${this._buildPageQueries(pageQueries)}&${this._buildExperimentQueries(experimentQueries)}`;
+    let queries = `?${this._buildPageQueries(pageQueries)}&${this._buildExperimentQueries(experimentQueries)}`;
     return this.http.get<Experiment[]>(`${environment.BACKEND_API_URL}/experiments${queries}`);
   }
 
@@ -269,7 +267,7 @@ export class BackendApiService {
    * @returns Observable<number> (count)
    */
   getExperimentsCount(experimentQueries?: ExperimentQueries): Observable<number> {
-    var queries = `?${this._buildExperimentQueries(experimentQueries)}`;
+    let queries = `?${this._buildExperimentQueries(experimentQueries)}`;
     return this.http.get<number>(`${environment.BACKEND_API_URL}/count/experiments${queries}`);
   }
 
@@ -292,7 +290,7 @@ export class BackendApiService {
     pageQueries?: PageQueries,
     templateQueries?: ExperimentTemplateQueries
   ): Observable<ExperimentTemplate[]> {
-    var queries = `?${this._buildPageQueries(pageQueries)}&${this._buildExperimentTemplateQueries(templateQueries)}`;
+    let queries = `?${this._buildPageQueries(pageQueries)}&${this._buildExperimentTemplateQueries(templateQueries)}`;
     return this.http.get<ExperimentTemplate[]>(`${environment.BACKEND_API_URL}/experiment-templates${queries}`);
   }
 
@@ -312,7 +310,7 @@ export class BackendApiService {
   getExperimentTemplatesCount(
     templateQueries?: ExperimentTemplateQueries
   ): Observable<number> {
-    var queries = `?${this._buildExperimentTemplateQueries(templateQueries)}`;
+    let queries = `?${this._buildExperimentTemplateQueries(templateQueries)}`;
     return this.http.get<number>(`${environment.BACKEND_API_URL}/count/experiment-templates${queries}`);
   }
 
@@ -329,23 +327,22 @@ export class BackendApiService {
   /**
    * Get list of experiment runs
    * @returns Observable<ExperimentRun[]>
-   * @param offset
-   * @param limit
+   * @param pageQueries
    * @param experimentId
    */
   getExperimentRuns(experimentId: string = "", pageQueries?: PageQueries): Observable<ExperimentRun[]> {
     let pageQueriesStr = `?${this._buildPageQueries(pageQueries)}`;
-    
+
     if (experimentId == "") {
       return this.http.get<ExperimentRun[]>(`${environment.BACKEND_API_URL}/experiment-runs${pageQueriesStr}`);
-    }    
+    }
     return this.http.get<ExperimentRun[]>(`${environment.BACKEND_API_URL}/experiments/${experimentId}/runs${pageQueriesStr}`);
   }
 
   getExperimentRunsCount(experimentId: string): Observable<number> {
     return this.http.get<number>(`${environment.BACKEND_API_URL}/count/experiments/${experimentId}/runs`);
   }
-  
+
   /**
    * Get experiment run by id
    * @returns Observable<ExperimentRun>
@@ -362,7 +359,7 @@ export class BackendApiService {
    */
   getExperimentRunLogs(experimentRunId: string): Observable<string> {
     return this.http.get<string>(`${environment.BACKEND_API_URL}/experiment-runs/${experimentRunId}/logs`,
-      { responseType: 'text' as 'json' });
+      {responseType: 'text' as 'json'});
   }
 
   /**
@@ -375,7 +372,7 @@ export class BackendApiService {
   }
 
   _buildPageQueries(pageQueries?: PageQueries): string {
-    if (pageQueries == null) {
+    if (pageQueries == undefined) {
       pageQueries = {};
     }
     if (pageQueries.limit == null) {
@@ -388,13 +385,14 @@ export class BackendApiService {
   }
 
   _buildExperimentQueries(experimentQueries?: ExperimentQueries): string {
-    if (experimentQueries == null) {
-      experimentQueries = {};
+    if (experimentQueries == undefined) {
+      return "";
     }
-    if (experimentQueries.include_mine == null) {
+
+    if (experimentQueries.include_mine == undefined) {
       experimentQueries.include_mine = false;
     }
-    if (experimentQueries.query_operator == null) {
+    if (experimentQueries.query_operator == undefined) {
       experimentQueries.query_operator = QueryOperator.And;
     }
 
@@ -407,16 +405,17 @@ export class BackendApiService {
   }
 
   _buildExperimentTemplateQueries(templateQueries?: ExperimentTemplateQueries): string {
-    if (templateQueries == null) {
-      templateQueries = {};
+    if (templateQueries == undefined) {
+      return "";
     }
-    if (templateQueries.include_mine == null) {
+
+    if (templateQueries.include_mine == undefined) {
       templateQueries.include_mine = false;
     }
-    if (templateQueries.include_approved == null) {
+    if (templateQueries.include_approved == undefined) {
       templateQueries.include_approved = false;
     }
-    if (templateQueries.query_operator == null) {
+    if (templateQueries.query_operator == undefined) {
       templateQueries.query_operator = QueryOperator.And;
     }
 
