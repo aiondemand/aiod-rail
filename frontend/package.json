@@ -4,10 +4,11 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
+    "build-prod": "ng build --configuration production --output-path=dist",
+    "build-dev": "ng build --configuration development --output-path=dist",
+    "build-local": "ng build --configuration local --output-path=dist",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test",
-    "build-prod-flat": "ng build --configuration production --output-path=dist"
+    "test": "ng test"
   },
   "private": true,
   "dependencies": {
@@ -31,8 +32,8 @@
     "zone.js": "~0.13.0"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^16.0.1",
-    "@angular/cli": "~16.0.1",
+    "@angular-devkit/build-angular": "^16.2.12",
+    "@angular/cli": "^16.0.6",
     "@angular/compiler-cli": "^16.0.0",
     "@types/jasmine": "~4.3.0",
     "@types/marked": "^4.3.1",

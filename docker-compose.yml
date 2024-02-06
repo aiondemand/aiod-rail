@@ -18,6 +18,9 @@ services:
   frontend-app:
     build:
       context: ./frontend
+      args:
+        # One of local/dev/prod
+        PROFILE: local
     depends_on:
       - backend-app
     restart: always
