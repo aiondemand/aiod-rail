@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-from abc import ABC, abstractmethod, abstractstaticmethod
+from abc import ABC, abstractmethod
 
 from app.helpers import WorkflowState
 from app.models.experiment import Experiment
 from app.models.experiment_run import ExperimentRun
 
 
-class WorkflowConnectionExcpetion(Exception):
+class WorkflowConnectionException(Exception):
     pass
 
 
@@ -32,13 +32,11 @@ class WorkflowEngineBase(ABC):
         pass
 
     @abstractmethod
-    async def postprocess_workflow(self, experiment_run: ExperimentRun) -> bool:
+    async def postprocess_workflow(self, experiment_run: ExperimentRun):
         pass
 
     @abstractmethod
-    async def download_files(
-        self, experiment_run: ExperimentRun, filepath: str, is_directory: bool = False
-    ) -> bool:
+    async def download_files(self, *args, **kwargs):
         pass
 
     @abstractmethod
@@ -47,11 +45,13 @@ class WorkflowEngineBase(ABC):
     ) -> bool:
         pass
 
-    @abstractstaticmethod
+    @staticmethod
+    @abstractmethod
     def get_workflow_name(experiment_run: ExperimentRun) -> str:
         pass
 
-    @abstractstaticmethod
+    @staticmethod
+    @abstractmethod
     async def init() -> WorkflowEngineBase:
         pass
 

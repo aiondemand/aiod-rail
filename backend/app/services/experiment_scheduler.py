@@ -17,13 +17,13 @@ from app.schemas.experiment_template import ExperimentTemplateId
 from app.schemas.states import RunState, TemplateState
 from app.services.container_platforms.base import ContainerPlatformBase
 from app.services.workflow_engines.base import (
-    WorkflowConnectionExcpetion,
+    WorkflowConnectionException,
     WorkflowEngineBase,
 )
 
 
 class ExperimentScheduler:
-    EXPERIMENT_SCHEDULING: ExperimentScheduler | None = None
+    SERVICE: ExperimentScheduler | None = None
 
     def __init__(
         self,
@@ -140,7 +140,7 @@ class ExperimentScheduler:
 
             try:
                 workflow_state = await self._exec_experiment(experiment_run, experiment)
-            except WorkflowConnectionExcpetion as e:
+            except WorkflowConnectionException as e:
                 self.logger.error(str(e))
                 await self.add_run_to_execute(exp_run_id)
                 return
@@ -195,7 +195,7 @@ class ExperimentScheduler:
         experiment_template.retry_count = 0
         await experiment_template.replace()
 
-        successful_image_rebuild = self._build_image_multiple_attempts(
+        successful_image_rebuild = await self._build_image_multiple_attempts(
             experiment_template
         )
         if successful_image_rebuild is False:
@@ -285,14 +285,14 @@ class ExperimentScheduler:
     async def init(
         container_platform: ContainerPlatformBase, workflow_engine: WorkflowEngineBase
     ) -> ExperimentScheduler:
-        ExperimentScheduler.EXPERIMENT_SCHEDULING = ExperimentScheduler(
+        ExperimentScheduler.SERVICE = ExperimentScheduler(
             container_platform, workflow_engine
         )
-        await ExperimentScheduler.EXPERIMENT_SCHEDULING.init_image_build_queue()
-        await ExperimentScheduler.EXPERIMENT_SCHEDULING.init_run_queue()
+        await ExperimentScheduler.SERVICE.init_image_build_queue()
+        await ExperimentScheduler.SERVICE.init_run_queue()
 
-        return ExperimentScheduler.EXPERIMENT_SCHEDULING
+        return ExperimentScheduler.SERVICE
 
     @staticmethod
     def get_service() -> ExperimentScheduler:
-        return ExperimentScheduler.EXPERIMENT_SCHEDULING
+        return ExperimentScheduler.SERVICE

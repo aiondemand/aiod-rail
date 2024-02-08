@@ -48,18 +48,18 @@ async def app_init():
         document_models=[ExperimentTemplate, Experiment, ExperimentRun],
     )
 
-    # initialize container platform and worfklow engine
+    # initialize container platform and workflow engine
     container_platform: ContainerPlatformBase = await DockerService.init()
     workflow_engine: WorkflowEngineBase = await ReanaService.init()
 
-    # Setup ExperimentScheduling and create queues of experiments and images to execute
-    experiment_scheduling = await ExperimentScheduler.init(
+    # Setup ExperimentScheduler and create queues of experiments and images to execute
+    experiment_scheduler = await ExperimentScheduler.init(
         container_platform, workflow_engine
     )
 
-    # Create seperate tasks for scheduling experiments and images
-    asyncio.create_task(experiment_scheduling.schedule_image_building())
-    asyncio.create_task(experiment_scheduling.schedule_experiment_runs())
+    # Create separate tasks for scheduling experiments and images
+    asyncio.create_task(experiment_scheduler.schedule_image_building())
+    asyncio.create_task(experiment_scheduler.schedule_experiment_runs())
 
 
 @app.on_event("shutdown")

@@ -86,7 +86,7 @@ async def create_experiment(
 async def execute_experiment_run(
     id: PydanticObjectId,
     user: Json = Depends(get_current_user),
-    exp_scheduling: ExperimentScheduler = Depends(ExperimentScheduler.get_service),
+    exp_scheduler: ExperimentScheduler = Depends(ExperimentScheduler.get_service),
     workflow_engine: WorkflowEngineBase = Depends(WorkflowEngineBase.get_service),
 ) -> Any:
     experiment = await Experiment.get(id)
@@ -115,7 +115,7 @@ async def execute_experiment_run(
     experiment_run = ExperimentRun(experiment_id=experiment.id)
     experiment_run = await experiment_run.create()
 
-    await exp_scheduling.add_run_to_execute(experiment_run.id)
+    await exp_scheduler.add_run_to_execute(experiment_run.id)
     return experiment_run.map_to_response()
 
 
@@ -166,7 +166,7 @@ def find_specific_experiments(
     user: Json,
     pagination: Pagination = None,
 ) -> FindMany[Experiment]:
-    search_condtions = []
+    search_conditions = []
     page_kwargs = (
         {"skip": pagination.offset, "limit": pagination.limit}
         if pagination is not None
@@ -185,13 +185,13 @@ def find_specific_experiments(
         # queries, it might be relevant
         include_mine = False
     if include_mine:
-        search_condtions.append(Experiment.created_by == user["email"])
+        search_conditions.append(Experiment.created_by == user["email"])
 
-    if len(search_condtions) > 0:
+    if len(search_conditions) > 0:
         multi_query = (
-            operators.Or(*search_condtions)
+            operators.Or(*search_conditions)
             if query_operator == QueryOperator.OR
-            else operators.And(*search_condtions)
+            else operators.And(*search_conditions)
         )
         return Experiment.find(multi_query, **page_kwargs)
 

@@ -66,7 +66,7 @@ class ExperimentTemplateId(BaseModel):
     A class that is used for projecting the entire ExperimentTemplate documents
     into only their IDs and that we use when fetching ExperimentTemplate documents.
     Using the beanie library, we cannot simply choose what fields to return,
-    but rather we need to create a projection definition using a seperate class.
+    but rather we need to create a projection definition using a separate class.
     """
 
     id: PydanticObjectId

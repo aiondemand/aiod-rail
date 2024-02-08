@@ -21,12 +21,12 @@ from app.helpers import WorkflowState, create_env_file
 from app.models.experiment import Experiment
 from app.models.experiment_run import ExperimentRun
 from app.services.workflow_engines.base import (
-    WorkflowConnectionExcpetion,
+    WorkflowConnectionException,
     WorkflowEngineBase,
 )
 
 
-class ReanaConnectionException(WorkflowConnectionExcpetion):
+class ReanaConnectionException(WorkflowConnectionException):
     pass
 
 
@@ -66,7 +66,7 @@ class ReanaService(WorkflowEngineBase):
                     all_runs=True,
                     workspace=True,
                 )
-        except WorkflowConnectionExcpetion as e:
+        except WorkflowConnectionException as e:
             raise e
         except Exception as e:
             self.logger.warning(
@@ -115,7 +115,7 @@ class ReanaService(WorkflowEngineBase):
             return WorkflowState(success=False, error_message=error_return_msg)
         return WorkflowState(success=True)
 
-    async def postprocess_workflow(self, experiment_run: ExperimentRun) -> bool:
+    async def postprocess_workflow(self, experiment_run: ExperimentRun):
         workflow_name = self.get_workflow_name(experiment_run)
         try:
             await self._call_reana_function(
@@ -141,7 +141,7 @@ class ReanaService(WorkflowEngineBase):
         experiment_run: ExperimentRun,
         workflow_filepath: str,
         local_save_dirpath: Path,
-    ) -> bool:
+    ):
         workflow_name = self.get_workflow_name(experiment_run)
 
         try:
