@@ -21,6 +21,7 @@ export * from './ml-model';
 export * from './note';
 export * from './platform';
 export * from './publication';
+export * from './query-operator';
 export * from './run-state';
 export * from './runnable-distribution';
 export * from './size';
