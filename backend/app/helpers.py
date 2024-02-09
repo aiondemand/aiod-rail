@@ -49,8 +49,8 @@ def create_env_file(env_vars: dict[str, str], path: Path) -> None:
     path.write_text("\n".join(lines))
 
 
-# TODO 
-# this function is not being used yet. Having multiple loggers 
+# TODO
+# this function is not being used yet. Having multiple loggers
 # with this same setup makes their formatting ugly...
 def setup_logger(logger_name: str) -> logging.Logger:
     uvicorn_formatter = logging.getLogger("uvicorn").handlers[0].formatter
