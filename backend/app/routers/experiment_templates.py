@@ -14,7 +14,7 @@ from app.schemas.experiment_template import (
     ExperimentTemplateCreate,
     ExperimentTemplateResponse,
 )
-from app.services.experiment import ExperimentService
+from app.services.experiment_scheduler import ExperimentScheduler
 
 router = APIRouter()
 
@@ -91,7 +91,7 @@ async def approve_experiment_template(
     id: PydanticObjectId,
     password: str,
     approve_value: bool = True,
-    docker_service: ExperimentService = Depends(ExperimentService.get_docker_service),
+    exp_scheduler: ExperimentScheduler = Depends(ExperimentScheduler.get_service),
 ) -> Any:
     if password != settings.PASSWORD_FOR_TEMPLATE_APPROVAL:
         raise HTTPException(
@@ -110,7 +110,7 @@ async def approve_experiment_template(
     experiment_template.updated_at = datetime.utcnow()
 
     await ExperimentTemplate.replace(experiment_template)
-    await docker_service.add_image_to_build(experiment_template.id)
+    await exp_scheduler.add_image_to_build(experiment_template.id)
 
 
 def find_specific_experiment_templates(
@@ -120,7 +120,7 @@ def find_specific_experiment_templates(
     user: Json,
     pagination: Pagination = None,
 ) -> FindMany[ExperimentTemplate]:
-    search_condtions = []
+    search_conditions = []
     page_kwargs = (
         {"skip": pagination.offset, "limit": pagination.limit}
         if pagination is not None
@@ -137,15 +137,15 @@ def find_specific_experiment_templates(
     if len(user) == 0:
         include_mine = False
     if include_mine:
-        search_condtions.append(ExperimentTemplate.created_by == user["email"])
+        search_conditions.append(ExperimentTemplate.created_by == user["email"])
     if include_approved:
-        search_condtions.append(ExperimentTemplate.approved == True)  # noqa: E712
+        search_conditions.append(ExperimentTemplate.approved == True)  # noqa: E712
 
-    if len(search_condtions) > 0:
+    if len(search_conditions) > 0:
         multi_query = (
-            operators.Or(*search_condtions)
+            operators.Or(*search_conditions)
             if query_operator == QueryOperator.OR
-            else operators.And(*search_condtions)
+            else operators.And(*search_conditions)
         )
         return ExperimentTemplate.find(multi_query, **page_kwargs)
 

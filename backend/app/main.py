@@ -12,7 +12,11 @@ from app.models.experiment import Experiment
 from app.models.experiment_run import ExperimentRun
 from app.models.experiment_template import ExperimentTemplate
 from app.routers import aiod, experiment_templates, experiments
-from app.services.experiment import ExperimentService
+from app.services.container_platforms.base import ContainerPlatformBase
+from app.services.container_platforms.docker import DockerService
+from app.services.experiment_scheduler import ExperimentScheduler
+from app.services.workflow_engines.base import WorkflowEngineBase
+from app.services.workflow_engines.reana import ReanaService
 
 app = FastAPI(title="AIoD - RAIL", version=__version__)
 
@@ -39,20 +43,23 @@ async def app_init():
     app.db = AsyncIOMotorClient(settings.MONGODB_URI, uuidRepresentation="standard")[
         settings.MONGODB_DBNAME
     ]
-
     await init_beanie(
         database=app.db,
         document_models=[ExperimentTemplate, Experiment, ExperimentRun],
     )
 
-    # Setup DockerClient and create queue of ExperimentRuns to execute
-    docker_service = await ExperimentService.init_docker_service()
+    # initialize container platform and workflow engine
+    container_platform: ContainerPlatformBase = await DockerService.init()
+    workflow_engine: WorkflowEngineBase = await ReanaService.init()
 
-    # Create task for scheduling docker image builds for ExperimentTemplates from queue
-    asyncio.create_task(docker_service.schedule_image_building())
+    # Setup ExperimentScheduler and create queues of experiments and images to execute
+    experiment_scheduler = await ExperimentScheduler.init(
+        container_platform, workflow_engine
+    )
 
-    # Create task for scheduling ExperimentRuns from queue
-    asyncio.create_task(docker_service.schedule_experiment_runs())
+    # Create separate tasks for scheduling experiments and images
+    asyncio.create_task(experiment_scheduler.schedule_image_building())
+    asyncio.create_task(experiment_scheduler.schedule_experiment_runs())
 
 
 @app.on_event("shutdown")
@@ -60,7 +67,7 @@ async def shutdown_event():
     if getattr(app, "db", None) is not None:
         app.db.client.close()
 
-    ExperimentService.get_docker_service().close_docker_connection()
+    await ContainerPlatformBase.get_service().terminate()
 
     await aiod_client_wrapper.stop()
 
