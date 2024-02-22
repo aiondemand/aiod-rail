@@ -1,15 +1,15 @@
-import {HttpClient} from '@angular/common/http';
-import {Injectable} from '@angular/core';
-import {catchError, combineLatest, Observable, of, switchMap, tap, throwError} from 'rxjs';
-import {Dataset} from '../models/dataset';
-import {environment} from 'src/environments/environment';
-import {Platform} from '../models/platform';
-import {Experiment, ExperimentCreate} from '../models/experiment';
-import {Model} from '../models/model';
-import {ExperimentTemplate, ExperimentTemplateCreate} from '../models/experiment-template';
-import {Publication} from '../models/publication';
-import {ExperimentRun, ExperimentRunDetails} from '../models/experiment-run';
-import {ExperimentQueries, ExperimentTemplateQueries, PageQueries, QueryOperator} from '../models/queries';
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { catchError, combineLatest, Observable, of, switchMap, tap, throwError } from 'rxjs';
+import { Dataset } from '../models/dataset';
+import { environment } from 'src/environments/environment';
+import { Platform } from '../models/platform';
+import { Experiment, ExperimentCreate } from '../models/experiment';
+import { Model } from '../models/model';
+import { ExperimentTemplate, ExperimentTemplateCreate } from '../models/experiment-template';
+import { Publication } from '../models/publication';
+import { ExperimentRun, ExperimentRunDetails } from '../models/experiment-run';
+import { ExperimentQueries, ExperimentTemplateQueries, PageQueries, QueryOperator } from '../models/queries';
 
 
 @Injectable({
@@ -359,7 +359,7 @@ export class BackendApiService {
    */
   getExperimentRunLogs(experimentRunId: string): Observable<string> {
     return this.http.get<string>(`${environment.BACKEND_API_URL}/experiment-runs/${experimentRunId}/logs`,
-      {responseType: 'text' as 'json'});
+      { responseType: 'text' as 'json' });
   }
 
   /**

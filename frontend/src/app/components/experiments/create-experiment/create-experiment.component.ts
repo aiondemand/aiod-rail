@@ -160,11 +160,11 @@ export class CreateExperimentComponent implements OnInit {
       .map(([key, _]) => key);
     const publicationIds = (this.experimentForm.value.publications as Array<Publication>).map(publication => publication.identifier.toString());
     
-    var all_envs: Record<string, string> = {
+    let all_envs: Record<string, string> = {
       ...this.experimentForm?.value?.envs_required,
       ...this.experimentForm?.value?.envs_optional
     };
-    var envsToSend: EnvironmentVar[] = [];
+    let envsToSend: EnvironmentVar[] = [];
 
     for (let env in all_envs) {
       if (all_envs[env] && all_envs[env].length > 0) {
