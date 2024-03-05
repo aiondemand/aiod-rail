@@ -6,6 +6,7 @@ export const authConfig: AuthConfig = {
   issuer: `${environment.AIOD_KEYCLOAK_URL}/realms/${environment.AIOD_KEYCLOAK_REALM}`,
   clientId: environment.AIOD_KEYCLOAK_CLIENT_ID,
   redirectUri: window.location.origin + '/',
+  useSilentRefresh: true,
   responseType: 'code',
   scope: 'openid profile email',
   showDebugInformation: true,

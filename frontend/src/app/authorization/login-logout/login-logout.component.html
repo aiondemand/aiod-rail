@@ -1,10 +1,10 @@
 <div class="login-container">
-    <!-- <button mat-raised-button color="primary" (click)="test()">TEST</button> -->    
-    <div *ngIf="!userName" class="sign-in-out" matTooltip="Sign in">
+    <!-- <button mat-raised-button color="primary" (click)="test()">TEST</button> -->
+    <div *ngIf="!isLoggedIn" class="sign-in-out" matTooltip="Sign in">
         <button mat-raised-button color="primary" (click)="login()">Sign in</button>
     </div>
-    
-    <ng-container *ngIf="userName">
+
+    <ng-container *ngIf="isLoggedIn">
         <div class="user-wrapper">
             <img class="user-icon" src="../assets/account_circle_FILL0_wght400_GRAD0_opsz48.png">
             <div class="user-username">{{userName}}</div>

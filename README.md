@@ -32,8 +32,8 @@ in order to change the default ports, etc.
 ### Configuration
 * **Backend** - It is _mandatory_ to configure environment variables in file `backend/.env`.
   See the section "_Setup->Using docker compose_" in the corresponding [README](backend/README.md) file for more details.
-* **Frontend** - There are some environments created in directory [frontend/src/environments](frontend/src/environments).
-  Create new one or update an existing one to suit your specific needs.
+* **Frontend** - There are some environments created and can be selected in the [docker-compose.yml](docker-compose.yml) file
+  by a build argument `PROFILE` of the `frontend-app`. Update one of the existing ones to suit your specific needs.
 
 ## Authentication
 Some of the functionality is accessible only for authenticated users.

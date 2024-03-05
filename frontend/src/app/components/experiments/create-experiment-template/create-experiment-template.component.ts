@@ -73,7 +73,7 @@ export class CreateExperimentTemplateComponent {
   }
 
   onSubmit() {
-    var formValue = this.experimentTemplateForm.value;
+    let formValue = this.experimentTemplateForm.value;
 
     // TODO for now this attributes will be fixed
     const fixedTask = TaskType.TextClassification;
@@ -84,7 +84,7 @@ export class CreateExperimentTemplateComponent {
       "cardinality": AssetCardinality._11,
     };
 
-    var experimentTemplate: ExperimentTemplateCreate = {
+    let experimentTemplate: ExperimentTemplateCreate = {
       name: String(formValue.name?.trim()),
       description: String(formValue.description?.trim()),
       task: fixedTask,
@@ -126,8 +126,8 @@ export class CreateExperimentTemplateComponent {
   }
 
   addVariable(form: FormGroup, dataTable: EnvironmentVarDef[]) {
-    var newEnvName = String(form.value.name.trim().toUpperCase());
-    var alreadyExists = this.requiredVarsData
+    let newEnvName = String(form.value.name.trim().toUpperCase());
+    let alreadyExists = this.requiredVarsData
       .concat(...this.optionalVarsData)
       .some(env => env.name == newEnvName);
 
@@ -154,7 +154,7 @@ export class CreateExperimentTemplateComponent {
   }
 
   addMetric(): void {
-    var newMetric = String(this.metricForm.value.name?.trim())
+    let newMetric = String(this.metricForm.value.name?.trim())
     if (this.metrics.includes(newMetric)) {
       this.snackBar.show(`Metric ${newMetric} has already been added.`)
       return;

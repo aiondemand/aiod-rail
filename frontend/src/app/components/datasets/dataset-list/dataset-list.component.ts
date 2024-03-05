@@ -65,7 +65,7 @@ export class DatasetListComponent implements OnInit {
       searchQuery?: string
     }
 
-    var queryParams: QueryParams = {
+    let queryParams: QueryParams = {
       pageSize: this.pagination.pageSize,
       pageIndex: this.pagination.pageIndex
     };
