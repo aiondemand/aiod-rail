@@ -8,7 +8,8 @@
     "build-dev": "ng build --configuration development --output-path=dist",
     "build-local": "ng build --configuration local --output-path=dist",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "start-inside-dev-container": "ng serve -c local --watch --port 80 --host 0.0.0.0"
   },
   "private": true,
   "dependencies": {

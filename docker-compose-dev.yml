@@ -1,0 +1,35 @@
+version: "3.9"
+services:
+  # BACKEND
+  backend-app:
+    env_file:
+      - ./backend/.env-dev
+    ports:
+      - "8000:80"
+      - "5678:5678"
+    volumes:
+      - ./backend/app:/code/app
+    entrypoint: ""
+    command:
+      [
+        "sh",
+        "-c",
+        "pip install debugpy -t /tmp && python /tmp/debugpy --listen 0.0.0.0:5678 -m uvicorn app.main:app --host 0.0.0.0 --port 80 --root-path /api --reload"
+      ]
+    
+  # FRONTEND
+  frontend-app:
+    build:
+      context: ./frontend
+      dockerfile: ./Dockerfile-dev
+      args:
+        # One of local/dev/prod
+        PROFILE: local
+    volumes:
+      - ./frontend/src:/app/src
+    command: 
+      [
+        "sh",
+        "-c",
+        "npm run start-inside-dev-container"
+      ]
