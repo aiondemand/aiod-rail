@@ -44,6 +44,38 @@ The current setup relies on Keycloak deployed as part of [AIoD API](https://gith
 Following the installation instructions above, the web application may be reached at `127.0.0.1:80`.
 Documentation of the underlying backend REST API is automatically generated and can be viewed at `127.0.0.1:80/api/docs`.
 
+## Development and debugging
+For development purposes, we recommend running RAIL's development docker containers (docker-compose) and then attach to the applications running inside. This helps to ensure that all developers develop in the same environment.
+
+To start development and debugging, follow these steps:
+1. Create development `.env-dev` file in the Backend root folder. It must define all variables the `.env` file defines.
+1. Start the images either by running [`run-dev-docker-env.sh`](./run-dev-docker-env.sh) or by running the following command from the root of the project:   
+    * ```bash 
+      docker-compose -f docker-compose.yml -f docker-compose-dev.yml up -d --build
+      ```
+1. Attach to the application.
+    * For **Visual Studio Code**, there are a [`.vscode/launch.json`](.vscode/launch.json) configuration file in the root directory. In the *Run and Debug* menu, you should see:
+        * ![Debug configurations for VS Code](images/image.png)
+
+This gif shows how to start development containers and attach a debugger in Visual Studio Code:
+![Debugging animation](images/debugging-demo-animation.gif)
+
+Under the hood:
+* **Frontend** starts the development server (`ng serve ...`).
+* **Backend** utilizes the `debugpy` utility (`debugpy ... -m uvicorn ...`). The debug server listens on *0.0.0.0:5678*.
+
+### Notes
+When you install a new package (Python lib or an NPM package), you need to restart the dev containers.
+
+For better development experience, we recommend installing the local dev environments and libraries. Depending on your IDE, this will allow for features like autocomplete.
+* **Frontend**
+    * Install node and npm package manager.
+    * Install all the dependencies: `npm ci`
+* **Backend**
+    * [optional] Create a Python virtual environment, conda environment or equivalent.
+    * Install all the dependencies: `pip install --no-cache-dir --upgrade -r requirements.txt`
+
+
 ## Contact
 For any questions please contact the maintainers:
 * Martin Tamajka ([martin.tamajka@kinit.sk](mailto:martin.tamajka@kinit.sk))
