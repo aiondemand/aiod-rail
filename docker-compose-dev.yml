@@ -24,7 +24,7 @@ services:
       dockerfile: ./Dockerfile-dev
       args:
         # One of local/dev/prod
-        PROFILE: local
+        PROFILE: local-docker
     volumes:
       - ./frontend/src:/app/src
     command: 
