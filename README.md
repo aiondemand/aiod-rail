@@ -67,6 +67,8 @@ Under the hood:
 ### Notes
 When you install a new package (Python lib or an NPM package), you need to restart the dev containers.
 
+Current setup doesn't support Frontend hot reload (--watch). You need to refresh your browser after every change.
+
 For better development experience, we recommend installing the local dev environments and libraries. Depending on your IDE, this will allow for features like autocomplete.
 * **Frontend**
     * Install node and npm package manager.
