@@ -1,4 +1,5 @@
 from typing import Any
+from urllib.parse import urljoin
 
 from fastapi import APIRouter, Depends, HTTPException, UploadFile
 from pydantic import Json
@@ -21,7 +22,9 @@ router = APIRouter()
 async def get_datasets(pagination: Pagination = Depends()) -> Any:
     async_client = aiod_client_wrapper()
     res = await async_client.get(
-        f"{settings.AIOD_API.BASE_URL}/datasets/{settings.AIOD_API.DATASETS_VERSION}",
+        urljoin(
+            settings.AIOD_API.BASE_URL, f"datasets/{settings.AIOD_API.DATASETS_VERSION}"
+        ),
         params={"offset": pagination.offset, "limit": pagination.limit},
     )
     return res.json()
@@ -31,7 +34,10 @@ async def get_datasets(pagination: Pagination = Depends()) -> Any:
 async def search_datasets(query: str, pagination: Pagination = Depends()) -> Any:
     async_client = aiod_client_wrapper()
     res = await async_client.get(
-        f"{settings.AIOD_API.BASE_URL}/search/datasets/{settings.AIOD_API.DATASETS_VERSION}",
+        urljoin(
+            settings.AIOD_API.BASE_URL,
+            f"search/datasets/{settings.AIOD_API.DATASETS_VERSION}",
+        ),
         params={
             "search_query": query,
             "search_fields": "name",
@@ -47,7 +53,10 @@ async def search_datasets(query: str, pagination: Pagination = Depends()) -> Any
 async def get_dataset(id: int) -> Any:
     async_client = aiod_client_wrapper()
     res = await async_client.get(
-        f"{settings.AIOD_API.BASE_URL}/datasets/{settings.AIOD_API.DATASETS_VERSION}/{id}",
+        urljoin(
+            settings.AIOD_API.BASE_URL,
+            f"datasets/{settings.AIOD_API.DATASETS_VERSION}/{id}",
+        ),
     )
     return res.json()
 
@@ -55,8 +64,12 @@ async def get_dataset(id: int) -> Any:
 @router.get("/counts/datasets", response_model=int)
 async def get_datasets_count() -> Any:
     async_client = aiod_client_wrapper()
+
     res = await async_client.get(
-        f"{settings.AIOD_API.BASE_URL}/counts/datasets/{settings.AIOD_API.DATASETS_VERSION}",
+        urljoin(
+            settings.AIOD_API.BASE_URL,
+            f"counts/datasets/{settings.AIOD_API.DATASETS_VERSION}",
+        ),
     )
     return res.json()
 
@@ -65,7 +78,10 @@ async def get_datasets_count() -> Any:
 async def get_filtered_datasets_count(query: str) -> Any:
     async_client = aiod_client_wrapper()
     res = await async_client.get(
-        f"{settings.AIOD_API.BASE_URL}/search/datasets/{settings.AIOD_API.DATASETS_VERSION}",
+        urljoin(
+            settings.AIOD_API.BASE_URL,
+            f"search/datasets/{settings.AIOD_API.DATASETS_VERSION}",
+        ),
         params={"search_query": query, "search_fields": "name", "limit": 1},
     )
     return res.json()["total_hits"]
@@ -80,7 +96,9 @@ async def create_dataset(
     async_client = aiod_client_wrapper()
     # Create a new dataset in AIoD (just metadata)
     res = await async_client.post(
-        f"{settings.AIOD_API.BASE_URL}/datasets/{settings.AIOD_API.DATASETS_VERSION}",
+        urljoin(
+            settings.AIOD_API.BASE_URL, f"datasets/{settings.AIOD_API.DATASETS_VERSION}"
+        ),
         headers={"Authorization": f"{token}"},
         json=dataset.dict(exclude_unset=True),
     )
@@ -103,7 +121,10 @@ async def create_dataset(
 async def delete_dataset(id: int, token: str = Depends(get_current_user_token)) -> Any:
     async_client = aiod_client_wrapper()
     res = await async_client.delete(
-        f"{settings.AIOD_API.BASE_URL}/datasets/{settings.AIOD_API.DATASETS_VERSION}/{id}",
+        urljoin(
+            settings.AIOD_API.BASE_URL,
+            f"datasets/{settings.AIOD_API.DATASETS_VERSION}/{id}",
+        ),
         headers={"Authorization": f"{token}"},
     )
 
@@ -128,7 +149,11 @@ async def dataset_upload_file_to_huggingface(
     async_client = aiod_client_wrapper()
 
     res = await async_client.post(
-        f"{settings.AIOD_API.BASE_URL}/upload/datasets/{id}/huggingface?token={huggingface_token}&username={huggingface_name}",
+        urljoin(
+            settings.AIOD_API.BASE_URL,
+            f"upload/datasets/{id}/huggingface",
+        ),
+        params={"token": huggingface_token, "username": huggingface_name},
         headers={"Authorization": f"{token}"},
         files={"file": (file.filename, file.file, file.content_type)},
     )
@@ -160,7 +185,10 @@ async def get_dataset_name(id: int) -> str:
 async def get_models(pagination: Pagination = Depends()) -> Any:
     async_client = aiod_client_wrapper()
     res = await async_client.get(
-        f"{settings.AIOD_API.BASE_URL}/ml_models/{settings.AIOD_API.ML_MODELS_VERSION}",
+        urljoin(
+            settings.AIOD_API.BASE_URL,
+            f"ml_models/{settings.AIOD_API.ML_MODELS_VERSION}",
+        ),
         params={"offset": pagination.offset, "limit": pagination.limit},
     )
     return res.json()
@@ -170,7 +198,10 @@ async def get_models(pagination: Pagination = Depends()) -> Any:
 async def search_models(query: str, pagination: Pagination = Depends()) -> Any:
     async_client = aiod_client_wrapper()
     res = await async_client.get(
-        f"{settings.AIOD_API.BASE_URL}/search/ml_models/{settings.AIOD_API.ML_MODELS_VERSION}",
+        urljoin(
+            settings.AIOD_API.BASE_URL,
+            f"search/ml_models/{settings.AIOD_API.ML_MODELS_VERSION}",
+        ),
         params={
             "search_query": query,
             "search_fields": "name",
@@ -186,7 +217,10 @@ async def search_models(query: str, pagination: Pagination = Depends()) -> Any:
 async def get_model(id: int) -> Any:
     async_client = aiod_client_wrapper()
     res = await async_client.get(
-        f"{settings.AIOD_API.BASE_URL}/ml_models/{settings.AIOD_API.ML_MODELS_VERSION}/{id}",
+        urljoin(
+            settings.AIOD_API.BASE_URL,
+            f"ml_models/{settings.AIOD_API.ML_MODELS_VERSION}/{id}",
+        ),
     )
     return res.json()
 
@@ -195,7 +229,10 @@ async def get_model(id: int) -> Any:
 async def get_models_count() -> Any:
     async_client = aiod_client_wrapper()
     res = await async_client.get(
-        f"{settings.AIOD_API.BASE_URL}/counts/ml_models/{settings.AIOD_API.ML_MODELS_VERSION}",
+        urljoin(
+            settings.AIOD_API.BASE_URL,
+            f"counts/ml_models/{settings.AIOD_API.ML_MODELS_VERSION}",
+        ),
     )
     return res.json()
 
@@ -204,7 +241,10 @@ async def get_models_count() -> Any:
 async def get_filtered_models_count(query: str) -> Any:
     async_client = aiod_client_wrapper()
     res = await async_client.get(
-        f"{settings.AIOD_API.BASE_URL}/search/ml_models/{settings.AIOD_API.ML_MODELS_VERSION}",
+        urljoin(
+            settings.AIOD_API.BASE_URL,
+            f"search/ml_models/{settings.AIOD_API.ML_MODELS_VERSION}",
+        ),
         params={"search_query": query, "search_fields": "name", "limit": 1},
     )
     return res.json()["total_hits"]
@@ -222,7 +262,10 @@ async def get_model_name(id: int) -> str:
 async def get_publications(pagination: Pagination = Depends()) -> Any:
     async_client = aiod_client_wrapper()
     res = await async_client.get(
-        f"{settings.AIOD_API.BASE_URL}/publications/{settings.AIOD_API.PUBLICATIONS_VERSION}",
+        urljoin(
+            settings.AIOD_API.BASE_URL,
+            f"publications/{settings.AIOD_API.PUBLICATIONS_VERSION}",
+        ),
         params={"offset": pagination.offset, "limit": pagination.limit},
     )
     return res.json()
@@ -232,7 +275,10 @@ async def get_publications(pagination: Pagination = Depends()) -> Any:
 async def search_publications(query: str, pagination: Pagination = Depends()) -> Any:
     async_client = aiod_client_wrapper()
     res = await async_client.get(
-        f"{settings.AIOD_API.BASE_URL}/search/publications/{settings.AIOD_API.PUBLICATIONS_VERSION}",
+        urljoin(
+            settings.AIOD_API.BASE_URL,
+            f"search/publications/{settings.AIOD_API.PUBLICATIONS_VERSION}",
+        ),
         params={
             "search_query": query,
             "search_fields": "name",
@@ -248,7 +294,10 @@ async def search_publications(query: str, pagination: Pagination = Depends()) ->
 async def get_publication(id: int) -> Any:
     async_client = aiod_client_wrapper()
     res = await async_client.get(
-        f"{settings.AIOD_API.BASE_URL}/publications/{settings.AIOD_API.PUBLICATIONS_VERSION}/{id}",
+        urljoin(
+            settings.AIOD_API.BASE_URL,
+            f"publications/{settings.AIOD_API.PUBLICATIONS_VERSION}/{id}",
+        ),
     )
     return res.json()
 
@@ -257,7 +306,10 @@ async def get_publication(id: int) -> Any:
 async def get_publications_count() -> Any:
     async_client = aiod_client_wrapper()
     res = await async_client.get(
-        f"{settings.AIOD_API.BASE_URL}/counts/publications/{settings.AIOD_API.PUBLICATIONS_VERSION}",
+        urljoin(
+            settings.AIOD_API.BASE_URL,
+            f"counts/publications/{settings.AIOD_API.PUBLICATIONS_VERSION}",
+        ),
     )
     return res.json()
 
@@ -266,7 +318,10 @@ async def get_publications_count() -> Any:
 async def get_filtered_publications_count(query: str) -> Any:
     async_client = aiod_client_wrapper()
     res = await async_client.get(
-        f"{settings.AIOD_API.BASE_URL}/search/publications/{settings.AIOD_API.PUBLICATIONS_VERSION}",
+        urljoin(
+            settings.AIOD_API.BASE_URL,
+            f"search/publications/{settings.AIOD_API.PUBLICATIONS_VERSION}",
+        ),
         params={"search_query": query, "search_fields": "name", "limit": 1},
     )
     return res.json()["total_hits"]
@@ -276,7 +331,10 @@ async def get_filtered_publications_count(query: str) -> Any:
 async def get_platforms() -> Any:
     async_client = aiod_client_wrapper()
     res = await async_client.get(
-        f"{settings.AIOD_API.BASE_URL}/platforms/{settings.AIOD_API.PLATFORMS_VERSION}",
+        urljoin(
+            settings.AIOD_API.BASE_URL,
+            f"platforms/{settings.AIOD_API.PLATFORMS_VERSION}",
+        ),
     )
 
     if res.status_code != 200:
