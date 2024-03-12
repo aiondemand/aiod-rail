@@ -20,6 +20,18 @@
             ],
         },
         {
+            "name": "Debug backend manually (locally)",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/backend/app/main.py",
+            "cwd": "${workspaceFolder}/backend",
+            "env": {
+                "PYTHONPATH": "${cwd}/backend"
+            },
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
             "type": "chrome",
             "request": "launch",
             "name": "Debug Angular running in Docker",
