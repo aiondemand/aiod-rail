@@ -41,7 +41,8 @@ fi
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
 MODELS_DIR="$SCRIPT_DIR/../app/schemas"
 
-wget "$AIOD_API_BASE_PATH/openapi.json" -o "$TEMP_OUT_DIR/openapi.json"
+mkdir $TEMP_OUT_DIR
+wget "$AIOD_API_BASE_PATH/openapi.json" -O "$TEMP_OUT_DIR/openapi.json"
 datamodel-codegen --input "$TEMP_OUT_DIR/openapi.json" --input-file-type openapi --output "$MODELS_DIR/aiod_generated.py"
 
 # Remove the temporary directory

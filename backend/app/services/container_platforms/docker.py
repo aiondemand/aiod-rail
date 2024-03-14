@@ -77,7 +77,7 @@ class DockerService(ContainerPlatformBase):
             await asyncio.to_thread(
                 self.docker_client.images.push, repository=image_name
             )
-            self.docker_client.images.remove(image_name)
+            await asyncio.to_thread(self.docker_client.images.remove, image=image_name)
         except Exception as e:
             self.logger.error(
                 "\tThere was an error when building/pushing an image "

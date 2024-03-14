@@ -63,7 +63,9 @@ async def get_dataset(id: int) -> Any:
     res = await async_client.get(
         urljoin(
             base=settings.AIOD_API.BASE_URL,
-            url=Path("datasets", settings.AIOD_API.DATASETS_VERSION, id).as_posix(),
+            url=Path(
+                "datasets", settings.AIOD_API.DATASETS_VERSION, str(id)
+            ).as_posix(),
         ),
     )
     return res.json()
@@ -132,7 +134,9 @@ async def delete_dataset(id: int, token: str = Depends(get_current_user_token)) 
     res = await async_client.delete(
         urljoin(
             base=settings.AIOD_API.BASE_URL,
-            url=Path("datasets", settings.AIOD_API.DATASETS_VERSION, id).as_posix(),
+            url=Path(
+                "datasets", settings.AIOD_API.DATASETS_VERSION, str(id)
+            ).as_posix(),
         ),
         headers={"Authorization": f"{token}"},
     )
@@ -160,7 +164,7 @@ async def dataset_upload_file_to_huggingface(
     res = await async_client.post(
         urljoin(
             base=settings.AIOD_API.BASE_URL,
-            url=Path("upload/datasets", id, "huggingface").as_posix(),
+            url=Path("upload/datasets", str(id), "huggingface").as_posix(),
         ),
         params={"token": huggingface_token, "username": huggingface_name},
         headers={"Authorization": f"{token}"},
@@ -230,7 +234,9 @@ async def get_model(id: int) -> Any:
     res = await async_client.get(
         urljoin(
             base=settings.AIOD_API.BASE_URL,
-            url=Path("ml_models", settings.AIOD_API.ML_MODELS_VERSION, "id").as_posix(),
+            url=Path(
+                "ml_models", settings.AIOD_API.ML_MODELS_VERSION, str(id)
+            ).as_posix(),
         ),
     )
     return res.json()
@@ -314,7 +320,7 @@ async def get_publication(id: int) -> Any:
         urljoin(
             base=settings.AIOD_API.BASE_URL,
             url=Path(
-                "publications", settings.AIOD_API.PUBLICATIONS_VERSION, id
+                "publications", settings.AIOD_API.PUBLICATIONS_VERSION, str(id)
             ).as_posix(),
         ),
     )
