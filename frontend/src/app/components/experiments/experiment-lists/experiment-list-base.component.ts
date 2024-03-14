@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { PageEvent } from '@angular/material/paginator';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable, catchError, of } from 'rxjs';
+import { Observable, catchError, firstValueFrom, of } from 'rxjs';
 import { Experiment } from 'src/app/models/experiment';
 import { BackendApiService } from 'src/app/services/backend-api.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
@@ -33,9 +33,8 @@ export  abstract class ExperimentListBaseComponent {
         this._updateExperiments();
     });
 
-    this.getExperimentsCount().subscribe(count => {
-      this.pagination.length = count;
-    });
+    firstValueFrom(this.getExperimentsCount())
+      .then(count => this.pagination.length = count);
   }
 
   handlePageEvent(e: PageEvent) {

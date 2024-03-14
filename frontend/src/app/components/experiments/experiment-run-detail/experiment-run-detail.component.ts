@@ -15,6 +15,7 @@ export class ExperimentRunDetailComponent {
     this.subscription = this.backend.getExperimentRun(id).pipe(
       switchMap(run => {
         if (run.state == 'CREATED' || run.state == 'IN_PROGRESS') {
+          this.experimentRun = run;
           return interval(5000).pipe(switchMap(_ => this.backend.getExperimentRun(id)));
         }
         else {
@@ -37,6 +38,10 @@ export class ExperimentRunDetailComponent {
           this.snackBar.showError(`Couldn't load experiment run: ${err.message}`);
         }
       });
+  }
+
+  ngOnDestroy() {
+    this.subscription?.unsubscribe();
   }
 
   logs: string = "";
