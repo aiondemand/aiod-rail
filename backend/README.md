@@ -89,10 +89,10 @@ ExperimentRun:
 └── experiments-userdata
     └── run-64d22795090f4a38dbbf9764
         ├── .env
+        ├── log.txt
         ├── reana.yaml
         ├── script.py
         └── output
-            ├── log.txt
             └── metrics.json
 ```
 
