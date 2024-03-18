@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 
-from app.helpers import WorkflowState
+from app.helpers import FileDetail, WorkflowState
 from app.models.experiment import Experiment
 from app.models.experiment_run import ExperimentRun
 
@@ -32,17 +32,21 @@ class WorkflowEngineBase(ABC):
         pass
 
     @abstractmethod
-    async def postprocess_workflow(self, experiment_run: ExperimentRun):
-        pass
-
-    @abstractmethod
-    async def download_files(self, *args, **kwargs):
-        pass
-
-    @abstractmethod
-    async def save_metadata(
+    async def postprocess_workflow(
         self, experiment_run: ExperimentRun, workflow_state: WorkflowState
-    ) -> bool:
+    ) -> None:
+        pass
+
+    @abstractmethod
+    async def download_file(
+        self, experiment_run: ExperimentRun, filepath: str
+    ) -> tuple[bytes | None, str | None]:
+        pass
+
+    @abstractmethod
+    async def list_files(
+        self, experiment_run: ExperimentRun, filepath: str, greater_detail: bool = False
+    ) -> list[FileDetail]:
         pass
 
     @staticmethod

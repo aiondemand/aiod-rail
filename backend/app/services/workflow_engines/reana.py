@@ -17,7 +17,7 @@ from app.config import (
     RUN_TEMP_OUTPUT_FOLDER,
     settings,
 )
-from app.helpers import WorkflowState, create_env_file
+from app.helpers import FileDetail, WorkflowState, create_env_file
 from app.models.experiment import Experiment
 from app.models.experiment_run import ExperimentRun
 from app.services.workflow_engines.base import (
@@ -115,8 +115,12 @@ class ReanaService(WorkflowEngineBase):
             return WorkflowState(success=False, error_message=error_return_msg)
         return WorkflowState(success=True)
 
-    async def postprocess_workflow(self, experiment_run: ExperimentRun):
+    async def postprocess_workflow(
+        self, experiment_run: ExperimentRun, workflow_state: WorkflowState
+    ) -> None:
         workflow_name = self.get_workflow_name(experiment_run)
+        experiment_dirpath = settings.get_experiment_run_path(run_id=experiment_run.id)
+
         try:
             await self._call_reana_function(
                 "prune_workspace",
@@ -130,19 +134,62 @@ class ReanaService(WorkflowEngineBase):
                 target=RUN_OUTPUT_FOLDER,
                 workflow=workflow_name,
             )
+            # retrieve logs
+            logs = (
+                await self._call_reana_function(
+                    "get_workflow_logs", workflow=workflow_name
+                )
+            )["logs"]
+
+            if workflow_state.success is False:
+                logs = f"{workflow_state.error_message}{logs}"
+            experiment_dirpath.joinpath(LOGS_FILENAME).write_text(
+                logs, encoding="utf-8"
+            )
         except ReanaConnectionException as e:
             raise e
         except Exception:
             # TODO: Handle exception properly
             pass
 
-    async def download_files(
+        # save metrics.json
+        metrics_filepath = f"{RUN_OUTPUT_FOLDER}/{METRICS_FILENAME}"
+        data, _ = await self.download_file(experiment_run, metrics_filepath)
+        if data is not None:
+            savepath_file = os.path.join(experiment_dirpath, metrics_filepath)
+            os.makedirs(os.path.dirname(savepath_file), exist_ok=True)
+            with open(savepath_file, "wb") as f:
+                f.write(data)
+
+    async def download_file(
+        self, experiment_run: ExperimentRun, filepath: str
+    ) -> tuple[bytes | None, str | None]:
+        workflow_name = self.get_workflow_name(experiment_run)
+        try:
+            data, filename, _ = await self._call_reana_function(
+                "download_file", workflow=workflow_name, file_name=filepath
+            )
+        except ReanaConnectionException as e:
+            raise e
+        except Exception:
+            return None, None
+
+        return data, os.path.basename(filename)
+
+    async def list_files(
+        self, experiment_run: ExperimentRun, filepath: str, greater_detail: bool = False
+    ) -> list[FileDetail]:
+        pass
+
+    async def _post_download_files(
         self,
         experiment_run: ExperimentRun,
         workflow_filepath: str,
         local_save_dirpath: Path,
     ):
         workflow_name = self.get_workflow_name(experiment_run)
+
+        self.download_file(experiment_run, filepath=workflow_filepath)
 
         try:
             matched_files = await self._call_reana_function(
@@ -169,39 +216,6 @@ class ReanaService(WorkflowEngineBase):
         except Exception:
             # TODO: Handle exception properly
             pass
-
-    async def save_metadata(
-        self, experiment_run: ExperimentRun, workflow_state: WorkflowState
-    ) -> bool:
-        workflow_name = self.get_workflow_name(experiment_run)
-        experiment_dirpath = settings.get_experiment_run_path(run_id=experiment_run.id)
-
-        try:
-            # retrieve logs
-            logs = (
-                await self._call_reana_function(
-                    "get_workflow_logs", workflow=workflow_name
-                )
-            )["logs"]
-
-            if workflow_state.success is False:
-                logs = f"{workflow_state.error_message}{logs}"
-            experiment_dirpath.joinpath(LOGS_FILENAME).write_text(
-                logs, encoding="utf-8"
-            )
-        except ReanaConnectionException as e:
-            raise e
-        except Exception:
-            # TODO: Handle exception properly
-            pass
-
-        metrics_filepath = f"{RUN_OUTPUT_FOLDER}/{METRICS_FILENAME}"
-        await self.download_files(
-            experiment_run,
-            workflow_filepath=metrics_filepath,
-            local_save_dirpath=experiment_dirpath,
-        )
-        return True
 
     async def _call_reana_function(self, function_name, *args, **kwargs):
         if not await self.ping():

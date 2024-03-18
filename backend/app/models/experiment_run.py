@@ -15,6 +15,12 @@ class ExperimentRun(Document):
     state: RunState = RunState.CREATED
     experiment_id: PydanticObjectId
 
+    @property
+    def logs(self):
+        run_path = settings.get_experiment_run_path(self.id)
+        log_path = run_path / LOGS_FILENAME
+        return log_path.read_text() if log_path.is_file() else ""
+
     class Settings:
         name = "experimentRuns"
         indexes = ["experiment_id"]
@@ -36,12 +42,7 @@ class ExperimentRun(Document):
 
     def map_to_detailed_response(self) -> ExperimentRunDetails:
         response = self.map_to_response()
-
-        run_path = settings.get_experiment_run_path(self.id)
-        log_path = run_path / LOGS_FILENAME
-        logs = log_path.read_text() if log_path.is_file() else ""
-
-        return ExperimentRunDetails(**response.dict(), logs=logs)
+        return ExperimentRunDetails(**response.dict(), logs=self.logs)
 
     def retry_failed_run(self):
         return ExperimentRun(

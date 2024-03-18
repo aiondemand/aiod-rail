@@ -1,6 +1,7 @@
 import logging
 from enum import Enum
 from pathlib import Path
+from typing import Optional
 
 import httpx
 from pydantic import BaseModel
@@ -21,6 +22,14 @@ class QueryOperator(str, Enum):
 class WorkflowState(BaseModel):
     success: bool
     error_message: str = ""
+
+
+class FileDetail(BaseModel):
+    filename: str
+    filepath: str
+    size: Optional[int]
+    created_at: Optional[int]
+    updated_at: Optional[int]
 
 
 class AIoDClientWrapper:

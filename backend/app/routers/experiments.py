@@ -1,19 +1,22 @@
+from io import BytesIO
+from pathlib import Path
 from typing import Any
 
 from beanie import PydanticObjectId, operators
 from beanie.odm.queries.find import FindMany
 from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.responses import PlainTextResponse
+from fastapi.responses import PlainTextResponse, StreamingResponse
 from pydantic import Json
 
 from app.authentication import get_current_user, get_current_user_optional
-from app.helpers import Pagination, QueryOperator
+from app.helpers import FileDetail, Pagination, QueryOperator
 from app.models.experiment import Experiment
 from app.models.experiment_run import ExperimentRun
 from app.schemas.experiment import ExperimentCreate, ExperimentResponse
 from app.schemas.experiment_run import ExperimentRunDetails, ExperimentRunResponse
 from app.services.experiment_scheduler import ExperimentScheduler
 from app.services.workflow_engines.base import WorkflowEngineBase
+from app.services.workflow_engines.reana import ReanaService
 
 router = APIRouter()
 
@@ -152,12 +155,45 @@ async def get_experiment_run(id: PydanticObjectId) -> Any:
     return experiment_run.map_to_detailed_response()
 
 
-@router.get("/experiment-runs/{id}/logs", response_class=PlainTextResponse)
+@router.get("/experiment-runs/{id}/logs/download", response_class=PlainTextResponse)
 async def get_experiment_run_logs(id: PydanticObjectId) -> str:
-    # TODO
-    raise HTTPException(
-        status_code=status.HTTP_405_METHOD_NOT_ALLOWED, detail="Method not implemented"
+    experiment_run = await ExperimentRun.get(id)
+    return experiment_run.logs
+
+
+@router.get("/experiment-runs/{id}/files/download", response_class=StreamingResponse)
+async def download_file(
+    id: PydanticObjectId,
+    filepath: str,
+    workflow_engine: WorkflowEngineBase = Depends(ReanaService.get_service),
+) -> bytes:
+    experiment_run = await ExperimentRun.get(id)
+    data, save_name = await workflow_engine.download_file(experiment_run, filepath)
+    if data is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Requested file doesn't exist.",
+        )
+
+    buffer = BytesIO(data)
+
+    def chunk_generator():
+        CHUNK_SIZE = 1024**2  # 1MB chunks
+        while chunk := buffer.read(CHUNK_SIZE):
+            yield chunk
+
+    headers = {"Content-Disposition": f'attachment; filename="{save_name}"'}
+    return StreamingResponse(
+        chunk_generator(), headers=headers, media_type="application/octet-stream"
     )
+
+
+@router.get("/experiment-runs/{id}/files/list/{path}", response_model=list[FileDetail])
+async def list_files(id: PydanticObjectId, path: Path, is_directory: bool) -> list[str]:
+    # TODO vymenuje vsetky subory na danom path
+    # prepinac na granulatiu informacii??? -> rovno mozem veci z inspectu dat sem
+    # tu asi nebudem pracovat so subormi, iba directories?
+    pass
 
 
 def find_specific_experiments(
