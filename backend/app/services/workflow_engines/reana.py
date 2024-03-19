@@ -5,12 +5,10 @@ import logging
 import os
 import shutil
 import subprocess
-from pathlib import Path
 
 from reana_client.api import client
 
 from app.config import (
-    EXPERIMENT_RUN_DIR_PREFIX,
     LOGS_FILENAME,
     METRICS_FILENAME,
     RUN_OUTPUT_FOLDER,
@@ -35,13 +33,8 @@ class ReanaService(WorkflowEngineBase):
         # self.logger = setup_logging("reana")
         self.logger = logging.getLogger("uvicorn")
 
-    async def ping(self) -> bool:
-        for _ in range(5):
-            out = client.ping(access_token=settings.REANA_ACCESS_TOKEN)
-            if out["error"] is False:
-                return True
-
-        return False
+    async def is_connected(self) -> bool:
+        return self._ping()
 
     async def preprocess_workflow(
         self,
@@ -51,16 +44,16 @@ class ReanaService(WorkflowEngineBase):
     ) -> bool:
         try:
             # delete existing workflows tied to this experiment run if any exists
-            workflow_name = self.get_workflow_name(experiment_run)
-            workflow_runs = await self._call_reana_function(
+            workflow_name = experiment_run.workflow_name
+            workflow_runs = await self._generic_reana_call(
                 "get_workflows", type="batch", workflow=workflow_name
             )
             if len(workflow_runs) > 0:
                 if workflow_runs[0]["status"] == "running":
-                    await self._call_reana_function(
+                    await self._generic_reana_call(
                         "stop_workflow", workflow=workflow_name, force_stop=True
                     )
-                await self._call_reana_function(
+                await self._generic_reana_call(
                     "delete_workflow",
                     workflow=workflow_name,
                     all_runs=True,
@@ -88,7 +81,7 @@ class ReanaService(WorkflowEngineBase):
     async def run_workflow(self, experiment_run: ExperimentRun) -> WorkflowState:
         exp_run_id = experiment_run.id
         exp_run_folder = settings.get_experiment_run_path(exp_run_id)
-        workflow_name = self.get_workflow_name(experiment_run)
+        workflow_name = experiment_run.workflow_name
 
         self.logger.info(f"\tRunning REANA workflow for ExperimentRun id={exp_run_id}")
         error_log_msg = (
@@ -118,17 +111,17 @@ class ReanaService(WorkflowEngineBase):
     async def postprocess_workflow(
         self, experiment_run: ExperimentRun, workflow_state: WorkflowState
     ) -> None:
-        workflow_name = self.get_workflow_name(experiment_run)
+        workflow_name = experiment_run.workflow_name
         experiment_dirpath = settings.get_experiment_run_path(run_id=experiment_run.id)
 
         try:
-            await self._call_reana_function(
+            await self._generic_reana_call(
                 "prune_workspace",
                 workflow=workflow_name,
                 include_inputs=False,
                 include_outputs=False,
             )
-            await self._call_reana_function(
+            await self._generic_reana_call(
                 "mv_files",
                 source=RUN_TEMP_OUTPUT_FOLDER,
                 target=RUN_OUTPUT_FOLDER,
@@ -136,7 +129,7 @@ class ReanaService(WorkflowEngineBase):
             )
             # retrieve logs
             logs = (
-                await self._call_reana_function(
+                await self._generic_reana_call(
                     "get_workflow_logs", workflow=workflow_name
                 )
             )["logs"]
@@ -164,77 +157,57 @@ class ReanaService(WorkflowEngineBase):
     async def download_file(
         self, experiment_run: ExperimentRun, filepath: str
     ) -> tuple[bytes | None, str | None]:
-        workflow_name = self.get_workflow_name(experiment_run)
+        filepath = filepath[:-1] if filepath.endswith("/") else filepath
         try:
-            data, filename, _ = await self._call_reana_function(
-                "download_file", workflow=workflow_name, file_name=filepath
+            data, _, zipped = await self._generic_reana_call(
+                "download_file",
+                workflow=experiment_run.workflow_name,
+                file_name=filepath,
             )
         except ReanaConnectionException as e:
             raise e
         except Exception:
             return None, None
 
-        return data, os.path.basename(filename)
+        savename = os.path.basename(f"{filepath}.zip" if zipped else filepath)
+        return data, savename
 
     async def list_files(
         self, experiment_run: ExperimentRun, filepath: str, greater_detail: bool = False
     ) -> list[FileDetail]:
+        files = await self._generic_reana_call(
+            "list_files", workflow=experiment_run.workflow_name, file_name=filepath
+        )
+        print(files)
+
         pass
 
-    async def _post_download_files(
-        self,
-        experiment_run: ExperimentRun,
-        workflow_filepath: str,
-        local_save_dirpath: Path,
-    ):
-        workflow_name = self.get_workflow_name(experiment_run)
+    async def _generic_reana_call(self, function_name, *args, **kwargs):
+        return await asyncio.to_thread(
+            self.__reana_call, function_name, *args, **kwargs
+        )
 
-        self.download_file(experiment_run, filepath=workflow_filepath)
+    def _ping(self) -> bool:
+        for _ in range(5):
+            out = client.ping(access_token=settings.REANA_ACCESS_TOKEN)
+            if out["error"] is False:
+                return True
+        return False
 
-        try:
-            matched_files = await self._call_reana_function(
-                "list_files", workflow=workflow_name, file_name=workflow_filepath
-            )
-            for matched_file in matched_files:
-                if matched_file["name"].startswith(workflow_filepath) is False:
-                    continue
-                binary, _, _ = await self._call_reana_function(
-                    "download_file",
-                    workflow=workflow_name,
-                    file_name=matched_file["name"],
-                )
-
-                savepath_file = os.path.join(
-                    local_save_dirpath, *matched_file["name"].split("/")
-                )
-                os.makedirs(os.path.dirname(savepath_file), exist_ok=True)
-                with open(savepath_file, "wb") as f:
-                    f.write(binary)
-
-        except ReanaConnectionException as e:
-            raise e
-        except Exception:
-            # TODO: Handle exception properly
-            pass
-
-    async def _call_reana_function(self, function_name, *args, **kwargs):
-        if not await self.ping():
+    def __reana_call(self, function_name, *args, **kwargs):
+        if not self._ping():
             raise ReanaConnectionException("Unable to connect to REANA server")
         return getattr(client, function_name)(
             *args, **kwargs, access_token=settings.REANA_ACCESS_TOKEN
         )
 
     @staticmethod
-    def get_workflow_name(experiment_run: ExperimentRun) -> str:
-        return f"{EXPERIMENT_RUN_DIR_PREFIX}{str(experiment_run.id)}"
-
-    @staticmethod
     async def init() -> ReanaService:
         service = ReanaService()
 
-        if not await service.ping():
+        if not await service.is_connected():
             raise SystemExit(
-                f"Unable to log in to Docker registry '{settings.DOCKER_REGISTRY_URL}'. Exiting..."
+                f"Unable to connect to REANA server '{settings.REANA_SERVER_URL}'. Exiting..."
             )
         WorkflowEngineBase.set_service(service)
         return service

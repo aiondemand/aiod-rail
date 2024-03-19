@@ -35,6 +35,11 @@ class ExperimentTemplate(Document):
     approved: bool = False
     created_by: str
 
+    @property
+    def image_name(self) -> str:
+        image_tag = f"{EXPERIMENT_TEMPLATE_DIR_PREFIX}{self.id}"
+        return f"{settings.DOCKER_REGISTRY_URL}/{REPOSITORY_NAME}:{image_tag}"
+
     class Settings:
         name = "experimentTemplates"
 
@@ -56,7 +61,7 @@ class ExperimentTemplate(Document):
         reana_cfg = yaml.safe_load(open("app/data/template-reana.yaml"))
         reana_cfg["workflow"]["specification"]["steps"][0][
             "environment"
-        ] = self.get_image_name()
+        ] = self.image_name
         reana_cfg["outputs"]["directories"][0] = RUN_TEMP_OUTPUT_FOLDER
 
         with base_path.joinpath("reana.yaml").open("w") as fp:
@@ -105,7 +110,3 @@ class ExperimentTemplate(Document):
         required_environment_var_names = set([env.name for env in self.envs_required])
 
         return required_environment_var_names.issubset(experiment_environment_var_names)
-
-    def get_image_name(self) -> str:
-        image_tag = f"{EXPERIMENT_TEMPLATE_DIR_PREFIX}{self.id}"
-        return f"{settings.DOCKER_REGISTRY_URL}/{REPOSITORY_NAME}:{image_tag}"

@@ -3,7 +3,12 @@ from datetime import datetime
 
 from beanie import Document, PydanticObjectId
 
-from app.config import LOGS_FILENAME, METRICS_FILENAME, settings
+from app.config import (
+    EXPERIMENT_RUN_DIR_PREFIX,
+    LOGS_FILENAME,
+    METRICS_FILENAME,
+    settings,
+)
 from app.schemas.experiment_run import ExperimentRunDetails, ExperimentRunResponse
 from app.schemas.states import RunState
 
@@ -20,6 +25,10 @@ class ExperimentRun(Document):
         run_path = settings.get_experiment_run_path(self.id)
         log_path = run_path / LOGS_FILENAME
         return log_path.read_text() if log_path.is_file() else ""
+
+    @property
+    def workflow_name(self) -> str:
+        return f"{EXPERIMENT_RUN_DIR_PREFIX}{str(self.id)}"
 
     class Settings:
         name = "experimentRuns"

@@ -109,7 +109,7 @@ async def execute_experiment_run(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="You cannot execute experiments of other users.",
         )
-    if not await workflow_engine.ping():
+    if not await workflow_engine.is_connected():
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Workflow engine is currently unavailable",

@@ -15,7 +15,7 @@ class WorkflowEngineBase(ABC):
     SERVICE: WorkflowEngineBase | None = None
 
     @abstractmethod
-    async def ping(self) -> bool:
+    async def is_connected(self) -> bool:
         pass
 
     @abstractmethod
@@ -47,11 +47,6 @@ class WorkflowEngineBase(ABC):
     async def list_files(
         self, experiment_run: ExperimentRun, filepath: str, greater_detail: bool = False
     ) -> list[FileDetail]:
-        pass
-
-    @staticmethod
-    @abstractmethod
-    def get_workflow_name(experiment_run: ExperimentRun) -> str:
         pass
 
     @staticmethod
