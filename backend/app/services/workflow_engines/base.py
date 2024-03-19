@@ -45,7 +45,7 @@ class WorkflowEngineBase(ABC):
 
     @abstractmethod
     async def list_files(
-        self, experiment_run: ExperimentRun, filepath: str, greater_detail: bool = False
+        self, experiment_run: ExperimentRun, filepath: str
     ) -> list[FileDetail]:
         pass
 

@@ -6,6 +6,7 @@ import os
 import shutil
 import subprocess
 
+import dateutil.parser
 from reana_client.api import client
 
 from app.config import (
@@ -48,8 +49,10 @@ class ReanaService(WorkflowEngineBase):
             workflow_runs = await self._generic_reana_call(
                 "get_workflows", type="batch", workflow=workflow_name
             )
-            if len(workflow_runs) > 0:
-                if workflow_runs[0]["status"] == "running":
+            for workflow in workflow_runs:
+                if workflow["status"] == "deleted":
+                    continue
+                if workflow["status"] == "running":
                     await self._generic_reana_call(
                         "stop_workflow", workflow=workflow_name, force_stop=True
                     )
@@ -173,14 +176,70 @@ class ReanaService(WorkflowEngineBase):
         return data, savename
 
     async def list_files(
-        self, experiment_run: ExperimentRun, filepath: str, greater_detail: bool = False
+        self, experiment_run: ExperimentRun, parent_dir: str = ""
     ) -> list[FileDetail]:
-        files = await self._generic_reana_call(
-            "list_files", workflow=experiment_run.workflow_name, file_name=filepath
+        # TODO this function cant recognize empty folder as a directory
+        # We cannot skip the empty folder either
+        # One possible solution: Download files to server and list the files
+        # in filesystem rather than using REANA service - not ideal solution
+        parent_dir = f"{parent_dir.strip('/')}/" if parent_dir else ""
+        parent_dir = "" if "/" else parent_dir
+        matching_files = await self._generic_reana_call(
+            "list_files", workflow=experiment_run.workflow_name, file_name=parent_dir
         )
-        print(files)
 
-        pass
+        files_to_return: list[FileDetail] = []
+        folders_to_return: list[FileDetail] = []
+        folder_names: list[str] = []
+        for file in matching_files:
+            rel_filename = file["name"][len(parent_dir) :]
+            path_parts = rel_filename.split("/")
+            filename = path_parts[0]
+
+            if len(path_parts) == 1:
+                # files (or folder records themselves)
+                files_to_return.append(
+                    FileDetail(
+                        filename=filename,
+                        filepath=file["name"],
+                        is_dir=False,
+                        size=file["size"]["raw"],
+                        last_modified=file["last-modified"],
+                    )
+                )
+            elif filename in folder_names:
+                # analyzing a file of known folder
+                idx = folder_names.index(filename)
+                folders_to_return[idx].last_modified = max(
+                    dateutil.parser.parse(file["last-modified"]),
+                    folders_to_return[idx].last_modified,
+                )
+            else:
+                # new folder encountered
+                folders_to_return.append(
+                    FileDetail(
+                        filename=filename,
+                        filepath=os.path.join(parent_dir, filename),
+                        is_dir=True,
+                        size=4096,
+                        last_modified=file["last-modified"],
+                    )
+                )
+                folder_names.append(filename)
+
+        # remove entries tied to folder record themselves
+        # this is sanity check since sometimes REANA returns directories,
+        # sometimes it chooses not to and only return files within directories...
+        idx_to_remove = []
+        for it, file in enumerate(files_to_return):
+            if file.filename in folder_names:
+                idx_to_remove.append(it)
+        [files_to_return.pop(idx) for idx in idx_to_remove[::-1]]
+
+        # sort alphabetically
+        files_to_return = sorted(files_to_return, key=lambda f: f.filename)
+        folders_to_return = sorted(folders_to_return, key=lambda d: d.filename)
+        return folders_to_return + files_to_return
 
     async def _generic_reana_call(self, function_name, *args, **kwargs):
         return await asyncio.to_thread(

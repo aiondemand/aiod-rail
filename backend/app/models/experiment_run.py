@@ -2,6 +2,7 @@ import json
 from datetime import datetime
 
 from beanie import Document, PydanticObjectId
+from pydantic import validator
 
 from app.config import (
     EXPERIMENT_RUN_DIR_PREFIX,
@@ -14,11 +15,19 @@ from app.schemas.states import RunState
 
 
 class ExperimentRun(Document):
-    created_at: datetime = datetime.utcnow()
-    updated_at: datetime = datetime.utcnow()
+    created_at: datetime = None
+    updated_at: datetime = None
     retry_count: int = 0
     state: RunState = RunState.CREATED
     experiment_id: PydanticObjectId
+
+    @validator("created_at", always=True)
+    def init_created_at(cls, val):
+        return val or datetime.utcnow()
+
+    @validator("updated_at", always=True)
+    def init_updated_at(cls, val):
+        return val or datetime.utcnow()
 
     @property
     def logs(self):

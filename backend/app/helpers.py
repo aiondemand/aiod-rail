@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 import logging
+from datetime import datetime
 from enum import Enum
 from pathlib import Path
 from typing import Optional
@@ -27,9 +30,9 @@ class WorkflowState(BaseModel):
 class FileDetail(BaseModel):
     filename: str
     filepath: str
+    is_dir: bool
     size: Optional[int]
-    created_at: Optional[int]
-    updated_at: Optional[int]
+    last_modified: Optional[datetime]
 
 
 class AIoDClientWrapper:

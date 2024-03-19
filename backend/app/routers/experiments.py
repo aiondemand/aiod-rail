@@ -1,5 +1,4 @@
 from io import BytesIO
-from pathlib import Path
 from typing import Any
 
 from beanie import PydanticObjectId, operators
@@ -155,7 +154,7 @@ async def get_experiment_run(id: PydanticObjectId) -> Any:
     return experiment_run.map_to_detailed_response()
 
 
-@router.get("/experiment-runs/{id}/logs/download", response_class=PlainTextResponse)
+@router.get("/experiment-runs/{id}/logs", response_class=PlainTextResponse)
 async def get_experiment_run_logs(id: PydanticObjectId) -> str:
     experiment_run = await ExperimentRun.get(id)
     return experiment_run.logs
@@ -188,12 +187,14 @@ async def download_file(
     )
 
 
-@router.get("/experiment-runs/{id}/files/list/{path}", response_model=list[FileDetail])
-async def list_files(id: PydanticObjectId, path: Path, is_directory: bool) -> list[str]:
-    # TODO vymenuje vsetky subory na danom path
-    # prepinac na granulatiu informacii??? -> rovno mozem veci z inspectu dat sem
-    # tu asi nebudem pracovat so subormi, iba directories?
-    pass
+@router.get("/experiment-runs/{id}/files/list", response_model=list[FileDetail])
+async def list_files(
+    id: PydanticObjectId,
+    path: str = "",
+    workflow_engine: WorkflowEngineBase = Depends(ReanaService.get_service),
+) -> list[str]:
+    experiment_run = await ExperimentRun.get(id)
+    return await workflow_engine.list_files(experiment_run, path)
 
 
 def find_specific_experiments(

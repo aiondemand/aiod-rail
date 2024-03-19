@@ -89,7 +89,7 @@ class ExperimentScheduler:
     async def get_run_to_execute(self) -> PydanticObjectId:
         while True:
             if not self.experiment_run_queue.empty():
-                while not self.workflow_engine.is_connected():
+                while not await self.workflow_engine.is_connected():
                     await asyncio.sleep(CHECK_REANA_CONNECTION_INTERVAL)
                 return self.experiment_run_queue.get_nowait()
             await asyncio.sleep(LITTLE_NAP)
@@ -148,8 +148,6 @@ class ExperimentScheduler:
             )
             if workflow_state.success:
                 new_state = RunState.FINISHED
-            elif should_retry:
-                new_state = RunState.IN_PROGRESS
             else:
                 new_state = RunState.CRASHED
 
