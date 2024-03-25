@@ -1,4 +1,3 @@
-from enum import Enum
 from pathlib import Path
 from typing import Any
 from urllib.parse import urljoin
@@ -13,133 +12,60 @@ from app.schemas.dataset import Dataset
 from app.schemas.ml_model import MLModel
 from app.schemas.platform import Platform
 from app.schemas.publication import Publication
+from app.services.aiod import (
+    AssetType,
+    get_asset,
+    get_assets,
+    get_assets_count,
+    get_assets_version,
+    search_assets,
+)
 
 router = APIRouter()
-
-
-class AssetType(Enum):
-    DATASETS: str = "datasets"
-    ML_MODELS: str = "ml_models"
-    PUBLICATIONS: str = "publications"
-    PLATFORMS: str = "platforms"
-
-
-def get_assets_version(asset_type: AssetType) -> str:
-    match asset_type:
-        case AssetType.DATASETS:
-            return settings.AIOD_API.DATASETS_VERSION
-        case AssetType.ML_MODELS:
-            return settings.AIOD_API.ML_MODELS_VERSION
-        case AssetType.PUBLICATIONS:
-            return settings.AIOD_API.PUBLICATIONS_VERSION
-
-
-async def get_assets(asset_type: AssetType, pagination: Pagination) -> Json:
-    async_client = aiod_client_wrapper()
-    res = await async_client.get(
-        urljoin(
-            base=settings.AIOD_API.BASE_URL,
-            url=Path(asset_type.value, get_assets_version(asset_type)).as_posix(),
-        ),
-        params={"offset": pagination.offset, "limit": pagination.limit},
-    )
-
-    if res.status_code != 200:
-        raise HTTPException(
-            status_code=res.status_code,
-            detail=f"Failed to get {asset_type.value} from AIoD. {res.json()}",
-        )
-
-    return res.json()
-
-
-async def get_asset(asset_type: AssetType, asset_id: int) -> Json:
-    async_client = aiod_client_wrapper()
-    res = await async_client.get(
-        urljoin(
-            base=settings.AIOD_API.BASE_URL,
-            url=Path(
-                asset_type.value, get_assets_version(asset_type), str(asset_id)
-            ).as_posix(),
-        ),
-    )
-    return res.json()
-
-
-async def get_assets_count(asset_type: AssetType, filter_query: str = None) -> Json:
-    async_client = aiod_client_wrapper()
-
-    if filter_query is None:
-        res = await async_client.get(
-            urljoin(
-                base=settings.AIOD_API.BASE_URL,
-                url=Path(
-                    f"counts/{asset_type.value}", get_assets_version(asset_type)
-                ).as_posix(),
-            ),
-        )
-        return res.json()
-    else:
-        res = await async_client.get(
-            urljoin(
-                base=settings.AIOD_API.BASE_URL,
-                url=Path(
-                    f"search/{asset_type.value}", get_assets_version(asset_type)
-                ).as_posix(),
-            ),
-            params={"search_query": filter_query, "search_fields": "name", "limit": 1},
-        )
-        return res.json()["total_hits"]
-
-
-async def search_assets(
-    asset_type: AssetType, query: str, pagination: Pagination
-) -> Json:
-    async_client = aiod_client_wrapper()
-    res = await async_client.get(
-        urljoin(
-            base=settings.AIOD_API.BASE_URL,
-            url=Path(
-                f"search/{asset_type.value}", get_assets_version(asset_type)
-            ).as_posix(),
-        ),
-        params={
-            "search_query": query,
-            "search_fields": "name",
-            "limit": pagination.limit,
-            "offset": pagination.offset,
-            "get_all": True,
-        },
-    )
-    return res.json()["resources"]
-
 
 """ Datasets """
 
 
 @router.get("/datasets", response_model=list[Dataset])
 async def get_datasets(pagination: Pagination = Depends()) -> Any:
-    return get_assets(AssetType.DATASETS, pagination=pagination)
+    return await get_assets(
+        async_client=aiod_client_wrapper(),
+        asset_type=AssetType.DATASETS,
+        pagination=pagination,
+    )
 
 
 @router.get("/datasets/search/{query}", response_model=list[Dataset])
 async def search_datasets(query: str, pagination: Pagination = Depends()) -> Any:
-    return search_assets(AssetType.DATASETS, query=query, pagination=pagination)
+    return await search_assets(
+        async_client=aiod_client_wrapper(),
+        asset_type=AssetType.DATASETS,
+        query=query,
+        pagination=pagination,
+    )
 
 
 @router.get("/datasets/{id}", response_model=Dataset)
 async def get_dataset(id: int) -> Any:
-    return get_asset(AssetType.DATASETS, asset_id=id)
+    return await get_asset(
+        async_client=aiod_client_wrapper(), asset_type=AssetType.DATASETS, asset_id=id
+    )
 
 
 @router.get("/counts/datasets", response_model=int)
 async def get_datasets_count() -> Any:
-    return get_assets_count(asset_type=AssetType.DATASETS)
+    return await get_assets_count(
+        async_client=aiod_client_wrapper(), asset_type=AssetType.DATASETS
+    )
 
 
 @router.get("/counts/datasets/search/{query}", response_model=int)
 async def get_filtered_datasets_count(query: str) -> Any:
-    return get_assets_count(asset_type=AssetType.DATASETS, filter_query=query)
+    return await get_assets_count(
+        async_client=aiod_client_wrapper(),
+        asset_type=AssetType.DATASETS,
+        filter_query=query,
+    )
 
 
 @router.post("/datasets", response_model=Dataset)
@@ -153,7 +79,9 @@ async def create_dataset(
     res = await async_client.post(
         urljoin(
             base=settings.AIOD_API.BASE_URL,
-            url=Path("datasets", settings.AIOD_API.DATASETS_VERSION).as_posix(),
+            url=Path(
+                AssetType.DATASETS.value, get_assets_version(AssetType.DATASETS)
+            ).as_posix(),
         ),
         headers={"Authorization": f"{token}"},
         json=dataset.dict(exclude_unset=True),
@@ -241,27 +169,44 @@ async def get_dataset_name(id: int) -> str:
 
 @router.get("/models", response_model=list[MLModel])
 async def get_models(pagination: Pagination = Depends()) -> Any:
-    return get_assets(AssetType.ML_MODELS, pagination=pagination)
+    return await get_assets(
+        async_client=aiod_client_wrapper(),
+        asset_type=AssetType.ML_MODELS,
+        pagination=pagination,
+    )
 
 
 @router.get("/models/search/{query}", response_model=list[MLModel])
 async def search_models(query: str, pagination: Pagination = Depends()) -> Any:
-    return search_assets(AssetType.ML_MODELS, query=query, pagination=pagination)
+    return await search_assets(
+        async_client=aiod_client_wrapper(),
+        asset_type=AssetType.ML_MODELS,
+        query=query,
+        pagination=pagination,
+    )
 
 
 @router.get("/models/{id}", response_model=MLModel)
 async def get_model(id: int) -> Any:
-    return get_asset(AssetType.ML_MODELS, asset_id=id)
+    return await get_asset(
+        async_client=aiod_client_wrapper(), asset_type=AssetType.ML_MODELS, asset_id=id
+    )
 
 
 @router.get("/counts/models", response_model=int)
 async def get_models_count() -> Any:
-    return get_assets_count(AssetType.ML_MODELS)
+    return await get_assets_count(
+        async_client=aiod_client_wrapper(), asset_type=AssetType.ML_MODELS
+    )
 
 
 @router.get("/counts/models/search/{query}", response_model=int)
 async def get_filtered_models_count(query: str) -> Any:
-    return get_assets_count(AssetType.ML_MODELS, filter_query=query)
+    return await get_assets_count(
+        async_client=aiod_client_wrapper(),
+        asset_type=AssetType.ML_MODELS,
+        filter_query=query,
+    )
 
 
 async def get_model_name(id: int) -> str:
@@ -274,29 +219,52 @@ async def get_model_name(id: int) -> str:
 
 @router.get("/publications", response_model=list[Publication])
 async def get_publications(pagination: Pagination = Depends()) -> Any:
-    return get_assets(AssetType.PUBLICATIONS, pagination=pagination)
+    return await get_assets(
+        async_client=aiod_client_wrapper(),
+        asset_type=AssetType.PUBLICATIONS,
+        pagination=pagination,
+    )
 
 
 @router.get("/publications/search/{query}", response_model=list[Publication])
 async def search_publications(query: str, pagination: Pagination = Depends()) -> Any:
-    return search_assets(AssetType.PUBLICATIONS, query=query, pagination=pagination)
+    return await search_assets(
+        async_client=aiod_client_wrapper(),
+        asset_type=AssetType.PUBLICATIONS,
+        query=query,
+        pagination=pagination,
+    )
 
 
 @router.get("/publications/{id}", response_model=Publication)
 async def get_publication(id: int) -> Any:
-    return get_asset(AssetType.PUBLICATIONS, asset_id=id)
+    return await get_asset(
+        async_client=aiod_client_wrapper(),
+        asset_type=AssetType.PUBLICATIONS,
+        asset_id=id,
+    )
 
 
 @router.get("/counts/publications", response_model=int)
 async def get_publications_count() -> Any:
-    return get_assets_count(AssetType.PUBLICATIONS)
+    return await get_assets_count(
+        async_client=aiod_client_wrapper(), asset_type=AssetType.PUBLICATIONS
+    )
 
 
 @router.get("/counts/publications/search/{query}", response_model=int)
 async def get_filtered_publications_count(query: str) -> Any:
-    return get_assets_count(AssetType.PUBLICATIONS, filter_query=query)
+    return await get_assets_count(
+        async_client=aiod_client_wrapper(),
+        asset_type=AssetType.PUBLICATIONS,
+        filter_query=query,
+    )
 
 
 @router.get("/platforms", response_model=list[Platform])
 async def get_platforms(pagination: Pagination = Depends()) -> Any:
-    return get_assets(AssetType.PLATFORMS, pagination=pagination)
+    return await get_assets(
+        async_client=aiod_client_wrapper(),
+        asset_type=AssetType.PLATFORMS,
+        pagination=pagination,
+    )
