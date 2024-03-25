@@ -7,13 +7,14 @@ from pydantic import Json
 
 from app.authentication import get_current_user, get_current_user_token
 from app.config import settings
-from app.helpers import Pagination, aiod_client_wrapper
+from app.helpers import Pagination
 from app.schemas.dataset import Dataset
 from app.schemas.ml_model import MLModel
 from app.schemas.platform import Platform
 from app.schemas.publication import Publication
 from app.services.aiod import (
     AssetType,
+    aiod_client_wrapper,
     get_asset,
     get_assets,
     get_assets_count,
@@ -159,11 +160,6 @@ async def dataset_upload_file_to_huggingface(
     return dataset
 
 
-async def get_dataset_name(id: int) -> str:
-    dataset = Dataset(**await get_dataset(id))
-    return dataset.name
-
-
 """ ML Models """
 
 
@@ -207,11 +203,6 @@ async def get_filtered_models_count(query: str) -> Any:
         asset_type=AssetType.ML_MODELS,
         filter_query=query,
     )
-
-
-async def get_model_name(id: int) -> str:
-    ml_model = MLModel(**await get_model(id))
-    return ml_model.name
 
 
 """ Publications """

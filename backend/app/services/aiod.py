@@ -2,12 +2,15 @@ from enum import Enum
 from pathlib import Path
 from urllib.parse import urljoin
 
+import httpx
 from fastapi import HTTPException
 from httpx import AsyncClient
 from pydantic import Json
 
 from app.config import settings
 from app.helpers import Pagination
+from app.schemas.dataset import Dataset
+from app.schemas.ml_model import MLModel
 
 
 class AssetType(Enum):
@@ -15,6 +18,27 @@ class AssetType(Enum):
     ML_MODELS: str = "ml_models"
     PUBLICATIONS: str = "publications"
     PLATFORMS: str = "platforms"
+
+
+class AIoDClientWrapper:
+    async_client = None
+
+    def start(self):
+        """Instantiate the client. Call from the FastAPI startup hook."""
+        self.async_client = httpx.AsyncClient(verify=settings.AIOD_API.VERIFY_SSL)
+
+    async def stop(self):
+        """Gracefully shutdown. Call from FastAPI shutdown hook."""
+        await self.async_client.aclose()
+        self.async_client = None
+
+    def __call__(self):
+        """Calling the instantiated HTTPXClientWrapper returns the wrapped singleton."""
+        assert self.async_client is not None
+        return self.async_client
+
+
+aiod_client_wrapper = AIoDClientWrapper()
 
 
 def get_assets_version(asset_type: AssetType) -> str:
@@ -135,3 +159,21 @@ async def search_assets(
         )
 
     return res.json()["resources"]
+
+
+async def get_dataset_name(async_client: AsyncClient, id: int) -> str:
+    dataset = Dataset(
+        **await get_asset(
+            async_client=async_client, asset_type=AssetType.DATASETS, asset_id=id
+        )
+    )
+    return dataset.name
+
+
+async def get_model_name(async_client: AsyncClient, id: int) -> str:
+    ml_model = MLModel(
+        **await get_asset(
+            async_client=async_client, asset_type=AssetType.ML_MODELS, asset_id=id
+        )
+    )
+    return ml_model.name

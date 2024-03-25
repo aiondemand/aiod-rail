@@ -1,8 +1,8 @@
 import pytest
 from fastapi.testclient import TestClient
 
-from app.helpers import aiod_client_wrapper
 from app.main import app
+from app.services.aiod import aiod_client_wrapper
 
 
 @pytest.fixture(scope="session")
