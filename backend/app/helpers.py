@@ -28,9 +28,7 @@ class WorkflowState(BaseModel):
 
 
 class FileDetail(BaseModel):
-    filename: str
     filepath: str
-    is_dir: bool
     size: Optional[int]
     last_modified: Optional[datetime]
 

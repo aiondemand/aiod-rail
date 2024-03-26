@@ -1,4 +1,4 @@
-from io import BytesIO
+from pathlib import Path
 from typing import Any
 
 from beanie import PydanticObjectId, operators
@@ -62,6 +62,11 @@ async def get_experiments_count(
 )
 async def get_experiment(id: PydanticObjectId) -> Any:
     experiment = await Experiment.get(id)
+    if experiment is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Specified experiment doesn't exist",
+        )
     return experiment.dict()
 
 
@@ -136,8 +141,7 @@ async def get_experiment_runs(
 
 @router.get("/count/experiments/{id}/runs", response_model=int)
 async def get_experiment_runs_count(id: PydanticObjectId) -> Any:
-    runs = await ExperimentRun.find(ExperimentRun.experiment_id == id)
-    return len(runs)
+    return await ExperimentRun.find(ExperimentRun.experiment_id == id).count()
 
 
 @router.get("/experiment-runs", response_model=list[ExperimentRunResponse])
@@ -151,12 +155,22 @@ async def get_all_experiment_runs(pagination: Pagination = Depends()) -> Any:
 @router.get("/experiment-runs/{id}", response_model=ExperimentRunDetails | None)
 async def get_experiment_run(id: PydanticObjectId) -> Any:
     experiment_run = await ExperimentRun.get(id)
+    if experiment_run is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Specified experiment run doesn't exist",
+        )
     return experiment_run.map_to_detailed_response()
 
 
 @router.get("/experiment-runs/{id}/logs", response_class=PlainTextResponse)
 async def get_experiment_run_logs(id: PydanticObjectId) -> str:
     experiment_run = await ExperimentRun.get(id)
+    if experiment_run is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Specified experiment run doesn't exist",
+        )
     return experiment_run.logs
 
 
@@ -167,34 +181,50 @@ async def download_file(
     workflow_engine: WorkflowEngineBase = Depends(ReanaService.get_service),
 ) -> bytes:
     experiment_run = await ExperimentRun.get(id)
-    data, save_name = await workflow_engine.download_file(experiment_run, filepath)
-    if data is None:
+    if experiment_run is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Specified experiment run doesn't exist",
+        )
+
+    tempdir = Path("./temp")
+    tempdir.mkdir(parents=True, exist_ok=True)
+
+    savepath = await workflow_engine.download_file(
+        experiment_run, filepath, savedir=tempdir
+    )
+    if savepath is None:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Requested file doesn't exist.",
         )
 
-    buffer = BytesIO(data)
+    def iterfile():
+        with open(savepath, "rb") as f:
+            CHUNK_SIZE = 1024**2  # 1MB
+            while chunk := f.read(CHUNK_SIZE):
+                yield chunk
+        savepath.unlink()
 
-    def chunk_generator():
-        CHUNK_SIZE = 1024**2  # 1MB chunks
-        while chunk := buffer.read(CHUNK_SIZE):
-            yield chunk
-
-    headers = {"Content-Disposition": f'attachment; filename="{save_name}"'}
+    headers = {"Content-Disposition": f'attachment; filename="{savepath.name}"'}
     return StreamingResponse(
-        chunk_generator(), headers=headers, media_type="application/octet-stream"
+        iterfile(), headers=headers, media_type="application/octet-stream"
     )
 
 
 @router.get("/experiment-runs/{id}/files/list", response_model=list[FileDetail])
 async def list_files(
     id: PydanticObjectId,
-    path: str = "",
     workflow_engine: WorkflowEngineBase = Depends(ReanaService.get_service),
 ) -> list[str]:
     experiment_run = await ExperimentRun.get(id)
-    return await workflow_engine.list_files(experiment_run, path)
+    if experiment_run is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Specified experiment run doesn't exist",
+        )
+
+    return await workflow_engine.list_files(experiment_run)
 
 
 def find_specific_experiments(

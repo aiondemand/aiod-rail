@@ -14,6 +14,7 @@ CHECK_REANA_CONNECTION_INTERVAL = 60
 RUN_TEMP_OUTPUT_FOLDER = "output-temp"
 RUN_OUTPUT_FOLDER = "output"
 REPOSITORY_NAME = "rail-exp-templates"
+TEMP_DIRNAME = "temp"
 
 
 class AIODApiConfig(BaseModel):

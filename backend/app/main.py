@@ -1,4 +1,6 @@
 import asyncio
+import shutil
+from pathlib import Path
 
 from beanie import init_beanie
 from fastapi import FastAPI
@@ -6,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from app import __version__
-from app.config import settings
+from app.config import TEMP_DIRNAME, settings
 from app.helpers import aiod_client_wrapper
 from app.models.experiment import Experiment
 from app.models.experiment_run import ExperimentRun
@@ -38,6 +40,9 @@ app.add_middleware(
 @app.on_event("startup")
 async def app_init():
     """Initialize application services"""
+    if Path(TEMP_DIRNAME).exists():
+        shutil.rmtree(TEMP_DIRNAME)
+
     aiod_client_wrapper.start()
 
     app.db = AsyncIOMotorClient(settings.MONGODB_URI, uuidRepresentation="standard")[
@@ -64,6 +69,9 @@ async def app_init():
 
 @app.on_event("shutdown")
 async def shutdown_event():
+    if Path(TEMP_DIRNAME).exists():
+        shutil.rmtree(TEMP_DIRNAME)
+
     if getattr(app, "db", None) is not None:
         app.db.client.close()
 

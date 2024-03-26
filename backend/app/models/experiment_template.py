@@ -1,8 +1,9 @@
-from datetime import datetime
+from datetime import datetime, timezone
+from functools import partial
 
 import yaml
 from beanie import Document
-from pydantic import validator
+from pydantic import Field
 
 from app.config import (
     EXPERIMENT_TEMPLATE_DIR_PREFIX,
@@ -29,20 +30,12 @@ class ExperimentTemplate(Document):
     envs_required: list[EnvironmentVarDef]
     envs_optional: list[EnvironmentVarDef]
     available_metrics: list[str]
-    created_at: datetime = None
-    updated_at: datetime = None
+    created_at: datetime = Field(default_factory=partial(datetime.now, tz=timezone.utc))
+    updated_at: datetime = Field(default_factory=partial(datetime.now, tz=timezone.utc))
     state: TemplateState = TemplateState.CREATED
     retry_count: int = 0
     approved: bool = False
     created_by: str
-
-    @validator("created_at", always=True)
-    def init_created_at(cls, val):
-        return val or datetime.utcnow()
-
-    @validator("updated_at", always=True)
-    def init_updated_at(cls, val):
-        return val or datetime.utcnow()
 
     @property
     def image_name(self) -> str:

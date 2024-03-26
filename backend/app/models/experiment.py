@@ -1,7 +1,8 @@
-from datetime import datetime
+from datetime import datetime, timezone
+from functools import partial
 
 from beanie import Document, PydanticObjectId
-from pydantic import validator
+from pydantic import Field
 
 from app.models.experiment_template import ExperimentTemplate
 from app.schemas.env_vars import EnvironmentVar
@@ -12,8 +13,8 @@ class Experiment(Document):
     name: str
     description: str
     publication_ids: list[str]
-    created_at: datetime = None
-    updated_at: datetime = None
+    updated_at: datetime = Field(default_factory=partial(datetime.now, tz=timezone.utc))
+    created_at: datetime = Field(default_factory=partial(datetime.now, tz=timezone.utc))
     created_by: str
 
     experiment_template_id: PydanticObjectId
@@ -21,14 +22,6 @@ class Experiment(Document):
     model_ids: list[int]
     env_vars: list[EnvironmentVar]
     metrics: list[str]
-
-    @validator("created_at", always=True)
-    def init_created_at(cls, val):
-        return val or datetime.utcnow()
-
-    @validator("updated_at", always=True)
-    def init_updated_at(cls, val):
-        return val or datetime.utcnow()
 
     class Settings:
         name = "experiments"

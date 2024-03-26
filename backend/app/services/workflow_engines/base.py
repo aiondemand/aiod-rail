@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from pathlib import Path
 
 from app.helpers import FileDetail, WorkflowState
 from app.models.experiment import Experiment
@@ -39,14 +40,12 @@ class WorkflowEngineBase(ABC):
 
     @abstractmethod
     async def download_file(
-        self, experiment_run: ExperimentRun, filepath: str
-    ) -> tuple[bytes | None, str | None]:
+        self, experiment_run: ExperimentRun, filepath: str, savedir: Path
+    ) -> Path | None:
         pass
 
     @abstractmethod
-    async def list_files(
-        self, experiment_run: ExperimentRun, filepath: str
-    ) -> list[FileDetail]:
+    async def list_files(self, experiment_run: ExperimentRun) -> list[FileDetail]:
         pass
 
     @staticmethod
