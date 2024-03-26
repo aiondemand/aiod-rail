@@ -14,7 +14,7 @@ from app.models.experiment_template import ExperimentTemplate
 from app.schemas.experiment_run import ExperimentRunId
 from app.schemas.experiment_template import ExperimentTemplateId
 from app.schemas.states import RunState, TemplateState
-from app.services.aiod import aiod_client_wrapper, get_dataset_name, get_model_name
+from app.services.aiod import get_dataset_name, get_model_name
 from app.services.container_platforms.base import ContainerPlatformBase
 from app.services.workflow_engines.base import (
     WorkflowConnectionException,
@@ -213,14 +213,8 @@ class ExperimentScheduler:
     async def _general_workflow_preparation(
         self, experiment_run: ExperimentRun, experiment: Experiment
     ) -> dict[str, str]:
-        model_names = [
-            await get_model_name(aiod_client_wrapper, id=x)
-            for x in experiment.model_ids
-        ]
-        dataset_names = [
-            await get_dataset_name(aiod_client_wrapper, id=x)
-            for x in experiment.dataset_ids
-        ]
+        model_names = [await get_model_name(x) for x in experiment.model_ids]
+        dataset_names = [await get_dataset_name(x) for x in experiment.dataset_ids]
 
         environment_variables = {env.key: env.value for env in experiment.env_vars}
         environment_variables.update(

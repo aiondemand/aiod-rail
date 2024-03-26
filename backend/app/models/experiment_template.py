@@ -16,7 +16,7 @@ from app.schemas.experiment_template import (
     TaskType,
 )
 from app.schemas.states import TemplateState
-from app.services.aiod import aiod_client_wrapper, get_dataset_name, get_model_name
+from app.services.aiod import get_dataset_name, get_model_name
 
 
 class ExperimentTemplate(Document):
@@ -81,9 +81,7 @@ class ExperimentTemplate(Document):
         self.updated_at = datetime.utcnow()
 
     async def validate_models(self, model_ids: list[int]) -> bool:
-        model_names = [
-            await get_model_name(aiod_client_wrapper, id=x) for x in model_ids
-        ]
+        model_names = [await get_model_name(x) for x in model_ids]
 
         checks = [
             all(model_name is not None for model_name in model_names),
@@ -93,9 +91,7 @@ class ExperimentTemplate(Document):
         return all(checks)
 
     async def validate_datasets(self, dataset_ids: list[int]) -> bool:
-        dataset_names = [
-            await get_dataset_name(aiod_client_wrapper, id=x) for x in dataset_ids
-        ]
+        dataset_names = [await get_dataset_name(x) for x in dataset_ids]
 
         checks = [
             all(dataset_name is not None for dataset_name in dataset_names),

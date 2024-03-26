@@ -4,7 +4,6 @@ from urllib.parse import urljoin
 
 import httpx
 from fastapi import HTTPException
-from httpx import AsyncClient
 from pydantic import Json
 
 from app.config import settings
@@ -32,8 +31,8 @@ class AIoDClientWrapper:
         await self.async_client.aclose()
         self.async_client = None
 
-    def __call__(self):
-        """Calling the instantiated HTTPXClientWrapper returns the wrapped singleton."""
+    @property
+    def client(self):
         assert self.async_client is not None
         return self.async_client
 
@@ -53,10 +52,8 @@ def get_assets_version(asset_type: AssetType) -> str:
             return settings.AIOD_API.PLATFORMS_VERSION
 
 
-async def get_assets(
-    async_client: AsyncClient, asset_type: AssetType, pagination: Pagination
-) -> list:
-    res = await async_client.get(
+async def get_assets(asset_type: AssetType, pagination: Pagination) -> list:
+    res = await aiod_client_wrapper.client.get(
         urljoin(
             base=settings.AIOD_API.BASE_URL,
             url=Path(asset_type.value, get_assets_version(asset_type)).as_posix(),
@@ -73,10 +70,8 @@ async def get_assets(
     return res.json()
 
 
-async def get_asset(
-    async_client: AsyncClient, asset_type: AssetType, asset_id: int
-) -> Json:
-    res = await async_client.get(
+async def get_asset(asset_type: AssetType, asset_id: int) -> Json:
+    res = await aiod_client_wrapper.client.get(
         urljoin(
             base=settings.AIOD_API.BASE_URL,
             url=Path(
@@ -94,11 +89,9 @@ async def get_asset(
     return res.json()
 
 
-async def get_assets_count(
-    async_client: AsyncClient, asset_type: AssetType, filter_query: str = None
-) -> int:
+async def get_assets_count(asset_type: AssetType, filter_query: str = None) -> int:
     if filter_query is None:
-        res = await async_client.get(
+        res = await aiod_client_wrapper.client.get(
             urljoin(
                 base=settings.AIOD_API.BASE_URL,
                 url=Path(
@@ -107,7 +100,7 @@ async def get_assets_count(
             ),
         )
     else:
-        res = await async_client.get(
+        res = await aiod_client_wrapper.client.get(
             urljoin(
                 base=settings.AIOD_API.BASE_URL,
                 url=Path(
@@ -134,9 +127,9 @@ async def get_assets_count(
 
 
 async def search_assets(
-    async_client: AsyncClient, asset_type: AssetType, query: str, pagination: Pagination
+    asset_type: AssetType, query: str, pagination: Pagination
 ) -> list:
-    res = await async_client.get(
+    res = await aiod_client_wrapper.client.get(
         urljoin(
             base=settings.AIOD_API.BASE_URL,
             url=Path(
@@ -161,19 +154,11 @@ async def search_assets(
     return res.json()["resources"]
 
 
-async def get_dataset_name(async_client: AsyncClient, id: int) -> str:
-    dataset = Dataset(
-        **await get_asset(
-            async_client=async_client, asset_type=AssetType.DATASETS, asset_id=id
-        )
-    )
+async def get_dataset_name(id: int) -> str:
+    dataset = Dataset(**await get_asset(asset_type=AssetType.DATASETS, asset_id=id))
     return dataset.name
 
 
-async def get_model_name(async_client: AsyncClient, id: int) -> str:
-    ml_model = MLModel(
-        **await get_asset(
-            async_client=async_client, asset_type=AssetType.ML_MODELS, asset_id=id
-        )
-    )
+async def get_model_name(id: int) -> str:
+    ml_model = MLModel(**await get_asset(asset_type=AssetType.ML_MODELS, asset_id=id))
     return ml_model.name

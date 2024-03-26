@@ -27,9 +27,7 @@ async def test_api_get_assets(client, mocker, api_path, asset_type, asset_class)
 
     res = client.get(api_path)
 
-    mock_get_assets.assert_called_once_with(
-        asset_type=asset_type, async_client=ANY, pagination=ANY
-    )
+    mock_get_assets.assert_called_once_with(asset_type=asset_type, pagination=ANY)
     assert res.status_code == 200
     assets = res.json()
     assert isinstance(assets, list) and len(assets) == 1
@@ -59,7 +57,7 @@ async def test_api_search_assets(client, mocker, api_path, asset_type, asset_cla
     res = client.get(api_path)
 
     mock_search_assets.assert_called_once_with(
-        asset_type=asset_type, query="asset_name", async_client=ANY, pagination=ANY
+        asset_type=asset_type, query="asset_name", pagination=ANY
     )
     assert res.status_code == 200
     assets = res.json()
@@ -85,9 +83,7 @@ async def test_api_get_asset(client, mocker, api_path, asset_type, asset_class):
 
     res = client.get(api_path)
 
-    mock_get_asset.assert_called_once_with(
-        asset_type=asset_type, asset_id=42, async_client=ANY
-    )
+    mock_get_asset.assert_called_once_with(asset_type=asset_type, asset_id=42)
     assert res.status_code == 200
     asset_obj = asset_class(**res.json())
     assert asset_obj.name == "asset_name" and asset_obj.identifier == 42
@@ -110,9 +106,7 @@ async def test_api_get_assets_count(client, mocker, api_path, asset_type):
 
     res = client.get(api_path)
 
-    mock_get_assets_count.assert_called_once_with(
-        asset_type=asset_type, async_client=ANY
-    )
+    mock_get_assets_count.assert_called_once_with(asset_type=asset_type)
     assert res.status_code == 200
     assert isinstance(res.json(), int) and res.json() == 7
 
@@ -135,7 +129,7 @@ async def test_api_get_filtered_assets_count(client, mocker, api_path, asset_typ
     res = client.get(api_path)
 
     mock_get_assets_count.assert_called_once_with(
-        asset_type=asset_type, filter_query="asset_name", async_client=ANY
+        asset_type=asset_type, filter_query="asset_name"
     )
     assert res.status_code == 200
     assert isinstance(res.json(), int) and res.json() == 7
