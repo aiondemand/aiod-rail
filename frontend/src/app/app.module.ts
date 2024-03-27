@@ -60,7 +60,9 @@ import { HIGHLIGHT_OPTIONS, HighlightModule, HighlightOptions } from 'ngx-highli
 import { CodeEditorModule } from '@ngstack/code-editor';
 import { FeedbackComponent } from './components/general/feedback/feedback.component';
 import { AboutComponent } from './components/general/about/about.component';
-import {NgOptimizedImage} from "@angular/common";
+import { NgOptimizedImage } from "@angular/common";
+import { MatTreeModule } from '@angular/material/tree';
+
 
 
 @NgModule({
@@ -95,46 +97,47 @@ import {NgOptimizedImage} from "@angular/common";
     FeedbackComponent,
     AboutComponent
   ],
-    imports: [
-        BrowserModule,
-        AppRoutingModule,
-        FormsModule,
-        ReactiveFormsModule,
-        HttpClientModule,
-        BrowserAnimationsModule,
-        MatToolbarModule,
-        MatButtonModule,
-        MatSidenavModule,
-        MatIconModule,
-        MatListModule,
-        MatButtonModule,
-        MatTabsModule,
-        MatGridListModule,
-        MatCardModule,
-        MatExpansionModule,
-        MatPaginatorModule,
-        MatChipsModule,
-        MatTooltipModule,
-        MatSnackBarModule,
-        MatFormFieldModule,
-        MatSelectModule,
-        MatInputModule,
-        MatTableModule,
-        MatProgressSpinnerModule,
-        MatCheckboxModule,
-        TextFieldModule,
-        MatAutocompleteModule,
-        HighlightModule,
-        MarkdownModule.forRoot(),
-        CodeEditorModule.forRoot(),
-        OAuthModule.forRoot({
-            resourceServer: {
-                allowedUrls: [environment.BACKEND_API_URL],
-                sendAccessToken: true
-            }
-        }),
-        NgOptimizedImage
-    ],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    FormsModule,
+    ReactiveFormsModule,
+    HttpClientModule,
+    BrowserAnimationsModule,
+    MatToolbarModule,
+    MatButtonModule,
+    MatSidenavModule,
+    MatIconModule,
+    MatListModule,
+    MatButtonModule,
+    MatTabsModule,
+    MatGridListModule,
+    MatCardModule,
+    MatExpansionModule,
+    MatPaginatorModule,
+    MatChipsModule,
+    MatTooltipModule,
+    MatSnackBarModule,
+    MatFormFieldModule,
+    MatSelectModule,
+    MatInputModule,
+    MatTableModule,
+    MatProgressSpinnerModule,
+    MatCheckboxModule,
+    TextFieldModule,
+    MatAutocompleteModule,
+    HighlightModule,
+    MatTreeModule,
+    MarkdownModule.forRoot(),
+    CodeEditorModule.forRoot(),
+    OAuthModule.forRoot({
+      resourceServer: {
+        allowedUrls: [environment.BACKEND_API_URL],
+        sendAccessToken: true
+      }
+    }),
+    NgOptimizedImage
+  ],
   providers: [
     { provide: OAuthStorage, useFactory: () => localStorage },
     {
