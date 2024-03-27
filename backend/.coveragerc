@@ -1,0 +1,2 @@
+[run]
+omit = app/schemas/aiod_generated.py

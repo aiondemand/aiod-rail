@@ -9,7 +9,6 @@ from app.config import (
     RUN_TEMP_OUTPUT_FOLDER,
     settings,
 )
-from app.routers.aiod import get_dataset_name, get_model_name
 from app.schemas.env_vars import EnvironmentVar, EnvironmentVarDef
 from app.schemas.experiment_template import (
     AssetSchema,
@@ -17,6 +16,7 @@ from app.schemas.experiment_template import (
     TaskType,
 )
 from app.schemas.states import TemplateState
+from app.services.aiod import get_dataset_name, get_model_name
 
 
 class ExperimentTemplate(Document):

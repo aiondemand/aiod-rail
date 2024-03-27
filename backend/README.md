@@ -16,7 +16,8 @@ As a database we use a containerized MongoDB server (through Docker), the REST A
     - `MAX_PARALLEL_IMAGE_BUILDS`: Define a maximum number of Python (asyncio) tasks that build and push docker images
       in parallel
     - `MAX_PARALLEL_CONTAINERS`: Define a maximum number of Python (asyncio) tasks that run REANA workflows in parallel
-    - `MAX_IMAGE_BUILDS_ATTEMPTS`: Define a maximum number of ATTEMPTS that are executed for each failing process of building a docker image
+    - `MAX_IMAGE_BUILDS_ATTEMPTS`: Define a maximum number of ATTEMPTS that are executed for each failing process of
+      building a docker image
     - `MAX_EXPERIMENT_RUN_ATTEMPTS`: Define a maximum number of ATTEMPTS that are executed for each failing experiment
       run
     - `REANA_SERVER_URL`: Define the URL used for connecting to REANA server
@@ -98,15 +99,28 @@ ExperimentRun:
 
 ## Contributing
 
-1. Install dependencies
-   ```shell
-   pip install -r requirements-dev.txt
-   ```
-1. Setup pre-commit hooks
-   ```shell
-   pre-commit install
-   ```
-1. [OPTIONAL] Trigger execution of pre-commit hooks manually
+### 1. Install dependencies
+```shell
+pip install -r requirements-dev.txt
+```
+### 2. Setup pre-commit hooks
+```shell
+pre-commit install
+```
+You can also trigger the execution of pre-commit hooks on all files manually by running the following command:
    ```shell
    pre-commit run --all-files
    ```
+### 3. Run unit tests
+This project uses [pytest](https://docs.pytest.org/) framework for testing.
+
+You need to run the unit tests from root directory `backend` where also the config file `pytest.ini` is located.
+The execution of all tests can be then simply done by running the command:
+```shell
+pytest
+```
+
+#### Code coverage
+The configuration makes sure that code coverage is computed by `pytest-cov` as well.
+You can browse the generated coverage report in HTML format found in directory `htmlcov`.
+   
