@@ -1,7 +1,6 @@
-from unittest.mock import ANY
-
 import pytest
 
+from app.helpers import Pagination
 from app.schemas.dataset import Dataset
 from app.schemas.ml_model import MLModel
 from app.schemas.platform import Platform
@@ -20,14 +19,17 @@ from app.services.aiod import AssetType
 )
 @pytest.mark.asyncio
 async def test_api_get_assets(client, mocker, api_path, asset_type, asset_class):
+    pagination = Pagination(offset=7, limit=13)
     mock_get_assets = mocker.patch(
         "app.routers.aiod.get_assets",
         return_value=[{"name": "asset_name", "identifier": 42}],
     )
 
-    res = client.get(api_path)
+    res = client.get(api_path, params=pagination.dict())
 
-    mock_get_assets.assert_called_once_with(asset_type=asset_type, pagination=ANY)
+    mock_get_assets.assert_called_once_with(
+        asset_type=asset_type, pagination=pagination
+    )
     assert res.status_code == 200
     assets = res.json()
     assert isinstance(assets, list) and len(assets) == 1
@@ -49,15 +51,16 @@ async def test_api_get_assets(client, mocker, api_path, asset_type, asset_class)
 )
 @pytest.mark.asyncio
 async def test_api_search_assets(client, mocker, api_path, asset_type, asset_class):
+    pagination = Pagination(offset=7, limit=13)
     mock_search_assets = mocker.patch(
         "app.routers.aiod.search_assets",
         return_value=[{"name": "asset_name", "identifier": 42}],
     )
 
-    res = client.get(api_path)
+    res = client.get(api_path, params=pagination.dict())
 
     mock_search_assets.assert_called_once_with(
-        asset_type=asset_type, query="asset_name", pagination=ANY
+        asset_type=asset_type, query="asset_name", pagination=pagination
     )
     assert res.status_code == 200
     assets = res.json()

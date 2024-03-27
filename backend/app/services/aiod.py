@@ -53,6 +53,7 @@ def get_assets_version(asset_type: AssetType) -> str:
 
 
 async def get_assets(asset_type: AssetType, pagination: Pagination) -> list:
+    """Wrapper function to call the AIoD API and return a list of requested assets."""
     res = await aiod_client_wrapper.client.get(
         urljoin(
             base=settings.AIOD_API.BASE_URL,
@@ -71,6 +72,7 @@ async def get_assets(asset_type: AssetType, pagination: Pagination) -> list:
 
 
 async def get_asset(asset_type: AssetType, asset_id: int) -> Json:
+    """Wrapper function to call the AIoD API and return requested asset data."""
     res = await aiod_client_wrapper.client.get(
         urljoin(
             base=settings.AIOD_API.BASE_URL,
@@ -90,6 +92,11 @@ async def get_asset(asset_type: AssetType, asset_id: int) -> Json:
 
 
 async def get_assets_count(asset_type: AssetType, filter_query: str = None) -> int:
+    """Wrapper function to call the AIoD API and return the total counts of requested assets.
+
+    Note: The current AIoD API 'counts' endpoint does not support filtering of assets to count.
+    Therefore, the desired logic is achieved by calling the 'search' endpoint in that case.
+    """
     if filter_query is None:
         res = await aiod_client_wrapper.client.get(
             urljoin(
@@ -129,6 +136,7 @@ async def get_assets_count(asset_type: AssetType, filter_query: str = None) -> i
 async def search_assets(
     asset_type: AssetType, query: str, pagination: Pagination
 ) -> list:
+    """Wrapper function to call the AIoD API and return a list of requested assets."""
     res = await aiod_client_wrapper.client.get(
         urljoin(
             base=settings.AIOD_API.BASE_URL,
@@ -155,10 +163,12 @@ async def search_assets(
 
 
 async def get_dataset_name(id: int) -> str:
+    """Helper function to fetch requested Dataset and return its name"""
     dataset = Dataset(**await get_asset(asset_type=AssetType.DATASETS, asset_id=id))
     return dataset.name
 
 
 async def get_model_name(id: int) -> str:
+    """Helper function to fetch requested MLModel and return its name"""
     ml_model = MLModel(**await get_asset(asset_type=AssetType.ML_MODELS, asset_id=id))
     return ml_model.name
