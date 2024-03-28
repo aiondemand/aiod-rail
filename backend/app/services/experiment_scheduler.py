@@ -11,10 +11,10 @@ from app.helpers import WorkflowState
 from app.models.experiment import Experiment
 from app.models.experiment_run import ExperimentRun
 from app.models.experiment_template import ExperimentTemplate
-from app.routers.aiod import get_dataset_name, get_model_name
 from app.schemas.experiment_run import ExperimentRunId
 from app.schemas.experiment_template import ExperimentTemplateId
 from app.schemas.states import RunState, TemplateState
+from app.services.aiod import get_dataset_name, get_model_name
 from app.services.container_platforms.base import ContainerPlatformBase
 from app.services.workflow_engines.base import (
     WorkflowConnectionException,

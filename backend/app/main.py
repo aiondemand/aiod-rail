@@ -7,11 +7,11 @@ from motor.motor_asyncio import AsyncIOMotorClient
 
 from app import __version__
 from app.config import settings
-from app.helpers import aiod_client_wrapper
 from app.models.experiment import Experiment
 from app.models.experiment_run import ExperimentRun
 from app.models.experiment_template import ExperimentTemplate
 from app.routers import aiod, experiment_templates, experiments
+from app.services.aiod import aiod_client_wrapper
 from app.services.container_platforms.base import ContainerPlatformBase
 from app.services.container_platforms.docker import DockerService
 from app.services.experiment_scheduler import ExperimentScheduler
