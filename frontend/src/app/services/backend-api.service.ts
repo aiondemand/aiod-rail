@@ -10,6 +10,7 @@ import { ExperimentTemplate, ExperimentTemplateCreate } from '../models/experime
 import { Publication } from '../models/publication';
 import { ExperimentRun, ExperimentRunDetails } from '../models/experiment-run';
 import { ExperimentQueries, ExperimentTemplateQueries, PageQueries, QueryOperator } from '../models/queries';
+import { FileDetail } from '../models/file-detail';
 
 
 @Injectable({
@@ -341,6 +342,19 @@ export class BackendApiService {
 
   getExperimentRunsCount(experimentId: string): Observable<number> {
     return this.http.get<number>(`${environment.BACKEND_API_URL}/count/experiments/${experimentId}/runs`);
+  }
+
+
+  listFilesFromExperimentRun(experimentId: string): Observable<FileDetail[]> {
+    return this.http.get<FileDetail[]>(`${environment.BACKEND_API_URL}/experiment-runs/${experimentId}/files/list`);
+  }
+
+  // TODO how to download file from backend
+  downloadFileFromExperimentRun(experimentId: string, filepath: string): Observable<any> {
+    return this.http.get(
+      `${environment.BACKEND_API_URL}/experiment-runs/${experimentId}/files/download?filepath=${filepath}`, 
+      { responseType: 'blob', observe: 'response', reportProgress: true }
+    );
   }
 
   /**

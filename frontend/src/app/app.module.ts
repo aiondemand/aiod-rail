@@ -62,6 +62,8 @@ import { FeedbackComponent } from './components/general/feedback/feedback.compon
 import { AboutComponent } from './components/general/about/about.component';
 import { NgOptimizedImage } from "@angular/common";
 import { MatTreeModule } from '@angular/material/tree';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+
 
 
 
@@ -128,6 +130,7 @@ import { MatTreeModule } from '@angular/material/tree';
     MatAutocompleteModule,
     HighlightModule,
     MatTreeModule,
+    MatProgressBarModule,
     MarkdownModule.forRoot(),
     CodeEditorModule.forRoot(),
     OAuthModule.forRoot({

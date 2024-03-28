@@ -1,44 +1,26 @@
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
-import { Observable, Subscription, catchError, interval, mergeMap, of, retry, switchMap, tap } from 'rxjs';
+import { Observable, Subscription, catchError, firstValueFrom, interval, mergeMap, of, retry, switchMap, tap } from 'rxjs';
 import { ExperimentRunDetails } from 'src/app/models/experiment-run';
+import { FileDetail } from 'src/app/models/file-detail';
 import { BackendApiService } from 'src/app/services/backend-api.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
 
-interface FoodNode {
+interface FileNode {
   name: string;
-  children?: FoodNode[];
+  filepath: string;
+  last_modified?: string;
+  size?: number;
+  children?: FileNode[];
 }
 
-interface ExampleFlatNode {
-  originalNode: FoodNode;
-  expandable: boolean;
+interface FlattenedNode {
+  node: FileNode;
   name: string;
+  expandable: boolean;
   level: number;
 }
-
-const TREE_DATA: FoodNode[] = [
-  {
-    name: 'Fruit',
-    children: [{ name: 'Apple' }, { name: 'Banana' }, { name: 'Fruit loops' }],
-  },
-  {
-    name: 'Vegetables',
-    children: [
-      {
-        name: 'Green',
-        children: [{ name: 'Broccoli' }, { name: 'Brussels sprouts' }],
-      },
-      {
-        name: 'Orange',
-        children: [{ name: 'Pumpkins' }, { name: 'Carrots' }],
-      },
-    ],
-  },
-];
-
-
 
 @Component({
   selector: 'app-experiment-run-detail',
@@ -46,6 +28,12 @@ const TREE_DATA: FoodNode[] = [
   styleUrls: ['./experiment-run-detail.component.scss']
 })
 export class ExperimentRunDetailComponent {
+  fileTreeStructure: FileNode[] = [];
+  treeControl: FlatTreeControl<FlattenedNode> | null = null;
+  treeViewDataSource: MatTreeFlatDataSource<FileNode, FlattenedNode> | null = null;
+
+  currentlyBeingDownloaded = new Set<string>();
+
   @Input()
   set runId(id: string) {
     this.subscription = this.backend.getExperimentRun(id).pipe(
@@ -68,6 +56,27 @@ export class ExperimentRunDetailComponent {
 
         if (run.state != 'CREATED' && run.state != 'IN_PROGRESS') {
           this.subscription.unsubscribe();
+
+          firstValueFrom(this.backend.listFilesFromExperimentRun(run.id))
+            .then(files => {
+              this.buildTreeFileStructure(files);
+
+              this.treeControl = new FlatTreeControl<FlattenedNode>(
+                node => node.level,
+                node => node.expandable,
+              );
+            
+              let treeFlattener = new MatTreeFlattener(
+                this.flattenNode,
+                node => node.level,
+                node => node.expandable,
+                node => node.children,
+              );
+            
+              this.treeViewDataSource = new MatTreeFlatDataSource(this.treeControl, treeFlattener);
+              this.treeViewDataSource.data = this.fileTreeStructure;
+            })
+            .catch(err => console.log(err))
         }
       },
       error: err => {
@@ -76,39 +85,133 @@ export class ExperimentRunDetailComponent {
     });
   }
 
-  /////////////////////////////////////
+  test() {
+    if (this.treeViewDataSource) {
+      this.fileTreeStructure[0].name = "ASDASDASD";
+      this.treeViewDataSource.data = this.fileTreeStructure;
 
-  private _transformer = (node: FoodNode, level: number) => {
-    return {
-      originalNode: node,
-      expandable: !!node.children && node.children.length > 0,
-      name: node.name,
-      level: level,
-    };
-  };
-
-  treeControl = new FlatTreeControl<ExampleFlatNode>(
-    node => node.level,
-    node => node.expandable,
-  );
-
-  treeFlattener = new MatTreeFlattener(
-    this._transformer,
-    node => node.level,
-    node => node.expandable,
-    node => node.children,
-  );
-
-  dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
-
-  hasChild = (_: number, node: ExampleFlatNode) => node.expandable;
-
-  printout(val: String): void {
-    console.log(val);
+      this.treeViewDataSource.data
+    }  
   }
 
-  /////////////////////////////////////
+  downloadfile(event: Event, filepath: string) { 
+    event.stopPropagation();
+    this.currentlyBeingDownloaded.add(filepath);
 
+    this.backend.downloadFileFromExperimentRun(this.experimentRun.id, filepath).subscribe(response => {
+      let blobObj = new Blob([response.body], { type: response.body.type });
+      let url = window.URL.createObjectURL(blobObj);
+      let link = document.createElement('a');
+      
+      let filename = response.headers
+        .get('content-disposition')
+        .split('filename=')[1]
+        .split(';')[0]
+      let first_quote = filename[0]
+      let last_quote_idx = filename.slice(1).indexOf(first_quote)
+      filename = filename.slice(1, 1+last_quote_idx);
+
+      link.href = url;
+      link.download = filename
+      link.style.display = 'none';
+      document.body.appendChild(link);
+      link.click();
+
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(link);
+
+      this.currentlyBeingDownloaded.delete(filepath);
+    });
+      
+  }
+
+  sortFilesFunction(x: string, y: string): number {
+    if (x.endsWith("/") && !y.endsWith("/")) {
+      return -1;
+    }
+    if (!x.endsWith("/") && y.endsWith("/")) {
+      return 1;
+    }
+    if (x < y) {
+      return -1;
+    }
+    if (x > y) {
+      return 1;
+    }
+    return 0;  
+  }
+
+  buildTreeFileStructure(files: FileDetail[]): void {
+    for (let file of files) {
+      let parts = file.filepath.split("/");
+      let nodeTraverser: FileNode[] = this.fileTreeStructure;
+      for (let it = 0; it < parts.length; it++) {
+        let filename = parts[it]
+        let filepath = parts.slice(0, it+1).join("/");
+        let nameArr = nodeTraverser.map(node => node.name);
+  
+        if (it == parts.length - 1) {
+          // file
+          if (nodeTraverser.findIndex(node => node.filepath == filepath) == -1) {
+            nameArr.push(filename);
+            let idxToPush = nameArr.sort(this.sortFilesFunction).indexOf(filename);
+
+            nodeTraverser.splice(idxToPush, 0, {
+              name: filename,
+              filepath: file.filepath,
+              last_modified: file.last_modified,
+              size: file.size
+            });
+          }
+        }
+        else {
+          // directory
+          let idx = nodeTraverser.findIndex(node => node.filepath == filepath)
+          if (idx == -1) {
+            filename = `${filename}/`;
+            nameArr.push(filename);
+            let idxToPush = nameArr.sort(this.sortFilesFunction).indexOf(filename);
+            
+            let newDir = {
+              name: filename,
+              filepath: filepath,
+              children: []
+            };
+            nodeTraverser.splice(idxToPush, 0, newDir);
+            nodeTraverser = newDir.children;
+          }
+          else {
+            nodeTraverser = nodeTraverser[idx].children ?? []
+          }
+        }
+      }
+    } 
+  }
+
+  flattenNode(node: FileNode, level: number) {
+    return {
+      node: node,
+      name: node.name,
+      expandable: !!node.children && node.children.length > 0,
+      level: level,
+    }
+  }
+
+  hasChild = (_: number, node: FlattenedNode) => node.expandable;
+
+  formatFileSize(size: number): string {
+    let sizes_abbr = ["B", "KB", "MB", "GB"]
+    
+    for (let abbr of sizes_abbr) {
+      if (size < 1024) {
+        size = Math.round(size * 100) / 100
+        return `${size} ${abbr}`;
+      }
+      size /= 1024;
+    }
+    size = Math.round(size * 100) / 100
+    return `${size} TB`;  
+  }
 
   ngOnDestroy() {
     this.subscription?.unsubscribe();
@@ -123,7 +226,6 @@ export class ExperimentRunDetailComponent {
     private backend: BackendApiService,
     private snackBar: SnackBarService
   ) { 
-    this.dataSource.data = TREE_DATA;
   }
 
   wandbLink(logs: string | null): string {

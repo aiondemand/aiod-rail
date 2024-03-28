@@ -4,7 +4,6 @@ import logging
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Optional
 
 import httpx
 from pydantic import BaseModel
@@ -29,8 +28,8 @@ class WorkflowState(BaseModel):
 
 class FileDetail(BaseModel):
     filepath: str
-    size: Optional[int]
-    last_modified: Optional[datetime]
+    size: int
+    last_modified: datetime
 
 
 class AIoDClientWrapper:
