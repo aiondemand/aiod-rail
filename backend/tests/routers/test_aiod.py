@@ -1,21 +1,11 @@
 import pytest
 
-from app.authentication import get_current_user, get_current_user_token
 from app.helpers import Pagination
-from app.main import app
 from app.schemas.dataset import Dataset
 from app.schemas.ml_model import MLModel
 from app.schemas.platform import Platform
 from app.schemas.publication import Publication
 from app.services.aiod import AssetType
-
-
-async def override_get_current_user_token():
-    return "valid-user-token"
-
-
-async def override_get_current_user():
-    return {"sub": "user-id", "name": "John Doe", "preferred_username": "johndoe"}
 
 
 @pytest.mark.parametrize(
@@ -56,26 +46,21 @@ async def test_api_get_assets(client, mocker, api_path, asset_type, asset_class)
 )
 @pytest.mark.asyncio
 async def test_api_get_my_assets(client, mocker, api_path, asset_type, asset_class):
-    app.dependency_overrides[get_current_user_token] = override_get_current_user_token
-    app.dependency_overrides[get_current_user] = override_get_current_user
-
     mock_get_my_assets = mocker.patch(
         "app.routers.aiod.get_my_assets",
         return_value=[{"name": "asset_name", "identifier": 42}],
     )
 
-    res = client.get(api_path)
+    res = client.get(api_path, headers={"Authorization": "valid-user-token"})
 
     mock_get_my_assets.assert_called_once_with(
-        asset_type=asset_type, token="valid-user-token", user_id="user-id"
+        asset_type=asset_type, token="valid-user-token"
     )
     assert res.status_code == 200
     assets = res.json()
     assert isinstance(assets, list) and len(assets) == 1
     asset_obj = asset_class(**assets[0])
     assert asset_obj.name == "asset_name" and asset_obj.identifier == 42
-
-    app.dependency_overrides = {}
 
 
 @pytest.mark.parametrize(

@@ -6,6 +6,7 @@ import httpx
 from fastapi import HTTPException
 from pydantic import Json
 
+from app.authentication import get_current_user
 from app.config import settings
 from app.helpers import Pagination
 from app.schemas.dataset import Dataset
@@ -73,9 +74,9 @@ async def get_assets(asset_type: AssetType, pagination: Pagination) -> list:
     return res.json()
 
 
-async def get_my_assets(asset_type: AssetType, user_id: str, token: str) -> List[Json]:
+async def get_my_assets(asset_type: AssetType, token: str) -> List[Json]:
     """Wrapper function to fetch my assets from AIoD's My Library."""
-    my_asset_ids = await get_my_asset_ids(asset_type, user_id, token)
+    my_asset_ids = await get_my_asset_ids(asset_type, token)
     my_assets = [
         await get_asset(asset_type=asset_type, asset_id=asset_id)
         for asset_id in my_asset_ids
@@ -83,14 +84,15 @@ async def get_my_assets(asset_type: AssetType, user_id: str, token: str) -> List
     return my_assets
 
 
-async def get_my_asset_ids(
-    asset_type: AssetType, user_id: str, token: str
-) -> List[int]:
+async def get_my_asset_ids(asset_type: AssetType, token: str) -> List[int]:
     """Wrapper function to call the AIoD's My Library and return a list of identifiers of my requested assets.
 
     Note: Only Datasets and ML_Models are supported currently.
     """
     assert asset_type in [AssetType.DATASETS, AssetType.ML_MODELS]
+
+    user = await get_current_user(token=token)
+    user_id = user.get("sub")
 
     res = await aiod_library_client_wrapper.client.get(
         f"api/libraries/{user_id}/assets", headers={"Authorization": f"{token}"}

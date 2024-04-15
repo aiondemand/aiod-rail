@@ -63,9 +63,9 @@ async def test_get_my_assets_happy_path(mocker, asset_type):
         "app.services.aiod.get_asset", return_value=[{}, {}, {}]
     )
 
-    _ = await get_my_assets(asset_type, user_id="user-id", token="valid-user-token")
+    _ = await get_my_assets(asset_type, token="valid-user-token")
 
-    mock_get_my_asset_ids.assert_called_with(asset_type, "user-id", "valid-user-token")
+    mock_get_my_asset_ids.assert_called_with(asset_type, "valid-user-token")
     assert mock_get_asset.mock_calls == [
         call(asset_type=asset_type, asset_id=1),
         call(asset_type=asset_type, asset_id=2),
@@ -82,7 +82,7 @@ async def test_get_my_assets_happy_path(mocker, asset_type):
 )
 @pytest.mark.asyncio
 async def test_get_my_asset_ids_happy_path(
-    asset_type, expected_url, expected_asset_ids, async_client_mock
+    asset_type, expected_url, expected_asset_ids, async_client_mock, mocker
 ):
     mock_response = Mock()
     mock_response.status_code = 200
@@ -108,10 +108,16 @@ async def test_get_my_asset_ids_happy_path(
         "code": 200,
     }
     async_client_mock.get.return_value = mock_response
-
-    my_asset_ids = await get_my_asset_ids(
-        asset_type, user_id="user-id", token="valid-user-token"
+    mocker.patch(
+        "app.services.aiod.get_current_user",
+        return_value={
+            "sub": "user-id",
+            "name": "John Doe",
+            "preferred_username": "johndoe",
+        },
     )
+
+    my_asset_ids = await get_my_asset_ids(asset_type, token="valid-user-token")
 
     async_client_mock.get.assert_called_once_with(
         expected_url.format(user_id="user-id"),
@@ -132,7 +138,7 @@ async def test_get_my_asset_ids_raises_exception_on_non_200_status_code(
     async_client_mock.get.return_value = mock_response
 
     with pytest.raises(HTTPException):
-        await get_my_asset_ids(asset_type, user_id="user-id", token="valid-user-token")
+        await get_my_asset_ids(asset_type, token="valid-user-token")
 
 
 @pytest.mark.parametrize(

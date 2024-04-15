@@ -35,11 +35,8 @@ async def get_datasets(pagination: Pagination = Depends()) -> Any:
 @router.get("/datasets/my", response_model=list[Dataset])
 async def get_my_datasets(
     token: str = Depends(get_current_user_token),
-    user: Json = Depends(get_current_user),
 ) -> Any:
-    return await get_my_assets(
-        asset_type=AssetType.DATASETS, user_id=user.get("sub"), token=token
-    )
+    return await get_my_assets(asset_type=AssetType.DATASETS, token=token)
 
 
 @router.get("/datasets/search/{query}", response_model=list[Dataset])
@@ -151,11 +148,8 @@ async def get_models(pagination: Pagination = Depends()) -> Any:
 @router.get("/models/my", response_model=list[MLModel])
 async def get_my_models(
     token: str = Depends(get_current_user_token),
-    user: Json = Depends(get_current_user),
 ) -> Any:
-    return await get_my_assets(
-        asset_type=AssetType.ML_MODELS, user_id=user.get("sub"), token=token
-    )
+    return await get_my_assets(asset_type=AssetType.ML_MODELS, token=token)
 
 
 @router.get("/models/search/{query}", response_model=list[MLModel])
