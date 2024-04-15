@@ -148,6 +148,16 @@ async def get_models(pagination: Pagination = Depends()) -> Any:
     return await get_assets(asset_type=AssetType.ML_MODELS, pagination=pagination)
 
 
+@router.get("/models/my", response_model=list[MLModel])
+async def get_my_models(
+    token: str = Depends(get_current_user_token),
+    user: Json = Depends(get_current_user),
+) -> Any:
+    return await get_my_assets(
+        asset_type=AssetType.ML_MODELS, user_id=user.get("id"), token=token
+    )
+
+
 @router.get("/models/search/{query}", response_model=list[MLModel])
 async def search_models(query: str, pagination: Pagination = Depends()) -> Any:
     return await search_assets(

@@ -51,6 +51,7 @@ async def test_api_get_assets(client, mocker, api_path, asset_type, asset_class)
     "api_path, asset_type, asset_class",
     [
         ("/v1/assets/datasets/my", AssetType.DATASETS, Dataset),
+        ("/v1/assets/models/my", AssetType.ML_MODELS, MLModel),
     ],
 )
 @pytest.mark.asyncio
