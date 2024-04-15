@@ -15,7 +15,7 @@ async def override_get_current_user_token():
 
 
 async def override_get_current_user():
-    return {"id": "user-id", "name": "user-name"}
+    return {"sub": "user-id", "name": "John Doe", "preferred_username": "johndoe"}
 
 
 @pytest.mark.parametrize(

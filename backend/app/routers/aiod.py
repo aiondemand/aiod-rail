@@ -38,7 +38,7 @@ async def get_my_datasets(
     user: Json = Depends(get_current_user),
 ) -> Any:
     return await get_my_assets(
-        asset_type=AssetType.DATASETS, user_id=user.get("id"), token=token
+        asset_type=AssetType.DATASETS, user_id=user.get("sub"), token=token
     )
 
 
@@ -154,7 +154,7 @@ async def get_my_models(
     user: Json = Depends(get_current_user),
 ) -> Any:
     return await get_my_assets(
-        asset_type=AssetType.ML_MODELS, user_id=user.get("id"), token=token
+        asset_type=AssetType.ML_MODELS, user_id=user.get("sub"), token=token
     )
 
 
