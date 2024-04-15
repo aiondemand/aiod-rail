@@ -1,6 +1,5 @@
 from pathlib import Path
 from typing import Any
-from urllib.parse import urljoin
 
 from fastapi import APIRouter, Depends, HTTPException, UploadFile
 from pydantic import Json
@@ -19,6 +18,7 @@ from app.services.aiod import (
     get_assets,
     get_assets_count,
     get_assets_version,
+    get_my_assets,
     search_assets,
 )
 
@@ -30,6 +30,16 @@ router = APIRouter()
 @router.get("/datasets", response_model=list[Dataset])
 async def get_datasets(pagination: Pagination = Depends()) -> Any:
     return await get_assets(asset_type=AssetType.DATASETS, pagination=pagination)
+
+
+@router.get("/datasets/my", response_model=list[Dataset])
+async def get_my_datasets(
+    token: str = Depends(get_current_user_token),
+    user: Json = Depends(get_current_user),
+) -> Any:
+    return await get_my_assets(
+        asset_type=AssetType.DATASETS, user_id=user.get("id"), token=token
+    )
 
 
 @router.get("/datasets/search/{query}", response_model=list[Dataset])
@@ -64,12 +74,7 @@ async def create_dataset(
 ) -> Any:
     # Create a new dataset in AIoD (just metadata)
     res = await aiod_client_wrapper.client.post(
-        urljoin(
-            base=settings.AIOD_API.BASE_URL,
-            url=Path(
-                AssetType.DATASETS.value, get_assets_version(AssetType.DATASETS)
-            ).as_posix(),
-        ),
+        Path(AssetType.DATASETS.value, get_assets_version(AssetType.DATASETS)),
         headers={"Authorization": f"{token}"},
         json=dataset.dict(exclude_unset=True),
     )
@@ -91,12 +96,7 @@ async def create_dataset(
 @router.delete("/datasets/{id}", response_model=bool)
 async def delete_dataset(id: int, token: str = Depends(get_current_user_token)) -> Any:
     res = await aiod_client_wrapper.client.delete(
-        urljoin(
-            base=settings.AIOD_API.BASE_URL,
-            url=Path(
-                "datasets", settings.AIOD_API.DATASETS_VERSION, str(id)
-            ).as_posix(),
-        ),
+        Path("datasets", settings.AIOD_API.DATASETS_VERSION, str(id)),
         headers={"Authorization": f"{token}"},
     )
 
@@ -119,10 +119,7 @@ async def dataset_upload_file_to_huggingface(
     token: str = Depends(get_current_user_token),
 ) -> Any:
     res = await aiod_client_wrapper.client.post(
-        urljoin(
-            base=settings.AIOD_API.BASE_URL,
-            url=Path("upload/datasets", str(id), "huggingface").as_posix(),
-        ),
+        Path("upload/datasets", str(id), "huggingface"),
         params={"token": huggingface_token, "username": huggingface_name},
         headers={"Authorization": f"{token}"},
         files={"file": (file.filename, file.file, file.content_type)},

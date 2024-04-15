@@ -1,6 +1,6 @@
 from enum import Enum
 from pathlib import Path
-from urllib.parse import urljoin
+from typing import List
 
 import httpx
 from fastapi import HTTPException
@@ -19,12 +19,14 @@ class AssetType(Enum):
     PLATFORMS: str = "platforms"
 
 
-class AIoDClientWrapper:
-    async_client = None
+class AsyncClientWrapper:
+    def __init__(self, base_url: str):
+        self.async_client = None
+        self.base_url = base_url
 
     def start(self):
         """Instantiate the client. Call from the FastAPI startup hook."""
-        self.async_client = httpx.AsyncClient(verify=settings.AIOD_API.VERIFY_SSL)
+        self.async_client = httpx.AsyncClient(base_url=self.base_url)
 
     async def stop(self):
         """Gracefully shutdown. Call from FastAPI shutdown hook."""
@@ -37,7 +39,10 @@ class AIoDClientWrapper:
         return self.async_client
 
 
-aiod_client_wrapper = AIoDClientWrapper()
+aiod_client_wrapper = AsyncClientWrapper(base_url=settings.AIOD_API.BASE_URL)
+aiod_library_client_wrapper = AsyncClientWrapper(
+    base_url=settings.AIOD_LIBRARY_API.BASE_URL
+)
 
 
 def get_assets_version(asset_type: AssetType) -> str:
@@ -55,10 +60,7 @@ def get_assets_version(asset_type: AssetType) -> str:
 async def get_assets(asset_type: AssetType, pagination: Pagination) -> list:
     """Wrapper function to call the AIoD API and return a list of requested assets."""
     res = await aiod_client_wrapper.client.get(
-        urljoin(
-            base=settings.AIOD_API.BASE_URL,
-            url=Path(asset_type.value, get_assets_version(asset_type)).as_posix(),
-        ),
+        Path(asset_type.value, get_assets_version(asset_type)).as_posix(),
         params={"offset": pagination.offset, "limit": pagination.limit},
     )
 
@@ -71,15 +73,55 @@ async def get_assets(asset_type: AssetType, pagination: Pagination) -> list:
     return res.json()
 
 
+async def get_my_assets(asset_type: AssetType, user_id: str, token: str) -> List[Json]:
+    """Wrapper function to fetch my assets from AIoD's My Library."""
+    my_asset_ids = await get_my_asset_ids(asset_type, user_id, token)
+    my_assets = [
+        await get_asset(asset_type=asset_type, asset_id=asset_id)
+        for asset_id in my_asset_ids
+    ]
+    return my_assets
+
+
+async def get_my_asset_ids(
+    asset_type: AssetType, user_id: str, token: str
+) -> List[int]:
+    """Wrapper function to call the AIoD's My Library and return a list of identifiers of my requested assets.
+
+    Note: Only Datasets and ML_Models are supported currently.
+    """
+    assert asset_type in [AssetType.DATASETS, AssetType.ML_MODELS]
+
+    res = await aiod_library_client_wrapper.client.get(
+        f"api/libraries/{user_id}/assets", headers={"Authorization": f"{token}"}
+    )
+
+    if res.status_code != 200:
+        raise HTTPException(
+            status_code=res.status_code,
+            detail=f"Failed to get my {asset_type.value} from AIoD Library. {res.json()}",
+        )
+
+    asset_name_mapper = {
+        AssetType.DATASETS: "Dataset",
+        AssetType.ML_MODELS: "AIModel",
+    }
+
+    requested_assets = [
+        int(asset["identifier"])
+        for asset in res.json()["data"]
+        if asset["category"] == asset_name_mapper[asset_type]
+    ]
+
+    return requested_assets
+
+
 async def get_asset(asset_type: AssetType, asset_id: int) -> Json:
     """Wrapper function to call the AIoD API and return requested asset data."""
     res = await aiod_client_wrapper.client.get(
-        urljoin(
-            base=settings.AIOD_API.BASE_URL,
-            url=Path(
-                asset_type.value, get_assets_version(asset_type), str(asset_id)
-            ).as_posix(),
-        ),
+        Path(
+            asset_type.value, get_assets_version(asset_type), str(asset_id)
+        ).as_posix(),
     )
 
     if res.status_code != 200:
@@ -99,21 +141,15 @@ async def get_assets_count(asset_type: AssetType, filter_query: str = None) -> i
     """
     if filter_query is None:
         res = await aiod_client_wrapper.client.get(
-            urljoin(
-                base=settings.AIOD_API.BASE_URL,
-                url=Path(
-                    f"counts/{asset_type.value}", get_assets_version(asset_type)
-                ).as_posix(),
-            ),
+            Path(
+                f"counts/{asset_type.value}", get_assets_version(asset_type)
+            ).as_posix(),
         )
     else:
         res = await aiod_client_wrapper.client.get(
-            urljoin(
-                base=settings.AIOD_API.BASE_URL,
-                url=Path(
-                    f"search/{asset_type.value}", get_assets_version(asset_type)
-                ).as_posix(),
-            ),
+            Path(
+                f"search/{asset_type.value}", get_assets_version(asset_type)
+            ).as_posix(),
             params={
                 "search_query": filter_query,
                 "search_fields": "name",
@@ -138,12 +174,7 @@ async def search_assets(
 ) -> list:
     """Wrapper function to call the AIoD API and return a list of requested assets."""
     res = await aiod_client_wrapper.client.get(
-        urljoin(
-            base=settings.AIOD_API.BASE_URL,
-            url=Path(
-                f"search/{asset_type.value}", get_assets_version(asset_type)
-            ).as_posix(),
-        ),
+        Path(f"search/{asset_type.value}", get_assets_version(asset_type)).as_posix(),
         params={
             "search_query": query,
             "search_fields": "name",
