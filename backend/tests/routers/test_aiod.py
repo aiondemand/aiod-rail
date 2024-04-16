@@ -46,15 +46,20 @@ async def test_api_get_assets(client, mocker, api_path, asset_type, asset_class)
 )
 @pytest.mark.asyncio
 async def test_api_get_my_assets(client, mocker, api_path, asset_type, asset_class):
+    pagination = Pagination(offset=7, limit=13)
     mock_get_my_assets = mocker.patch(
         "app.routers.aiod.get_my_assets",
         return_value=[{"name": "asset_name", "identifier": 42}],
     )
 
-    res = client.get(api_path, headers={"Authorization": "valid-user-token"})
+    res = client.get(
+        api_path,
+        params=pagination.dict(),
+        headers={"Authorization": "valid-user-token"},
+    )
 
     mock_get_my_assets.assert_called_once_with(
-        asset_type=asset_type, token="valid-user-token"
+        asset_type=asset_type, token="valid-user-token", pagination=pagination
     )
     assert res.status_code == 200
     assets = res.json()

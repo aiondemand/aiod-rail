@@ -56,6 +56,7 @@ async def test_get_assets_raises_exception_on_non_200_status_code(
 )
 @pytest.mark.asyncio
 async def test_get_my_assets_happy_path(mocker, asset_type):
+    pagination = Pagination(offset=7, limit=13)
     mock_get_my_asset_ids = mocker.patch(
         "app.services.aiod.get_my_asset_ids", return_value=[1, 2, 3]
     )
@@ -63,9 +64,9 @@ async def test_get_my_assets_happy_path(mocker, asset_type):
         "app.services.aiod.get_asset", return_value=[{}, {}, {}]
     )
 
-    _ = await get_my_assets(asset_type, token="valid-user-token")
+    _ = await get_my_assets(asset_type, token="valid-user-token", pagination=pagination)
 
-    mock_get_my_asset_ids.assert_called_with(asset_type, "valid-user-token")
+    mock_get_my_asset_ids.assert_called_with(asset_type, "valid-user-token", pagination)
     assert mock_get_asset.mock_calls == [
         call(asset_type=asset_type, asset_id=1),
         call(asset_type=asset_type, asset_id=2),
@@ -74,15 +75,37 @@ async def test_get_my_assets_happy_path(mocker, asset_type):
 
 
 @pytest.mark.parametrize(
-    "asset_type, expected_url, expected_asset_ids",
+    "asset_type, pagination, expected_url, expected_asset_ids",
     [
-        (AssetType.DATASETS, "api/libraries/{user_id}/assets", [1]),
-        (AssetType.ML_MODELS, "api/libraries/{user_id}/assets", [14]),
+        (
+            AssetType.DATASETS,
+            Pagination(offset=0, limit=2),
+            "api/libraries/{user_id}/assets",
+            [1, 2],
+        ),
+        (
+            AssetType.DATASETS,
+            Pagination(offset=1, limit=1),
+            "api/libraries/{user_id}/assets",
+            [2],
+        ),
+        (
+            AssetType.ML_MODELS,
+            Pagination(offset=0, limit=10),
+            "api/libraries/{user_id}/assets",
+            [14],
+        ),
+        (
+            AssetType.ML_MODELS,
+            Pagination(offset=1, limit=10),
+            "api/libraries/{user_id}/assets",
+            [],
+        ),
     ],
 )
 @pytest.mark.asyncio
 async def test_get_my_asset_ids_happy_path(
-    asset_type, expected_url, expected_asset_ids, async_client_mock, mocker
+    asset_type, pagination, expected_url, expected_asset_ids, async_client_mock, mocker
 ):
     mock_response = Mock()
     mock_response.status_code = 200
@@ -104,6 +127,14 @@ async def test_get_my_asset_ids_happy_path(
                 "price": 0,
                 "added_at": 15,
             },
+            {
+                "identifier": "2",
+                "name": "ade_corpus_v2",
+                "category": "Dataset",
+                "url_metadata": "https://huggingface.co/datasets/ade_corpus_v2",
+                "price": 0,
+                "added_at": 16,
+            },
         ],
         "code": 200,
     }
@@ -117,7 +148,9 @@ async def test_get_my_asset_ids_happy_path(
         },
     )
 
-    my_asset_ids = await get_my_asset_ids(asset_type, token="valid-user-token")
+    my_asset_ids = await get_my_asset_ids(
+        asset_type, token="valid-user-token", pagination=pagination
+    )
 
     async_client_mock.get.assert_called_once_with(
         expected_url.format(user_id="user-id"),
@@ -138,7 +171,9 @@ async def test_get_my_asset_ids_raises_exception_on_non_200_status_code(
     async_client_mock.get.return_value = mock_response
 
     with pytest.raises(HTTPException):
-        await get_my_asset_ids(asset_type, token="valid-user-token")
+        await get_my_asset_ids(
+            asset_type, token="valid-user-token", pagination=Pagination()
+        )
 
 
 @pytest.mark.parametrize(

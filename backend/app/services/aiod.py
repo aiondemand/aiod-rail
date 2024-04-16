@@ -74,9 +74,11 @@ async def get_assets(asset_type: AssetType, pagination: Pagination) -> list:
     return res.json()
 
 
-async def get_my_assets(asset_type: AssetType, token: str) -> List[Json]:
+async def get_my_assets(
+    asset_type: AssetType, token: str, pagination: Pagination
+) -> List[Json]:
     """Wrapper function to fetch my assets from AIoD's My Library."""
-    my_asset_ids = await get_my_asset_ids(asset_type, token)
+    my_asset_ids = await get_my_asset_ids(asset_type, token, pagination)
     my_assets = [
         await get_asset(asset_type=asset_type, asset_id=asset_id)
         for asset_id in my_asset_ids
@@ -84,8 +86,12 @@ async def get_my_assets(asset_type: AssetType, token: str) -> List[Json]:
     return my_assets
 
 
-async def get_my_asset_ids(asset_type: AssetType, token: str) -> List[int]:
+async def get_my_asset_ids(
+    asset_type: AssetType, token: str, pagination: Pagination
+) -> List[int]:
     """Wrapper function to call the AIoD's My Library and return a list of identifiers of my requested assets.
+
+    Pagination is currently not supported by My Library, so the behavior is just mimicked.
 
     Note: Only Datasets and ML_Models are supported currently.
     """
@@ -115,7 +121,7 @@ async def get_my_asset_ids(asset_type: AssetType, token: str) -> List[int]:
         if asset["category"] == asset_name_mapper[asset_type]
     ]
 
-    return requested_assets
+    return requested_assets[pagination.offset : pagination.offset + pagination.limit]
 
 
 async def get_asset(asset_type: AssetType, asset_id: int) -> Json:
