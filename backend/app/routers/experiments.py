@@ -113,7 +113,7 @@ async def execute_experiment_run(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="You cannot execute experiments of other users.",
         )
-    if not await workflow_engine.is_connected():
+    if not await workflow_engine.is_available():
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Workflow engine is currently unavailable",
@@ -187,6 +187,7 @@ async def download_file(
             detail="Specified experiment run doesn't exist",
         )
 
+    # TODO use temporaryFile/Directory package for this?
     tempdir = Path("./temp")
     tempdir.mkdir(parents=True, exist_ok=True)
 

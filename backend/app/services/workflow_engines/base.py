@@ -16,7 +16,7 @@ class WorkflowEngineBase(ABC):
     SERVICE: WorkflowEngineBase | None = None
 
     @abstractmethod
-    async def is_connected(self) -> bool:
+    async def is_available(self) -> bool:
         pass
 
     @abstractmethod

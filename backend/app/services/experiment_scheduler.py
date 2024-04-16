@@ -89,7 +89,7 @@ class ExperimentScheduler:
     async def get_run_to_execute(self) -> PydanticObjectId:
         while True:
             if not self.experiment_run_queue.empty():
-                while not await self.workflow_engine.is_connected():
+                while not await self.workflow_engine.is_available():
                     await asyncio.sleep(CHECK_REANA_CONNECTION_INTERVAL)
                 return self.experiment_run_queue.get_nowait()
             await asyncio.sleep(LITTLE_NAP)
