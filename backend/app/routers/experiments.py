@@ -8,6 +8,7 @@ from fastapi.responses import PlainTextResponse, StreamingResponse
 from pydantic import Json
 
 from app.authentication import get_current_user, get_current_user_optional
+from app.config import TEMP_DIRNAME
 from app.helpers import FileDetail, Pagination, QueryOperator
 from app.models.experiment import Experiment
 from app.models.experiment_run import ExperimentRun
@@ -188,7 +189,7 @@ async def download_file(
         )
 
     # TODO use temporaryFile/Directory package for this?
-    tempdir = Path("./temp")
+    tempdir = Path(TEMP_DIRNAME)
     tempdir.mkdir(parents=True, exist_ok=True)
 
     savepath = await workflow_engine.download_file(
