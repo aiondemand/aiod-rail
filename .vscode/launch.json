@@ -44,7 +44,7 @@
         {
             "type": "chrome",
             "request": "launch",
-            "name": "Debug Angular ran manually (locally)",
+            "name": "Debug Angular manually (locally)",
             "url": "http://localhost:4200",
             "webRoot": "${workspaceFolder}/frontend",
             "sourceMapPathOverrides": {
