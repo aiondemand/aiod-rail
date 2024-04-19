@@ -1,9 +1,7 @@
 import logging
-from datetime import datetime
 from enum import Enum
 from pathlib import Path
 
-import httpx
 from pydantic import BaseModel
 
 from app.config import settings
@@ -22,33 +20,6 @@ class QueryOperator(str, Enum):
 class WorkflowState(BaseModel):
     success: bool
     error_message: str = ""
-
-
-class FileDetail(BaseModel):
-    filepath: str
-    size: int
-    last_modified: datetime
-
-
-class AIoDClientWrapper:
-    async_client = None
-
-    def start(self):
-        """Instantiate the client. Call from the FastAPI startup hook."""
-        self.async_client = httpx.AsyncClient(verify=settings.AIOD_API.VERIFY_SSL)
-
-    async def stop(self):
-        """Gracefully shutdown. Call from FastAPI shutdown hook."""
-        await self.async_client.aclose()
-        self.async_client = None
-
-    def __call__(self):
-        """Calling the instantiated HTTPXClientWrapper returns the wrapped singleton."""
-        assert self.async_client is not None
-        return self.async_client
-
-
-aiod_client_wrapper = AIoDClientWrapper()
 
 
 def create_env_file(env_vars: dict[str, str], path: Path) -> None:

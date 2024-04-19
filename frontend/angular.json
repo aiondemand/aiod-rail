@@ -93,6 +93,20 @@
                   "with": "src/environments/environment.local.ts"
                 }
               ]
+            },
+            "local-docker": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.local-docker.ts"
+                }
+              ]
             }
           },
           "defaultConfiguration": "production"
@@ -108,6 +122,9 @@
             },
             "local": {
               "browserTarget": "aiod-rail-frontend:build:local"
+            },
+            "local-docker": {
+              "browserTarget": "aiod-rail-frontend:build:local-docker"
             }
           },
           "defaultConfiguration": "development"
