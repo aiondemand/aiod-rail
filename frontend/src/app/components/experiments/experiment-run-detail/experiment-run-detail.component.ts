@@ -50,9 +50,14 @@ export class ExperimentRunDetailComponent {
       next: run => {
         this.experimentRun = run;
 
-        let logs = JSON.parse(this.experimentRun.logs)["job_logs"];
-        let key = Object.keys(logs)[0];
-        this.logs = logs[key]["logs"];
+        if (this.experimentRun.logs) {
+          let logs = JSON.parse(this.experimentRun.logs)["job_logs"];
+          let key = Object.keys(logs)[0];
+          this.logs = logs[key]["logs"];
+        }
+        else {
+          this.logs == '';
+        }
 
         if (run.state != 'CREATED' && run.state != 'IN_PROGRESS') {
           this.subscription.unsubscribe();
