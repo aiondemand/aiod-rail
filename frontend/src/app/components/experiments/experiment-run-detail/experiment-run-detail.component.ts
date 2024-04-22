@@ -90,19 +90,11 @@ export class ExperimentRunDetailComponent {
     });
   }
 
-  test() {
-    if (this.treeViewDataSource) {
-      this.fileTreeStructure[0].name = "ASDASDASD";
-      this.treeViewDataSource.data = this.fileTreeStructure;
-
-      this.treeViewDataSource.data
-    }  
-  }
-
   downloadfile(event: Event, filepath: string) { 
     event.stopPropagation();
     this.currentlyBeingDownloaded.add(filepath);
 
+    // TODO make this less ugly
     this.backend.downloadFileFromExperimentRun(this.experimentRun.id, filepath).subscribe(response => {
       let blobObj = new Blob([response.body], { type: response.body.type });
       let url = window.URL.createObjectURL(blobObj);
@@ -117,7 +109,7 @@ export class ExperimentRunDetailComponent {
       filename = filename.slice(1, 1+last_quote_idx);
 
       link.href = url;
-      link.download = filename
+      link.download = filename;
       link.style.display = 'none';
       document.body.appendChild(link);
       link.click();
@@ -215,7 +207,7 @@ export class ExperimentRunDetailComponent {
       size /= 1024;
     }
     size = Math.round(size * 100) / 100
-    return `${size} TB`;  
+    return `${size} TB`;
   }
 
   ngOnDestroy() {
