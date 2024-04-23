@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { PageEvent } from '@angular/material/paginator';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable } from 'rxjs';
+import { Observable, Subscription, firstValueFrom } from 'rxjs';
 import { Dataset } from 'src/app/models/dataset';
 import { BackendApiService } from 'src/app/services/backend-api.service';
 import { environment } from 'src/environments/environment';
@@ -19,6 +19,8 @@ export class SavedDatasetsComponent {
     length: 0 
   }
 
+  subscription: Subscription;
+
   constructor(
     private backend: BackendApiService,
     private route: ActivatedRoute,
@@ -35,9 +37,12 @@ export class SavedDatasetsComponent {
       this.updateDatasets();
     });
 
-    this.backend.getSavedDatasetsCount().subscribe(count => {
-      this.pagination.length = count;
-    });
+    firstValueFrom(this.backend.getSavedDatasetsCount())
+      .then(count => this.pagination.length = count);
+  }
+
+  ngOnDestroy(): void {
+    this.subscription?.unsubscribe();
   }
 
   handlePageEvent(e: PageEvent) {

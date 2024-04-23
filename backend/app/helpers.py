@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime
 from enum import Enum
 from pathlib import Path
 
@@ -20,6 +21,12 @@ class QueryOperator(str, Enum):
 class WorkflowState(BaseModel):
     success: bool
     error_message: str = ""
+
+
+class FileDetail(BaseModel):
+    filepath: str
+    size: int
+    last_modified: datetime
 
 
 def create_env_file(env_vars: dict[str, str], path: Path) -> None:

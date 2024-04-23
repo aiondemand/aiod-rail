@@ -45,6 +45,11 @@ async def get_experiment_templates(
 @router.get("/experiment-templates/{id}", response_model=ExperimentTemplateResponse)
 async def get_experiment_template(id: PydanticObjectId) -> Any:
     experiment_template = await ExperimentTemplate.get(id)
+    if experiment_template is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Specified experiment template doesn't exist",
+        )
     return experiment_template.map_to_response()
 
 

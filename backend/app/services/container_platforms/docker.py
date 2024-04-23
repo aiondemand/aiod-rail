@@ -19,7 +19,8 @@ class DockerService(ContainerPlatformBase):
 
     async def login_to_registry(self) -> bool:
         try:
-            response = self.docker_client.login(
+            response = await asyncio.to_thread(
+                self.docker_client.login,
                 username=settings.DOCKER_REGISTRY_USERNAME,
                 password=settings.DOCKER_REGISTRY_PASSWORD,
                 registry=settings.DOCKER_REGISTRY_URL,
@@ -39,8 +40,10 @@ class DockerService(ContainerPlatformBase):
 
     async def check_image(self, experiment_template: ExperimentTemplate) -> bool:
         try:
-            image_name = experiment_template.get_image_name()
-            self.docker_client.images.get_registry_data(image_name)
+            await asyncio.to_thread(
+                self.docker_client.images.get_registry_data,
+                experiment_template.image_name,
+            )
         except APIError:
             self.logger.warning(
                 "Docker image for ExperimentTemplate "
@@ -52,7 +55,7 @@ class DockerService(ContainerPlatformBase):
 
     async def build_image(self, experiment_template: ExperimentTemplate) -> bool:
         template_id = experiment_template.id
-        image_name = experiment_template.get_image_name()
+        image_name = experiment_template.image_name
         exp_template_savepath = settings.get_experiment_template_path(
             template_id=template_id
         )

@@ -1,7 +1,9 @@
-from datetime import datetime
+from datetime import datetime, timezone
+from functools import partial
 
 import yaml
 from beanie import Document
+from pydantic import Field
 
 from app.config import (
     EXPERIMENT_TEMPLATE_DIR_PREFIX,
@@ -28,12 +30,17 @@ class ExperimentTemplate(Document):
     envs_required: list[EnvironmentVarDef]
     envs_optional: list[EnvironmentVarDef]
     available_metrics: list[str]
-    created_at: datetime = datetime.utcnow()
-    updated_at: datetime = datetime.utcnow()
+    created_at: datetime = Field(default_factory=partial(datetime.now, tz=timezone.utc))
+    updated_at: datetime = Field(default_factory=partial(datetime.now, tz=timezone.utc))
     state: TemplateState = TemplateState.CREATED
     retry_count: int = 0
     approved: bool = False
     created_by: str
+
+    @property
+    def image_name(self) -> str:
+        image_tag = f"{EXPERIMENT_TEMPLATE_DIR_PREFIX}{self.id}"
+        return f"{settings.DOCKER_REGISTRY_URL}/{REPOSITORY_NAME}:{image_tag}"
 
     class Settings:
         name = "experimentTemplates"
@@ -56,7 +63,7 @@ class ExperimentTemplate(Document):
         reana_cfg = yaml.safe_load(open("app/data/template-reana.yaml"))
         reana_cfg["workflow"]["specification"]["steps"][0][
             "environment"
-        ] = self.get_image_name()
+        ] = self.image_name
         reana_cfg["outputs"]["directories"][0] = RUN_TEMP_OUTPUT_FOLDER
 
         with base_path.joinpath("reana.yaml").open("w") as fp:
@@ -105,7 +112,3 @@ class ExperimentTemplate(Document):
         required_environment_var_names = set([env.name for env in self.envs_required])
 
         return required_environment_var_names.issubset(experiment_environment_var_names)
-
-    def get_image_name(self) -> str:
-        image_tag = f"{EXPERIMENT_TEMPLATE_DIR_PREFIX}{self.id}"
-        return f"{settings.DOCKER_REGISTRY_URL}/{REPOSITORY_NAME}:{image_tag}"

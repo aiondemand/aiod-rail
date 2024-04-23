@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSelectChange } from '@angular/material/select';
 import { Router } from '@angular/router';
-import { Observable, catchError, debounceTime, of, startWith, switchMap } from 'rxjs';
+import { Observable, Subscription, catchError, debounceTime, firstValueFrom, of, startWith, switchMap } from 'rxjs';
 import { Dataset } from 'src/app/models/dataset';
 import { EnvironmentVar } from 'src/app/models/env-vars';
 import { ExperimentCreate, Experiment } from 'src/app/models/experiment';
@@ -39,6 +39,8 @@ export class CreateExperimentComponent implements OnInit {
   models$: Observable<Model[]> | undefined;
   datasets$: Observable<Dataset[]> | undefined;
 
+  subscriptions: (Subscription | undefined)[] = [];
+
   constructor(
     private fb: FormBuilder,
     private backend: BackendApiService,
@@ -62,7 +64,6 @@ export class CreateExperimentComponent implements OnInit {
         return of([]);
       })
     );
-
 
     this.models$ = this.model?.valueChanges.pipe(
       debounceTime(300), // Debounce to avoid frequent requests
@@ -94,14 +95,22 @@ export class CreateExperimentComponent implements OnInit {
           return of([]);
         })
       );
+  
+    this.subscriptions.push(
+      this.experimentTemplate?.valueChanges.subscribe(value => {
+        value?.available_metrics.forEach(metric => this.metrics.addControl(metric, new FormControl<boolean>(true)));
+      })
+    );
+    this.subscriptions.push(
+      this.experimentTemplate?.valueChanges.subscribe(value => {
+        value?.envs_required.forEach(env => this.envs_required.addControl(env.name, new FormControl<string>("", Validators.required)));
+        value?.envs_optional.forEach(env => this.envs_optional.addControl(env.name, new FormControl<string>("")));
+      })
+    );    
+  }
 
-    this.experimentTemplate?.valueChanges.subscribe(value => {
-      value?.available_metrics.forEach(metric => this.metrics.addControl(metric, new FormControl<boolean>(true)));
-    });
-    this.experimentTemplate?.valueChanges.subscribe(value => {
-      value?.envs_required.forEach(env => this.envs_required.addControl(env.name, new FormControl<string>("", Validators.required)));
-      value?.envs_optional.forEach(env => this.envs_optional.addControl(env.name, new FormControl<string>("")));
-    });
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(sub => sub?.unsubscribe());
   }
 
   get experimentTemplate() {
@@ -186,16 +195,14 @@ export class CreateExperimentComponent implements OnInit {
       env_vars: envsToSend
     };
 
-    this.backend.createExperiment(experiment)
-      .subscribe({
-        next: experiment => {
-          this.snackBar.show('Experiment created');
-          this.router.navigate(['/experiments', experiment.id]);
-        },
-        error: err => {
-          this.error = err.message;
-          this.snackBar.showError("Couldn't create experiment");
-        }
+    firstValueFrom(this.backend.createExperiment(experiment))
+      .then(experiment => {
+        this.snackBar.show('Experiment created');
+        this.router.navigate(['/experiments', experiment.id]);
+      })
+      .catch(err => {
+        this.error = err.message;
+        this.snackBar.showError("Couldn't create experiment");
       });
   }
 

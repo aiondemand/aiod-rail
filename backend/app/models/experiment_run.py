@@ -1,19 +1,36 @@
 import json
-from datetime import datetime
+from datetime import datetime, timezone
+from functools import partial
 
 from beanie import Document, PydanticObjectId
+from pydantic import Field
 
-from app.config import LOGS_FILENAME, METRICS_FILENAME, settings
+from app.config import (
+    EXPERIMENT_RUN_DIR_PREFIX,
+    LOGS_FILENAME,
+    METRICS_FILENAME,
+    settings,
+)
 from app.schemas.experiment_run import ExperimentRunDetails, ExperimentRunResponse
 from app.schemas.states import RunState
 
 
 class ExperimentRun(Document):
-    created_at: datetime = datetime.utcnow()
-    updated_at: datetime = datetime.utcnow()
+    created_at: datetime = Field(default_factory=partial(datetime.now, tz=timezone.utc))
+    updated_at: datetime = Field(default_factory=partial(datetime.now, tz=timezone.utc))
     retry_count: int = 0
     state: RunState = RunState.CREATED
     experiment_id: PydanticObjectId
+
+    @property
+    def logs(self):
+        run_path = settings.get_experiment_run_path(self.id)
+        log_path = run_path / LOGS_FILENAME
+        return log_path.read_text() if log_path.is_file() else ""
+
+    @property
+    def workflow_name(self) -> str:
+        return f"{EXPERIMENT_RUN_DIR_PREFIX}{str(self.id)}"
 
     class Settings:
         name = "experimentRuns"
@@ -36,12 +53,7 @@ class ExperimentRun(Document):
 
     def map_to_detailed_response(self) -> ExperimentRunDetails:
         response = self.map_to_response()
-
-        run_path = settings.get_experiment_run_path(self.id)
-        log_path = run_path / LOGS_FILENAME
-        logs = log_path.read_text() if log_path.is_file() else ""
-
-        return ExperimentRunDetails(**response.dict(), logs=logs)
+        return ExperimentRunDetails(**response.dict(), logs=self.logs)
 
     def retry_failed_run(self):
         return ExperimentRun(
