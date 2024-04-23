@@ -9,6 +9,8 @@ import { environment } from 'src/environments/environment';
 
 @Injectable()
 export  abstract class ExperimentListBaseComponent {
+  protected allExperimentsFlag: boolean = false;
+  
   protected experiments$: Observable<Experiment[] | null>;
   protected pagination = {
     pageSize: environment.DEFAULT_PAGE_SIZE,
@@ -68,5 +70,7 @@ export  abstract class ExperimentListBaseComponent {
 
   protected abstract updateExperiments(): Observable<Experiment[]>;
 
-  protected abstract getExperimentsCount(): Observable<number>
+  protected abstract getExperimentsCount(): Observable<number>;
+
+  protected abstract isAllExperiments(): boolean;
 }

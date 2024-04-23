@@ -9,6 +9,9 @@ import { Observable } from 'rxjs';
   styleUrls: ['./experiment-lists.component.scss']
 })
 export class AllExperimentListComponent extends ExperimentListBaseComponent {
+  protected override isAllExperiments(): boolean {
+    return true;
+  }
 
   protected override getExperimentsCount(): Observable<number> {
     return this.backend.getExperimentsCount();

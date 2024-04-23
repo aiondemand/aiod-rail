@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import PlainTextResponse, StreamingResponse
 from pydantic import Json
 
-from app.authentication import get_current_user, get_current_user_optional
+from app.authentication import get_current_user
 from app.config import TEMP_DIRNAME
 from app.helpers import FileDetail, Pagination, QueryOperator
 from app.models.experiment import Experiment
@@ -26,18 +26,25 @@ router = APIRouter()
     response_model=list[ExperimentResponse],
 )
 async def get_experiments(
-    user: Json = Depends(get_current_user_optional),
+    user: Json = Depends(get_current_user),
     pagination: Pagination = Depends(),
     include_mine: bool = False,
     query_operator: QueryOperator = QueryOperator.AND,
 ) -> Any:
-    result_set = find_specific_experiments(
-        include_mine=include_mine,
-        query_operator=query_operator,
-        user=user,
-        pagination=pagination,
-    )
-    experiments = await result_set.to_list()
+    # result_set = find_specific_experiments(
+    #     include_mine=include_mine,
+    #     query_operator=query_operator,
+    #     user=user,
+    #     pagination=pagination,
+    # )
+    # experiments = await result_set.to_list()
+
+    # TODO hotfix for returing only your experiments
+    experiments = await Experiment.find(
+        Experiment.created_by == user["email"],
+        skip=pagination.offset,
+        limit=pagination.limit,
+    ).to_list()
 
     return [experiment.dict() for experiment in experiments]
 
@@ -47,13 +54,16 @@ async def get_experiments(
     response_model=int,
 )
 async def get_experiments_count(
-    user: Json = Depends(get_current_user_optional),
+    user: Json = Depends(get_current_user),
     include_mine: bool = False,
     query_operator: QueryOperator = QueryOperator.AND,
 ) -> Any:
-    result_set = find_specific_experiments(
-        include_mine=include_mine, query_operator=query_operator, user=user
-    )
+    # result_set = find_specific_experiments(
+    #     include_mine=include_mine, query_operator=query_operator, user=user
+    # )
+
+    # TODO hotfix for returing only your experiments
+    result_set = Experiment.find(Experiment.created_by == user["email"])
     return await result_set.count()
 
 
@@ -61,13 +71,18 @@ async def get_experiments_count(
     "/experiments/{id}",
     response_model=ExperimentResponse,
 )
-async def get_experiment(id: PydanticObjectId) -> Any:
+async def get_experiment(
+    id: PydanticObjectId, user: Json = Depends(get_current_user)
+) -> Any:
     experiment = await Experiment.get(id)
+
     if experiment is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Specified experiment doesn't exist",
         )
+    # TODO hotfix for returing only your experiments
+    await check_experiment_owner(id, user)
     return experiment.dict()
 
 
@@ -129,8 +144,13 @@ async def execute_experiment_run(
 
 @router.get("/experiments/{id}/runs", response_model=list[ExperimentRunResponse])
 async def get_experiment_runs(
-    id: PydanticObjectId, pagination: Pagination = Depends()
+    id: PydanticObjectId,
+    pagination: Pagination = Depends(),
+    user: Json = Depends(get_current_user),
 ) -> Any:
+    # TODO hotfix for returing only your experiments
+    await check_experiment_owner(id, user)
+
     runs = await ExperimentRun.find(
         ExperimentRun.experiment_id == id,
         skip=pagination.offset,
@@ -141,37 +161,71 @@ async def get_experiment_runs(
 
 
 @router.get("/count/experiments/{id}/runs", response_model=int)
-async def get_experiment_runs_count(id: PydanticObjectId) -> Any:
+async def get_experiment_runs_count(
+    id: PydanticObjectId,
+    user: Json = Depends(get_current_user),
+) -> Any:
+    # TODO hotfix for returing only your experiments
+    await check_experiment_owner(id, user)
+
     return await ExperimentRun.find(ExperimentRun.experiment_id == id).count()
 
 
 @router.get("/experiment-runs", response_model=list[ExperimentRunResponse])
-async def get_all_experiment_runs(pagination: Pagination = Depends()) -> Any:
-    runs = await ExperimentRun.find_all(
-        skip=pagination.offset, limit=pagination.limit
+async def get_all_experiment_runs(
+    pagination: Pagination = Depends(),
+    user: Json = Depends(get_current_user),
+) -> Any:
+    # TODO hotfix for returing only your experiments
+    my_experiments = await Experiment.find(
+        Experiment.created_by == user["email"]
     ).to_list()
+    if len(my_experiments) == 0:
+        return []
+
+    search_conditions = [
+        ExperimentRun.experiment_id == exp.id for exp in my_experiments
+    ]
+    query = operators.Or(*search_conditions)
+
+    runs = await ExperimentRun.find(
+        query, skip=pagination.offset, limit=pagination.limit
+    ).to_list()
+
     return [run.map_to_response() for run in runs]
 
 
 @router.get("/experiment-runs/{id}", response_model=ExperimentRunDetails | None)
-async def get_experiment_run(id: PydanticObjectId) -> Any:
+async def get_experiment_run(
+    id: PydanticObjectId,
+    user: Json = Depends(get_current_user),
+) -> Any:
     experiment_run = await ExperimentRun.get(id)
     if experiment_run is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Specified experiment run doesn't exist",
         )
+    # TODO hotfix for returing only your experiments
+    await check_experiment_owner(experiment_run.experiment_id, user)
+
     return experiment_run.map_to_detailed_response()
 
 
 @router.get("/experiment-runs/{id}/logs", response_class=PlainTextResponse)
-async def get_experiment_run_logs(id: PydanticObjectId) -> str:
+async def get_experiment_run_logs(
+    id: PydanticObjectId,
+    user: Json = Depends(get_current_user),
+) -> str:
     experiment_run = await ExperimentRun.get(id)
     if experiment_run is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Specified experiment run doesn't exist",
         )
+    # TODO hotfix for returing only your experiments
+    await check_experiment_owner(experiment_run.experiment_id, user)
+
     return experiment_run.logs
 
 
@@ -180,6 +234,7 @@ async def download_file(
     id: PydanticObjectId,
     filepath: str,
     workflow_engine: WorkflowEngineBase = Depends(ReanaService.get_service),
+    user: Json = Depends(get_current_user),
 ) -> bytes:
     experiment_run = await ExperimentRun.get(id)
     if experiment_run is None:
@@ -187,6 +242,8 @@ async def download_file(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Specified experiment run doesn't exist",
         )
+    # TODO hotfix for returing only your experiments
+    await check_experiment_owner(experiment_run.experiment_id, user)
 
     # TODO use temporaryFile/Directory package for this?
     tempdir = Path(TEMP_DIRNAME)
@@ -218,6 +275,7 @@ async def download_file(
 async def list_files(
     id: PydanticObjectId,
     workflow_engine: WorkflowEngineBase = Depends(ReanaService.get_service),
+    user: Json = Depends(get_current_user),
 ) -> list[str]:
     experiment_run = await ExperimentRun.get(id)
     if experiment_run is None:
@@ -225,6 +283,9 @@ async def list_files(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Specified experiment run doesn't exist",
         )
+
+    # TODO hotfix for returing only your experiments
+    await check_experiment_owner(experiment_run.experiment_id, user)
 
     return await workflow_engine.list_files(experiment_run)
 
@@ -265,3 +326,12 @@ def find_specific_experiments(
         return Experiment.find(multi_query, **page_kwargs)
 
     return Experiment.find_all(**page_kwargs)
+
+
+async def check_experiment_owner(id: PydanticObjectId, user: Json) -> Experiment:
+    experiment = await Experiment.get(id)
+    if experiment.created_by != user["email"]:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="You cannot access experiment runs of other users' experiments.",
+        )

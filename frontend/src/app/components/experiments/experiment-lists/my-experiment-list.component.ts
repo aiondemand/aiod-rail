@@ -9,6 +9,9 @@ import { Experiment } from 'src/app/models/experiment';
   styleUrls: ['./experiment-lists.component.scss']
 })
 export class MyExperimentListComponent extends ExperimentListBaseComponent {
+  protected override isAllExperiments(): boolean {
+    return false;
+  }
 
   protected override getExperimentsCount(): Observable<number> {
     return this.backend.getExperimentsCount({
