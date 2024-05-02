@@ -14,9 +14,7 @@ export class MyExperimentListComponent extends ExperimentListBaseComponent {
   }
 
   protected override getExperimentsCount(): Observable<number> {
-    return this.backend.getExperimentsCount({
-      include_mine: true
-    });
+    return this.backend.getExperimentsCount({});
   }
 
   protected override updateExperiments(): Observable<Experiment[]>  {
@@ -25,9 +23,7 @@ export class MyExperimentListComponent extends ExperimentListBaseComponent {
         offset: this.pagination.pageIndex * this.pagination.pageSize,
         limit: this.pagination.pageSize
       },
-      {
-        include_mine: true
-      }
+      {}
     );
   }
 }

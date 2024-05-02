@@ -9,8 +9,6 @@ import { environment } from 'src/environments/environment';
 
 @Injectable()
 export  abstract class ExperimentListBaseComponent {
-  protected allExperimentsFlag: boolean = false;
-  
   protected experiments$: Observable<Experiment[] | null>;
   protected pagination = {
     pageSize: environment.DEFAULT_PAGE_SIZE,
@@ -61,7 +59,7 @@ export  abstract class ExperimentListBaseComponent {
     this.experiments$  = this.updateExperiments().pipe(
       catchError(error => {
         if (error.status == 401) {
-          this.snackBar.showError("An authorization error occured. Try logging out and then logging in again.");
+          this.snackBar.showError("An authorization error occurred. Try logging out and then logging in again.");
         }
         return of(null);
       })

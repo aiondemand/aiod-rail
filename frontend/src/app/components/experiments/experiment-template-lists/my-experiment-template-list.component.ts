@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { ExperimentTemplateListBaseComponent } from './experiment-template-list-base.component';
 import { Observable } from 'rxjs';
 import { ExperimentTemplate } from 'src/app/models/experiment-template';
-import { QueryOperator } from 'src/app/models/queries';
 
 @Component({
   selector: 'app-my-experiment-template-list',
@@ -12,12 +11,12 @@ import { QueryOperator } from 'src/app/models/queries';
 export class MyExperimentTemplateList extends ExperimentTemplateListBaseComponent {
 
   protected override getExperimentTemplatesCount(): Observable<number> {
-    return this.backend.getExperimentTemplatesCount({ 
-      include_mine: true,
-      query_operator: QueryOperator.Or
+    return this.backend.getExperimentTemplatesCount({
+      only_mine: true,
+      include_pending: true
     });
   }
-  
+
   protected override updateExperimentTemplates(): Observable<ExperimentTemplate[]> {
     return this.backend.getExperimentTemplates(
       {
@@ -25,8 +24,8 @@ export class MyExperimentTemplateList extends ExperimentTemplateListBaseComponen
         limit: this.pagination.pageSize
       },
       {
-        include_mine: true,
-        query_operator: QueryOperator.Or
+        only_mine: true,
+        include_pending: true
       }
     );
   }

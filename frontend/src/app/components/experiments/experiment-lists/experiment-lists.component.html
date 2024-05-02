@@ -1,23 +1,22 @@
+<mat-paginator #paginator
+               class="demo-paginator"
+               (page)="handlePageEvent($event)"
+               [length]="pagination.length"
+               [pageSize]="pagination.pageSize"
+               [pageSizeOptions]="[10, 25, 50, 100]"
+               [pageIndex]="pagination.pageIndex"
+               [disabled]="false"
+               aria-label="Select page">
+</mat-paginator>
 <div *ngIf="isAllExperiments()">
-    Public experiments are coming soon - stay tuned!
+    <h2>Public experiments are coming soon - stay tuned!</h2>
 </div>
 <div *ngIf="!isAllExperiments()">
-    <mat-paginator #paginator
-                class="demo-paginator"
-                (page)="handlePageEvent($event)"
-                [length]="pagination.length"
-                [pageSize]="pagination.pageSize"
-                [pageSizeOptions]="[10, 25, 50, 100]"
-                [pageIndex]="pagination.pageIndex"
-                [disabled]="false"
-                aria-label="Select page">
-    </mat-paginator>
-
     <div *ngIf="(experiments$ | async) as experiments">
         <div class="no-experiments" *ngIf="experiments.length == 0">
             <h2>There are currently no experiments.</h2>
         </div>
-        
+
         <app-experiment-list-item *ngFor="let experiment of experiments" [experiment]="experiment">
         </app-experiment-list-item>
     </div>

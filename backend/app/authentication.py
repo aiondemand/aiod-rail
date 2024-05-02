@@ -1,6 +1,6 @@
 import logging
 
-from fastapi import Depends, HTTPException, Security, status
+from fastapi import HTTPException, Security, status
 from fastapi.security import OpenIdConnect
 from keycloak import KeycloakError, KeycloakOpenID
 
@@ -24,37 +24,37 @@ async def get_current_user_token(token=Security(oidc)):
     return token
 
 
-async def get_current_user(token=Depends(get_current_user_token)) -> dict:
-    if not token:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="This endpoint requires authorization. You need to be logged in.",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    return await _get_current_user(token)
+def get_current_user(required: bool):
+    async def _get_user(token: str = Security(oidc)) -> dict | None:
+        if not required and not token:
+            return None
+        else:
+            if not token:
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="This endpoint requires authorization. You need to be logged in.",
+                    headers={"WWW-Authenticate": "Bearer"},
+                )
+            return await _verify_token(token)
+
+    return _get_user
 
 
-# TODO find a better way how to have an optional authentication
-# The only reason for implementing this optional auth is for one route to have
-# two different behaviours based on whether the user is logged in or not...
-async def get_current_user_optional(token=Depends(get_current_user_token)) -> dict:
-    if not token:
-        return {}
-    return await _get_current_user(token)
-
-
-async def _get_current_user(token: str):
+async def _verify_token(token: str) -> dict:
     try:
         token = token.replace("Bearer ", "")
         return keycloak_openid.userinfo(token)  # perform a request to keycloak
     except KeycloakError as e:
         logging.error(f"Error while checking the access token: '{e}'")
         error_msg = e.error_message
+        detail = "Invalid authentication token"
+
         if isinstance(error_msg, bytes):
             error_msg = error_msg.decode("utf-8")
-        detail = "Invalid authentication token"
-        if error_msg != "":
-            detail += f": '{error_msg}'"
+
+        if error_msg:
+            detail = f"{detail}: '{error_msg}'"
+
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=detail,
