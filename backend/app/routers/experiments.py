@@ -70,7 +70,7 @@ async def get_experiment(
             detail="Specified experiment doesn't exist",
         )
 
-    await check_experiment_access(id, user)
+    await check_experiment_access_or_raise(id, user)
     return experiment.dict()
 
 
@@ -137,7 +137,7 @@ async def get_experiment_runs(
     pagination: Pagination = Depends(),
     user: dict = Depends(get_current_user(required=False)),
 ) -> Any:
-    await check_experiment_access(id, user)
+    await check_experiment_access_or_raise(id, user)
 
     runs = await ExperimentRun.find(
         ExperimentRun.experiment_id == id,
@@ -153,8 +153,7 @@ async def get_experiment_runs_count(
     id: PydanticObjectId,
     user: dict = Depends(get_current_user(required=False)),
 ) -> Any:
-    await check_experiment_access(id, user)
-
+    await check_experiment_access_or_raise(id, user)
     return await ExperimentRun.find(ExperimentRun.experiment_id == id).count()
 
 
@@ -198,7 +197,7 @@ async def get_experiment_run(
             detail="Specified experiment run doesn't exist",
         )
 
-    await check_experiment_access(experiment_run.experiment_id, user)
+    await check_experiment_access_or_raise(experiment_run.experiment_id, user)
     return experiment_run.map_to_detailed_response()
 
 
@@ -214,7 +213,7 @@ async def get_experiment_run_logs(
             detail="Specified experiment run doesn't exist",
         )
 
-    await check_experiment_access(experiment_run.experiment_id, user)
+    await check_experiment_access_or_raise(experiment_run.experiment_id, user)
     return experiment_run.logs
 
 
@@ -232,7 +231,7 @@ async def download_file(
             detail="Specified experiment run doesn't exist",
         )
 
-    await check_experiment_access(experiment_run.experiment_id, user)
+    await check_experiment_access_or_raise(experiment_run.experiment_id, user)
 
     # TODO use temporaryFile/Directory package for this?
     tempdir = Path(TEMP_DIRNAME)
@@ -273,12 +272,13 @@ async def list_files(
             detail="Specified experiment run doesn't exist",
         )
 
-    await check_experiment_access(experiment_run.experiment_id, user)
-
+    await check_experiment_access_or_raise(experiment_run.experiment_id, user)
     return await workflow_engine.list_files(experiment_run)
 
 
-async def check_experiment_access(experiment_id: PydanticObjectId, user: dict | None):
+async def check_experiment_access_or_raise(
+    experiment_id: PydanticObjectId, user: dict | None
+):
     experiment = await Experiment.get(experiment_id)
 
     # TODO: Add experiment access management
