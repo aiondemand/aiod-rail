@@ -17,8 +17,8 @@ from app.services.aiod import (
     get_assets,
     get_assets_count,
     get_assets_version,
-    get_my_assets,
     get_my_asset_ids,
+    get_my_assets,
     search_assets,
 )
 
@@ -176,25 +176,17 @@ async def get_models_count() -> Any:
 
 
 @router.get("/counts/models/my", response_model=int)
-async def get_my_models_count(
-    token: str = Depends(get_current_user_token)
-) -> Any:
+async def get_my_models_count(token: str = Depends(get_current_user_token)) -> Any:
     my_dataset_ids = await get_my_asset_ids(
-        AssetType.ML_MODELS, 
-        token, 
-        Pagination(offset=0, limit=10e10)
+        AssetType.ML_MODELS, token, Pagination(offset=0, limit=10e10)
     )
     return len(my_dataset_ids)
 
 
 @router.get("/counts/datasets/my", response_model=int)
-async def get_my_datasets_count(
-    token: str = Depends(get_current_user_token)
-) -> Any:
+async def get_my_datasets_count(token: str = Depends(get_current_user_token)) -> Any:
     my_dataset_ids = await get_my_asset_ids(
-        AssetType.DATASETS, 
-        token, 
-        Pagination(offset=0, limit=10e10)
+        AssetType.DATASETS, token, Pagination(offset=0, limit=10e10)
     )
     return len(my_dataset_ids)
 
