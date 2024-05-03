@@ -28,14 +28,11 @@ async def get_experiments(
     pagination: Pagination = Depends(),
 ) -> Any:
     # TODO hotfix for returning only my experiments
-    if user:
-        experiments = await Experiment.find(
-            Experiment.created_by == user["email"],
-            skip=pagination.offset,
-            limit=pagination.limit,
-        ).to_list()
-    else:
-        experiments = []
+    experiments = await Experiment.find(
+        Experiment.created_by == user["email"],
+        skip=pagination.offset,
+        limit=pagination.limit,
+    ).to_list()
 
     return [experiment.dict() for experiment in experiments]
 
@@ -48,10 +45,7 @@ async def get_experiments_count(
     user: Annotated[dict, Depends(get_current_user(required=True))],
 ) -> Any:
     # TODO hotfix for returning only my experiments
-    if user:
-        return await Experiment.find(Experiment.created_by == user["email"]).count()
-    else:
-        return 0
+    return await Experiment.find(Experiment.created_by == user["email"]).count()
 
 
 @router.get(
@@ -280,7 +274,7 @@ async def check_experiment_access_or_raise(
     experiment = await Experiment.get(experiment_id)
 
     # TODO: Add experiment access management
-    if user is None or experiment.created_by != user["email"]:
+    if not user or experiment.created_by != user["email"]:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="You cannot access this experiment.",
