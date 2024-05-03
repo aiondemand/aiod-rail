@@ -97,7 +97,7 @@ async def get_my_asset_ids(
     """
     assert asset_type in [AssetType.DATASETS, AssetType.ML_MODELS]
 
-    user = await get_current_user(token=token)
+    user = await get_current_user(required=True)(token=token)
     user_id = user.get("sub")
 
     res = await aiod_library_client_wrapper.client.get(

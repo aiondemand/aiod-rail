@@ -64,7 +64,7 @@ export class SavedDatasetsComponent {
   }
 
   private updateDatasets() {
-    this.datasets$ = this.backend.getSavedDatasets({
+    this.datasets$ = this.backend.getMyDatasets({
       offset: this.pagination.pageIndex * this.pagination.pageSize,
       limit: this.pagination.pageSize
     });

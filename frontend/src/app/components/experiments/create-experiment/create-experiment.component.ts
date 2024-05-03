@@ -36,7 +36,9 @@ export class CreateExperimentComponent implements OnInit {
   experimentTemplates$: Observable<ExperimentTemplate[]>;
   publications$: Observable<Publication[]>;
   models$: Observable<Model[]> | undefined;
+  myModels$: Observable<Model[]> | undefined;
   datasets$: Observable<Dataset[]> | undefined;
+  myDatasets$: Observable<Dataset[]> | undefined;
 
   subscriptions: (Subscription | undefined)[] = [];
 
@@ -74,12 +76,34 @@ export class CreateExperimentComponent implements OnInit {
       })
     );
 
+    this.myModels$ = this.model?.valueChanges.pipe(
+      debounceTime(300), // Debounce to avoid frequent requests
+      startWith(""),
+      switchMap(_ => this.backend.getMyModels()),
+      catchError(err => {
+        this.error = err.message;
+        this.snackBar.showError("Couldn't load models");
+        return of([]);
+      })
+    );
+
     this.datasets$ = this.dataset?.valueChanges.pipe(
       debounceTime(300), // Debounce to avoid frequent requests
       startWith(""),
       switchMap(value => this.datasetAutocompleteFilter(value)),
       catchError(err => {
         this.error = err.message;
+        this.snackBar.showError("Couldn't load datasets");
+        return of([]);
+      })
+    );
+
+    this.myDatasets$ = this.dataset?.valueChanges.pipe(
+      debounceTime(300),
+      startWith(""),
+      switchMap(_ => this.backend.getMyDatasets()),
+      catchError(err => {
+        this.error = "Couldn't load datasets." + err.message;
         this.snackBar.showError("Couldn't load datasets");
         return of([]);
       })

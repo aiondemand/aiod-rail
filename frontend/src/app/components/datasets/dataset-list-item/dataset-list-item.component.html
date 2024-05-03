@@ -23,9 +23,5 @@
         <a [routerLink]="['/datasets', dataset.identifier]">
             <button mat-stroked-button >Go to detail</button>
         </a>
-
-        <!-- Show save button if dataset is not saved, else unsave button -->
-        <app-save-remove-dataset-button [dataset]="dataset"></app-save-remove-dataset-button>
-
     </mat-card-actions>
 </mat-card>

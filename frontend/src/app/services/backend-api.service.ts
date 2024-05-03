@@ -121,7 +121,10 @@ export class BackendApiService {
     return of(true);
   }
 
-  getSavedDatasets(pageQueries?: PageQueries): Observable<Dataset[]> {
+  getMyDatasets(pageQueries?: PageQueries, query: string = ""): Observable<Dataset[]> {
+
+    return this.http.get<Dataset[]>(`${environment.BACKEND_API_URL}/assets/datasets/my`);
+    
     // TODO: call the backend API to get the saved datasets once we have the endpoint
     // TODO: handle the "is_in_my_saved" property on backend
     let offset = pageQueries?.offset ?? 0;
@@ -131,6 +134,11 @@ export class BackendApiService {
       .pipe(tap(datasets => {
         datasets.forEach(dataset => dataset.is_in_my_saved = true);
       }));
+  }
+
+  getMyModels(pageQueries?: PageQueries, query: string = ""): Observable<Model[]> {
+    // TODO: call the backend API to get the saved models once we have the endpoint
+    return this.http.get<Model[]>(`${environment.BACKEND_API_URL}/assets/models/my`);
   }
 
   getSavedDatasetsCount(): Observable<number> {
