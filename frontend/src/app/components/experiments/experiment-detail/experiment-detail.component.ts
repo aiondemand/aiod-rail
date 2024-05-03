@@ -1,5 +1,5 @@
 import { Component, Input, ViewChild } from '@angular/core';
-import { catchError, combineLatest, of, retry, switchMap, tap } from 'rxjs';
+import { catchError, combineLatest, firstValueFrom, of, retry, switchMap, tap } from 'rxjs';
 import { Dataset } from 'src/app/models/dataset';
 import { Experiment } from 'src/app/models/experiment';
 import { ExperimentTemplate } from 'src/app/models/experiment-template';
@@ -30,12 +30,13 @@ export class ExperimentDetailComponent {
 
   displayedEnvVarColumns: string[] = ['key', 'value'];
   envTableData: EnvironmentVar[] | null = null;
-  
-    
+
+
   @Input()
   set id(id: string) {
     // get experiment by id from backend. Then, get ExperimentTemplate from the backend, using experiment.experiment_type_id
-    this.backend.getExperiment(id)
+
+    var data$ = this.backend.getExperiment(id)
       .pipe(
         switchMap(experiment => combineLatest([
           // TODO: Update to use arrays
@@ -46,26 +47,26 @@ export class ExperimentDetailComponent {
           of(experiment)
         ])),
         retry(3)
-      )
-      .subscribe({
-        next: ([dataset, model, publications, experimentTemplate, experiment]) => {
-          this.dataset = dataset;
-          this.model = model;
-          this.relatedPublications = publications;
-          this.experimentTemplate = experimentTemplate;
-          this.experiment = experiment;
+      );
 
-          this.envTableData = this.buildEnvTable();
-        },
-        error: (err) => {
-          this.snackBar.showError("Failed to load experiment details");
-        }
+    firstValueFrom(data$)
+      .then(([dataset, model, publications, experimentTemplate, experiment]) => {
+        this.dataset = dataset;
+        this.model = model;
+        this.relatedPublications = publications;
+        this.experimentTemplate = experimentTemplate;
+        this.experiment = experiment;
+
+        this.envTableData = this.buildEnvTable();
+      })
+      .catch(err => {
+        this.snackBar.showError("Failed to load experiment details");
       });
   }
 
   buildEnvTable(): EnvironmentVar[] {
-    let tableData: EnvironmentVar[] = [];  
-  
+    let tableData: EnvironmentVar[] = [];
+
     let reqEnvironmentVarNames = this.experimentTemplate.envs_required.map(env => env.name);
     let optEnvironmentVarNames = this.experimentTemplate.envs_optional.map(env => env.name);
 
@@ -96,24 +97,26 @@ export class ExperimentDetailComponent {
     //   }
     // }
 
-    this.backend.executeExperimentRun(this.experiment.id)
-      .pipe(
-        catchError(err => {
-          if (err.status == 401) {
-            this.snackBar.showError("An authorization error occured. Try logging out and then logging in again.");
-          }
-          else if (err.status == 500) {
-            this.snackBar.showError(`Failed to create run: ${err.message}. ${err.error.detail}`);
-          }
-          else {
-            this.snackBar.showError(`Failed to create run: ${err}`);
-          }
-          return [];
-        }))
-      .subscribe(run => {
-        this.snackBar.show(`Created run ${run.id}`);
-        this.runListComponent.updateRuns();
-      }
-      );
+    firstValueFrom(
+      this.backend.executeExperimentRun(this.experiment.id)
+        .pipe(
+          catchError(err => {
+            if (err.status == 401) {
+              this.snackBar.showError("An authorization error occurred. Try logging out and then logging in again.");
+            }
+            else if (err.status == 500) {
+              this.snackBar.showError(`Failed to create run: ${err.message}. ${err.error.detail}`);
+            }
+            else {
+              this.snackBar.showError(`Failed to create run: ${err}`);
+            }
+            return [];
+          })
+        )
+      )
+        .then(run => {
+          this.snackBar.show(`Created run ${run.id}`);
+          this.runListComponent.updateRuns();
+        });
   }
 }

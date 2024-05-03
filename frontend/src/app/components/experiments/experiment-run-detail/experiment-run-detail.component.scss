@@ -40,3 +40,43 @@
         margin-left: $margin-default;
     }
 }
+
+.tree-view {
+    height: 500px;
+    width: 100%;
+    overflow: auto;
+
+    .tree-node {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
+        border: 1px rgba(0, 0, 0, 0.1) solid;
+    
+        .download-btn {
+            display: none;
+        }
+    }
+
+    .tree-node:hover {
+        .download-btn {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+        }
+    }
+
+    .tree-node-directory:hover {
+        background-color: rgba(0, 0, 0, 0.05);
+        cursor: pointer;
+    }
+
+    .growing-space {
+        flex-grow: 1;
+    }
+
+    .download-circle{
+        padding-left: 0px;
+        padding-right: 24px;
+    }
+}

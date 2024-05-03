@@ -9,6 +9,7 @@ import { ExperimentTemplateCreate } from 'src/app/models/experiment-template';
 import { TaskType } from 'src/app/models/backend-generated/task-type';
 import { AssetCardinality } from 'src/app/models/backend-generated/asset-cardinality';
 import { CodeModel } from '@ngstack/code-editor';
+import { firstValueFrom } from 'rxjs';
 
 
 @Component({
@@ -98,19 +99,17 @@ export class CreateExperimentTemplateComponent {
       pip_requirements: String(formValue.pipRequirements)
     };
 
-    this.backend.createExperimentTemplate(experimentTemplate)
-      .subscribe({
-        next: experimentTemplate => {
-          this.snackBar.show('Experiment template created');
-          this.router.navigate(['/experiments', 'templates', experimentTemplate.id]);
-        },
-        error: err => {
-          if (err.status == 401) {
-            this.snackBar.showError("An authorization error occured. Try logging out and then logging in again.");
-          }
-          else {
-            this.snackBar.showError("Couldn't create experiment");
-          }
+    firstValueFrom(this.backend.createExperimentTemplate(experimentTemplate))
+      .then(experimentTemplate => {
+        this.snackBar.show('Experiment template created');
+        this.router.navigate(['/experiments', 'templates', experimentTemplate.id]);
+      })
+      .catch(err => {
+        if (err.status == 401) {
+          this.snackBar.showError("An authorization error occurred. Try logging out and then logging in again.");
+        }
+        else {
+          this.snackBar.showError("Couldn't create experiment");
         }
       });
   }

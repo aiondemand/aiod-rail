@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from pathlib import Path
 
-from app.helpers import WorkflowState
+from app.helpers import FileDetail, WorkflowState
 from app.models.experiment import Experiment
 from app.models.experiment_run import ExperimentRun
 
@@ -15,7 +16,7 @@ class WorkflowEngineBase(ABC):
     SERVICE: WorkflowEngineBase | None = None
 
     @abstractmethod
-    async def ping(self) -> bool:
+    async def is_available(self) -> bool:
         pass
 
     @abstractmethod
@@ -32,22 +33,19 @@ class WorkflowEngineBase(ABC):
         pass
 
     @abstractmethod
-    async def postprocess_workflow(self, experiment_run: ExperimentRun):
-        pass
-
-    @abstractmethod
-    async def download_files(self, *args, **kwargs):
-        pass
-
-    @abstractmethod
-    async def save_metadata(
+    async def postprocess_workflow(
         self, experiment_run: ExperimentRun, workflow_state: WorkflowState
-    ) -> bool:
+    ) -> None:
         pass
 
-    @staticmethod
     @abstractmethod
-    def get_workflow_name(experiment_run: ExperimentRun) -> str:
+    async def download_file(
+        self, experiment_run: ExperimentRun, filepath: str, savedir: Path
+    ) -> Path | None:
+        pass
+
+    @abstractmethod
+    async def list_files(self, experiment_run: ExperimentRun) -> list[FileDetail]:
         pass
 
     @staticmethod

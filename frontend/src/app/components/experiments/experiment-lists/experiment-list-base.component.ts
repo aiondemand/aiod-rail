@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { PageEvent } from '@angular/material/paginator';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable, catchError, of } from 'rxjs';
+import { Observable, catchError, firstValueFrom, of } from 'rxjs';
 import { Experiment } from 'src/app/models/experiment';
 import { BackendApiService } from 'src/app/services/backend-api.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
@@ -33,9 +33,8 @@ export  abstract class ExperimentListBaseComponent {
         this._updateExperiments();
     });
 
-    this.getExperimentsCount().subscribe(count => {
-      this.pagination.length = count;
-    });
+    firstValueFrom(this.getExperimentsCount())
+      .then(count => this.pagination.length = count);
   }
 
   handlePageEvent(e: PageEvent) {
@@ -60,7 +59,7 @@ export  abstract class ExperimentListBaseComponent {
     this.experiments$  = this.updateExperiments().pipe(
       catchError(error => {
         if (error.status == 401) {
-          this.snackBar.showError("An authorization error occured. Try logging out and then logging in again.");
+          this.snackBar.showError("An authorization error occurred. Try logging out and then logging in again.");
         }
         return of(null);
       })
@@ -69,5 +68,7 @@ export  abstract class ExperimentListBaseComponent {
 
   protected abstract updateExperiments(): Observable<Experiment[]>;
 
-  protected abstract getExperimentsCount(): Observable<number>
+  protected abstract getExperimentsCount(): Observable<number>;
+
+  protected abstract isAllExperiments(): boolean;
 }

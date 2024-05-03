@@ -43,5 +43,49 @@
         <h2>Logs</h2>
         <pre class="logs"><code [highlight]="logs" [languages]="['plaintext']" [lineNumbers]="true"></code></pre>
     </div>
+
+    <div *ngIf="treeViewDataSource && treeControl">
+        <mat-divider></mat-divider>
+        <h2>File hierarchy</h2>
+    
+        <mat-tree class="tree-view" [dataSource]="treeViewDataSource" [treeControl]="treeControl">
+            <!-- LEAF NODES (FILES) -->
+            <mat-tree-node class="tree-node" *matTreeNodeDef="let node" matTreeNodePadding>
+                <button mat-icon-button disabled></button>
+                {{node.name}}
+                <span class="growing-space"></span>
+                <span class="download-btn">
+                    <span class="file-size">{{formatFileSize(node.node.size)}}</span>
+                    <button mat-icon-button class="download-btn"
+                    (click)="downloadfile($event, node.node.filepath)" 
+                    *ngIf="!currentlyBeingDownloaded.has(node.node.filepath)">
+                        <mat-icon>download</mat-icon>
+                    </button>
+                </span>
+                <mat-spinner *ngIf="currentlyBeingDownloaded.has(node.node.filepath)" 
+                class="download-circle" [diameter]="24"></mat-spinner>
+            </mat-tree-node>
+
+            <!-- INNER NODES (DIRECTORIES) -->
+            <mat-tree-node class="tree-node tree-node-directory" *matTreeNodeDef="let node; when: hasChild" matTreeNodePadding matTreeNodeToggle>
+                <button mat-icon-button disabled>
+                    <mat-icon>
+                        {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+                    </mat-icon>
+                </button>
+                {{node.name}}
+                <span class="growing-space"></span>
+                <span class="download-btn">
+                    <button mat-icon-button class="download-btn" 
+                    (click)="downloadfile($event, node.node.filepath)" 
+                    *ngIf="!currentlyBeingDownloaded.has(node.node.filepath)">
+                        <mat-icon>download</mat-icon>
+                    </button>
+                </span>
+                <mat-spinner *ngIf="currentlyBeingDownloaded.has(node.node.filepath)" 
+                class="download-circle" [diameter]="24"></mat-spinner>
+            </mat-tree-node>
+        </mat-tree>
+    </div>
 </ng-container>
 

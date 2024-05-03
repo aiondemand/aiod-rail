@@ -2,7 +2,6 @@ from pathlib import Path
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, UploadFile
-from pydantic import Json
 
 from app.authentication import get_current_user, get_current_user_token
 from app.config import settings
@@ -69,7 +68,7 @@ async def get_filtered_datasets_count(query: str) -> Any:
 async def create_dataset(
     dataset: Dataset,
     token: str = Depends(get_current_user_token),
-    user: Json = Depends(get_current_user),
+    user: dict = Depends(get_current_user(required=True)),
 ) -> Any:
     # Create a new dataset in AIoD (just metadata)
     res = await aiod_client_wrapper.client.post(

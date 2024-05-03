@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { PageEvent } from '@angular/material/paginator';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable, catchError, of } from 'rxjs';
+import { Observable, catchError, count, firstValueFrom, of } from 'rxjs';
 import { ExperimentTemplate } from 'src/app/models/experiment-template';
 import { BackendApiService } from 'src/app/services/backend-api.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
@@ -49,9 +49,8 @@ export  abstract class ExperimentTemplateListBaseComponent {
         this.updateTemplates();
     });
 
-    this.getExperimentTemplatesCount().subscribe(count => {
-      this.pagination.length = count;
-    });
+    firstValueFrom(this.getExperimentTemplatesCount())
+      .then(count => this.pagination.length = count);
   }
 
   handlePageEvent(e: PageEvent) {
@@ -68,15 +67,15 @@ export  abstract class ExperimentTemplateListBaseComponent {
       },
       queryParamsHandling: 'merge'
     });
-    
-    this.updateTemplates();    
+
+    this.updateTemplates();
   }
 
   updateTemplates() {
     this.experimentTemplates$ = this.updateExperimentTemplates().pipe(
       catchError((error) => {
         if (error.status == 401) {
-          this.snackBar.showError("An authorization error occured. Try logging out and then logging in again.");
+          this.snackBar.showError("An authorization error occurred. Try logging out and then logging in again.");
         }
         return of(null);
       })

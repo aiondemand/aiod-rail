@@ -63,7 +63,7 @@ import { Platform } from 'src/app/models/platform';
 
 //   ngOnInit(): void {
 //     // Trigger validation when platform changes as they depend on it
-//     this.datasetForm.get('platform')?.valueChanges.subscribe(_ => {
+    // this.datasetForm.get('platform')?.valueChanges.subscribe(_ => {  //TODO unsubscribe
 //       this.datasetForm.get('name')?.updateValueAndValidity();
 //       this.datasetForm.get('keywords')?.updateValueAndValidity();
 //     });

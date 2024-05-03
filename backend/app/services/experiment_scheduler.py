@@ -89,7 +89,7 @@ class ExperimentScheduler:
     async def get_run_to_execute(self) -> PydanticObjectId:
         while True:
             if not self.experiment_run_queue.empty():
-                while not await self.workflow_engine.ping():
+                while not await self.workflow_engine.is_available():
                     await asyncio.sleep(CHECK_REANA_CONNECTION_INTERVAL)
                 return self.experiment_run_queue.get_nowait()
             await asyncio.sleep(LITTLE_NAP)
@@ -122,12 +122,10 @@ class ExperimentScheduler:
                 experiment.experiment_template_id
             )
 
-            if (
-                await self._rebuild_image_if_necessary(
-                    experiment_run, experiment_template
-                )
-                is False
-            ):
+            image_exists = await self._rebuild_image_if_necessary(
+                experiment_run, experiment_template
+            )
+            if image_exists is False:
                 return
 
             experiment_run.update_state(RunState.IN_PROGRESS)
@@ -137,7 +135,6 @@ class ExperimentScheduler:
                 + f"(retry_count={experiment_run.retry_count}) "
                 + f"- Experiment id={experiment.id} INITIALIZED ==="
             )
-
             try:
                 workflow_state = await self._exec_experiment(experiment_run, experiment)
             except WorkflowConnectionException as e:
@@ -151,8 +148,6 @@ class ExperimentScheduler:
             )
             if workflow_state.success:
                 new_state = RunState.FINISHED
-            elif should_retry:
-                new_state = RunState.IN_PROGRESS
             else:
                 new_state = RunState.CRASHED
 
@@ -178,8 +173,7 @@ class ExperimentScheduler:
             experiment_run, experiment, environment_variables
         )
         workflow_state = await self.workflow_engine.run_workflow(experiment_run)
-        await self.workflow_engine.postprocess_workflow(experiment_run)
-        await self.workflow_engine.save_metadata(experiment_run, workflow_state)
+        await self.workflow_engine.postprocess_workflow(experiment_run, workflow_state)
 
         return workflow_state
 
@@ -207,8 +201,6 @@ class ExperimentScheduler:
             await experiment_run.replace()
 
         return successful_image_rebuild
-
-        pass
 
     async def _general_workflow_preparation(
         self, experiment_run: ExperimentRun, experiment: Experiment

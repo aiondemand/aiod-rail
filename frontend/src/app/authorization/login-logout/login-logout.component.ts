@@ -40,8 +40,4 @@ export class LoginLogoutComponent {
     if (!claims) return "";
     return claims['given_name'] + " " + claims['family_name'];
   }
-
-  test(): void {
-    this.backend.authenticationTest().subscribe((_) => console.log(_));
-  }
 }

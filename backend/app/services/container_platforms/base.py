@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from abc import ABC, abstractmethod, abstractstaticmethod
+from abc import ABC, abstractmethod
 
 from app.models.experiment_template import ExperimentTemplate
 
@@ -24,7 +24,8 @@ class ContainerPlatformBase(ABC):
     async def terminate(self) -> bool:
         pass
 
-    @abstractstaticmethod
+    @staticmethod
+    @abstractmethod
     async def init() -> ContainerPlatformBase:
         pass
 

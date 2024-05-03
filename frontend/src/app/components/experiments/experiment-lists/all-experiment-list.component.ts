@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { ExperimentListBaseComponent } from './experiment-list-base.component';
 import { Experiment } from 'src/app/models/experiment';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 
 @Component({
   selector: 'app-all-experiment-list',
@@ -9,12 +9,17 @@ import { Observable } from 'rxjs';
   styleUrls: ['./experiment-lists.component.scss']
 })
 export class AllExperimentListComponent extends ExperimentListBaseComponent {
+  protected override isAllExperiments(): boolean {
+    return true;
+  }
 
   protected override getExperimentsCount(): Observable<number> {
-    return this.backend.getExperimentsCount();
+    // TODO: Add support for public experiments
+    return of(0);
   }
-  
+
   protected override updateExperiments(): Observable<Experiment[]> {
-    return this.backend.getExperiments();
+    // TODO: Add support for public experiments
+    return of([]);
   }
 }
