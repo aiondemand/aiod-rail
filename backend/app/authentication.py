@@ -45,18 +45,19 @@ async def _verify_token(token: str) -> dict:
         token = token.replace("Bearer ", "")
         return keycloak_openid.userinfo(token)  # perform a request to keycloak
     except KeycloakError as e:
-        logging.error(f"Error while checking the access token: '{e}'")
         error_msg = e.error_message
-        detail = "Invalid authentication token"
+        error_detail = "Invalid authentication token"
 
         if isinstance(error_msg, bytes):
             error_msg = error_msg.decode("utf-8")
 
         if error_msg:
-            detail = f"{detail}: '{error_msg}'"
+            error_detail = f"{error_detail}: '{error_msg}'"
+
+        logging.error(error_detail)
 
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=detail,
+            detail=error_detail,
             headers={"WWW-Authenticate": "Bearer"},
         )
