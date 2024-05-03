@@ -1,23 +1,14 @@
-export type QueryOperator = 'AND' | 'OR';
-
-export const QueryOperator = {
-    And: 'AND' as QueryOperator,
-    Or: 'OR' as QueryOperator
-};
-
-
 export interface PageQueries {
-    offset?: number;
-    limit?: number;
+  offset?: number;
+  limit?: number;
 }
 
-export interface ExperimentTemplateQueries { 
-    include_mine?: boolean;
-    include_approved?: boolean;
-    query_operator?: QueryOperator;
+export interface ExperimentTemplateQueries {
+  only_mine?: boolean;
+  include_pending?: boolean;
+  only_finalized?: boolean;
 }
 
 export interface ExperimentQueries {
-    include_mine?: boolean;
-    query_operator?: QueryOperator;
+  // TODO: Add query parameters
 }

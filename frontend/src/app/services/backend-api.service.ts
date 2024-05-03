@@ -9,7 +9,7 @@ import { Model } from '../models/model';
 import { ExperimentTemplate, ExperimentTemplateCreate } from '../models/experiment-template';
 import { Publication } from '../models/publication';
 import { ExperimentRun, ExperimentRunDetails } from '../models/experiment-run';
-import { ExperimentQueries, ExperimentTemplateQueries, PageQueries, QueryOperator } from '../models/queries';
+import { ExperimentQueries, ExperimentTemplateQueries, PageQueries } from '../models/queries';
 import { FileDetail } from '../models/file-detail';
 
 
@@ -352,7 +352,7 @@ export class BackendApiService {
   // TODO how to download file from backend
   downloadFileFromExperimentRun(experimentId: string, filepath: string): Observable<any> {
     return this.http.get(
-      `${environment.BACKEND_API_URL}/experiment-runs/${experimentId}/files/download?filepath=${filepath}`, 
+      `${environment.BACKEND_API_URL}/experiment-runs/${experimentId}/files/download?filepath=${filepath}`,
       { responseType: 'blob', observe: 'response', reportProgress: true }
     );
   }
@@ -399,38 +399,13 @@ export class BackendApiService {
   }
 
   _buildExperimentQueries(experimentQueries?: ExperimentQueries): string {
-    if (experimentQueries == undefined) {
-      return "";
-    }
-
-    if (experimentQueries.include_mine == undefined) {
-      experimentQueries.include_mine = false;
-    }
-    if (experimentQueries.query_operator == undefined) {
-      experimentQueries.query_operator = QueryOperator.And;
-    }
-
-    let q: string = "";
-    let key: keyof ExperimentQueries
-    for (key in experimentQueries) {
-      q += `${key}=${experimentQueries[key]}&`;
-    }
-    return q.slice(0, q.length - 1);
+    // TODO: Add query parameters
+    return "";
   }
 
   _buildExperimentTemplateQueries(templateQueries?: ExperimentTemplateQueries): string {
     if (templateQueries == undefined) {
       return "";
-    }
-
-    if (templateQueries.include_mine == undefined) {
-      templateQueries.include_mine = false;
-    }
-    if (templateQueries.include_approved == undefined) {
-      templateQueries.include_approved = false;
-    }
-    if (templateQueries.query_operator == undefined) {
-      templateQueries.query_operator = QueryOperator.And;
     }
 
     let q: string = "";

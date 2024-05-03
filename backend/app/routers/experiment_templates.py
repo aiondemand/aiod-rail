@@ -4,9 +4,8 @@ from typing import Any
 from beanie import PydanticObjectId, operators
 from beanie.odm.queries.find import FindMany
 from fastapi import APIRouter, Depends, HTTPException, status
-from pydantic import Json
 
-from app.authentication import get_current_user, get_current_user_optional
+from app.authentication import get_current_user
 from app.config import settings
 from app.helpers import Pagination, QueryOperator
 from app.models.experiment_template import ExperimentTemplate
@@ -14,6 +13,7 @@ from app.schemas.experiment_template import (
     ExperimentTemplateCreate,
     ExperimentTemplateResponse,
 )
+from app.schemas.states import TemplateState
 from app.services.experiment_scheduler import ExperimentScheduler
 
 router = APIRouter()
@@ -21,16 +21,17 @@ router = APIRouter()
 
 @router.get("/experiment-templates", response_model=list[ExperimentTemplateResponse])
 async def get_experiment_templates(
-    user: Json = Depends(get_current_user_optional),
+    user: dict = Depends(get_current_user(required=False)),
     pagination: Pagination = Depends(),
-    include_mine: bool = False,
-    include_approved: bool = False,
-    query_operator: QueryOperator = QueryOperator.AND,
+    only_mine: bool = False,
+    include_pending: bool = False,
+    only_finalized: bool = False,
 ) -> Any:
     result_set = find_specific_experiment_templates(
-        include_mine=include_mine,
-        include_approved=include_approved,
-        query_operator=query_operator,
+        only_mine=only_mine,
+        include_pending=include_pending,
+        only_finalized=only_finalized,
+        query_operator=QueryOperator.AND,
         user=user,
         pagination=pagination,
     )
@@ -55,15 +56,16 @@ async def get_experiment_template(id: PydanticObjectId) -> Any:
 
 @router.get("/count/experiment-templates", response_model=int)
 async def get_experiment_templates_count(
-    user: Json = Depends(get_current_user_optional),
-    include_mine: bool = False,
-    include_approved: bool = False,
-    query_operator: QueryOperator = QueryOperator.AND,
+    user: dict = Depends(get_current_user(required=False)),
+    only_mine: bool = False,
+    include_pending: bool = False,
+    only_finalized: bool = False,
 ) -> Any:
     result_set = find_specific_experiment_templates(
-        include_mine=include_mine,
-        include_approved=include_approved,
-        query_operator=query_operator,
+        only_mine=only_mine,
+        include_pending=include_pending,
+        only_finalized=only_finalized,
+        query_operator=QueryOperator.AND,
         user=user,
     )
     return await result_set.count()
@@ -76,7 +78,7 @@ async def get_experiment_templates_count(
 )
 async def create_experiment_template(
     experiment_template_req: ExperimentTemplateCreate,
-    user: Json = Depends(get_current_user),
+    user: dict = Depends(get_current_user(required=True)),
 ) -> Any:
     experiment_template = ExperimentTemplate(
         **experiment_template_req.dict(), created_by=user["email"]
@@ -95,7 +97,7 @@ async def create_experiment_template(
 async def approve_experiment_template(
     id: PydanticObjectId,
     password: str,
-    approve_value: bool = True,
+    is_approved: bool = False,
     exp_scheduler: ExperimentScheduler = Depends(ExperimentScheduler.get_service),
 ) -> Any:
     if password != settings.PASSWORD_FOR_TEMPLATE_APPROVAL:
@@ -111,7 +113,7 @@ async def approve_experiment_template(
             detail="Such experiment template doesn't exist",
         )
 
-    experiment_template.approved = approve_value
+    experiment_template.approved = is_approved
     experiment_template.updated_at = datetime.utcnow()
 
     await ExperimentTemplate.replace(experiment_template)
@@ -119,10 +121,11 @@ async def approve_experiment_template(
 
 
 def find_specific_experiment_templates(
-    include_mine: bool,
-    include_approved: bool,
+    only_mine: bool,
+    include_pending: bool,
+    only_finalized: bool,
     query_operator: QueryOperator,
-    user: Json,
+    user: dict | None,
     pagination: Pagination = None,
 ) -> FindMany[ExperimentTemplate]:
     search_conditions = []
@@ -132,19 +135,22 @@ def find_specific_experiment_templates(
         else {}
     )
 
-    if len(user) == 0 and include_mine and not include_approved:
-        # You need to be authorized to see only your experiment templates
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="This endpoint requires authorization. You need to be logged in.",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    if len(user) == 0:
-        include_mine = False
-    if include_mine:
-        search_conditions.append(ExperimentTemplate.created_by == user["email"])
-    if include_approved:
+    if user is None:
+        if only_mine or include_pending:
+            # Authentication required to see your experiment templates or pending experiment templates
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="This endpoint requires authorization. You need to be logged in.",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+    else:
+        if only_mine:
+            search_conditions.append(ExperimentTemplate.created_by == user["email"])
+
+    if not include_pending:
         search_conditions.append(ExperimentTemplate.approved == True)  # noqa: E712
+    if only_finalized:
+        search_conditions.append(ExperimentTemplate.state == TemplateState.FINISHED)
 
     if len(search_conditions) > 0:
         multi_query = (
