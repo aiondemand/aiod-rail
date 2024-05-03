@@ -24,7 +24,7 @@ router = APIRouter()
     response_model=list[ExperimentResponse],
 )
 async def get_experiments(
-    user: Annotated[dict, Depends(get_current_user(required=False))],
+    user: Annotated[dict, Depends(get_current_user(required=True))],
     pagination: Pagination = Depends(),
 ) -> Any:
     # TODO hotfix for returning only my experiments
@@ -45,7 +45,7 @@ async def get_experiments(
     response_model=int,
 )
 async def get_experiments_count(
-    user: Annotated[dict, Depends(get_current_user(required=False))],
+    user: Annotated[dict, Depends(get_current_user(required=True))],
 ) -> Any:
     # TODO hotfix for returning only my experiments
     if user:
@@ -60,7 +60,7 @@ async def get_experiments_count(
 )
 async def get_experiment(
     id: PydanticObjectId,
-    user: Annotated[dict, Depends(get_current_user(required=False))],
+    user: Annotated[dict, Depends(get_current_user(required=True))],
 ) -> Any:
     experiment = await Experiment.get(id)
 
@@ -135,7 +135,7 @@ async def execute_experiment_run(
 async def get_experiment_runs(
     id: PydanticObjectId,
     pagination: Pagination = Depends(),
-    user: dict = Depends(get_current_user(required=False)),
+    user: dict = Depends(get_current_user(required=True)),
 ) -> Any:
     await check_experiment_access_or_raise(id, user)
 
@@ -151,7 +151,7 @@ async def get_experiment_runs(
 @router.get("/count/experiments/{id}/runs", response_model=int)
 async def get_experiment_runs_count(
     id: PydanticObjectId,
-    user: dict = Depends(get_current_user(required=False)),
+    user: dict = Depends(get_current_user(required=True)),
 ) -> Any:
     await check_experiment_access_or_raise(id, user)
     return await ExperimentRun.find(ExperimentRun.experiment_id == id).count()
@@ -160,26 +160,23 @@ async def get_experiment_runs_count(
 @router.get("/experiment-runs", response_model=list[ExperimentRunResponse])
 async def get_all_experiment_runs(
     pagination: Pagination = Depends(),
-    user: dict = Depends(get_current_user(required=False)),
+    user: dict = Depends(get_current_user(required=True)),
 ) -> Any:
     # TODO hotfix for returning only my experiments
-    if user:
-        my_experiments = await Experiment.find(
-            Experiment.created_by == user["email"]
-        ).to_list()
-        if len(my_experiments) == 0:
-            return []
+    my_experiments = await Experiment.find(
+        Experiment.created_by == user["email"]
+    ).to_list()
+    if len(my_experiments) == 0:
+        return []
 
-        search_conditions = [
-            ExperimentRun.experiment_id == exp.id for exp in my_experiments
-        ]
-        query = operators.Or(*search_conditions)
+    search_conditions = [
+        ExperimentRun.experiment_id == exp.id for exp in my_experiments
+    ]
+    query = operators.Or(*search_conditions)
 
-        runs = await ExperimentRun.find(
-            query, skip=pagination.offset, limit=pagination.limit
-        ).to_list()
-    else:
-        runs = []
+    runs = await ExperimentRun.find(
+        query, skip=pagination.offset, limit=pagination.limit
+    ).to_list()
 
     return [run.map_to_response() for run in runs]
 
@@ -187,7 +184,7 @@ async def get_all_experiment_runs(
 @router.get("/experiment-runs/{id}", response_model=ExperimentRunDetails | None)
 async def get_experiment_run(
     id: PydanticObjectId,
-    user: dict = Depends(get_current_user(required=False)),
+    user: dict = Depends(get_current_user(required=True)),
 ) -> Any:
     experiment_run = await ExperimentRun.get(id)
 
@@ -204,9 +201,10 @@ async def get_experiment_run(
 @router.get("/experiment-runs/{id}/logs", response_class=PlainTextResponse)
 async def get_experiment_run_logs(
     id: PydanticObjectId,
-    user: dict = Depends(get_current_user(required=False)),
+    user: dict = Depends(get_current_user(required=True)),
 ) -> str:
     experiment_run = await ExperimentRun.get(id)
+
     if experiment_run is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -222,7 +220,7 @@ async def download_file(
     id: PydanticObjectId,
     filepath: str,
     workflow_engine: WorkflowEngineBase = Depends(ReanaService.get_service),
-    user: dict = Depends(get_current_user(required=False)),
+    user: dict = Depends(get_current_user(required=True)),
 ) -> bytes:
     experiment_run = await ExperimentRun.get(id)
     if experiment_run is None:
@@ -263,7 +261,7 @@ async def download_file(
 async def list_files(
     id: PydanticObjectId,
     workflow_engine: WorkflowEngineBase = Depends(ReanaService.get_service),
-    user: dict = Depends(get_current_user(required=False)),
+    user: dict = Depends(get_current_user(required=True)),
 ) -> list[FileDetail]:
     experiment_run = await ExperimentRun.get(id)
     if experiment_run is None:
