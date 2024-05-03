@@ -79,10 +79,10 @@ export class CreateExperimentComponent implements OnInit {
     this.myModels$ = this.model?.valueChanges.pipe(
       debounceTime(300), // Debounce to avoid frequent requests
       startWith(""),
-      switchMap(_ => this.backend.getMyModels()),
+      switchMap(value => this.myModelAutocompleteFilter(value)),
       catchError(err => {
         this.error = err.message;
-        this.snackBar.showError("Couldn't load models");
+        this.snackBar.showError("Couldn't load my models");
         return of([]);
       })
     );
@@ -101,10 +101,10 @@ export class CreateExperimentComponent implements OnInit {
     this.myDatasets$ = this.dataset?.valueChanges.pipe(
       debounceTime(300),
       startWith(""),
-      switchMap(_ => this.backend.getMyDatasets()),
+      switchMap(value => this.myDatasetAutocompleteFilter(value)),
       catchError(err => {
         this.error = "Couldn't load datasets." + err.message;
-        this.snackBar.showError("Couldn't load datasets");
+        this.snackBar.showError("Couldn't load my datasets");
         return of([]);
       })
     );
@@ -175,6 +175,20 @@ export class CreateExperimentComponent implements OnInit {
       return this.datasets$ ? this.datasets$ : of([]);;
     }
     return this.backend.getDatasets(query);
+  }
+
+  myModelAutocompleteFilter(query: string | Model | null): Observable<Model[]> {
+    if (typeof query != "string") {
+      return this.myModels$ ? this.myModels$ : of([]);
+    }
+    return this.backend.getMyModels(query)
+  }
+
+  myDatasetAutocompleteFilter(query: string | Dataset | null): Observable<Dataset[]> {
+    if (typeof query != "string") {
+      return this.myDatasets$ ? this.myDatasets$ : of([]);;
+    }
+    return this.backend.getMyDatasets(query);
   }
 
   displayChosenModel(model: Model) {

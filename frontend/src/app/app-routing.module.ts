@@ -57,7 +57,7 @@ const routes: Routes = [
     children: [
       { path: '', redirectTo: 'all', pathMatch: 'full' }, 
       { path: 'all', component: DatasetListComponent },
-      { path: 'my', component: SavedDatasetsComponent },
+      { path: 'my', component: SavedDatasetsComponent, canActivate: [authGuard] },
       { path: 'create', component: CreateDatasetComponent },
       { path: ':id', component: DatasetDetailComponent }
     ]
