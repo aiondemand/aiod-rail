@@ -109,6 +109,16 @@ async def get_my_asset_ids(
             status_code=res.status_code,
             detail=f"Failed to get my {asset_type.value} from AIoD Library. {res.json()}",
         )
+    
+    # Currently, the API returns code: 404 IN RESPONSE if user has no library
+    if (
+        ("code" in res.json() and res.json()["code"] == 404) or 
+        "data" not in res.json()
+    ):
+        raise HTTPException(
+            status_code=404,
+            detail=f"User does not have a library. {res.json()}",
+        )
 
     asset_name_mapper = {
         AssetType.DATASETS: "Dataset",

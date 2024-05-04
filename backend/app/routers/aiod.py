@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException, UploadFile
+from fastapi import APIRouter, Depends, HTTPException, Response, UploadFile
 
 from app.authentication import get_current_user, get_current_user_token
 from app.config import settings
@@ -34,11 +34,21 @@ async def get_datasets(pagination: Pagination = Depends()) -> Any:
 
 @router.get("/datasets/my", response_model=list[Dataset])
 async def get_my_datasets(
-    token: str = Depends(get_current_user_token), pagination: Pagination = Depends()
+    response: Response,
+    token: str = Depends(get_current_user_token),
+    pagination: Pagination = Depends(),
 ) -> Any:
-    return await get_my_assets(
-        asset_type=AssetType.DATASETS, token=token, pagination=pagination
-    )
+    try:
+        return await get_my_assets(
+            asset_type=AssetType.DATASETS, token=token, pagination=pagination
+        )
+    except HTTPException as e:
+        if e.status_code == 404:
+            response.status_code = 204  # No content
+            return []
+        raise e
+    except Exception:
+        raise HTTPException(status_code=503, detail="Failed to get my datasets.")
 
 
 @router.get("/datasets/search/{query}", response_model=list[Dataset])
@@ -149,11 +159,21 @@ async def get_models(pagination: Pagination = Depends()) -> Any:
 
 @router.get("/models/my", response_model=list[MLModel])
 async def get_my_models(
-    token: str = Depends(get_current_user_token), pagination: Pagination = Depends()
+    response: Response,
+    token: str = Depends(get_current_user_token),
+    pagination: Pagination = Depends(),
 ) -> Any:
-    return await get_my_assets(
-        asset_type=AssetType.ML_MODELS, token=token, pagination=pagination
-    )
+    try:
+        return await get_my_assets(
+            asset_type=AssetType.ML_MODELS, token=token, pagination=pagination
+        )
+    except HTTPException as e:
+        if e.status_code == 404:
+            response.status_code = 204  # No content
+            return []
+        raise e
+    except Exception:
+        raise HTTPException(status_code=503, detail="Failed to get my models.")
 
 
 @router.get("/models/search/{query}", response_model=list[MLModel])
@@ -176,19 +196,39 @@ async def get_models_count() -> Any:
 
 
 @router.get("/counts/models/my", response_model=int)
-async def get_my_models_count(token: str = Depends(get_current_user_token)) -> Any:
-    my_dataset_ids = await get_my_asset_ids(
-        AssetType.ML_MODELS, token, Pagination(offset=0, limit=10e10)
-    )
-    return len(my_dataset_ids)
+async def get_my_models_count(
+    response: Response, token: str = Depends(get_current_user_token)
+) -> Any:
+    try:
+        my_dataset_ids = await get_my_asset_ids(
+            AssetType.ML_MODELS, token, Pagination(offset=0, limit=10e10)
+        )
+        return len(my_dataset_ids)
+    except HTTPException as e:
+        if e.status_code == 404:
+            response.status_code = 204  # No content
+            return 0
+        raise e
+    except Exception:
+        raise HTTPException(status_code=503, detail="Failed to get my models count.")
 
 
 @router.get("/counts/datasets/my", response_model=int)
-async def get_my_datasets_count(token: str = Depends(get_current_user_token)) -> Any:
-    my_dataset_ids = await get_my_asset_ids(
-        AssetType.DATASETS, token, Pagination(offset=0, limit=10e10)
-    )
-    return len(my_dataset_ids)
+async def get_my_datasets_count(
+    response: Response, token: str = Depends(get_current_user_token)
+) -> Any:
+    try:
+        my_dataset_ids = await get_my_asset_ids(
+            AssetType.DATASETS, token, Pagination(offset=0, limit=10e10)
+        )
+        return len(my_dataset_ids)
+    except HTTPException as e:
+        if e.status_code == 404:
+            response.status_code = 204  # No content
+            return 0
+        raise e
+    except Exception:
+        raise HTTPException(status_code=503, detail="Failed to get my datasets count.")
 
 
 @router.get("/counts/models/search/{query}", response_model=int)

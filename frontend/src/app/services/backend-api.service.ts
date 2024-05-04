@@ -94,8 +94,11 @@ export class BackendApiService {
 
     return this.http.get<Dataset[]>(`${environment.BACKEND_API_URL}/assets/datasets/my${queries}`).pipe(
       // TODO: Implement in MyLibrary and Backend
-      // Filter only datasets their name contains the query
-      map(datasets => query ? datasets.filter(dataset => dataset.name.includes(query)) : datasets)
+      // Filter only datasets their name contains th  e query
+      map(datasets => query && datasets
+        ? datasets.filter(dataset => dataset.name.includes(query)) 
+        : datasets
+      )
     );      
   }
 
@@ -105,7 +108,10 @@ export class BackendApiService {
     return this.http.get<Model[]>(`${environment.BACKEND_API_URL}/assets/models/my${queries}`).pipe(
       // TODO: Implement in MyLibrary and Backend
       // Filter only models their name contains the query
-      map(models => query ? models.filter(model => model.name.includes(query)) : models)
+      map(models => query && models 
+        ? models.filter(model => model.name.includes(query)) 
+        : models
+      )
     );
   }
 
