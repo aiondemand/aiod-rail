@@ -17,13 +17,16 @@ REPOSITORY_NAME = "rail-exp-templates"
 TEMP_DIRNAME = "temp"
 
 
-class AIODApiConfig(BaseModel):
+class AIoDApiConfig(BaseModel):
     BASE_URL: AnyHttpUrl
-    VERIFY_SSL: bool = True
     DATASETS_VERSION: str = "v1"
     ML_MODELS_VERSION: str = "v1"
     PUBLICATIONS_VERSION: str = "v1"
     PLATFORMS_VERSION: str = "v1"
+
+
+class AIoDLibraryApiConfig(BaseModel):
+    BASE_URL: AnyHttpUrl
 
 
 class AIODKeycloakConfig(BaseModel):
@@ -40,7 +43,8 @@ class Settings(BaseSettings):
     MONGODB_URI: str
     MONGODB_DBNAME: str
 
-    AIOD_API: AIODApiConfig
+    AIOD_API: AIoDApiConfig
+    AIOD_LIBRARY_API: AIoDLibraryApiConfig
     AIOD_KEYCLOAK: AIODKeycloakConfig
     DEFAULT_RESPONSE_LIMIT: int = 100
 

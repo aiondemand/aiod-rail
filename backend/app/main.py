@@ -13,7 +13,7 @@ from app.models.experiment import Experiment
 from app.models.experiment_run import ExperimentRun
 from app.models.experiment_template import ExperimentTemplate
 from app.routers import aiod, experiment_templates, experiments
-from app.services.aiod import aiod_client_wrapper
+from app.services.aiod import aiod_client_wrapper, aiod_library_client_wrapper
 from app.services.container_platforms.base import ContainerPlatformBase
 from app.services.container_platforms.docker import DockerService
 from app.services.experiment_scheduler import ExperimentScheduler
@@ -45,6 +45,7 @@ async def app_init():
         shutil.rmtree(TEMP_DIRNAME)
 
     aiod_client_wrapper.start()
+    aiod_library_client_wrapper.start()
 
     app.db = AsyncIOMotorClient(settings.MONGODB_URI, uuidRepresentation="standard")[
         settings.MONGODB_DBNAME
@@ -79,6 +80,7 @@ async def shutdown_event():
     await ContainerPlatformBase.get_service().terminate()
 
     await aiod_client_wrapper.stop()
+    await aiod_library_client_wrapper.stop()
 
 
 if __name__ == "__main__":

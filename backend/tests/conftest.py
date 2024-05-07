@@ -4,7 +4,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app.main import app
-from app.services.aiod import AIoDClientWrapper, aiod_client_wrapper
+from app.services.aiod import AsyncClientWrapper, aiod_client_wrapper
 
 
 @pytest.fixture(scope="module")
@@ -14,5 +14,5 @@ def client():
 
 
 @pytest.fixture
-def aiod_client_mock(mocker):
-    return mocker.patch.object(AIoDClientWrapper, "client", new_callable=AsyncMock)
+def async_client_mock(mocker):
+    return mocker.patch.object(AsyncClientWrapper, "client", new_callable=AsyncMock)

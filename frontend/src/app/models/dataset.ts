@@ -1,8 +1,6 @@
 import * as backend from './backend-generated/dataset';
 
-export interface Dataset extends backend.Dataset {
-    is_in_my_saved: boolean;
-}
+export interface Dataset extends backend.Dataset { }
 
 export interface DatasetFormValue {
     name: string,
@@ -27,7 +25,6 @@ export function createDatasetFromFormData(
         description: { plain: formValue.description },
         alternate_name: getAlternateNames(formValue),
         keyword: getKeywords(formValue),
-        is_in_my_saved: false,
         citation: [],
         distribution: [],
         is_part_of: [],

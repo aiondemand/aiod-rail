@@ -36,7 +36,9 @@ export class CreateExperimentComponent implements OnInit {
   experimentTemplates$: Observable<ExperimentTemplate[]>;
   publications$: Observable<Publication[]>;
   models$: Observable<Model[]> | undefined;
+  myModels$: Observable<Model[]> | undefined;
   datasets$: Observable<Dataset[]> | undefined;
+  myDatasets$: Observable<Dataset[]> | undefined;
 
   subscriptions: (Subscription | undefined)[] = [];
 
@@ -74,6 +76,17 @@ export class CreateExperimentComponent implements OnInit {
       })
     );
 
+    this.myModels$ = this.model?.valueChanges.pipe(
+      debounceTime(300), // Debounce to avoid frequent requests
+      startWith(""),
+      switchMap(value => this.myModelAutocompleteFilter(value)),
+      catchError(err => {
+        this.error = err.message;
+        this.snackBar.showError("Couldn't load my models");
+        return of([]);
+      })
+    );
+
     this.datasets$ = this.dataset?.valueChanges.pipe(
       debounceTime(300), // Debounce to avoid frequent requests
       startWith(""),
@@ -81,6 +94,17 @@ export class CreateExperimentComponent implements OnInit {
       catchError(err => {
         this.error = err.message;
         this.snackBar.showError("Couldn't load datasets");
+        return of([]);
+      })
+    );
+
+    this.myDatasets$ = this.dataset?.valueChanges.pipe(
+      debounceTime(300),
+      startWith(""),
+      switchMap(value => this.myDatasetAutocompleteFilter(value)),
+      catchError(err => {
+        this.error = "Couldn't load datasets." + err.message;
+        this.snackBar.showError("Couldn't load my datasets");
         return of([]);
       })
     );
@@ -151,6 +175,20 @@ export class CreateExperimentComponent implements OnInit {
       return this.datasets$ ? this.datasets$ : of([]);;
     }
     return this.backend.getDatasets(query);
+  }
+
+  myModelAutocompleteFilter(query: string | Model | null): Observable<Model[]> {
+    if (typeof query != "string") {
+      return this.myModels$ ? this.myModels$ : of([]);
+    }
+    return this.backend.getMyModels(query)
+  }
+
+  myDatasetAutocompleteFilter(query: string | Dataset | null): Observable<Dataset[]> {
+    if (typeof query != "string") {
+      return this.myDatasets$ ? this.myDatasets$ : of([]);;
+    }
+    return this.backend.getMyDatasets(query);
   }
 
   displayChosenModel(model: Model) {
