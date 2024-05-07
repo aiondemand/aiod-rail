@@ -15,6 +15,14 @@ from app.services.aiod import (
 )
 
 
+async def mock_current_user(token):
+    return {
+        "sub": "user-id",
+        "name": "John Doe",
+        "preferred_username": "johndoe",
+    }
+
+
 @pytest.mark.parametrize(
     "asset_type, expected_url",
     [
@@ -141,11 +149,7 @@ async def test_get_my_asset_ids_happy_path(
     async_client_mock.get.return_value = mock_response
     mocker.patch(
         "app.services.aiod.get_current_user",
-        return_value={
-            "sub": "user-id",
-            "name": "John Doe",
-            "preferred_username": "johndoe",
-        },
+        return_value=mock_current_user,
     )
 
     my_asset_ids = await get_my_asset_ids(
@@ -159,6 +163,55 @@ async def test_get_my_asset_ids_happy_path(
 
     assert isinstance(my_asset_ids, list)
     assert my_asset_ids == expected_asset_ids
+
+
+@pytest.mark.parametrize(
+    "asset_type, my_library_response, expected_url",
+    [
+        (AssetType.DATASETS, {}, "api/libraries/{user_id}/assets"),
+        (
+            AssetType.DATASETS,
+            {
+                "error": "Not found error",
+                "code": 404,
+                "message": "User library not found",
+            },
+            "api/libraries/{user_id}/assets",
+        ),
+        (AssetType.ML_MODELS, {}, "api/libraries/{user_id}/assets"),
+        (
+            AssetType.ML_MODELS,
+            {
+                "error": "Not found error",
+                "code": 404,
+                "message": "User library not found",
+            },
+            "api/libraries/{user_id}/assets",
+        ),
+    ],
+)
+@pytest.mark.asyncio
+async def test_get_my_asset_ids_no_library(
+    asset_type, my_library_response, expected_url, async_client_mock, mocker
+):
+    mock_response = Mock()
+    mock_response.status_code = 200
+    mock_response.json.return_value = my_library_response
+    async_client_mock.get.return_value = mock_response
+    mocker.patch(
+        "app.services.aiod.get_current_user",
+        return_value=mock_current_user,
+    )
+
+    with pytest.raises(HTTPException):
+        _ = await get_my_asset_ids(
+            asset_type, token="valid-user-token", pagination=Pagination()
+        )
+
+    async_client_mock.get.assert_called_once_with(
+        expected_url.format(user_id="user-id"),
+        headers={"Authorization": "valid-user-token"},
+    )
 
 
 @pytest.mark.parametrize("asset_type", [AssetType.DATASETS, AssetType.ML_MODELS])

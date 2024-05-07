@@ -111,11 +111,13 @@ async def get_my_asset_ids(
         )
 
     # Currently, the API returns code: 404 IN RESPONSE if user has no library
-    if ("code" in res.json() and res.json()["code"] == 404) or "data" not in res.json():
+    if res.json().get("code") == 404 or "data" not in res.json():
         raise HTTPException(
             status_code=404,
-            detail=f"User does not have a library. {res.json()}",
+            detail=f"User does not have a library: {res.json()}",
         )
+    else:
+        my_assets = res.json().get("data", [])
 
     asset_name_mapper = {
         AssetType.DATASETS: "Dataset",
@@ -124,7 +126,7 @@ async def get_my_asset_ids(
 
     requested_assets = [
         int(asset["identifier"])
-        for asset in res.json()["data"]
+        for asset in my_assets
         if asset["category"] == asset_name_mapper[asset_type]
     ]
 
