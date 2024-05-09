@@ -30,8 +30,8 @@ export class ExperimentDetailComponent {
 
   displayedEnvVarColumns: string[] = ['key', 'value'];
   envTableData: EnvironmentVar[] | null = null;
-  
-    
+
+
   @Input()
   set id(id: string) {
     // get experiment by id from backend. Then, get ExperimentTemplate from the backend, using experiment.experiment_type_id
@@ -65,8 +65,8 @@ export class ExperimentDetailComponent {
   }
 
   buildEnvTable(): EnvironmentVar[] {
-    let tableData: EnvironmentVar[] = [];  
-  
+    let tableData: EnvironmentVar[] = [];
+
     let reqEnvironmentVarNames = this.experimentTemplate.envs_required.map(env => env.name);
     let optEnvironmentVarNames = this.experimentTemplate.envs_optional.map(env => env.name);
 
@@ -102,7 +102,7 @@ export class ExperimentDetailComponent {
         .pipe(
           catchError(err => {
             if (err.status == 401) {
-              this.snackBar.showError("An authorization error occured. Try logging out and then logging in again.");
+              this.snackBar.showError("An authorization error occurred. Try logging out and then logging in again.");
             }
             else if (err.status == 500) {
               this.snackBar.showError(`Failed to create run: ${err.message}. ${err.error.detail}`);

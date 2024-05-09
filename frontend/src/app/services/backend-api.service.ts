@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { catchError, combineLatest, Observable, of, switchMap, tap, throwError } from 'rxjs';
+import { catchError, combineLatest, map, Observable, of, switchMap, throwError } from 'rxjs';
 import { Dataset } from '../models/dataset';
 import { environment } from 'src/environments/environment';
 import { Platform } from '../models/platform';
@@ -9,7 +9,7 @@ import { Model } from '../models/model';
 import { ExperimentTemplate, ExperimentTemplateCreate } from '../models/experiment-template';
 import { Publication } from '../models/publication';
 import { ExperimentRun, ExperimentRunDetails } from '../models/experiment-run';
-import { ExperimentQueries, ExperimentTemplateQueries, PageQueries, QueryOperator } from '../models/queries';
+import { ExperimentQueries, ExperimentTemplateQueries, PageQueries } from '../models/queries';
 import { FileDetail } from '../models/file-detail';
 
 
@@ -18,14 +18,7 @@ import { FileDetail } from '../models/file-detail';
 })
 export class BackendApiService {
 
-  mockedSavedDatasets: Dataset[] = [];
-
-  constructor(private http: HttpClient) {
-    const savedDatasets = localStorage.getItem('savedDatasets');
-    if (savedDatasets) {
-      this.mockedSavedDatasets = JSON.parse(savedDatasets);
-    }
-  }
+  constructor(private http: HttpClient) { }
 
   ////////////////////////////// DATASETS //////////////////////////////
 
@@ -37,12 +30,7 @@ export class BackendApiService {
     }
     backend_route += `?${this._buildPageQueries(pageQueries)}`;
 
-    return this.http.get<Dataset[]>(backend_route)
-      .pipe(tap(datasets => {
-        datasets.forEach(dataset => {
-          dataset.is_in_my_saved = this.mockedSavedDatasets.some(d => d.identifier === dataset.identifier);
-        });
-      }));
+    return this.http.get<Dataset[]>(backend_route);
   }
 
   getDatasetsCount(query: string = ""): Observable<number> {
@@ -55,11 +43,7 @@ export class BackendApiService {
   }
 
   getDataset(id: string): Observable<Dataset> {
-    // TODO: handle the "is_in_my_saved" property on backend
-    return this.http.get<Dataset>(`${environment.BACKEND_API_URL}/assets/datasets/${id}`)
-      .pipe(tap(dataset => {
-        dataset.is_in_my_saved = this.mockedSavedDatasets.some(d => d.identifier === dataset.identifier);
-      }));
+    return this.http.get<Dataset>(`${environment.BACKEND_API_URL}/assets/datasets/${id}`);
   }
 
   createDataset(dataset: Dataset, file: any, hf_username: string = '', hf_token: string = ''): Observable<Dataset> {
@@ -101,41 +85,42 @@ export class BackendApiService {
   private deleteDataset(dataset: Dataset): Observable<boolean> {
     return this.http.delete<Dataset>(`${environment.BACKEND_API_URL}/assets/datasets/${dataset.identifier}`)
       .pipe(
-        switchMap(_ => {
-          return this.removeFromSaved(dataset);
-        }),
-        catchError(err => throwError(() => new Error(err)))
+        map(_ => true)
       );
   }
 
-  saveDataset(dataset: Dataset): Observable<boolean> {
-    // TODO: call the backend API to save the dataset once we have the endpoint
-    this.mockedSavedDatasets.push(dataset);
-    localStorage.setItem('savedDatasets', JSON.stringify(this.mockedSavedDatasets));
-    return of(true);
+  getMyDatasets(query: string = "", pageQueries?: PageQueries): Observable<Dataset[]> {
+    let queries = `?${this._buildPageQueries(pageQueries)}`;
+
+    return this.http.get<Dataset[]>(`${environment.BACKEND_API_URL}/assets/datasets/my${queries}`).pipe(
+      // TODO: Implement in MyLibrary and Backend
+      // Filter only datasets their name contains th  e query
+      map(datasets => query && datasets
+        ? datasets.filter(dataset => dataset.name.includes(query)) 
+        : datasets
+      )
+    );      
   }
 
-  removeFromSaved(dataset: Dataset): Observable<boolean> {
-    this.mockedSavedDatasets = this.mockedSavedDatasets.filter(d => d.identifier !== dataset.identifier);
-    localStorage.setItem('savedDatasets', JSON.stringify(this.mockedSavedDatasets));
-    return of(true);
+  getMyModels(query: string = "", pageQueries?: PageQueries): Observable<Model[]> {
+    let queries = `?${this._buildPageQueries(pageQueries)}`;
+
+    return this.http.get<Model[]>(`${environment.BACKEND_API_URL}/assets/models/my${queries}`).pipe(
+      // TODO: Implement in MyLibrary and Backend
+      // Filter only models their name contains the query
+      map(models => query && models 
+        ? models.filter(model => model.name.includes(query)) 
+        : models
+      )
+    );
   }
 
-  getSavedDatasets(pageQueries?: PageQueries): Observable<Dataset[]> {
-    // TODO: call the backend API to get the saved datasets once we have the endpoint
-    // TODO: handle the "is_in_my_saved" property on backend
-    let offset = pageQueries?.offset ?? 0;
-    let limit = pageQueries?.limit ?? environment.DEFAULT_PAGE_SIZE;
-
-    return of(this.mockedSavedDatasets.slice(offset, offset + limit))
-      .pipe(tap(datasets => {
-        datasets.forEach(dataset => dataset.is_in_my_saved = true);
-      }));
+  getMyDatasetsCount(): Observable<number> {
+    return this.http.get<number>(`${environment.BACKEND_API_URL}/assets/counts/datasets/my`);
   }
 
-  getSavedDatasetsCount(): Observable<number> {
-    // TODO: call the backend API to get the saved datasets count once we have the endpoint
-    return of<number>(this.mockedSavedDatasets.length);
+  getMyModelsCount(): Observable<number> {
+    return this.http.get<number>(`${environment.BACKEND_API_URL}/assets/counts/models/my`);
   }
 
   ////////////////////////////// MODELS //////////////////////////////
@@ -352,7 +337,7 @@ export class BackendApiService {
   // TODO how to download file from backend
   downloadFileFromExperimentRun(experimentId: string, filepath: string): Observable<any> {
     return this.http.get(
-      `${environment.BACKEND_API_URL}/experiment-runs/${experimentId}/files/download?filepath=${filepath}`, 
+      `${environment.BACKEND_API_URL}/experiment-runs/${experimentId}/files/download?filepath=${filepath}`,
       { responseType: 'blob', observe: 'response', reportProgress: true }
     );
   }
@@ -399,38 +384,13 @@ export class BackendApiService {
   }
 
   _buildExperimentQueries(experimentQueries?: ExperimentQueries): string {
-    if (experimentQueries == undefined) {
-      return "";
-    }
-
-    if (experimentQueries.include_mine == undefined) {
-      experimentQueries.include_mine = false;
-    }
-    if (experimentQueries.query_operator == undefined) {
-      experimentQueries.query_operator = QueryOperator.And;
-    }
-
-    let q: string = "";
-    let key: keyof ExperimentQueries
-    for (key in experimentQueries) {
-      q += `${key}=${experimentQueries[key]}&`;
-    }
-    return q.slice(0, q.length - 1);
+    // TODO: Add query parameters
+    return "";
   }
 
   _buildExperimentTemplateQueries(templateQueries?: ExperimentTemplateQueries): string {
     if (templateQueries == undefined) {
       return "";
-    }
-
-    if (templateQueries.include_mine == undefined) {
-      templateQueries.include_mine = false;
-    }
-    if (templateQueries.include_approved == undefined) {
-      templateQueries.include_approved = false;
-    }
-    if (templateQueries.query_operator == undefined) {
-      templateQueries.query_operator = QueryOperator.And;
     }
 
     let q: string = "";

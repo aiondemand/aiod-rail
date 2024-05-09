@@ -10,7 +10,6 @@
         <span matTooltip="License">
             <mat-icon>description</mat-icon>{{dataset.license | uppercase | defaultIfEmpty: "Unknown"}}
         </span>
-        <app-save-remove-dataset-button [dataset]="dataset"></app-save-remove-dataset-button>
     </div>
 
     <div class="dataset-keywords">

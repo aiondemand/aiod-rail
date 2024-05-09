@@ -67,15 +67,15 @@ export  abstract class ExperimentTemplateListBaseComponent {
       },
       queryParamsHandling: 'merge'
     });
-    
-    this.updateTemplates();    
+
+    this.updateTemplates();
   }
 
   updateTemplates() {
     this.experimentTemplates$ = this.updateExperimentTemplates().pipe(
       catchError((error) => {
         if (error.status == 401) {
-          this.snackBar.showError("An authorization error occured. Try logging out and then logging in again.");
+          this.snackBar.showError("An authorization error occurred. Try logging out and then logging in again.");
         }
         return of(null);
       })

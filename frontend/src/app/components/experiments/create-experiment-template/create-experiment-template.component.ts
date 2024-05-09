@@ -106,7 +106,7 @@ export class CreateExperimentTemplateComponent {
       })
       .catch(err => {
         if (err.status == 401) {
-          this.snackBar.showError("An authorization error occured. Try logging out and then logging in again.");
+          this.snackBar.showError("An authorization error occurred. Try logging out and then logging in again.");
         }
         else {
           this.snackBar.showError("Couldn't create experiment");

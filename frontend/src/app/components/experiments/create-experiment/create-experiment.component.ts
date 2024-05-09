@@ -5,11 +5,10 @@ import { Router } from '@angular/router';
 import { Observable, Subscription, catchError, debounceTime, firstValueFrom, of, startWith, switchMap } from 'rxjs';
 import { Dataset } from 'src/app/models/dataset';
 import { EnvironmentVar } from 'src/app/models/env-vars';
-import { ExperimentCreate, Experiment } from 'src/app/models/experiment';
+import { ExperimentCreate } from 'src/app/models/experiment';
 import { ExperimentTemplate } from 'src/app/models/experiment-template';
 import { Model } from 'src/app/models/model';
 import { Publication } from 'src/app/models/publication';
-import { QueryOperator } from 'src/app/models/queries';
 import { BackendApiService } from 'src/app/services/backend-api.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
 
@@ -30,14 +29,16 @@ export class CreateExperimentComponent implements OnInit {
     envs_optional: this.fb.group({}),
     experimentTemplate: new FormControl<ExperimentTemplate | null>(null, Validators.required)
   });
-  
+
 
   error: string = '';
 
   experimentTemplates$: Observable<ExperimentTemplate[]>;
   publications$: Observable<Publication[]>;
   models$: Observable<Model[]> | undefined;
+  myModels$: Observable<Model[]> | undefined;
   datasets$: Observable<Dataset[]> | undefined;
+  myDatasets$: Observable<Dataset[]> | undefined;
 
   subscriptions: (Subscription | undefined)[] = [];
 
@@ -49,13 +50,12 @@ export class CreateExperimentComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.experimentTemplates$ = this.backend.getExperimentTemplates({}, { 
-      include_approved: true, 
-      query_operator: QueryOperator.Or 
+    this.experimentTemplates$ = this.backend.getExperimentTemplates({}, {
+      only_finalized: true
     }).pipe(
       catchError(err => {
         if (err.status == 401) {
-          this.snackBar.showError("An authorization error occured. Try logging out and then logging in again.");
+          this.snackBar.showError("An authorization error occurred. Try logging out and then logging in again.");
         }
         else {
           this.error = err.message;
@@ -76,6 +76,17 @@ export class CreateExperimentComponent implements OnInit {
       })
     );
 
+    this.myModels$ = this.model?.valueChanges.pipe(
+      debounceTime(300), // Debounce to avoid frequent requests
+      startWith(""),
+      switchMap(value => this.myModelAutocompleteFilter(value)),
+      catchError(err => {
+        this.error = err.message;
+        this.snackBar.showError("Couldn't load my models");
+        return of([]);
+      })
+    );
+
     this.datasets$ = this.dataset?.valueChanges.pipe(
       debounceTime(300), // Debounce to avoid frequent requests
       startWith(""),
@@ -83,6 +94,17 @@ export class CreateExperimentComponent implements OnInit {
       catchError(err => {
         this.error = err.message;
         this.snackBar.showError("Couldn't load datasets");
+        return of([]);
+      })
+    );
+
+    this.myDatasets$ = this.dataset?.valueChanges.pipe(
+      debounceTime(300),
+      startWith(""),
+      switchMap(value => this.myDatasetAutocompleteFilter(value)),
+      catchError(err => {
+        this.error = "Couldn't load datasets." + err.message;
+        this.snackBar.showError("Couldn't load my datasets");
         return of([]);
       })
     );
@@ -95,7 +117,7 @@ export class CreateExperimentComponent implements OnInit {
           return of([]);
         })
       );
-  
+
     this.subscriptions.push(
       this.experimentTemplate?.valueChanges.subscribe(value => {
         value?.available_metrics.forEach(metric => this.metrics.addControl(metric, new FormControl<boolean>(true)));
@@ -106,7 +128,7 @@ export class CreateExperimentComponent implements OnInit {
         value?.envs_required.forEach(env => this.envs_required.addControl(env.name, new FormControl<string>("", Validators.required)));
         value?.envs_optional.forEach(env => this.envs_optional.addControl(env.name, new FormControl<string>("")));
       })
-    );    
+    );
   }
 
   ngOnDestroy(): void {
@@ -155,6 +177,20 @@ export class CreateExperimentComponent implements OnInit {
     return this.backend.getDatasets(query);
   }
 
+  myModelAutocompleteFilter(query: string | Model | null): Observable<Model[]> {
+    if (typeof query != "string") {
+      return this.myModels$ ? this.myModels$ : of([]);
+    }
+    return this.backend.getMyModels(query)
+  }
+
+  myDatasetAutocompleteFilter(query: string | Dataset | null): Observable<Dataset[]> {
+    if (typeof query != "string") {
+      return this.myDatasets$ ? this.myDatasets$ : of([]);;
+    }
+    return this.backend.getMyDatasets(query);
+  }
+
   displayChosenModel(model: Model) {
     return model ? model.name : "";
   }
@@ -163,12 +199,12 @@ export class CreateExperimentComponent implements OnInit {
     return dataset ? dataset.name : "";
   }
 
-  onSubmit() {  
+  onSubmit() {
     const selectedMetrics = Object.entries(this.experimentForm?.value?.metrics as Record<string, boolean>)
       .filter(([_, value]) => value)
       .map(([key, _]) => key);
     const publicationIds = (this.experimentForm.value.publications as Array<Publication>).map(publication => publication.identifier.toString());
-    
+
     let all_envs: Record<string, string> = {
       ...this.experimentForm?.value?.envs_required,
       ...this.experimentForm?.value?.envs_optional
@@ -180,7 +216,7 @@ export class CreateExperimentComponent implements OnInit {
         envsToSend.push({
           key: env,
           value: all_envs[env]
-        });  
+        });
       }
     }
 
