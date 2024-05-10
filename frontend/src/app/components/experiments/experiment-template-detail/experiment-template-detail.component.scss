@@ -1,12 +1,33 @@
 @import '../../../../variables.scss';
 
-h1 {
-    span {
-        font-size: 0.5em;
-        opacity: 0.75;
-        font-weight: normal;
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    h1 {
+        span {
+            font-size: 0.5em;
+            opacity: 0.75;
+            font-weight: normal;
+        }
+    }
+
+    .header-buttons {
+        display: flex;
+        gap: 0.25em;
+
+        color: grey;
+        // mat-icon {
+        //     color: grey;
+        // }
+
+        button:hover {
+            color: black;
+        }
     }
 }
+
 
 .code {
     margin-top: 0;

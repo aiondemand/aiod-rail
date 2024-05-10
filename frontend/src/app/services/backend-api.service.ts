@@ -315,12 +315,20 @@ export class BackendApiService {
     return this.http.get<number>(`${environment.BACKEND_API_URL}/count/experiment-templates${queries}`);
   }
 
+  getExperimentsOfTemplateCount(id: string): Observable<number> {
+    return this.http.get<number>(`${environment.BACKEND_API_URL}/count/experiment-templates/${id}/experiments`);
+  }
+
   /**
    * Create new experiment template
    * @returns Observable<ExperimentTemplate> (count)
    */
   createExperimentTemplate(experimentTemplate: ExperimentTemplateCreate): Observable<ExperimentTemplate> {
     return this.http.post<ExperimentTemplate>(`${environment.BACKEND_API_URL}/experiment-templates`, experimentTemplate);
+  }
+
+  updateExperimentTemplate(id: string, experimentTemplate: ExperimentTemplateCreate): Observable<ExperimentTemplate> {
+    return this.http.put<ExperimentTemplate>(`${environment.BACKEND_API_URL}/experiment-templates/${id}`, experimentTemplate);
   }
 
   ////////////////////////////// EXPERIMENT RUNS //////////////////////////////

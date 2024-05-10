@@ -50,7 +50,6 @@ import { ExperimentRunDetailComponent } from './components/experiments/experimen
 import { MatTableModule } from '@angular/material/table';
 import { AllExperimentListComponent } from './components/experiments/experiment-lists/all-experiment-list.component';
 import { MyExperimentListComponent } from './components/experiments/experiment-lists/my-experiment-list.component';
-import { CreateExperimentTemplateComponent } from './components/experiments/create-experiment-template/create-experiment-template.component';
 import { AllExperimentTemplateList } from './components/experiments/experiment-template-lists/all-experiment-template-list.component';
 import { MyExperimentTemplateList } from './components/experiments/experiment-template-lists/my-experiment-template-list.component';
 import { ExperimentTemplateListItemComponent } from './components/experiments/experiment-template-list-item/experiment-template-list-item.component';
@@ -63,6 +62,8 @@ import { AboutComponent } from './components/general/about/about.component';
 import { NgOptimizedImage } from "@angular/common";
 import { MatTreeModule } from '@angular/material/tree';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { EditExperimentTemplateComponent } from './components/experiments/edit-experiment-template/edit-experiment-template.component';
+import { UpdateExperimentComponent } from './components/experiments/update-experiment/update-experiment.component';
 
 
 
@@ -91,13 +92,14 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
     ExperimentRunDetailComponent,
     MyExperimentListComponent,
     AllExperimentListComponent,
-    CreateExperimentTemplateComponent,
     AllExperimentTemplateList,
     MyExperimentTemplateList,
     ExperimentTemplateListItemComponent,
     ExperimentTemplateDetailComponent,
     FeedbackComponent,
-    AboutComponent
+    AboutComponent,
+    EditExperimentTemplateComponent,
+    UpdateExperimentComponent
   ],
   imports: [
     BrowserModule,

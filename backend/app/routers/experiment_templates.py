@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any
 
 from beanie import PydanticObjectId, operators
@@ -8,6 +8,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from app.authentication import get_current_user
 from app.config import settings
 from app.helpers import Pagination, QueryOperator
+from app.models.experiment import Experiment
 from app.models.experiment_template import ExperimentTemplate
 from app.schemas.experiment_template import (
     ExperimentTemplateCreate,
@@ -93,6 +94,35 @@ async def create_experiment_template(
     return experiment_template.map_to_response()
 
 
+@router.put("/experiment-templates/{id}", response_model=ExperimentTemplateResponse)
+async def update_experiment_template(
+    id: PydanticObjectId,
+    experiment_template_req: ExperimentTemplateCreate,
+    user: dict = Depends(get_current_user(required=True)),
+) -> Any:
+    old_exp_template = await ExperimentTemplate.get(id)
+    if old_exp_template.created_by != user["email"]:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="You cannot modify others' experiment templates.",
+        )
+    exist_experiments = (
+        await Experiment.find(Experiment.experiment_template_id == id).count() > 0
+    )
+
+    template_to_save = ExperimentTemplate.update_template(
+        old_exp_template, experiment_template_req, exist_experiments
+    )
+    if template_to_save is None:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Performed changes to the experiment template are not allowed",
+        )
+
+    await ExperimentTemplate.replace(template_to_save)
+    return template_to_save.map_to_response()
+
+
 @router.patch("/experiment-templates/{id}/approve", response_model=None)
 async def approve_experiment_template(
     id: PydanticObjectId,
@@ -114,10 +144,15 @@ async def approve_experiment_template(
         )
 
     experiment_template.approved = is_approved
-    experiment_template.updated_at = datetime.utcnow()
+    experiment_template.updated_at = datetime.now(tz=timezone.utc)
 
     await ExperimentTemplate.replace(experiment_template)
     await exp_scheduler.add_image_to_build(experiment_template.id)
+
+
+@router.get("/count/experiment-templates/{id}/experiments", response_model=int)
+async def get_experiments_of_template_count(id: PydanticObjectId) -> Any:
+    return await Experiment.find(Experiment.experiment_template_id == id).count()
 
 
 def find_specific_experiment_templates(

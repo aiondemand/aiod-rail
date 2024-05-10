@@ -1,5 +1,17 @@
 <div *ngIf="experimentTemplate$ | async as experimentTemplate">
-    <h1>{{experimentTemplate.name}} <span>(template)</span></h1> 
+    <div class="header">
+        <h1>{{experimentTemplate.name}} <span>(template)</span></h1> 
+        <div class="header-buttons">
+            <button mat-icon-button (click)="editBtnClicked()">
+                <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button (click)="deleteBtnClicked()">
+                <mat-icon>delete</mat-icon>
+            </button>
+        </div>
+    </div>
+    
+    
 
     <div class="description-section">
         <pre>{{experimentTemplate.description}}</pre>

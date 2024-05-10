@@ -1,8 +1,12 @@
+from __future__ import annotations
+
 from datetime import datetime, timezone
 from functools import partial
+from pathlib import Path
 
 import yaml
 from beanie import Document
+from deepdiff import DeepDiff
 from pydantic import Field
 
 from app.config import (
@@ -14,6 +18,7 @@ from app.config import (
 from app.schemas.env_vars import EnvironmentVar, EnvironmentVarDef
 from app.schemas.experiment_template import (
     AssetSchema,
+    ExperimentTemplateCreate,
     ExperimentTemplateResponse,
     TaskType,
 )
@@ -38,6 +43,51 @@ class ExperimentTemplate(Document):
     created_by: str
 
     @property
+    def environment_attribute_names(self) -> list[str]:
+        return [
+            "task",
+            "datasets_schema",
+            "models_schema",
+            "envs_required",
+            "envs_optional",
+            "available_metrics",
+            "base_image",
+            "pip_requirements",
+            "script",
+        ]
+
+    @property
+    def experiment_template_path(self) -> Path:
+        return settings.get_experiment_template_path(template_id=self.id)
+
+    @property
+    def base_image(self) -> str:
+        if self.dockerfile == "":
+            return ""
+        return self.dockerfile.split("\n")[0][5:]
+
+    @property
+    def dockerfile(self) -> str:
+        path = self.experiment_template_path.joinpath("Dockerfile")
+        if path.exists():
+            return path.read_text()
+        return ""
+
+    @property
+    def pip_requirements(self) -> str:
+        path = self.experiment_template_path.joinpath("requirements.txt")
+        if path.exists():
+            return path.read_text()
+        return ""
+
+    @property
+    def script(self) -> str:
+        path = self.experiment_template_path.joinpath("script.py")
+        if path.exists():
+            return path.read_text()
+        return ""
+
+    @property
     def image_name(self) -> str:
         image_tag = f"{EXPERIMENT_TEMPLATE_DIR_PREFIX}{self.id}"
         return f"{settings.DOCKER_REGISTRY_URL}/{REPOSITORY_NAME}:{image_tag}"
@@ -46,7 +96,7 @@ class ExperimentTemplate(Document):
         name = "experimentTemplates"
 
     def initialize_files(self, base_image, pip_requirements, script):
-        base_path = settings.get_experiment_template_path(template_id=self.id)
+        base_path = self.experiment_template_path
         base_path.mkdir(exist_ok=True, parents=True)
 
         # TODO check https://docs.bentoml.org/en/latest/guides/containerization.html#dockerfile-template
@@ -70,22 +120,17 @@ class ExperimentTemplate(Document):
             yaml.safe_dump(reana_cfg, fp)
 
     def map_to_response(self) -> ExperimentTemplateResponse:
-        experiment_template_path = settings.get_experiment_template_path(
-            template_id=self.id
-        )
-
         return ExperimentTemplateResponse(
+            # TODO check if we need to further specify dockerfiles etc, or since there are now properties, they are in dict()
             **self.dict(),
-            dockerfile=experiment_template_path.joinpath("Dockerfile").read_text(),
-            pip_requirements=experiment_template_path.joinpath(
-                "requirements.txt"
-            ).read_text(),
-            script=experiment_template_path.joinpath("script.py").read_text(),
+            dockerfile=self.dockerfile,
+            pip_requirements=self.pip_requirements,
+            script=self.script,
         )
 
     def update_state(self, state: TemplateState) -> None:
         self.state = state
-        self.updated_at = datetime.utcnow()
+        self.updated_at = datetime.now(tz=timezone.utc)
 
     async def validate_models(self, model_ids: list[int]) -> bool:
         model_names = [await get_model_name(x) for x in model_ids]
@@ -112,3 +157,54 @@ class ExperimentTemplate(Document):
         required_environment_var_names = set([env.name for env in self.envs_required])
 
         return required_environment_var_names.issubset(experiment_environment_var_names)
+
+    def is_same_environment(
+        self, experiment_template_req: ExperimentTemplateCreate
+    ) -> bool:
+        return sum(
+            [
+                bool(
+                    DeepDiff(
+                        getattr(self, attr_name),
+                        getattr(experiment_template_req, attr_name),
+                        ignore_order=True,
+                    )
+                )
+                is False
+                for attr_name in self.environment_attribute_names
+            ]
+        ) == len(self.environment_attribute_names)
+
+    def update_textual_info(self, new_template: ExperimentTemplate) -> None:
+        self.name = new_template.name
+        self.description = new_template.description
+
+    @classmethod
+    def update_template(
+        cls,
+        old_template: ExperimentTemplate,
+        experiment_template_req: ExperimentTemplateCreate,
+        exist_experiments: bool,
+    ) -> ExperimentTemplate | None:
+        same_environment = old_template.is_same_environment(experiment_template_req)
+        new_template = ExperimentTemplate(
+            **experiment_template_req.dict(), created_by=old_template.created_by
+        )
+
+        if same_environment:
+            old_template.update_textual_info(new_template)
+            old_template.updated_at = new_template.updated_at
+            return old_template
+
+        if exist_experiments is False:
+            new_template.created_at = old_template.created_at
+            new_template.id = old_template.id
+
+            new_template.initialize_files(
+                base_image=experiment_template_req.base_image,
+                pip_requirements=experiment_template_req.pip_requirements,
+                script=experiment_template_req.script,
+            )
+            return new_template
+
+        return None

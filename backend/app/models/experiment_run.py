@@ -38,7 +38,7 @@ class ExperimentRun(Document):
 
     def update_state(self, state: RunState) -> None:
         self.state = state
-        self.updated_at = datetime.utcnow()
+        self.updated_at = datetime.now(tz=timezone.utc)
 
     def map_to_response(self) -> ExperimentRunResponse:
         run_path = settings.get_experiment_run_output_path(self.id)
