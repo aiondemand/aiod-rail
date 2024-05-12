@@ -48,7 +48,11 @@ def process_metrics(all_metrics: dict, metrics_filter: list):
 if __name__ == "__main__":
     model_name = os.getenv("MODEL_NAMES").split(",")[0]
     dataset_name = os.getenv("DATASET_NAMES").split(",")[0]
-    metrics_to_compute = os.getenv("METRICS", default="").split(",")
+    metrics_to_compute = (
+        os.getenv("METRICS", default="").split(",")
+        if len(os.getenv("METRICS", default=""))
+        else []
+    )
     split_name = os.getenv("SPLIT_NAME", default="train")
 
     for attempt in range(5):

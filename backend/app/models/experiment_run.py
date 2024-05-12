@@ -1,6 +1,7 @@
 import json
 from datetime import datetime, timezone
 from functools import partial
+from pathlib import Path
 
 from beanie import Document, PydanticObjectId
 from pydantic import Field
@@ -23,14 +24,31 @@ class ExperimentRun(Document):
     experiment_id: PydanticObjectId
 
     @property
-    def logs(self):
-        run_path = settings.get_experiment_run_path(self.id)
-        log_path = run_path / LOGS_FILENAME
+    def logs(self) -> str:
+        log_path = self.run_path / LOGS_FILENAME
         return log_path.read_text() if log_path.is_file() else ""
+
+    @property
+    def metrics(self) -> dict[str, float]:
+        m_path = self.run_output_path / METRICS_FILENAME
+        if m_path.exists() is False:
+            return {}
+
+        with open(m_path) as f:
+            metrics = json.load(f)
+        return metrics
 
     @property
     def workflow_name(self) -> str:
         return f"{EXPERIMENT_RUN_DIR_PREFIX}{str(self.id)}"
+
+    @property
+    def run_path(self) -> Path:
+        return settings.get_experiment_run_path(self.id)
+
+    @property
+    def run_output_path(self) -> Path:
+        return settings.get_experiment_run_output_path(self.id)
 
     class Settings:
         name = "experimentRuns"
@@ -41,15 +59,7 @@ class ExperimentRun(Document):
         self.updated_at = datetime.now(tz=timezone.utc)
 
     def map_to_response(self) -> ExperimentRunResponse:
-        run_path = settings.get_experiment_run_output_path(self.id)
-        m_path = run_path / METRICS_FILENAME
-
-        metrics = {}
-        if m_path.exists():
-            with open(m_path) as f:
-                metrics = json.load(f)
-
-        return ExperimentRunResponse(**self.dict(), metrics=metrics)
+        return ExperimentRunResponse(**self.dict(), metrics=self.metrics)
 
     def map_to_detailed_response(self) -> ExperimentRunDetails:
         response = self.map_to_response()

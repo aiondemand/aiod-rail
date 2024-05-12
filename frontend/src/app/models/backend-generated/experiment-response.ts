@@ -24,5 +24,6 @@ export interface ExperimentResponse {
     id: string;
     created_at: string;
     updated_at: string;
+    is_public: boolean;
 }
 

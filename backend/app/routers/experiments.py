@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Annotated, Any
+from typing import Any
 
 from beanie import PydanticObjectId, operators
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -18,13 +18,12 @@ from app.services.workflow_engines.reana import ReanaService
 
 router = APIRouter()
 
+# TODO incorporate logic for public/private visibility of experiments
 
-@router.get(
-    "/experiments",
-    response_model=list[ExperimentResponse],
-)
+
+@router.get("/experiments", response_model=list[ExperimentResponse])
 async def get_experiments(
-    user: Annotated[dict, Depends(get_current_user(required=True))],
+    user: dict = Depends(get_current_user(required=True)),
     pagination: Pagination = Depends(),
 ) -> Any:
     # TODO hotfix for returning only my experiments
@@ -37,24 +36,18 @@ async def get_experiments(
     return [experiment.dict() for experiment in experiments]
 
 
-@router.get(
-    "/count/experiments",
-    response_model=int,
-)
+@router.get("/count/experiments", response_model=int)
 async def get_experiments_count(
-    user: Annotated[dict, Depends(get_current_user(required=True))],
+    user: dict = Depends(get_current_user(required=True)),
 ) -> Any:
     # TODO hotfix for returning only my experiments
     return await Experiment.find(Experiment.created_by == user["email"]).count()
 
 
-@router.get(
-    "/experiments/{id}",
-    response_model=ExperimentResponse,
-)
+@router.get("/experiments/{id}", response_model=ExperimentResponse)
 async def get_experiment(
     id: PydanticObjectId,
-    user: Annotated[dict, Depends(get_current_user(required=True))],
+    user: dict = Depends(get_current_user(required=True)),
 ) -> Any:
     experiment = await Experiment.get(id)
 
@@ -68,6 +61,20 @@ async def get_experiment(
     return experiment.dict()
 
 
+@router.get("/experiments/{id}", response_model=ExperimentResponse)
+async def is_experiment_mine(
+    id: PydanticObjectId, user: dict = Depends(get_current_user(required=False))
+) -> Any:
+    experiment = await Experiment.get(id)
+    if experiment is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Specified experiment doesn't exist",
+        )
+
+    return user is not None and experiment.created_by == user["email"]
+
+
 @router.post(
     "/experiments",
     status_code=status.HTTP_201_CREATED,
@@ -75,7 +82,7 @@ async def get_experiment(
 )
 async def create_experiment(
     experiment: ExperimentCreate,
-    user: Annotated[dict, Depends(get_current_user(required=True))],
+    user: dict = Depends(get_current_user(required=True)),
 ) -> Any:
     experiment = Experiment(**experiment.dict(), created_by=user["email"])
     if not await experiment.is_valid():
@@ -270,7 +277,7 @@ async def list_files(
 
 async def check_experiment_access_or_raise(
     experiment_id: PydanticObjectId, user: dict | None
-):
+) -> None:
     experiment = await Experiment.get(experiment_id)
 
     # TODO: Add experiment access management

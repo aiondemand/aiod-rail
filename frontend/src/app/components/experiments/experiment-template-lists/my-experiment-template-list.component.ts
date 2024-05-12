@@ -13,7 +13,7 @@ export class MyExperimentTemplateList extends ExperimentTemplateListBaseComponen
   protected override getExperimentTemplatesCount(): Observable<number> {
     return this.backend.getExperimentTemplatesCount({
       only_mine: true,
-      include_pending: true
+      include_pending: true,
     });
   }
 

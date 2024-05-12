@@ -49,7 +49,9 @@ export class CreateExperimentComponent implements OnInit {
 
   ngOnInit(): void {
     this.experimentTemplates$ = this.backend.getExperimentTemplates({}, {
-      only_finalized: true
+      only_finalized: true,
+      only_public: true,
+      only_usable: true
     }).pipe(
       catchError(err => {
         if (err.status == 401) {
@@ -190,7 +192,8 @@ export class CreateExperimentComponent implements OnInit {
       dataset_ids: [String((this.experimentForm?.value?.dataset as Dataset)?.identifier)],
       model_ids: [String((this.experimentForm?.value?.model as Model)?.identifier)],
       metrics: selectedMetrics,
-      env_vars: envsToSend
+      env_vars: envsToSend,
+      is_public: false
     };
 
     firstValueFrom(this.backend.createExperiment(experiment))

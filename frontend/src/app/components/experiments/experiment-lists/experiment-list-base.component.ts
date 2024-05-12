@@ -34,7 +34,8 @@ export  abstract class ExperimentListBaseComponent {
     });
 
     firstValueFrom(this.getExperimentsCount())
-      .then(count => this.pagination.length = count);
+      .then(count => this.pagination.length = count)
+      .catch(err => console.error(err));
   }
 
   handlePageEvent(e: PageEvent) {

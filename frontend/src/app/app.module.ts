@@ -64,6 +64,8 @@ import { MatTreeModule } from '@angular/material/tree';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { EditExperimentTemplateComponent } from './components/experiments/edit-experiment-template/edit-experiment-template.component';
 import { UpdateExperimentComponent } from './components/experiments/update-experiment/update-experiment.component';
+import { ConfirmPopupComponent } from './components/general/popup/confirm-popup.component';
+import { MatDialogModule } from '@angular/material/dialog';
 
 
 
@@ -99,7 +101,8 @@ import { UpdateExperimentComponent } from './components/experiments/update-exper
     FeedbackComponent,
     AboutComponent,
     EditExperimentTemplateComponent,
-    UpdateExperimentComponent
+    UpdateExperimentComponent,
+    ConfirmPopupComponent
   ],
   imports: [
     BrowserModule,
@@ -133,6 +136,7 @@ import { UpdateExperimentComponent } from './components/experiments/update-exper
     HighlightModule,
     MatTreeModule,
     MatProgressBarModule,
+    MatDialogModule,
     MarkdownModule.forRoot(),
     CodeEditorModule.forRoot(),
     OAuthModule.forRoot({

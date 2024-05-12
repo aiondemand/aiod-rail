@@ -87,8 +87,10 @@ export class EditExperimentTemplateComponent {
                 this.setupEditor()
                 this.action = "update"
                 this.loading = false;
-              });    
-          });
+              })
+              .catch(err => console.error(err)); 
+          })
+          .catch(err => console.error(err));
       }
       else {
         this.setupEditor()
@@ -160,7 +162,9 @@ export class EditExperimentTemplateComponent {
       available_metrics: this.metrics,
       base_image: String(formValue.baseImage),
       script: String(this.scriptCode),
-      pip_requirements: String(formValue.pipRequirements)
+      pip_requirements: String(formValue.pipRequirements),
+      is_public: true,
+      is_usable: true
     };
 
     let promisedTemplate: Promise<ExperimentTemplate>;

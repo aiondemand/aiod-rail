@@ -1,0 +1,31 @@
+.outer-div {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5em;
+}
+
+.message {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    color: black;
+    font-size: 0.75em;
+    text-align: center;
+}
+
+.buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2em;
+
+    button {
+        width: 150px;
+        min-width: 100px;
+    }
+
+    .no-btn {
+        border-color: rgb(63, 81, 181);
+    }
+}

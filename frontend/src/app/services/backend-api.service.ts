@@ -263,6 +263,10 @@ export class BackendApiService {
     return this.http.get<Experiment>(`${environment.BACKEND_API_URL}/experiments/${id}`);
   }
 
+  isExperimentMine(id: string): Observable<boolean> {
+    return this.http.get<boolean>(`${environment.BACKEND_API_URL}/experiment/${id}/is_mine`);
+  }
+
   /**
    * Get count of experiments
    * @returns Observable<number> (count)
@@ -304,6 +308,10 @@ export class BackendApiService {
     return this.http.get<ExperimentTemplate>(`${environment.BACKEND_API_URL}/experiment-templates/${id}`);
   }
 
+  isExperimentTemplateMine(id: string): Observable<boolean> {
+    return this.http.get<boolean>(`${environment.BACKEND_API_URL}/experiment-templates/${id}/is_mine`);
+  }
+
   /**
    * Get count of experiment templates
    * @returns Observable<number> (count)
@@ -329,6 +337,14 @@ export class BackendApiService {
 
   updateExperimentTemplate(id: string, experimentTemplate: ExperimentTemplateCreate): Observable<ExperimentTemplate> {
     return this.http.put<ExperimentTemplate>(`${environment.BACKEND_API_URL}/experiment-templates/${id}`, experimentTemplate);
+  }
+
+  setExperimentTemplateUsability(id: string, is_usable: boolean): Observable<void> {
+    return this.http.patch<void>(`${environment.BACKEND_API_URL}/experiment-templates/${id}/usability?is_usable=${is_usable}`, {});
+  }
+
+  deleteExperimentTemplate(id: string): Observable<void> {
+    return this.http.delete<void>(`${environment.BACKEND_API_URL}/experiment-templates/${id}`);
   }
 
   ////////////////////////////// EXPERIMENT RUNS //////////////////////////////

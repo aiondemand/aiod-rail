@@ -28,6 +28,27 @@
     }
 }
 
+.state {
+    margin-bottom: 1em;
+    margin-left: 0.5em;
+    
+    span {
+        display: flex;
+        align-items: center;
+        gap: 0.25em;
+    }
+    
+    font-size: 0.7em;
+    
+    .in-progress {
+        color: green;
+    }
+
+    .crashed {
+        color: red;
+    }
+}
+
 
 .code {
     margin-top: 0;

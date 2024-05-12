@@ -1,0 +1,12 @@
+<mat-dialog-content>
+    <div class="outer-div"> 
+        <div class="message">
+            {{popupInput.message}}
+        </div>
+
+        <div class="buttons">
+            <button class="yes-btn" mat-flat-button color="primary" [mat-dialog-close]="true">{{popupInput.acceptBtnMessage ?? 'Confirm'}}</button>
+            <button class="no-btn" mat-stroked-button color="primary" [mat-dialog-close]="false">{{popupInput.declineBtnMessage ?? 'Dismiss'}}</button>
+        </div>
+    </div>
+</mat-dialog-content>

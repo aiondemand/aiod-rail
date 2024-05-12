@@ -217,7 +217,7 @@ class ExperimentScheduler:
             }
         )
 
-        exp_run_folder = settings.get_experiment_run_path(experiment_run.id)
+        exp_run_folder = experiment_run.run_path
         if exp_run_folder.exists():
             shutil.rmtree(exp_run_folder)
         exp_run_folder.mkdir(parents=True)

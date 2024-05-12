@@ -32,6 +32,8 @@ export interface ExperimentTemplateResponse {
     state: TemplateState;
     dockerfile: string;
     approved: boolean;
+    is_usable: boolean;
+    is_public: boolean;
 }
 export namespace ExperimentTemplateResponse {
 }

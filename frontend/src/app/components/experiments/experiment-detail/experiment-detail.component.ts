@@ -117,6 +117,7 @@ export class ExperimentDetailComponent {
         .then(run => {
           this.snackBar.show(`Created run ${run.id}`);
           this.runListComponent.updateRuns();
-        });
+        })
+        .catch(err => console.error(err));
   }
 }

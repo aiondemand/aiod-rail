@@ -12,7 +12,9 @@ export class AllExperimentTemplateList extends ExperimentTemplateListBaseCompone
 
   protected override getExperimentTemplatesCount(): Observable<number> {
     return this.backend.getExperimentTemplatesCount({
-      only_finalized: true
+      only_finalized: true,
+      only_usable: true,
+      only_public: true
     });
   }
 
@@ -23,7 +25,9 @@ export class AllExperimentTemplateList extends ExperimentTemplateListBaseCompone
         limit: this.pagination.pageSize
       },
       {
-        only_finalized: true
+        only_finalized: true,
+        only_usable: true,
+        only_public: true
       }
     );
   }

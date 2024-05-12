@@ -46,6 +46,8 @@ class ExperimentTemplateBase(BaseModel):
     available_metrics: list[str]
     script: str
     pip_requirements: str
+    is_usable: bool
+    is_public: bool
 
 
 class ExperimentTemplateCreate(ExperimentTemplateBase):

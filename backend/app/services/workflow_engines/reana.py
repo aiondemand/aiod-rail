@@ -72,7 +72,7 @@ class ReanaService(WorkflowEngineBase):
                 exc_info=e,
             )
 
-        exp_run_folder = settings.get_experiment_run_path(experiment_run.id)
+        exp_run_folder = experiment_run.run_path
         exp_template_folder = settings.get_experiment_template_path(
             experiment.experiment_template_id
         )
@@ -84,7 +84,7 @@ class ReanaService(WorkflowEngineBase):
 
     async def run_workflow(self, experiment_run: ExperimentRun) -> WorkflowState:
         exp_run_id = experiment_run.id
-        exp_run_folder = settings.get_experiment_run_path(exp_run_id)
+        exp_run_folder = experiment_run.run_path
         workflow_name = experiment_run.workflow_name
 
         self.logger.info(f"\tRunning REANA workflow for ExperimentRun id={exp_run_id}")
@@ -116,8 +116,8 @@ class ReanaService(WorkflowEngineBase):
         self, experiment_run: ExperimentRun, workflow_state: WorkflowState
     ) -> None:
         workflow_name = experiment_run.workflow_name
-        exp_dirpath = settings.get_experiment_run_path(experiment_run.id)
-        exp_output_dirpath = settings.get_experiment_run_output_path(experiment_run.id)
+        exp_dirpath = experiment_run.run_path
+        exp_output_dirpath = experiment_run.run_output_path
 
         try:
             await self._async_reana_call(

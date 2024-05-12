@@ -14,6 +14,16 @@ mat-card {
     }
 }
 
+.template-name {
+    display: flex;
+    align-items: center;
+    gap: 0.3em;
+
+    mat-icon {
+        color: rgb(220, 220, 220);
+    }
+}
+
 .state {
     margin-bottom: 1em;
     margin-left: 0.5em;

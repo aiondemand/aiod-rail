@@ -38,7 +38,8 @@ export class SavedDatasetsComponent {
     });
 
     firstValueFrom(this.backend.getSavedDatasetsCount())
-      .then(count => this.pagination.length = count);
+      .then(count => this.pagination.length = count)
+      .catch(err => console.error(err));
   }
 
   ngOnDestroy(): void {

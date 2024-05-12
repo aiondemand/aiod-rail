@@ -1,7 +1,7 @@
 <div *ngIf="experimentTemplate$ | async as experimentTemplate">
     <div class="header">
         <h1>{{experimentTemplate.name}} <span>(template)</span></h1> 
-        <div class="header-buttons">
+        <div class="header-buttons" *ngIf="isTemplateMine && experimentTemplate.is_usable">
             <button mat-icon-button (click)="editBtnClicked()">
                 <mat-icon>edit</mat-icon>
             </button>
@@ -11,7 +11,19 @@
         </div>
     </div>
     
-    
+    <div class="state" *ngIf="!experimentTemplate.is_usable">
+        <span class="crashed"><mat-icon matTooltip="New experiments cannot use this template">delete</mat-icon>Deleted</span>
+    </div>
+    <div class="state" *ngIf="experimentTemplate.is_usable && experimentTemplate.state != 'FINISHED'">
+        <ng-container *ngIf="!experimentTemplate.approved">
+            <span class="crashed"><mat-icon matTooltip="Experiment templates created by users are manually reviewed and then approved for use">search</mat-icon>Waiting for approval</span>
+        </ng-container>
+        <ng-container *ngIf="experimentTemplate.approved">
+            <span *ngIf="experimentTemplate.state == 'CREATED'"><mat-icon>schedule</mat-icon>Scheduled</span>
+            <span class="in-progress" *ngIf="experimentTemplate.state == 'IN_PROGRESS'"><mat-icon>rotate_right</mat-icon>Building image</span>
+            <span class="crashed" *ngIf="experimentTemplate.state == 'CRASHED'"><mat-icon>error</mat-icon>Crashed</span>
+        </ng-container>
+    </div>
 
     <div class="description-section">
         <pre>{{experimentTemplate.description}}</pre>

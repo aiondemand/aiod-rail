@@ -41,6 +41,8 @@ class ExperimentTemplate(Document):
     retry_count: int = 0
     approved: bool = False
     created_by: str
+    is_usable: bool = True
+    is_public: bool = True
 
     @property
     def environment_attribute_names(self) -> list[str]:
@@ -175,9 +177,10 @@ class ExperimentTemplate(Document):
             ]
         ) == len(self.environment_attribute_names)
 
-    def update_textual_info(self, new_template: ExperimentTemplate) -> None:
+    def update_non_environment(self, new_template: ExperimentTemplate) -> None:
         self.name = new_template.name
         self.description = new_template.description
+        self.is_public = new_template.is_public
 
     @classmethod
     def update_template(
@@ -192,7 +195,7 @@ class ExperimentTemplate(Document):
         )
 
         if same_environment:
-            old_template.update_textual_info(new_template)
+            old_template.update_non_environment(new_template)
             old_template.updated_at = new_template.updated_at
             return old_template
 
