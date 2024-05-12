@@ -72,7 +72,7 @@ export class ExperimentTemplateDetailComponent {
     }
     else {
       this.router.navigate(routeParts, routeExtras);
-    }  
+    }
   }
 
   deleteBtnClicked() {

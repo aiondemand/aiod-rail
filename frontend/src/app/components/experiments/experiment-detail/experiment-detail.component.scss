@@ -1,5 +1,22 @@
 @import '../../../../variables.scss';
 
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .header-buttons {
+        display: flex;
+        gap: 0.25em;
+
+        color: grey;
+
+        button:hover {
+            color: black;
+        }
+    }
+}
+
 
 .experiment-short-description {
     // show maximally 2 lines of text

@@ -180,7 +180,9 @@ class ExperimentTemplate(Document):
     def update_non_environment(self, new_template: ExperimentTemplate) -> None:
         self.name = new_template.name
         self.description = new_template.description
-        self.is_public = new_template.is_public
+        self.is_public = (
+            new_template.is_public
+        )  # TODO mozeme si dovolit hocikedy nastavit template na private???
 
     @classmethod
     def update_template(

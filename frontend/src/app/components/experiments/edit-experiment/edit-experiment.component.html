@@ -1,6 +1,16 @@
-<h1>Create an experiment</h1>
+<div *ngIf="loading">
+    <mat-spinner></mat-spinner>
+</div>
 
-<form class="create-experiment-form" [formGroup]="experimentForm" (ngSubmit)="onSubmit()">
+<form *ngIf="!loading" class="create-experiment-form" [formGroup]="experimentForm" (ngSubmit)="onSubmit()">
+    <div *ngIf="!inputExperiment">
+        <h1>Create an Experiment</h1>
+    </div>
+
+    <div *ngIf="inputExperiment">
+        <h1>Update an Experiment</h1>
+    </div>
+
     <div class="form-error-message" *ngIf="error">
         {{error}}
     </div>
@@ -33,7 +43,7 @@
             </mat-select>
         </mat-form-field>
         <mat-chip-listbox>
-            <mat-chip *ngFor="let publication of publications.controls" (removed)="onRemovePublication(publication)">
+            <mat-chip *ngFor="let publication of publications.controls" (removed)="onRemovePublication(publication)" [disabled]="!editableAssets">
                 {{ publication.value?.name | ellipsis: 40 }}
                 <mat-icon matChipRemove>cancel</mat-icon>
             </mat-chip>
@@ -92,11 +102,11 @@
         <div class="create-experiment-run-form">
             <h3>Specify environment variables</h3>
             
-            <div *ngIf="experimentTemplateValue.envs_required.length > 0 && experimentTemplateValue.envs_optional.length > 0">
+            <div *ngIf="experimentTemplateValue.envs_required.length == 0 && experimentTemplateValue.envs_optional.length == 0">
                 No environment variables were set in this Experiment Template.
             </div>
 
-            <div formGroupName="envs_required" *ngIf="experimentTemplateValue.envs_required.length > 0">
+            <div formGroupName="envsRequired" *ngIf="experimentTemplateValue.envs_required.length > 0">
                 <b>Required environment variables</b>
                 <mat-form-field *ngFor="let env of experimentTemplateValue.envs_required">
                     <mat-label>{{env.name}}</mat-label>
@@ -104,7 +114,7 @@
                 </mat-form-field>
             </div>
     
-            <div formGroupName="envs_optional" *ngIf="experimentTemplateValue.envs_optional.length > 0">
+            <div formGroupName="envsOptional" *ngIf="experimentTemplateValue.envs_optional.length > 0">
                 <b>Optional environment variables</b>
                 <mat-form-field *ngFor="let env of experimentTemplateValue.envs_optional">
                     <mat-label>{{env.name}}</mat-label>
@@ -114,8 +124,8 @@
         </div>
     </div>
 
-
     <button mat-raised-button color="primary" type="submit" [disabled]="!experimentForm.valid">
-        Submit
+        <span *ngIf="!inputExperiment">Create experiment</span>
+        <span *ngIf="inputExperiment">Update experiment</span>
     </button>
 </form>

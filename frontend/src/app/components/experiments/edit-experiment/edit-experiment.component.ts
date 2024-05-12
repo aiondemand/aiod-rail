@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSelectChange } from '@angular/material/select';
-import { Router } from '@angular/router';
-import { Observable, Subscription, catchError, debounceTime, firstValueFrom, of, startWith, switchMap } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Observable, Subscription, catchError, combineLatest, debounceTime, firstValueFrom, of, retry, startWith, switchMap } from 'rxjs';
 import { Dataset } from 'src/app/models/dataset';
 import { EnvironmentVar } from 'src/app/models/env-vars';
-import { ExperimentCreate } from 'src/app/models/experiment';
+import { Experiment, ExperimentCreate } from 'src/app/models/experiment';
 import { ExperimentTemplate } from 'src/app/models/experiment-template';
 import { Model } from 'src/app/models/model';
 import { Publication } from 'src/app/models/publication';
@@ -13,11 +13,21 @@ import { BackendApiService } from 'src/app/services/backend-api.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
 
 @Component({
-  selector: 'app-create-experiment',
-  templateUrl: './create-experiment.component.html',
-  styleUrls: ['./create-experiment.component.scss']
+  selector: 'app-edit-experiment',
+  templateUrl: './edit-experiment.component.html',
+  styleUrls: ['./edit-experiment.component.scss']
 })
-export class CreateExperimentComponent implements OnInit {
+export class EditExperimentComponent implements OnInit {
+  inputExperiment: Experiment | null = null;
+  inputExperimentTemplate: ExperimentTemplate | null = null;
+  inputPublications: Publication[] = [];
+  inputDataset: Dataset | null = null;
+  inputModel: Model | null = null;
+
+  editableAssets: boolean = true;
+  loading: boolean = true;
+  action: string = "create";
+  
   experimentForm = this.fb.group({
     name: ['', Validators.required],
     description: ['', Validators.required],
@@ -25,11 +35,10 @@ export class CreateExperimentComponent implements OnInit {
     dataset: new FormControl<Dataset | string>('', Validators.required),
     model: new FormControl<Model | string>('', Validators.required),
     metrics: this.fb.group({}),
-    envs_required: this.fb.group({}),
-    envs_optional: this.fb.group({}),
+    envsRequired: this.fb.group({}),
+    envsOptional: this.fb.group({}),
     experimentTemplate: new FormControl<ExperimentTemplate | null>(null, Validators.required)
   });
-
 
   error: string = '';
 
@@ -38,16 +47,50 @@ export class CreateExperimentComponent implements OnInit {
   models$: Observable<Model[]> | undefined;
   datasets$: Observable<Dataset[]> | undefined;
 
-  subscriptions: (Subscription | undefined)[] = [];
+  subscription: Subscription | undefined;
 
   constructor(
     private fb: FormBuilder,
     private backend: BackendApiService,
     private snackBar: SnackBarService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute,
   ) { }
 
   ngOnInit(): void {
+    this.route.queryParams.subscribe(params => {
+      if (params["id"]) {
+        var data$ = this.backend.getExperiment(params["id"]).pipe(
+            switchMap(experiment => combineLatest([
+              this.backend.getDataset(experiment.dataset_ids[0]),
+              this.backend.getModel(experiment.model_ids[0]),
+              this.backend.getExperimentPublications(experiment),
+              this.backend.getExperimentTemplate(experiment.experiment_template_id),
+              this.backend.getExperimentRunsCount(experiment.id),
+              of(experiment),
+            ])),
+            retry(3)
+          );
+        firstValueFrom(data$)
+          .then(([dataset, model, publications, template, experimentRunsCount, experiment]) => {
+            this.inputDataset = dataset;
+            this.inputModel = model;
+            this.inputPublications = publications;
+            this.inputExperimentTemplate = template;
+            this.inputExperiment = experiment;
+            this.editableAssets = experimentRunsCount == 0;
+
+            this.prefillOldValues();
+            this.action = "update"
+            this.loading = false;
+          })
+          .catch(err => console.error(err));
+      } 
+      else {
+        this.loading = false;
+      }     
+    });
+
     this.experimentTemplates$ = this.backend.getExperimentTemplates({}, {
       only_finalized: true,
       only_public: true,
@@ -96,21 +139,33 @@ export class CreateExperimentComponent implements OnInit {
         })
       );
 
-    this.subscriptions.push(
-      this.experimentTemplate?.valueChanges.subscribe(value => {
-        value?.available_metrics.forEach(metric => this.metrics.addControl(metric, new FormControl<boolean>(true)));
-      })
-    );
-    this.subscriptions.push(
-      this.experimentTemplate?.valueChanges.subscribe(value => {
-        value?.envs_required.forEach(env => this.envs_required.addControl(env.name, new FormControl<string>("", Validators.required)));
-        value?.envs_optional.forEach(env => this.envs_optional.addControl(env.name, new FormControl<string>("")));
-      })
-    );
+    this.subscription = this.experimentTemplate?.valueChanges.subscribe(value => {
+        Object.keys(this.metrics.controls).forEach(k => this.metrics.removeControl(k));
+        Object.keys(this.envsRequired.controls).forEach(k => this.envsRequired.removeControl(k));
+        Object.keys(this.envsOptional.controls).forEach(k => this.envsOptional.removeControl(k));
+
+        value?.available_metrics.forEach(metric => {
+          this.metrics.addControl(metric, new FormControl<boolean>(true));
+          this.metrics.get(metric)?.setValue(true);
+        });
+        value?.envs_required.forEach(env => this.envsRequired.addControl(env.name, new FormControl<string>("", Validators.required)));
+        value?.envs_optional.forEach(env => this.envsOptional.addControl(env.name, new FormControl<string>("")));
+
+        this.dataset?.setValue("");
+        this.model?.setValue("");
+      });
   }
 
   ngOnDestroy(): void {
-    this.subscriptions.forEach(sub => sub?.unsubscribe());
+    this.subscription?.unsubscribe();
+  }
+
+  get name() {
+    return this.experimentForm.get('name');
+  }
+
+  get description() {
+    return this.experimentForm.get('description');
   }
 
   get experimentTemplate() {
@@ -133,12 +188,52 @@ export class CreateExperimentComponent implements OnInit {
     return this.experimentForm.get("dataset");
   }
 
-  get envs_required() {
-    return this.experimentForm.get("envs_required") as FormGroup;
+  get envsRequired() {
+    return this.experimentForm.get("envsRequired") as FormGroup;
   }
 
-  get envs_optional() {
-    return this.experimentForm.get("envs_optional") as FormGroup;
+  get envsOptional() {
+    return this.experimentForm.get("envsOptional") as FormGroup;
+  }
+
+  prefillOldValues(): void {
+    let exp = this.inputExperiment;
+    if (!exp) {
+      return;
+    }
+  
+    this.name?.setValue(exp.name);
+    this.description?.setValue(exp.description);
+    this.experimentTemplate?.setValue(this.inputExperimentTemplate);
+
+    this.inputPublications.forEach(publ => this.publications.push(new FormControl(publ)));
+    this.model?.setValue(this.inputModel);
+    this.dataset?.setValue(this.inputDataset);
+
+    this.inputExperimentTemplate?.available_metrics.forEach(metric => {
+      this.metrics.addControl(metric, new FormControl<boolean>(true));
+      this.metrics.get(metric)?.setValue(exp?.metrics.includes(metric) ?? false);
+    });
+
+    this.inputExperimentTemplate?.envs_required.forEach(env => {
+      this.envsRequired.addControl(env.name, new FormControl<string>("", Validators.required));
+      this.envsRequired.get(env.name)?.setValue(exp?.env_vars.find(e => e.key == env.name)?.value ?? "");
+    });
+
+    this.inputExperimentTemplate?.envs_optional.forEach(env => {
+      this.envsOptional.addControl(env.name, new FormControl<string>("", Validators.required));
+      this.envsOptional.get(env.name)?.setValue(exp?.env_vars.find(e => e.key == env.name)?.value ?? "");
+    });
+
+    if (!this.editableAssets) {
+      this.model?.disable()
+      this.dataset?.disable();
+      this.experimentTemplate?.disable();
+      
+      this.experimentForm.get("metrics")?.disable();
+      this.experimentForm.get("envsOptional")?.disable();
+      this.experimentForm.get("envsRequired")?.disable(); 
+    }
   }
 
   modelAutocompleteFilter(query: string | Model | null): Observable<Model[]> {
@@ -170,8 +265,8 @@ export class CreateExperimentComponent implements OnInit {
     const publicationIds = (this.experimentForm.value.publications as Array<Publication>).map(publication => publication.identifier.toString());
 
     let all_envs: Record<string, string> = {
-      ...this.experimentForm?.value?.envs_required,
-      ...this.experimentForm?.value?.envs_optional
+      ...this.experimentForm?.value?.envsRequired,
+      ...this.experimentForm?.value?.envsOptional
     };
     let envsToSend: EnvironmentVar[] = [];
 

@@ -33,7 +33,7 @@ async def get_experiments(
         limit=pagination.limit,
     ).to_list()
 
-    return [experiment.dict() for experiment in experiments]
+    return [experiment.map_to_response() for experiment in experiments]
 
 
 @router.get("/count/experiments", response_model=int)
@@ -58,10 +58,10 @@ async def get_experiment(
         )
 
     await check_experiment_access_or_raise(id, user)
-    return experiment.dict()
+    return experiment.map_to_response()
 
 
-@router.get("/experiments/{id}", response_model=ExperimentResponse)
+@router.get("/experiments/{id}/is_mine", response_model=bool)
 async def is_experiment_mine(
     id: PydanticObjectId, user: dict = Depends(get_current_user(required=False))
 ) -> Any:
@@ -81,10 +81,10 @@ async def is_experiment_mine(
     response_model=ExperimentResponse,
 )
 async def create_experiment(
-    experiment: ExperimentCreate,
+    experiment_req: ExperimentCreate,
     user: dict = Depends(get_current_user(required=True)),
 ) -> Any:
-    experiment = Experiment(**experiment.dict(), created_by=user["email"])
+    experiment = Experiment(**experiment_req.dict(), created_by=user["email"])
     if not await experiment.is_valid():
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -92,7 +92,45 @@ async def create_experiment(
         )
 
     await experiment.create()
-    return experiment.dict()
+    return experiment.map_to_response()
+
+
+@router.put("/experiments/{id}", response_model=ExperimentResponse)
+async def update_experiment(
+    id: PydanticObjectId,
+    experiment_req: ExperimentCreate,
+    user: dict = Depends(get_current_user(required=True)),
+) -> Any:
+    await check_experiment_access_or_raise(id, user)
+    old_experiment = await Experiment.get(id)
+    exist_runs = await ExperimentRun.find(ExperimentRun.experiment_id == id).count() > 0
+
+    experiment_to_save = Experiment.update_experiment(
+        old_experiment, experiment_req, exist_runs
+    )
+    if experiment_to_save is None:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Performed changes to the experiment are not allowed",
+        )
+
+    await Experiment.replace(experiment_to_save)
+    return experiment_to_save.map_to_response()
+
+
+@router.delete("/experiments/{id}", response_model=ExperimentResponse)
+async def delete_experiment(
+    id: PydanticObjectId, user: dict = Depends(get_current_user(required=True))
+) -> Any:
+    await check_experiment_access_or_raise(id, user)
+    exist_runs = await ExperimentRun.find(ExperimentRun.experiment_id == id).count() > 0
+    if exist_runs:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="This experiment cannot be deleted",
+        )
+
+    await Experiment.find(Experiment.id == id).delete()
 
 
 @router.get("/experiments/{id}/execute", response_model=ExperimentRunResponse)

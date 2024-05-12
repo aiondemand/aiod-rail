@@ -263,10 +263,6 @@ export class BackendApiService {
     return this.http.get<Experiment>(`${environment.BACKEND_API_URL}/experiments/${id}`);
   }
 
-  isExperimentMine(id: string): Observable<boolean> {
-    return this.http.get<boolean>(`${environment.BACKEND_API_URL}/experiment/${id}/is_mine`);
-  }
-
   /**
    * Get count of experiments
    * @returns Observable<number> (count)
@@ -276,6 +272,10 @@ export class BackendApiService {
     return this.http.get<number>(`${environment.BACKEND_API_URL}/count/experiments${queries}`);
   }
 
+  isExperimentMine(id: string): Observable<boolean> {
+    return this.http.get<boolean>(`${environment.BACKEND_API_URL}/experiments/${id}/is_mine`);
+  }
+
   /**
    * Create experiment
    * @returns Observable<Experiment>
@@ -283,6 +283,14 @@ export class BackendApiService {
    */
   createExperiment(experiment: ExperimentCreate): Observable<Experiment> {
     return this.http.post<Experiment>(`${environment.BACKEND_API_URL}/experiments`, experiment);
+  }
+
+  updateExperiment(id: string, experiment: ExperimentCreate): Observable<Experiment> {
+    return this.http.put<Experiment>(`${environment.BACKEND_API_URL}/experiments/${id}`, experiment);
+  }
+
+  deleteExperiment(id: string): Observable<boolean> {
+    return this.http.delete<boolean>(`${environment.BACKEND_API_URL}/experiments/${id}`);
   }
 
   ////////////////////////////// EXPERIMENT TEMPLATES //////////////////////////////
@@ -373,7 +381,6 @@ export class BackendApiService {
     return this.http.get<FileDetail[]>(`${environment.BACKEND_API_URL}/experiment-runs/${experimentId}/files/list`);
   }
 
-  // TODO how to download file from backend
   downloadFileFromExperimentRun(experimentId: string, filepath: string): Observable<any> {
     return this.http.get(
       `${environment.BACKEND_API_URL}/experiment-runs/${experimentId}/files/download?filepath=${filepath}`,

@@ -1,5 +1,16 @@
 <div *ngIf="experiment">
-    <h1>{{experiment.name}}</h1>
+    <div class="header">
+        <h1>{{experiment.name}}</h1> 
+        <div class="header-buttons" *ngIf="isExperimentMine">
+            <button mat-icon-button (click)="editBtnClicked()">
+                <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button (click)="deleteBtnClicked()">
+                <mat-icon>delete</mat-icon>
+            </button>
+        </div>
+    </div>
+
     <div class="experiment-basic-information">
         <span class="detail" matTooltip="Identifier">
             <mat-icon class="icon">badge</mat-icon>ID: {{experiment.id | defaultIfEmpty:"Unknown"}}

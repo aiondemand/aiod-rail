@@ -7,7 +7,7 @@ import { DatasetDetailComponent } from './components/datasets/dataset-detail/dat
 import { SavedDatasetsComponent } from './components/datasets/saved-datasets/saved-datasets.component';
 import { CreateDatasetComponent } from './components/datasets/create-dataset/create-dataset.component';
 import { authGuard } from './guards/auth.guard';
-import { CreateExperimentComponent } from './components/experiments/create-experiment/create-experiment.component';
+import { EditExperimentComponent } from './components/experiments/edit-experiment/edit-experiment.component';
 import { ExperimentDetailComponent } from './components/experiments/experiment-detail/experiment-detail.component';
 import { ExperimentRunDetailComponent } from './components/experiments/experiment-run-detail/experiment-run-detail.component';
 import { AllExperimentListComponent } from './components/experiments/experiment-lists/all-experiment-list.component';
@@ -29,8 +29,7 @@ const routes: Routes = [
       { path: '', redirectTo: 'all', pathMatch: 'full' },
       { path: 'all', component: AllExperimentListComponent},
       { path: 'my',  component: MyExperimentListComponent, canActivate: [authGuard] },
-      { path: 'create', component: CreateExperimentComponent, canActivate: [authGuard] },
-      //TODO add updateExperiment
+      { path: 'edit', component: EditExperimentComponent, canActivate: [authGuard] },
       { path: ':id', component: ExperimentDetailComponent },
 
       // experiment runs

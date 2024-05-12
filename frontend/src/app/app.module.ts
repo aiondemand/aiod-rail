@@ -40,7 +40,7 @@ import { MatInputModule } from '@angular/material/input';
 import { TextFieldModule } from '@angular/cdk/text-field';
 import { HuggingfaceFormComponent } from './components/datasets/create-dataset/huggingface-form/huggingface-form.component';
 import { FormatPlatformNamePipe } from './pipes/format-platform-name.pipe';
-import { CreateExperimentComponent } from './components/experiments/create-experiment/create-experiment.component';
+import { EditExperimentComponent } from './components/experiments/edit-experiment/edit-experiment.component';
 import { ExperimentDetailComponent } from './components/experiments/experiment-detail/experiment-detail.component';
 import { ExperimentListItemComponent } from './components/experiments/experiment-list-item/experiment-list-item.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -63,7 +63,6 @@ import { NgOptimizedImage } from "@angular/common";
 import { MatTreeModule } from '@angular/material/tree';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { EditExperimentTemplateComponent } from './components/experiments/edit-experiment-template/edit-experiment-template.component';
-import { UpdateExperimentComponent } from './components/experiments/update-experiment/update-experiment.component';
 import { ConfirmPopupComponent } from './components/general/popup/confirm-popup.component';
 import { MatDialogModule } from '@angular/material/dialog';
 
@@ -87,7 +86,7 @@ import { MatDialogModule } from '@angular/material/dialog';
     HuggingfaceFormComponent,
     LoginLogoutComponent,
     FormatPlatformNamePipe,
-    CreateExperimentComponent,
+    EditExperimentComponent,
     ExperimentDetailComponent,
     ExperimentListItemComponent,
     ExperimentRunListComponent,
@@ -101,7 +100,6 @@ import { MatDialogModule } from '@angular/material/dialog';
     FeedbackComponent,
     AboutComponent,
     EditExperimentTemplateComponent,
-    UpdateExperimentComponent,
     ConfirmPopupComponent
   ],
   imports: [

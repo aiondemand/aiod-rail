@@ -81,8 +81,8 @@ export class EditExperimentTemplateComponent {
             this.editableEnvironment = count == 0;
             
             firstValueFrom(this.backend.getExperimentTemplate(params["id"]))
-              .then(temp => {
-                this.inputExperimentTemplate = temp
+              .then(template => {
+                this.inputExperimentTemplate = template
                 this.prefillOldValues();
                 this.setupEditor()
                 this.action = "update"
