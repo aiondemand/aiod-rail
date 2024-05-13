@@ -33,7 +33,7 @@ export class SaveRemoveDatasetButtonComponent {
         dataset.is_in_my_saved = false;
         this.snackBar.show('Dataset was removed from saved');
       },
-      error: () => console.log('Error removing dataset')
+      error: () => console.error('Error removing dataset')
     });
   }
 

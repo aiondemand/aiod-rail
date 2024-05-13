@@ -4,8 +4,9 @@ from datetime import datetime, timezone
 from functools import partial
 from pathlib import Path
 
+import pymongo
 import yaml
-from beanie import Document
+from beanie import Document, Indexed
 from deepdiff import DeepDiff
 from pydantic import Field
 
@@ -27,7 +28,7 @@ from app.services.aiod import get_dataset_name, get_model_name
 
 
 class ExperimentTemplate(Document):
-    name: str
+    name: Indexed(str, index_type=pymongo.TEXT)  # type: ignore
     description: str
     task: TaskType
     datasets_schema: AssetSchema

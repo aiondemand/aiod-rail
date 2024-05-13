@@ -14,11 +14,12 @@ export class MyExperimentListComponent extends ExperimentListBaseComponent {
   }
 
   protected override getExperimentsCount(): Observable<number> {
-    return this.backend.getExperimentsCount({});
+    return this.backend.getExperimentsCount("", {});
   }
 
   protected override updateExperiments(): Observable<Experiment[]>  {
     return this.backend.getExperiments(
+      "",
       {
         offset: this.pagination.pageIndex * this.pagination.pageSize,
         limit: this.pagination.pageSize

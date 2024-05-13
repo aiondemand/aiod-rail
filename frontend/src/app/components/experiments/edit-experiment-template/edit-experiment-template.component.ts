@@ -169,14 +169,16 @@ export class EditExperimentTemplateComponent {
 
     let promisedTemplate: Promise<ExperimentTemplate>;
     if (this.inputExperimentTemplate) {
+      // UPDATE
       promisedTemplate = firstValueFrom(this.backend.updateExperimentTemplate(
         this.inputExperimentTemplate.id, experimentTemplate
-      ))
+      ));
     }
     else {
+      // CREATE
       promisedTemplate = firstValueFrom(
         this.backend.createExperimentTemplate(experimentTemplate)
-      )
+      );
     }
     
     promisedTemplate

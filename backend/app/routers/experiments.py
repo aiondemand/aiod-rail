@@ -2,6 +2,7 @@ from pathlib import Path
 from typing import Any
 
 from beanie import PydanticObjectId, operators
+from beanie.odm.operators.find.evaluation import Text
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import PlainTextResponse, StreamingResponse
 
@@ -23,12 +24,17 @@ router = APIRouter()
 
 @router.get("/experiments", response_model=list[ExperimentResponse])
 async def get_experiments(
+    query: str = "",
     user: dict = Depends(get_current_user(required=True)),
     pagination: Pagination = Depends(),
 ) -> Any:
     # TODO hotfix for returning only my experiments
+    search_conditions = [Experiment.created_by == user["email"]]
+    if len(query) > 0:
+        search_conditions.append(Text(query))
+
     experiments = await Experiment.find(
-        Experiment.created_by == user["email"],
+        *search_conditions,
         skip=pagination.offset,
         limit=pagination.limit,
     ).to_list()
@@ -38,10 +44,15 @@ async def get_experiments(
 
 @router.get("/count/experiments", response_model=int)
 async def get_experiments_count(
+    query: str = "",
     user: dict = Depends(get_current_user(required=True)),
 ) -> Any:
     # TODO hotfix for returning only my experiments
-    return await Experiment.find(Experiment.created_by == user["email"]).count()
+    search_conditions = [Experiment.created_by == user["email"]]
+    if len(query) > 0:
+        search_conditions.append(Text(query))
+
+    return await Experiment.find(*search_conditions).count()
 
 
 @router.get("/experiments/{id}", response_model=ExperimentResponse)

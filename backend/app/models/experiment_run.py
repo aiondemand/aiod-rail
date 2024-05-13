@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 from functools import partial
 from pathlib import Path
 
-from beanie import Document, PydanticObjectId
+from beanie import Document, Indexed, PydanticObjectId
 from pydantic import Field
 
 from app.config import (
@@ -21,7 +21,7 @@ class ExperimentRun(Document):
     updated_at: datetime = Field(default_factory=partial(datetime.now, tz=timezone.utc))
     retry_count: int = 0
     state: RunState = RunState.CREATED
-    experiment_id: PydanticObjectId
+    experiment_id: Indexed(PydanticObjectId)  # type: ignore
 
     @property
     def logs(self) -> str:
@@ -52,7 +52,6 @@ class ExperimentRun(Document):
 
     class Settings:
         name = "experimentRuns"
-        indexes = ["experiment_id"]
 
     def update_state(self, state: RunState) -> None:
         self.state = state

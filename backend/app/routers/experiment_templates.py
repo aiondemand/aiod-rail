@@ -3,6 +3,7 @@ from datetime import datetime, timezone
 from typing import Any
 
 from beanie import PydanticObjectId, operators
+from beanie.odm.operators.find.evaluation import Text
 from beanie.odm.queries.find import FindMany
 from fastapi import APIRouter, Depends, HTTPException, status
 
@@ -24,6 +25,7 @@ router = APIRouter()
 @router.get("/experiment-templates", response_model=list[ExperimentTemplateResponse])
 async def get_experiment_templates(
     user: dict = Depends(get_current_user(required=False)),
+    query: str = "",
     pagination: Pagination = Depends(),
     only_mine: bool = False,
     include_pending: bool = False,
@@ -32,6 +34,7 @@ async def get_experiment_templates(
     only_public: bool = False,
 ) -> Any:
     result_set = find_specific_experiment_templates(
+        query,
         only_mine=only_mine,
         include_pending=include_pending,
         only_finalized=only_finalized,
@@ -77,6 +80,7 @@ async def is_experiment_template_mine(
 @router.get("/count/experiment-templates", response_model=int)
 async def get_experiment_templates_count(
     user: dict = Depends(get_current_user(required=False)),
+    query: str = "",
     only_mine: bool = False,
     include_pending: bool = False,
     only_finalized: bool = False,
@@ -84,6 +88,7 @@ async def get_experiment_templates_count(
     only_public: bool = False,
 ) -> Any:
     result_set = find_specific_experiment_templates(
+        query,
         only_mine=only_mine,
         include_pending=include_pending,
         only_finalized=only_finalized,
@@ -206,6 +211,7 @@ async def get_experiments_of_template_count(id: PydanticObjectId) -> Any:
 
 
 def find_specific_experiment_templates(
+    query: str,
     only_mine: bool,
     include_pending: bool,
     only_finalized: bool,
@@ -223,6 +229,9 @@ def find_specific_experiment_templates(
         if pagination is not None
         else {}
     )
+
+    if len(query) > 0:
+        search_conditions.append(Text(query))
 
     if user is None:
         if only_mine or include_pending:

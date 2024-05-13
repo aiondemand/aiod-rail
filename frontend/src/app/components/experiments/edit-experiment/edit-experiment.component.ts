@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSelectChange } from '@angular/material/select';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -12,12 +12,17 @@ import { Publication } from 'src/app/models/publication';
 import { BackendApiService } from 'src/app/services/backend-api.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
 
+export interface MetricsWrapper {
+  name: string;
+  checked: boolean;
+}
+
 @Component({
   selector: 'app-edit-experiment',
   templateUrl: './edit-experiment.component.html',
   styleUrls: ['./edit-experiment.component.scss']
 })
-export class EditExperimentComponent implements OnInit {
+export class EditExperimentComponent implements OnInit {  
   inputExperiment: Experiment | null = null;
   inputExperimentTemplate: ExperimentTemplate | null = null;
   inputPublications: Publication[] = [];
@@ -37,12 +42,21 @@ export class EditExperimentComponent implements OnInit {
     metrics: this.fb.group({}),
     envsRequired: this.fb.group({}),
     envsOptional: this.fb.group({}),
-    experimentTemplate: new FormControl<ExperimentTemplate | null>(null, Validators.required)
+    experimentTemplate: new FormControl<ExperimentTemplate | string>('', Validators.required)
   });
+
+  selectedExprimentTemplate: ExperimentTemplate | null = null;
+
+  // TODO for now were combining FormControl with ngModel which is not ideal...
+  // However this was the only way how we managed to change the UI after having
+  // changed the values of mat-checkbox elements programmatically
+  // TODO we need to figure out how to perform the 2way binding either only using
+  // formControls or ngModel, however not both
+  chosenMetricsValues: MetricsWrapper[] = [];
 
   error: string = '';
 
-  experimentTemplates$: Observable<ExperimentTemplate[]>;
+  experimentTemplates$: Observable<ExperimentTemplate[]> | undefined;
   publications$: Observable<Publication[]>;
   models$: Observable<Model[]> | undefined;
   datasets$: Observable<Dataset[]> | undefined;
@@ -54,7 +68,7 @@ export class EditExperimentComponent implements OnInit {
     private backend: BackendApiService,
     private snackBar: SnackBarService,
     private router: Router,
-    private route: ActivatedRoute,
+    private route: ActivatedRoute
   ) { }
 
   ngOnInit(): void {
@@ -82,31 +96,27 @@ export class EditExperimentComponent implements OnInit {
 
             this.prefillOldValues();
             this.action = "update"
+            this.subscribeToExperimentTemplateChange()
             this.loading = false;
           })
           .catch(err => console.error(err));
       } 
       else {
+        this.subscribeToExperimentTemplateChange()
         this.loading = false;
       }     
     });
 
-    this.experimentTemplates$ = this.backend.getExperimentTemplates({}, {
-      only_finalized: true,
-      only_public: true,
-      only_usable: true
-    }).pipe(
+    this.experimentTemplates$ = this.experimentTemplate?.valueChanges.pipe(
+      debounceTime(300),
+      startWith(""),
+      switchMap(value => this.experimentTemplateAutocompleteFilter(value)), 
       catchError(err => {
-        if (err.status == 401) {
-          this.snackBar.showError("An authorization error occurred. Try logging out and then logging in again.");
-        }
-        else {
-          this.error = err.message;
-          this.snackBar.showError("Couldn't load experiment types");
-        }
+        this.error = err.message;
+        this.snackBar.showError("Couldn't load experiment templates");
         return of([]);
       })
-    );
+    )
 
     this.models$ = this.model?.valueChanges.pipe(
       debounceTime(300), // Debounce to avoid frequent requests
@@ -138,22 +148,32 @@ export class EditExperimentComponent implements OnInit {
           return of([]);
         })
       );
+  }  
 
+  subscribeToExperimentTemplateChange(): void {
     this.subscription = this.experimentTemplate?.valueChanges.subscribe(value => {
-        Object.keys(this.metrics.controls).forEach(k => this.metrics.removeControl(k));
-        Object.keys(this.envsRequired.controls).forEach(k => this.envsRequired.removeControl(k));
-        Object.keys(this.envsOptional.controls).forEach(k => this.envsOptional.removeControl(k));
+      if (!value || typeof value == "string") {
+        return;
+      }
+      
+      Object.keys(this.metrics.controls).forEach(k => this.metrics.removeControl(k));
+      Object.keys(this.envsRequired.controls).forEach(k => this.envsRequired.removeControl(k));
+      Object.keys(this.envsOptional.controls).forEach(k => this.envsOptional.removeControl(k));
 
-        value?.available_metrics.forEach(metric => {
-          this.metrics.addControl(metric, new FormControl<boolean>(true));
-          this.metrics.get(metric)?.setValue(true);
-        });
-        value?.envs_required.forEach(env => this.envsRequired.addControl(env.name, new FormControl<string>("", Validators.required)));
-        value?.envs_optional.forEach(env => this.envsOptional.addControl(env.name, new FormControl<string>("")));
+      this.dataset?.setValue("");
+      this.model?.setValue("");
 
-        this.dataset?.setValue("");
-        this.model?.setValue("");
+      value?.available_metrics.forEach(metric => {
+        this.metrics.addControl(metric, new FormControl<boolean>(true));
+        this.metrics.get(metric)?.setValue(true);
       });
+      this.chosenMetricsValues = value?.available_metrics.map(m => { 
+        return { name: m, checked: true }
+      });
+
+      value?.envs_required.forEach(env => this.envsRequired.addControl(env.name, new FormControl<string>("", Validators.required)));
+      value?.envs_optional.forEach(env => this.envsOptional.addControl(env.name, new FormControl<string>("")));
+    });
   }
 
   ngOnDestroy(): void {
@@ -198,21 +218,25 @@ export class EditExperimentComponent implements OnInit {
 
   prefillOldValues(): void {
     let exp = this.inputExperiment;
-    if (!exp) {
+    if (!exp || !this.inputExperimentTemplate) {
       return;
     }
   
     this.name?.setValue(exp.name);
     this.description?.setValue(exp.description);
     this.experimentTemplate?.setValue(this.inputExperimentTemplate);
-
+    this.selectedExprimentTemplate = this.inputExperimentTemplate;
+  
     this.inputPublications.forEach(publ => this.publications.push(new FormControl(publ)));
     this.model?.setValue(this.inputModel);
     this.dataset?.setValue(this.inputDataset);
 
     this.inputExperimentTemplate?.available_metrics.forEach(metric => {
-      this.metrics.addControl(metric, new FormControl<boolean>(true));
+      this.metrics.addControl(metric, new FormControl<boolean>(false));
       this.metrics.get(metric)?.setValue(exp?.metrics.includes(metric) ?? false);
+    });
+    this.chosenMetricsValues = this.inputExperimentTemplate?.available_metrics.map(m => { 
+      return { name: m, checked: exp?.metrics.includes(m) ?? false }
     });
 
     this.inputExperimentTemplate?.envs_required.forEach(env => {
@@ -236,6 +260,22 @@ export class EditExperimentComponent implements OnInit {
     }
   }
 
+  experimentTemplateAutocompleteFilter(query: string | ExperimentTemplate | null): Observable<ExperimentTemplate[]> {    
+    if (typeof query != "string") {
+      this.selectedExprimentTemplate = query;
+      return this.experimentTemplates$ ? this.experimentTemplates$ : of([]);
+    }
+
+    if (query) {
+      this.selectedExprimentTemplate = null;
+    }
+    return this.backend.getExperimentTemplates(query, {}, {
+      only_finalized: true,
+      only_public: true,
+      only_usable: true
+    });
+  }
+
   modelAutocompleteFilter(query: string | Model | null): Observable<Model[]> {
     if (typeof query != "string") {
       return this.models$ ? this.models$ : of([]);
@@ -250,6 +290,10 @@ export class EditExperimentComponent implements OnInit {
     return this.backend.getDatasets(query);
   }
 
+  displayChosenExperimentTemplate(template: ExperimentTemplate) {
+    return template ? template.name : "";
+  }
+
   displayChosenModel(model: Model) {
     return model ? model.name : "";
   }
@@ -258,15 +302,15 @@ export class EditExperimentComponent implements OnInit {
     return dataset ? dataset.name : "";
   }
 
-  onSubmit() {
-    const selectedMetrics = Object.entries(this.experimentForm?.value?.metrics as Record<string, boolean>)
+  onSubmit() {  
+    let selectedMetrics = Object.entries(this.metrics.value as Record<string, boolean>)
       .filter(([_, value]) => value)
       .map(([key, _]) => key);
-    const publicationIds = (this.experimentForm.value.publications as Array<Publication>).map(publication => publication.identifier.toString());
+    let publicationIds = (this.publications.value as Array<Publication>).map(publication => publication.identifier.toString());
 
     let all_envs: Record<string, string> = {
-      ...this.experimentForm?.value?.envsRequired,
-      ...this.experimentForm?.value?.envsOptional
+      ...this.envsRequired.value,
+      ...this.envsOptional.value
     };
     let envsToSend: EnvironmentVar[] = [];
 
@@ -279,27 +323,41 @@ export class EditExperimentComponent implements OnInit {
       }
     }
 
-    const experiment: ExperimentCreate = {
-      name: String(this.experimentForm.value.name?.trim()),
-      description: String(this.experimentForm.value.description?.trim()),
+    let experiment: ExperimentCreate = {
+      name: String(this.name?.value?.trim()),
+      description: String(this.description?.value?.trim()),
       publication_ids: publicationIds,
-      experiment_template_id: String(this.experimentTemplate?.value?.id),
-      dataset_ids: [String((this.experimentForm?.value?.dataset as Dataset)?.identifier)],
-      model_ids: [String((this.experimentForm?.value?.model as Model)?.identifier)],
+      experiment_template_id: String(this.selectedExprimentTemplate?.id),
+      dataset_ids: [String((this.dataset?.value as Dataset)?.identifier)],
+      model_ids: [String((this.model?.value as Model)?.identifier)],
       metrics: selectedMetrics,
       env_vars: envsToSend,
       is_public: false
     };
 
-    firstValueFrom(this.backend.createExperiment(experiment))
+    console.log(experiment);
+
+    let promisedExperiment: Promise<Experiment>;
+    if (this.inputExperiment) {
+      // UPDATE
+      promisedExperiment = firstValueFrom(this.backend.updateExperiment(
+        this.inputExperiment.id, experiment
+      ));
+    }
+    else {
+      // CREATE
+      promisedExperiment = firstValueFrom(this.backend.createExperiment(experiment));
+    }
+
+    promisedExperiment
       .then(experiment => {
-        this.snackBar.show('Experiment created');
+        this.snackBar.show(`Experiment ${this.action}d`);
         this.router.navigate(['/experiments', experiment.id]);
       })
       .catch(err => {
         this.error = err.message;
-        this.snackBar.showError("Couldn't create experiment");
-      });
+        this.snackBar.showError(`Couldn't ${this.action} experiment`);
+      });  
   }
 
   onSelectPublication(event: MatSelectChange) {

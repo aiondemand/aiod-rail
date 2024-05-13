@@ -11,14 +11,18 @@ import { ExperimentTemplate } from 'src/app/models/experiment-template';
 export class MyExperimentTemplateList extends ExperimentTemplateListBaseComponent {
 
   protected override getExperimentTemplatesCount(): Observable<number> {
-    return this.backend.getExperimentTemplatesCount({
-      only_mine: true,
-      include_pending: true,
-    });
+    return this.backend.getExperimentTemplatesCount(
+      "",
+      {
+        only_mine: true,
+        include_pending: true,
+      }
+    );
   }
 
   protected override updateExperimentTemplates(): Observable<ExperimentTemplate[]> {
     return this.backend.getExperimentTemplates(
+      "",
       {
         offset: this.pagination.pageIndex * this.pagination.pageSize,
         limit: this.pagination.pageSize

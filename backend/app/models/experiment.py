@@ -3,7 +3,8 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from functools import partial
 
-from beanie import Document, PydanticObjectId
+import pymongo
+from beanie import Document, Indexed, PydanticObjectId
 from deepdiff import DeepDiff
 from pydantic import Field
 
@@ -14,17 +15,19 @@ from app.schemas.states import TemplateState
 
 
 class Experiment(Document):
-    name: str
+    name: Indexed(str, index_type=pymongo.TEXT)  # type: ignore
     description: str
-    publication_ids: list[str]
     updated_at: datetime = Field(default_factory=partial(datetime.now, tz=timezone.utc))
     created_at: datetime = Field(default_factory=partial(datetime.now, tz=timezone.utc))
     created_by: str
     is_public: bool = False
 
     experiment_template_id: PydanticObjectId
+
+    publication_ids: list[int]
     dataset_ids: list[int]
     model_ids: list[int]
+
     env_vars: list[EnvironmentVar]
     metrics: list[str]
 
@@ -60,13 +63,13 @@ class Experiment(Document):
         experiment_template = await ExperimentTemplate.get(self.experiment_template_id)
         return experiment_template.state == TemplateState.FINISHED
 
-    def has_same_assets(self, experiment_req: ExperimentCreate) -> bool:
+    def has_same_assets(self, experiment: Experiment) -> bool:
         return sum(
             [
                 bool(
                     DeepDiff(
                         getattr(self, attr_name),
-                        getattr(experiment_req, attr_name),
+                        getattr(experiment, attr_name),
                         ignore_order=True,
                     )
                 )
@@ -87,10 +90,10 @@ class Experiment(Document):
         experiment_req: ExperimentCreate,
         exist_runs: bool,
     ) -> Experiment | None:
-        same_assets = old_experiment.has_same_assets(experiment_req)
         new_experiment = Experiment(
             **experiment_req.dict(), created_by=old_experiment.created_by
         )
+        same_assets = old_experiment.has_same_assets(new_experiment)
 
         if same_assets:
             old_experiment.update_non_assets(new_experiment)

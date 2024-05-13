@@ -81,7 +81,7 @@ export class ExperimentRunDetailComponent {
               this.treeViewDataSource = new MatTreeFlatDataSource(this.treeControl, treeFlattener);
               this.treeViewDataSource.data = this.fileTreeStructure;
             })
-            .catch(err => console.log(err))
+            .catch(err => console.error(err))
         }
       },
       error: err => {

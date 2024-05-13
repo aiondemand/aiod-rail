@@ -14,6 +14,5 @@ export class ConfirmPopupComponent {
   ) { }
 
   ngOnInit(): void {
-    console.log(this.popupInput);
   }
 }

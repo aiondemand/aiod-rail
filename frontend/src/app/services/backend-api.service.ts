@@ -247,10 +247,11 @@ export class BackendApiService {
    * @returns Observable<Experiment[]>
    */
   getExperiments(
+    query: string,
     pageQueries?: PageQueries,
     experimentQueries?: ExperimentQueries
   ): Observable<Experiment[]> {
-    let queries = `?${this._buildPageQueries(pageQueries)}&${this._buildExperimentQueries(experimentQueries)}`;
+    let queries = `?query=${query}&${this._buildPageQueries(pageQueries)}&${this._buildExperimentQueries(experimentQueries)}`;
     return this.http.get<Experiment[]>(`${environment.BACKEND_API_URL}/experiments${queries}`);
   }
 
@@ -267,8 +268,8 @@ export class BackendApiService {
    * Get count of experiments
    * @returns Observable<number> (count)
    */
-  getExperimentsCount(experimentQueries?: ExperimentQueries): Observable<number> {
-    let queries = `?${this._buildExperimentQueries(experimentQueries)}`;
+  getExperimentsCount(query: string, experimentQueries?: ExperimentQueries): Observable<number> {
+    let queries = `?$query=${query}&${this._buildExperimentQueries(experimentQueries)}`;
     return this.http.get<number>(`${environment.BACKEND_API_URL}/count/experiments${queries}`);
   }
 
@@ -300,10 +301,11 @@ export class BackendApiService {
    * @returns Observable<ExperimentTemplate[]>
    */
   getExperimentTemplates(
+    query: string,
     pageQueries?: PageQueries,
     templateQueries?: ExperimentTemplateQueries
   ): Observable<ExperimentTemplate[]> {
-    let queries = `?${this._buildPageQueries(pageQueries)}&${this._buildExperimentTemplateQueries(templateQueries)}`;
+    let queries = `?query=${query}&${this._buildPageQueries(pageQueries)}&${this._buildExperimentTemplateQueries(templateQueries)}`;
     return this.http.get<ExperimentTemplate[]>(`${environment.BACKEND_API_URL}/experiment-templates${queries}`);
   }
 
@@ -325,9 +327,10 @@ export class BackendApiService {
    * @returns Observable<number> (count)
    */
   getExperimentTemplatesCount(
+    query: string,
     templateQueries?: ExperimentTemplateQueries
   ): Observable<number> {
-    let queries = `?${this._buildExperimentTemplateQueries(templateQueries)}`;
+    let queries = `?query=${query}&${this._buildExperimentTemplateQueries(templateQueries)}`;
     return this.http.get<number>(`${environment.BACKEND_API_URL}/count/experiment-templates${queries}`);
   }
 
