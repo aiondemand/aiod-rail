@@ -2,10 +2,18 @@
     <mat-card-header [routerLink]="['/experiments', experiment.id]">
         <mat-card-subtitle>{{experiment.id}}</mat-card-subtitle>
         <mat-card-title>
-            <h3>{{experiment.name}}</h3>
+            <span class="experiment-name">
+                <h3>{{experiment.name}}</h3>
+                <mat-icon *ngIf="experiment.is_public" matTooltip="Public experiment">public</mat-icon>
+                <mat-icon *ngIf="!experiment.is_public" matTooltip="Private experiment">public_off</mat-icon>
+            </span>
         </mat-card-title>
     </mat-card-header>
     <mat-card-content>
+        <div class="state" *ngIf="!experiment.is_usable">
+            <span class="crashed"><mat-icon matTooltip="This experiment can no longer be executed">delete</mat-icon>Deleted</span>
+        </div>
+
         {{experiment.description | ellipsis:300}}
         <div *ngIf="model && dataset" class="experiment-information">
             <div>

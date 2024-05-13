@@ -5,8 +5,8 @@
             
             <span class="template-name">
                 <h3>{{template.name}}</h3>
-                <mat-icon *ngIf="template.is_public" matTooltip="Visible to public">public</mat-icon>
-                <mat-icon *ngIf="!template.is_public" matTooltip="Visible to public">public_off</mat-icon>
+                <mat-icon *ngIf="template.is_public" matTooltip="Public template">public</mat-icon>
+                <mat-icon *ngIf="!template.is_public" matTooltip="Private template">public_off</mat-icon>
             </span>
         </mat-card-title>
     </mat-card-header>

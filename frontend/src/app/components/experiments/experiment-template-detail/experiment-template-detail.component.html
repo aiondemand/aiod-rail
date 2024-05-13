@@ -1,6 +1,13 @@
 <div *ngIf="experimentTemplate$ | async as experimentTemplate">
     <div class="header">
-        <h1>{{experimentTemplate.name}} <span>(template)</span></h1> 
+        <div class="header-name">
+            <h1>
+                {{experimentTemplate.name}}
+            </h1> 
+            <mat-icon *ngIf="experimentTemplate.is_public" matTooltip="Public template">public</mat-icon>
+            <mat-icon *ngIf="!experimentTemplate.is_public" matTooltip="Private template">public_off</mat-icon>
+        </div>
+        
         <div class="header-buttons" *ngIf="isTemplateMine && experimentTemplate.is_usable">
             <button mat-icon-button (click)="editBtnClicked()">
                 <mat-icon>edit</mat-icon>

@@ -163,8 +163,7 @@ export class EditExperimentTemplateComponent {
       base_image: String(formValue.baseImage),
       script: String(this.scriptCode),
       pip_requirements: String(formValue.pipRequirements),
-      is_public: true,
-      is_usable: true
+      is_public: true
     };
 
     let promisedTemplate: Promise<ExperimentTemplate>;

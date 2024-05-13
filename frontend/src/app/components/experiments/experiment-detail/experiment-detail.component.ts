@@ -170,6 +170,39 @@ export class ExperimentDetailComponent {
   }
 
   deleteBtnClicked(): void {
-    // TODO
+    let routeParts = ["/experiments", "my"];
+    
+    let str = (
+      this.existRuns
+      ?
+      "Since there exist ExperimentRuns that execute this particular experiment, you can no longer delete this experiment. " +
+      "However, you can still forbid an execution of new ExperimentRuns that are utilize this experiment. " + 
+      "Do you wish to make this experiment unusable?" 
+      : 
+      "Do you wish to delete this experiment?"
+    );  
+    let popupInput: ConfirmPopupInput = {
+      message: str,
+      acceptBtnMessage: "Yes",
+      declineBtnMessage: "No"
+    }
+    firstValueFrom(this.dialog.open(ConfirmPopupComponent, {
+      maxWidth: '450px',
+      width: '100%',
+      autoFocus: false,
+      data: popupInput
+    }).afterClosed())
+      .then(state => {
+        if (state && this.existRuns) {
+          firstValueFrom(this.backend.setExperimentUsability(this.experiment.id, false))
+            .then(_ => this.router.navigate(routeParts))
+            .catch(err => console.error(err));
+        }
+        else if (state) {
+          firstValueFrom(this.backend.deleteExperiment(this.experiment.id))
+            .then(_ => this.router.navigate(routeParts))
+            .catch(err => console.error(err));
+        }
+      });
   }
 }

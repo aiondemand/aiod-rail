@@ -129,7 +129,7 @@ async def update_experiment(
     return experiment_to_save.map_to_response()
 
 
-@router.delete("/experiments/{id}", response_model=ExperimentResponse)
+@router.delete("/experiments/{id}", response_model=None)
 async def delete_experiment(
     id: PydanticObjectId, user: dict = Depends(get_current_user(required=True))
 ) -> Any:
@@ -142,6 +142,19 @@ async def delete_experiment(
         )
 
     await Experiment.find(Experiment.id == id).delete()
+
+
+@router.patch("/experiments/{id}/usability", response_model=None)
+async def set_experiment_usability(
+    id: PydanticObjectId,
+    is_usable: bool = True,
+    user: dict = Depends(get_current_user(required=True)),
+) -> Any:
+    await check_experiment_access_or_raise(id, user)
+    experiment = await Experiment.get(id)
+    experiment.is_usable = is_usable
+
+    await Experiment.replace(experiment)
 
 
 @router.get("/experiments/{id}/execute", response_model=ExperimentRunResponse)
@@ -328,6 +341,11 @@ async def check_experiment_access_or_raise(
     experiment_id: PydanticObjectId, user: dict | None
 ) -> None:
     experiment = await Experiment.get(experiment_id)
+    if experiment is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Specified experiment doesn't exist",
+        )
 
     # TODO: Add experiment access management
     if not user or experiment.created_by != user["email"]:

@@ -335,8 +335,6 @@ export class EditExperimentComponent implements OnInit {
       is_public: false
     };
 
-    console.log(experiment);
-
     let promisedExperiment: Promise<Experiment>;
     if (this.inputExperiment) {
       // UPDATE

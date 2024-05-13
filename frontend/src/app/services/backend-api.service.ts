@@ -290,6 +290,10 @@ export class BackendApiService {
     return this.http.put<Experiment>(`${environment.BACKEND_API_URL}/experiments/${id}`, experiment);
   }
 
+  setExperimentUsability(id: string, is_usable: boolean): Observable<void> {
+    return this.http.patch<void>(`${environment.BACKEND_API_URL}/experiments/${id}/usability?is_usable=${is_usable}`, {});
+  }
+
   deleteExperiment(id: string): Observable<boolean> {
     return this.http.delete<boolean>(`${environment.BACKEND_API_URL}/experiments/${id}`);
   }

@@ -269,6 +269,11 @@ async def check_experiment_template_access_or_raise(
     template_id: PydanticObjectId, user: dict | None
 ) -> None:
     template = await ExperimentTemplate.get(template_id)
+    if template is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Specified experiment template doesn't exist",
+        )
 
     # TODO: Add experiment access management
     if not user or template.created_by != user["email"]:

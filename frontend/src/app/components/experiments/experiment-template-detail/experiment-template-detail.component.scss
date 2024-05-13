@@ -5,14 +5,18 @@
     justify-content: space-between;
     align-items: center;
 
-    h1 {
-        span {
-            font-size: 0.5em;
-            opacity: 0.75;
-            font-weight: normal;
+    .header-name {
+        display: flex;
+        align-items: center;
+        gap: 0.75em;
+
+        mat-icon {
+            color: rgb(220, 220, 220);
+            transform: scale(1.5);
         }
     }
 
+    
     .header-buttons {
         display: flex;
         gap: 0.25em;

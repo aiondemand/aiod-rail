@@ -1,7 +1,14 @@
 <div *ngIf="experiment">
     <div class="header">
-        <h1>{{experiment.name}}</h1> 
-        <div class="header-buttons" *ngIf="isExperimentMine">
+        <div class="header-name">
+            <h1>
+                {{experiment.name}}
+            </h1> 
+            <mat-icon *ngIf="experiment.is_public" matTooltip="Public template">public</mat-icon>
+            <mat-icon *ngIf="!experiment.is_public" matTooltip="Private template">public_off</mat-icon>
+        </div>
+
+        <div class="header-buttons" *ngIf="isExperimentMine && experiment.is_usable">
             <button mat-icon-button (click)="editBtnClicked()">
                 <mat-icon>edit</mat-icon>
             </button>
@@ -9,6 +16,10 @@
                 <mat-icon>delete</mat-icon>
             </button>
         </div>
+    </div>
+
+    <div class="state" *ngIf="!experiment.is_usable">
+        <span class="crashed"><mat-icon matTooltip="This experiment can no longer be executed">delete</mat-icon>Deleted</span>
     </div>
 
     <div class="experiment-basic-information">

@@ -21,6 +21,7 @@ class Experiment(Document):
     created_at: datetime = Field(default_factory=partial(datetime.now, tz=timezone.utc))
     created_by: str
     is_public: bool = False
+    is_usable: bool = True
 
     experiment_template_id: PydanticObjectId
 
