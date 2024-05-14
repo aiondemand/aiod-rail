@@ -40,6 +40,37 @@ async def test_api_get_assets(client, mocker, api_path, asset_type, asset_class)
 @pytest.mark.parametrize(
     "api_path, asset_type, asset_class",
     [
+        ("/v1/assets/datasets/my", AssetType.DATASETS, Dataset),
+        ("/v1/assets/models/my", AssetType.ML_MODELS, MLModel),
+    ],
+)
+@pytest.mark.asyncio
+async def test_api_get_my_assets(client, mocker, api_path, asset_type, asset_class):
+    pagination = Pagination(offset=7, limit=13)
+    mock_get_my_assets = mocker.patch(
+        "app.routers.aiod.get_my_assets",
+        return_value=[{"name": "asset_name", "identifier": 42}],
+    )
+
+    res = client.get(
+        api_path,
+        params=pagination.dict(),
+        headers={"Authorization": "valid-user-token"},
+    )
+
+    mock_get_my_assets.assert_called_once_with(
+        asset_type=asset_type, token="valid-user-token", pagination=pagination
+    )
+    assert res.status_code == 200
+    assets = res.json()
+    assert isinstance(assets, list) and len(assets) == 1
+    asset_obj = asset_class(**assets[0])
+    assert asset_obj.name == "asset_name" and asset_obj.identifier == 42
+
+
+@pytest.mark.parametrize(
+    "api_path, asset_type, asset_class",
+    [
         ("/v1/assets/datasets/search/asset_name", AssetType.DATASETS, Dataset),
         ("/v1/assets/models/search/asset_name", AssetType.ML_MODELS, MLModel),
         (

@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
 import { PageEvent } from '@angular/material/paginator';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable, Subscription, firstValueFrom } from 'rxjs';
+import { Observable, Subscription, catchError, firstValueFrom, of } from 'rxjs';
 import { Dataset } from 'src/app/models/dataset';
 import { BackendApiService } from 'src/app/services/backend-api.service';
+import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -12,7 +13,7 @@ import { environment } from 'src/environments/environment';
   styleUrls: ['./saved-datasets.component.scss']
 })
 export class SavedDatasetsComponent {
-  datasets$: Observable<Dataset[]>;
+  datasets$: Observable<Dataset[]> = of([]);
   pagination = {
     pageSize: environment.DEFAULT_PAGE_SIZE,
     pageIndex: 0,
@@ -24,7 +25,8 @@ export class SavedDatasetsComponent {
   constructor(
     private backend: BackendApiService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private snackBar: SnackBarService
   ) { }
 
   ngOnInit(): void {
@@ -37,9 +39,14 @@ export class SavedDatasetsComponent {
       this.updateDatasets();
     });
 
-    firstValueFrom(this.backend.getSavedDatasetsCount())
-      .then(count => this.pagination.length = count)
-      .catch(err => console.error(err));
+    firstValueFrom(
+      this.backend.getMyDatasetsCount().pipe(
+        catchError(_ => {
+          this.snackBar.showError("Couldn't load my datasets count from MyLibrary.");
+          return of(0);
+        })
+      ))   
+    .then(count => this.pagination.length = count);
   }
 
   ngOnDestroy(): void {
@@ -65,9 +72,14 @@ export class SavedDatasetsComponent {
   }
 
   private updateDatasets() {
-    this.datasets$ = this.backend.getSavedDatasets({
+    this.datasets$ = this.backend.getMyDatasets("", {
       offset: this.pagination.pageIndex * this.pagination.pageSize,
       limit: this.pagination.pageSize
-    });
+    }).pipe(
+      catchError(err => {
+        this.snackBar.showError("Couldn't load my datasets from MyLibrary.");
+        return of([]);
+      })
+    );
   }
 }

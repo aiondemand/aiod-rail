@@ -5,7 +5,7 @@ on:
       - '*'
 
 jobs:
-  build:
+  pytest:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -21,10 +21,14 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements-dev.txt
 
-      - name: Build coverage file
+      - name: Pytest coverage
+        id: run_pytest
         run: |
           cd backend
           pytest --junitxml=pytest.xml --cov-report=term-missing:skip-covered --cov=app tests/ | tee pytest-coverage.txt
+          exit_code=${PIPESTATUS[0]}
+          echo "Pytest exit code: $exit_code"
+          echo "pytest_exit_code=$exit_code" >> $GITHUB_OUTPUT
 
       - name: Pytest coverage comment
         uses: MishaKav/pytest-coverage-comment@main
@@ -32,3 +36,7 @@ jobs:
           pytest-coverage-path: ./backend/pytest-coverage.txt
           junitxml-path: ./backend/pytest.xml
           coverage-path-prefix: ./backend/
+
+      - name: Fail if pytest fails
+        if: steps.run_pytest.outputs.pytest_exit_code != '0'
+        run: exit 1

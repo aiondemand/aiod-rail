@@ -65,7 +65,9 @@ export class EditExperimentComponent implements OnInit {
   experimentTemplates$: Observable<ExperimentTemplate[]> | undefined;
   publications$: Observable<Publication[]>;
   models$: Observable<Model[]> | undefined;
+  myModels$: Observable<Model[]> | undefined;
   datasets$: Observable<Dataset[]> | undefined;
+  myDatasets$: Observable<Dataset[]> | undefined;
 
   subscription: Subscription | undefined;
 
@@ -135,6 +137,17 @@ export class EditExperimentComponent implements OnInit {
       })
     );
 
+    this.myModels$ = this.model?.valueChanges.pipe(
+      debounceTime(300), // Debounce to avoid frequent requests
+      startWith(""),
+      switchMap(value => this.myModelAutocompleteFilter(value)),
+      catchError(err => {
+        this.error = err.message;
+        this.snackBar.showError("Couldn't load my models");
+        return of([]);
+      })
+    );
+
     this.datasets$ = this.dataset?.valueChanges.pipe(
       debounceTime(300), // Debounce to avoid frequent requests
       startWith(""),
@@ -142,6 +155,17 @@ export class EditExperimentComponent implements OnInit {
       catchError(err => {
         this.error = err.message;
         this.snackBar.showError("Couldn't load datasets");
+        return of([]);
+      })
+    );
+
+    this.myDatasets$ = this.dataset?.valueChanges.pipe(
+      debounceTime(300),
+      startWith(""),
+      switchMap(value => this.myDatasetAutocompleteFilter(value)),
+      catchError(err => {
+        this.error = "Couldn't load datasets." + err.message;
+        this.snackBar.showError("Couldn't load my datasets");
         return of([]);
       })
     );
@@ -294,11 +318,25 @@ export class EditExperimentComponent implements OnInit {
     return this.backend.getModels(query)
   }
 
+  myModelAutocompleteFilter(query: string | Model | null): Observable<Model[]> {
+    if (typeof query != "string") {
+      return this.myModels$ ? this.myModels$ : of([]);
+    }
+    return this.backend.getMyModels(query)
+  }
+
   datasetAutocompleteFilter(query: string | Dataset | null): Observable<Dataset[]> {
     if (typeof query != "string") {
       return this.datasets$ ? this.datasets$ : of([]);;
     }
     return this.backend.getDatasets(query);
+  }
+
+  myDatasetAutocompleteFilter(query: string | Dataset | null): Observable<Dataset[]> {
+    if (typeof query != "string") {
+      return this.myDatasets$ ? this.myDatasets$ : of([]);;
+    }
+    return this.backend.getMyDatasets(query);
   }
 
   displayChosenExperimentTemplate(template: ExperimentTemplate) {

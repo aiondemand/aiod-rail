@@ -90,9 +90,16 @@
             <mat-form-field>
                 <input matInput placeholder="Model" [matAutocomplete]="autoModel" formControlName="model">
                 <mat-autocomplete #autoModel="matAutocomplete" [displayWith]="displayChosenModel">
-                    <mat-option *ngFor="let m of models$ | async" [value]="m">
-                        {{ m.name }}
-                    </mat-option>
+                    <mat-optgroup label="MY MODELS">
+                        <mat-option *ngFor="let m of myModels$ | async" [value]="m">
+                            {{ m.name }}
+                        </mat-option>
+                    </mat-optgroup>
+                    <mat-optgroup label="PUBLIC MODELS">
+                        <mat-option *ngFor="let m of models$ | async" [value]="m">
+                            {{ m.name }}
+                        </mat-option>
+                    </mat-optgroup>
                 </mat-autocomplete>
             </mat-form-field>
         </div>
@@ -101,9 +108,16 @@
             <mat-form-field>
                 <input matInput placeholder="Dataset" [matAutocomplete]="autoDataset" formControlName="dataset">
                 <mat-autocomplete #autoDataset="matAutocomplete" [displayWith]="displayChosenDataset">
-                    <mat-option *ngFor="let ds of datasets$ | async" [value]="ds">
-                        {{ ds.name }}
-                    </mat-option>
+                    <mat-optgroup label="MY DATASETS">
+                        <mat-option *ngFor="let ds of myDatasets$ | async" [value]="ds">
+                            {{ ds.name }}
+                        </mat-option>
+                    </mat-optgroup>
+                    <mat-optgroup label="PUBLIC DATASETS">
+                        <mat-option *ngFor="let ds of datasets$ | async" [value]="ds">
+                            {{ ds.name }}
+                        </mat-option>
+                    </mat-optgroup>
                 </mat-autocomplete>
             </mat-form-field>
         </div>

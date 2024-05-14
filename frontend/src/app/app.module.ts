@@ -27,7 +27,6 @@ import { DefaultIfEmptyPipe } from './pipes/default-if-empty.pipe';
 import { MarkdownModule } from 'ngx-markdown';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { SavedDatasetsComponent } from './components/datasets/saved-datasets/saved-datasets.component';
-import { SaveRemoveDatasetButtonComponent } from './components/datasets/utils/save-remove-dataset-button/save-remove-dataset-button.component';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { OAuthModule, OAuthStorage } from 'angular-oauth2-oidc';
 import { LoginLogoutComponent } from './authorization/login-logout/login-logout.component';
@@ -82,7 +81,6 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
     EllipsisPipe,
     DefaultIfEmptyPipe,
     SavedDatasetsComponent,
-    SaveRemoveDatasetButtonComponent,
     CreateDatasetComponent,
     HuggingfaceFormComponent,
     LoginLogoutComponent,
