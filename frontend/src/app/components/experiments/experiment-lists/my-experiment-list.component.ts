@@ -9,12 +9,8 @@ import { Experiment } from 'src/app/models/experiment';
   styleUrls: ['./experiment-lists.component.scss']
 })
 export class MyExperimentListComponent extends ExperimentListBaseComponent {
-  protected override isAllExperiments(): boolean {
-    return false;
-  }
-
   protected override getExperimentsCount(): Observable<number> {
-    return this.backend.getExperimentsCount("", {});
+    return this.backend.getExperimentsCount("", { only_mine: true });
   }
 
   protected override updateExperiments(): Observable<Experiment[]>  {
@@ -24,7 +20,9 @@ export class MyExperimentListComponent extends ExperimentListBaseComponent {
         offset: this.pagination.pageIndex * this.pagination.pageSize,
         limit: this.pagination.pageSize
       },
-      {}
+      {
+        only_mine: true,
+      }
     );
   }
 }

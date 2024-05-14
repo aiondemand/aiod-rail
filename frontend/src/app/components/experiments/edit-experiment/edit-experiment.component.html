@@ -29,6 +29,15 @@
         <textarea [rows]="10" matInput placeholder="Description" formControlName="description"></textarea>
     </mat-form-field>
 
+    <mat-form-field>
+        <mat-label>Experiment visiblity</mat-label>
+        <mat-select formControlName="visibility">
+            <mat-option *ngFor="let str of visibilityStrings" [value]="str">
+                {{ str }}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+
     <mat-divider></mat-divider>
 
     <h2>Link related AI assets</h2>

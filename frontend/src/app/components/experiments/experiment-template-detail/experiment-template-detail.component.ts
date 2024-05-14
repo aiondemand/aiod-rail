@@ -33,10 +33,10 @@ export class ExperimentTemplateDetailComponent {
       this.templateId = params["id"];
       this.experimentTemplate$ = this.backend.getExperimentTemplate(params["id"]);
 
-      firstValueFrom(this.backend.getExperimentsOfTemplateCount(params["id"]))
+      firstValueFrom(this.backend.getExperimentsOfTemplateCount(params["id"], false))
         .then(count => this.existExperiments = count > 0)
         .catch(err => console.error(err));
-      firstValueFrom(this.backend.isExperimentTemplateMine(params["id"]))
+      firstValueFrom(this.backend.isExperimentTemplateEditable(params["id"]))
         .then(mine => this.isTemplateMine = mine)
         .catch(err => console.error(err));
     });

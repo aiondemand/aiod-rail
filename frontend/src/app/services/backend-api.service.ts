@@ -273,8 +273,8 @@ export class BackendApiService {
     return this.http.get<number>(`${environment.BACKEND_API_URL}/count/experiments${queries}`);
   }
 
-  isExperimentMine(id: string): Observable<boolean> {
-    return this.http.get<boolean>(`${environment.BACKEND_API_URL}/experiments/${id}/is_mine`);
+  isExperimentEditable(id: string): Observable<boolean> {
+    return this.http.get<boolean>(`${environment.BACKEND_API_URL}/experiments/${id}/is_editable`);
   }
 
   /**
@@ -322,8 +322,8 @@ export class BackendApiService {
     return this.http.get<ExperimentTemplate>(`${environment.BACKEND_API_URL}/experiment-templates/${id}`);
   }
 
-  isExperimentTemplateMine(id: string): Observable<boolean> {
-    return this.http.get<boolean>(`${environment.BACKEND_API_URL}/experiment-templates/${id}/is_mine`);
+  isExperimentTemplateEditable(id: string): Observable<boolean> {
+    return this.http.get<boolean>(`${environment.BACKEND_API_URL}/experiment-templates/${id}/is_editable`);
   }
 
   /**
@@ -338,8 +338,8 @@ export class BackendApiService {
     return this.http.get<number>(`${environment.BACKEND_API_URL}/count/experiment-templates${queries}`);
   }
 
-  getExperimentsOfTemplateCount(id: string): Observable<number> {
-    return this.http.get<number>(`${environment.BACKEND_API_URL}/count/experiment-templates/${id}/experiments`);
+  getExperimentsOfTemplateCount(id: string, only_mine: boolean): Observable<number> {
+    return this.http.get<number>(`${environment.BACKEND_API_URL}/count/experiment-templates/${id}/experiments?only_mine=${only_mine}`);
   }
 
   /**
@@ -370,12 +370,8 @@ export class BackendApiService {
    * @param pageQueries
    * @param experimentId
    */
-  getExperimentRuns(experimentId: string = "", pageQueries?: PageQueries): Observable<ExperimentRun[]> {
+  getExperimentRuns(experimentId: string, pageQueries?: PageQueries): Observable<ExperimentRun[]> {
     let pageQueriesStr = `?${this._buildPageQueries(pageQueries)}`;
-
-    if (experimentId == "") {
-      return this.http.get<ExperimentRun[]>(`${environment.BACKEND_API_URL}/experiment-runs${pageQueriesStr}`);
-    }
     return this.http.get<ExperimentRun[]>(`${environment.BACKEND_API_URL}/experiments/${experimentId}/runs${pageQueriesStr}`);
   }
 
@@ -437,8 +433,16 @@ export class BackendApiService {
   }
 
   _buildExperimentQueries(experimentQueries?: ExperimentQueries): string {
-    // TODO: Add query parameters
-    return "";
+    if (experimentQueries == undefined) {
+      return "";
+    }
+
+    let q: string = "";
+    let key: keyof ExperimentQueries;
+    for (key in experimentQueries) {
+      q += `${key}=${experimentQueries[key]}&`;
+    }
+    return q.slice(0, q.length - 1);
   }
 
   _buildExperimentTemplateQueries(templateQueries?: ExperimentTemplateQueries): string {
@@ -447,7 +451,7 @@ export class BackendApiService {
     }
 
     let q: string = "";
-    let key: keyof ExperimentTemplateQueries
+    let key: keyof ExperimentTemplateQueries;
     for (key in templateQueries) {
       q += `${key}=${templateQueries[key]}&`;
     }

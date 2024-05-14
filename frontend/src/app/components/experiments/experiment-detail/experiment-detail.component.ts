@@ -55,7 +55,7 @@ export class ExperimentDetailComponent {
           this.backend.getModel(experiment.model_ids[0]),
           this.backend.getExperimentPublications(experiment),
           this.backend.getExperimentTemplate(experiment.experiment_template_id),
-          this.backend.isExperimentMine(experiment.id),
+          this.backend.isExperimentEditable(experiment.id),
           this.backend.getExperimentRunsCount(experiment.id),
           of(experiment)
         ])),

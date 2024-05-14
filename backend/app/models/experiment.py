@@ -11,7 +11,6 @@ from pydantic import Field
 from app.models.experiment_template import ExperimentTemplate
 from app.schemas.env_vars import EnvironmentVar
 from app.schemas.experiment import ExperimentCreate, ExperimentResponse
-from app.schemas.states import TemplateState
 
 
 class Experiment(Document):
@@ -49,20 +48,13 @@ class Experiment(Document):
     def map_to_response(self) -> ExperimentResponse:
         return ExperimentResponse(**self.dict())
 
-    async def is_valid(self) -> bool:
+    async def is_valid(self, experiment_template: ExperimentTemplate) -> bool:
         """Validate that experiment matches its experiment template definition"""
-        experiment_template = await ExperimentTemplate.get(self.experiment_template_id)
-
         return (
             await experiment_template.validate_models(self.model_ids)
             and await experiment_template.validate_datasets(self.dataset_ids)
             and experiment_template.validate_env_vars(self.env_vars)
         )
-
-    async def uses_finished_template(self) -> bool:
-        """Check whether docker image of ExperimentTemplate has been uploaded"""
-        experiment_template = await ExperimentTemplate.get(self.experiment_template_id)
-        return experiment_template.state == TemplateState.FINISHED
 
     def has_same_assets(self, experiment: Experiment) -> bool:
         return sum(
@@ -82,7 +74,7 @@ class Experiment(Document):
     def update_non_assets(self, new_experiment: Experiment) -> None:
         self.name = new_experiment.name
         self.description = new_experiment.description
-        self.is_public = new_experiment.is_public  # TODO mozeme toto nastavovat?
+        self.is_public = new_experiment.is_public
 
     @classmethod
     def update_experiment(
@@ -97,11 +89,14 @@ class Experiment(Document):
         same_assets = old_experiment.has_same_assets(new_experiment)
 
         if same_assets:
+            # Update name, descr & visibility (we can switch experiment visibility
+            # whenever we would like to)
             old_experiment.update_non_assets(new_experiment)
             old_experiment.updated_at = new_experiment.updated_at
             return old_experiment
 
         if exist_runs is False:
+            # No runs exist yet, so we can change everything in experiment
             new_experiment.created_at = old_experiment.created_at
             new_experiment.id = old_experiment.id
             return new_experiment

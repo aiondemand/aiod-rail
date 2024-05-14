@@ -70,6 +70,4 @@ export  abstract class ExperimentListBaseComponent {
   protected abstract updateExperiments(): Observable<Experiment[]>;
 
   protected abstract getExperimentsCount(): Observable<number>;
-
-  protected abstract isAllExperiments(): boolean;
 }

@@ -36,6 +36,7 @@ export class EditExperimentComponent implements OnInit {
   experimentForm = this.fb.group({
     name: ['', Validators.required],
     description: ['', Validators.required],
+    visibility: ['Private', Validators.required],
     publications: this.fb.array(Array<Publication>()),
     dataset: new FormControl<Dataset | string>('', Validators.required),
     model: new FormControl<Model | string>('', Validators.required),
@@ -44,6 +45,11 @@ export class EditExperimentComponent implements OnInit {
     envsOptional: this.fb.group({}),
     experimentTemplate: new FormControl<ExperimentTemplate | string>('', Validators.required)
   });
+
+  visibilityStrings: string[] = [
+    "Public",
+    "Private"
+  ]
 
   selectedExprimentTemplate: ExperimentTemplate | null = null;
 
@@ -188,6 +194,10 @@ export class EditExperimentComponent implements OnInit {
     return this.experimentForm.get('description');
   }
 
+  get visibility() {
+    return this.experimentForm.get('visibility');
+  }
+
   get experimentTemplate() {
     return this.experimentForm.get('experimentTemplate');
   }
@@ -224,6 +234,7 @@ export class EditExperimentComponent implements OnInit {
   
     this.name?.setValue(exp.name);
     this.description?.setValue(exp.description);
+    this.visibility?.setValue(exp.is_public ? "Public" : "Private");
     this.experimentTemplate?.setValue(this.inputExperimentTemplate);
     this.selectedExprimentTemplate = this.inputExperimentTemplate;
   
@@ -332,7 +343,7 @@ export class EditExperimentComponent implements OnInit {
       model_ids: [String((this.model?.value as Model)?.identifier)],
       metrics: selectedMetrics,
       env_vars: envsToSend,
-      is_public: false
+      is_public: String(this.visibility?.value) == "Public" ? true : false
     };
 
     let promisedExperiment: Promise<Experiment>;

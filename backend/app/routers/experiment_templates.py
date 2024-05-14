@@ -28,7 +28,6 @@ async def get_experiment_templates(
     query: str = "",
     pagination: Pagination = Depends(),
     only_mine: bool = False,
-    include_pending: bool = False,
     only_finalized: bool = False,
     only_usable: bool = False,
     only_public: bool = False,
@@ -36,7 +35,6 @@ async def get_experiment_templates(
     result_set = find_specific_experiment_templates(
         query,
         only_mine=only_mine,
-        include_pending=include_pending,
         only_finalized=only_finalized,
         only_usable=only_usable,
         only_public=only_public,
@@ -53,18 +51,15 @@ async def get_experiment_templates(
 
 
 @router.get("/experiment-templates/{id}", response_model=ExperimentTemplateResponse)
-async def get_experiment_template(id: PydanticObjectId) -> Any:
-    experiment_template = await ExperimentTemplate.get(id)
-    if experiment_template is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Specified experiment template doesn't exist",
-        )
+async def get_experiment_template(
+    id: PydanticObjectId, user: dict = Depends(get_current_user(required=False))
+) -> Any:
+    experiment_template = await get_experiment_template_if_accessible_or_raise(id, user)
     return experiment_template.map_to_response()
 
 
-@router.get("/experiment-templates/{id}/is_mine", response_model=bool)
-async def is_experiment_template_mine(
+@router.get("/experiment-templates/{id}/is_editable", response_model=bool)
+async def is_experiment_template_editable(
     id: PydanticObjectId,
     user: dict = Depends(get_current_user(required=False)),
 ) -> Any:
@@ -74,6 +69,7 @@ async def is_experiment_template_mine(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Specified experiment template doesn't exist",
         )
+
     return user is not None and experiment_template.created_by == user["email"]
 
 
@@ -82,7 +78,6 @@ async def get_experiment_templates_count(
     user: dict = Depends(get_current_user(required=False)),
     query: str = "",
     only_mine: bool = False,
-    include_pending: bool = False,
     only_finalized: bool = False,
     only_usable: bool = False,
     only_public: bool = False,
@@ -90,7 +85,6 @@ async def get_experiment_templates_count(
     result_set = find_specific_experiment_templates(
         query,
         only_mine=only_mine,
-        include_pending=include_pending,
         only_finalized=only_finalized,
         only_usable=only_usable,
         only_public=only_public,
@@ -128,14 +122,25 @@ async def update_experiment_template(
     experiment_template_req: ExperimentTemplateCreate,
     user: dict = Depends(get_current_user(required=True)),
 ) -> Any:
-    await check_experiment_template_access_or_raise(id, user)
-    old_exp_template = await ExperimentTemplate.get(id)
+    old_exp_template = await get_experiment_template_if_accessible_or_raise(
+        id, user, write_access=True
+    )
     exist_experiments = (
         await Experiment.find(Experiment.experiment_template_id == id).count() > 0
     )
+    exist_others_experiments = (
+        await Experiment.find(
+            Experiment.experiment_template_id == id,
+            Experiment.created_by != user["email"],
+        ).count()
+        > 0
+    )
 
     template_to_save = ExperimentTemplate.update_template(
-        old_exp_template, experiment_template_req, exist_experiments
+        old_exp_template,
+        experiment_template_req,
+        exist_experiments,
+        exist_others_experiments,
     )
     if template_to_save is None:
         raise HTTPException(
@@ -151,7 +156,7 @@ async def update_experiment_template(
 async def remove_experiment_template(
     id: PydanticObjectId, user: dict = Depends(get_current_user(required=True))
 ) -> Any:
-    await check_experiment_template_access_or_raise(id, user)
+    await get_experiment_template_if_accessible_or_raise(id, user, write_access=True)
     exist_experiments = (
         await Experiment.find(Experiment.experiment_template_id == id).count() > 0
     )
@@ -171,8 +176,9 @@ async def set_experiment_template_usability(
     is_usable: bool = True,
     user: dict = Depends(get_current_user(required=True)),
 ) -> Any:
-    await check_experiment_template_access_or_raise(id, user)
-    experiment_template = await ExperimentTemplate.get(id)
+    experiment_template = await get_experiment_template_if_accessible_or_raise(
+        id, user, write_access=True
+    )
     experiment_template.is_usable = is_usable
 
     await ExperimentTemplate.replace(experiment_template)
@@ -206,14 +212,22 @@ async def approve_experiment_template(
 
 
 @router.get("/count/experiment-templates/{id}/experiments", response_model=int)
-async def get_experiments_of_template_count(id: PydanticObjectId) -> Any:
-    return await Experiment.find(Experiment.experiment_template_id == id).count()
+async def get_experiments_of_template_count(
+    id: PydanticObjectId,
+    only_mine: bool = False,
+    user: dict = Depends(get_current_user(required=True)),
+) -> Any:
+    await get_experiment_template_if_accessible_or_raise(id, user)
+
+    search_conditions = [Experiment.created_by == user["email"]] if only_mine else []
+    search_conditions.append(Experiment.experiment_template_id == id)
+
+    return await Experiment.find(*search_conditions).count()
 
 
 def find_specific_experiment_templates(
-    query: str,
+    search_query: str,
     only_mine: bool,
-    include_pending: bool,
     only_finalized: bool,
     only_usable: bool,
     only_public: bool,
@@ -221,34 +235,28 @@ def find_specific_experiment_templates(
     user: dict | None,
     pagination: Pagination = None,
 ) -> FindMany[ExperimentTemplate]:
-    # TODO check logic for incorporating 'only_public' / 'only_usable' attributes
-
     search_conditions = []
     page_kwargs = (
         {"skip": pagination.offset, "limit": pagination.limit}
         if pagination is not None
         else {}
     )
+    if len(search_query) > 0:
+        search_conditions.append(Text(search_query))
 
-    if len(query) > 0:
-        search_conditions.append(Text(query))
+    if user is None and only_mine:
+        # Authentication required to see your experiment templates
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="This endpoint requires authorization. You need to be logged in.",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    elif only_mine:
+        search_conditions.append(ExperimentTemplate.created_by == user["email"])
 
-    if user is None:
-        if only_mine or include_pending:
-            # Authentication required to see your experiment templates or pending experiment templates
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="This endpoint requires authorization. You need to be logged in.",
-                headers={"WWW-Authenticate": "Bearer"},
-            )
-    else:
-        if only_mine:
-            search_conditions.append(ExperimentTemplate.created_by == user["email"])
-
-    if not include_pending:
-        search_conditions.append(ExperimentTemplate.approved == True)  # noqa: E712
     if only_finalized:
         search_conditions.append(ExperimentTemplate.state == TemplateState.FINISHED)
+        search_conditions.append(ExperimentTemplate.approved == True)  # noqa: E712
     if only_usable:
         search_conditions.append(ExperimentTemplate.is_usable == True)  # noqa: E712
     if only_public:
@@ -265,19 +273,22 @@ def find_specific_experiment_templates(
     return ExperimentTemplate.find_all(**page_kwargs)
 
 
-async def check_experiment_template_access_or_raise(
-    template_id: PydanticObjectId, user: dict | None
-) -> None:
+async def get_experiment_template_if_accessible_or_raise(
+    template_id: PydanticObjectId, user: dict | None, write_access: bool = False
+) -> ExperimentTemplate:
     template = await ExperimentTemplate.get(template_id)
     if template is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Specified experiment template doesn't exist",
         )
+    if write_access is False and template.is_public:
+        return template
 
     # TODO: Add experiment access management
-    if not user or template.created_by != user["email"]:
+    if user is None or template.created_by != user["email"]:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="You cannot access this experiment template.",
         )
+    return template

@@ -1,4 +1,4 @@
-import { Component, Input, ViewChild } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatTable } from '@angular/material/table';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -8,7 +8,7 @@ import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { ExperimentTemplate, ExperimentTemplateCreate } from 'src/app/models/experiment-template';
 import { TaskType } from 'src/app/models/backend-generated/task-type';
 import { AssetCardinality } from 'src/app/models/backend-generated/asset-cardinality';
-import { first, firstValueFrom } from 'rxjs';
+import { combineLatest, firstValueFrom, of, retry, switchMap } from 'rxjs';
 
 
 @Component({
@@ -19,6 +19,7 @@ import { first, firstValueFrom } from 'rxjs';
 export class EditExperimentTemplateComponent {
   inputExperimentTemplate: ExperimentTemplate | null = null;
   editableEnvironment: boolean = true;
+  editableVisibility: boolean = true;
   loading: boolean = true;
   action: string = "create";
   
@@ -26,6 +27,7 @@ export class EditExperimentTemplateComponent {
     name: ['', Validators.required],
     description: ['', Validators.required],
     baseImage: ['', Validators.required],
+    visibility: ['Public', Validators.required],
     pipRequirements: [''],
   });
   newRequiredEnvForm = this.fb.group({
@@ -41,8 +43,11 @@ export class EditExperimentTemplateComponent {
   })
 
   scriptCode: string = "";
-
-  base_images: string[] = [
+  visibilityStrings: string[] = [
+    "Public",
+    "Private"
+  ]
+  baseImageStrings: string[] = [
     "python:3.9",
     "python:3.10",
     "python:3.11",
@@ -76,21 +81,27 @@ export class EditExperimentTemplateComponent {
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {  
       if (params["id"]) {
-        firstValueFrom(this.backend.getExperimentsOfTemplateCount(params["id"]))
-          .then(count => {
-            this.editableEnvironment = count == 0;
-            
-            firstValueFrom(this.backend.getExperimentTemplate(params["id"]))
-              .then(template => {
-                this.inputExperimentTemplate = template
-                this.prefillOldValues();
-                this.setupEditor()
-                this.action = "update"
-                this.loading = false;
-              })
-              .catch(err => console.error(err)); 
+        var data$ = of(params["id"]).pipe(
+          switchMap(templateId => combineLatest([
+            this.backend.getExperimentsOfTemplateCount(templateId, false),
+            this.backend.getExperimentsOfTemplateCount(templateId, true),
+            this.backend.getExperimentTemplate(templateId)
+          ])),
+          retry(3)
+        );
+
+        firstValueFrom(data$)
+          .then(([experimentCount, myExperimentCount, template]) => {
+            this.editableEnvironment = experimentCount == 0;
+            this.editableVisibility = experimentCount - myExperimentCount == 0
+
+            this.inputExperimentTemplate = template
+            this.prefillOldValues();
+            this.setupEditor()
+            this.action = "update"
+            this.loading = false;
           })
-          .catch(err => console.error(err));
+          .catch(err => console.error(err))
       }
       else {
         this.setupEditor()
@@ -109,6 +120,7 @@ export class EditExperimentTemplateComponent {
     this.experimentTemplateForm.get("description")?.setValue(templ.description);
     this.experimentTemplateForm.get("baseImage")?.setValue(this.parseBaseImageFromDockerfile(templ.dockerfile));
     this.experimentTemplateForm.get("pipRequirements")?.setValue(templ.pip_requirements);
+    this.experimentTemplateForm.get("visibility")?.setValue(templ.is_public ? "Public" : "Private");
     this.scriptCode = templ.script;
     
     templ.envs_required.forEach(env => this.requiredVarsData.push(env));
@@ -121,16 +133,19 @@ export class EditExperimentTemplateComponent {
     this.metricForm.reset(); 
 
     if (!this.editableEnvironment) {
-      this.experimentTemplateForm.get("baseImage")?.disable()
-      this.experimentTemplateForm.get("pipRequirements")?.disable()
+      this.experimentTemplateForm.get("baseImage")?.disable();
+      this.experimentTemplateForm.get("pipRequirements")?.disable();
       
-      this.newRequiredEnvForm.get("name")?.disable()
-      this.newRequiredEnvForm.get("description")?.disable()
+      this.newRequiredEnvForm.get("name")?.disable();
+      this.newRequiredEnvForm.get("description")?.disable();
 
-      this.newOptionalEnvForm.get("name")?.disable()
-      this.newOptionalEnvForm.get("description")?.disable()
+      this.newOptionalEnvForm.get("name")?.disable();
+      this.newOptionalEnvForm.get("description")?.disable();
       
-      this.metricForm.get("name")?.disable()
+      this.metricForm.get("name")?.disable();
+    }
+    if (!this.editableVisibility) {
+      this.experimentTemplateForm.get("visibility")?.disable();
     }
     
   }
@@ -163,7 +178,7 @@ export class EditExperimentTemplateComponent {
       base_image: String(formValue.baseImage),
       script: String(this.scriptCode),
       pip_requirements: String(formValue.pipRequirements),
-      is_public: true
+      is_public: String(formValue.visibility) == "Public" ? true : false
     };
 
     let promisedTemplate: Promise<ExperimentTemplate>;

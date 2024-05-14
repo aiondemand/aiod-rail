@@ -95,6 +95,14 @@ class ExperimentTemplate(Document):
         image_tag = f"{EXPERIMENT_TEMPLATE_DIR_PREFIX}{self.id}"
         return f"{settings.DOCKER_REGISTRY_URL}/{REPOSITORY_NAME}:{image_tag}"
 
+    @property
+    def finalized(self) -> bool:
+        return self.state == TemplateState.FINISHED and self.approved
+
+    @property
+    def allows_experiment_creation(self) -> bool:
+        return self.finalized and self.is_usable
+
     class Settings:
         name = "experimentTemplates"
 
@@ -124,7 +132,6 @@ class ExperimentTemplate(Document):
 
     def map_to_response(self) -> ExperimentTemplateResponse:
         return ExperimentTemplateResponse(
-            # TODO check if we need to further specify dockerfiles etc, or since there are now properties, they are in dict()
             **self.dict(),
             dockerfile=self.dockerfile,
             pip_requirements=self.pip_requirements,
@@ -181,9 +188,6 @@ class ExperimentTemplate(Document):
     def update_non_environment(self, new_template: ExperimentTemplate) -> None:
         self.name = new_template.name
         self.description = new_template.description
-        self.is_public = (
-            new_template.is_public
-        )  # TODO mozeme si dovolit hocikedy nastavit template na private???
 
     @classmethod
     def update_template(
@@ -191,18 +195,31 @@ class ExperimentTemplate(Document):
         old_template: ExperimentTemplate,
         experiment_template_req: ExperimentTemplateCreate,
         exist_experiments: bool,
+        exist_others_experiments: bool,
     ) -> ExperimentTemplate | None:
         same_environment = old_template.is_same_environment(experiment_template_req)
+        same_visibility = old_template.is_public == experiment_template_req.is_public
         new_template = ExperimentTemplate(
             **experiment_template_req.dict(), created_by=old_template.created_by
         )
 
-        if same_environment:
+        if same_environment and same_visibility:
+            # We modify only name & descr
             old_template.update_non_environment(new_template)
             old_template.updated_at = new_template.updated_at
             return old_template
 
+        if same_environment and exist_others_experiments is False:
+            # We can additionally change the visibility if there are no experiments
+            # of other people that utilize this template
+            old_template.update_non_environment(new_template)
+            old_template.is_public = experiment_template_req.is_public
+            old_template.updated_at = new_template.updated_at
+            return old_template
+
         if exist_experiments is False:
+            # If there are no experiments tied to this template,
+            # we can modify everything
             new_template.created_at = old_template.created_at
             new_template.id = old_template.id
 

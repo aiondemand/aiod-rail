@@ -65,6 +65,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { EditExperimentTemplateComponent } from './components/experiments/edit-experiment-template/edit-experiment-template.component';
 import { ConfirmPopupComponent } from './components/general/popup/confirm-popup.component';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 
 
@@ -135,6 +136,7 @@ import { MatDialogModule } from '@angular/material/dialog';
     MatTreeModule,
     MatProgressBarModule,
     MatDialogModule,
+    MatSlideToggleModule,
     MarkdownModule.forRoot(),
     CodeEditorModule.forRoot(),
     OAuthModule.forRoot({

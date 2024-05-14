@@ -8,10 +8,7 @@
                [disabled]="false"
                aria-label="Select page">
 </mat-paginator>
-<div *ngIf="isAllExperiments()">
-    <h2>Public experiments are coming soon - stay tuned!</h2>
-</div>
-<div *ngIf="!isAllExperiments()">
+<div>
     <div *ngIf="(experiments$ | async) as experiments">
         <div class="no-experiments" *ngIf="experiments.length == 0">
             <h2>There are currently no experiments.</h2>
