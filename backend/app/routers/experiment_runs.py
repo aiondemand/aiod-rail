@@ -138,7 +138,7 @@ async def list_files_of_experiment_run(
 async def get_experiment_run_if_accessible_or_raise(
     run_id: PydanticObjectId, user: dict | None
 ) -> ExperimentRun:
-    experiment_run = ExperimentRun.get(run_id)
+    experiment_run = await ExperimentRun.get(run_id)
     if experiment_run is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

@@ -80,7 +80,11 @@ async def is_experiment_editable(
             detail="Specified experiment doesn't exist",
         )
 
-    return user is not None and experiment.created_by == user["email"]
+    return (
+        user is not None
+        and experiment.created_by == user["email"]
+        and experiment.is_usable
+    )
 
 
 @router.post(
@@ -102,7 +106,7 @@ async def create_experiment(
         )
 
     experiment = Experiment(**experiment_req.dict(), created_by=user["email"])
-    if not await experiment.is_valid():
+    if not await experiment.is_valid(template):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Experiment request does not match its ExperimentTemplate",

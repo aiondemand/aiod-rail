@@ -28,9 +28,9 @@
     }
 }
 
-.state {
-    margin-bottom: 1em;
-    margin-left: 0.5em;
+.deleted-state {
+    display: flex;
+    gap: 1em;
     
     span {
         display: flex;
@@ -42,6 +42,11 @@
     
     .crashed {
         color: red;
+    }
+
+    .undo-button {
+        border-color: red;
+        font-size: 1em;
     }
 }
 

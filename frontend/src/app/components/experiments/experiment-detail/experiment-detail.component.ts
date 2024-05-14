@@ -29,7 +29,7 @@ export class ExperimentDetailComponent {
   relatedPublications: Publication[] = [];
   experimentTemplate: ExperimentTemplate;
 
-  isExperimentMine: boolean = false;
+  isExperimentEditable: boolean = false;
   existRuns: boolean = false;
 
   constructor(
@@ -63,12 +63,12 @@ export class ExperimentDetailComponent {
       );
 
     firstValueFrom(data$)
-      .then(([dataset, model, publications, experimentTemplate, isExperimentMine, experimentRunsCount, experiment]) => {
+      .then(([dataset, model, publications, experimentTemplate, isExperimentEditable, experimentRunsCount, experiment]) => {
         this.dataset = dataset;
         this.model = model;
         this.relatedPublications = publications;
         this.experimentTemplate = experimentTemplate;
-        this.isExperimentMine = isExperimentMine;
+        this.isExperimentEditable = isExperimentEditable;
         this.existRuns = experimentRunsCount > 0;
         this.experiment = experiment;
 
@@ -204,5 +204,14 @@ export class ExperimentDetailComponent {
             .catch(err => console.error(err));
         }
       });
+  }
+
+  undoBtnClicked(): void {
+   firstValueFrom(this.backend.setExperimentUsability(this.experiment.id, true))
+    .then(_ => {
+      this.isExperimentEditable = true;
+      this.experiment.is_usable = true;
+    })
+    .catch(err => console.error(err));
   }
 }

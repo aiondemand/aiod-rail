@@ -26,6 +26,7 @@ export class ExperimentRunListComponent implements OnInit {
     private snackBar: SnackBarService
   ) { }
 
+  // TODO make this table dynamically reflect the current state of experiment runs
   ngOnInit(): void {
     this.updateRuns();
   }

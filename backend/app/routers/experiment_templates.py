@@ -70,7 +70,11 @@ async def is_experiment_template_editable(
             detail="Specified experiment template doesn't exist",
         )
 
-    return user is not None and experiment_template.created_by == user["email"]
+    return (
+        user is not None
+        and experiment_template.created_by == user["email"]
+        and experiment_template.is_usable
+    )
 
 
 @router.get("/count/experiment-templates", response_model=int)
@@ -211,18 +215,18 @@ async def approve_experiment_template(
     await exp_scheduler.add_image_to_build(experiment_template.id)
 
 
-@router.get("/count/experiment-templates/{id}/experiments", response_model=int)
-async def get_experiments_of_template_count(
+@router.get("/experiment-templates/{id}/exist-experiments", response_model=bool)
+async def exist_experiments_of_template(
     id: PydanticObjectId,
-    only_mine: bool = False,
+    only_others: bool = False,
     user: dict = Depends(get_current_user(required=True)),
 ) -> Any:
     await get_experiment_template_if_accessible_or_raise(id, user)
 
-    search_conditions = [Experiment.created_by == user["email"]] if only_mine else []
+    search_conditions = [Experiment.created_by != user["email"]] if only_others else []
     search_conditions.append(Experiment.experiment_template_id == id)
 
-    return await Experiment.find(*search_conditions).count()
+    return await Experiment.find(*search_conditions).count() > 0
 
 
 def find_specific_experiment_templates(

@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ExperimentTemplate } from 'src/app/models/experiment-template';
 import { BackendApiService } from 'src/app/services/backend-api.service';
-import { Observable, firstValueFrom, min } from 'rxjs';
+import { Observable, first, firstValueFrom, min } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmPopupComponent } from '../../general/popup/confirm-popup.component';
 import { ConfirmPopupInput } from 'src/app/models/popup-input';
@@ -14,10 +14,10 @@ import { ConfirmPopupInput } from 'src/app/models/popup-input';
   styleUrls: ['./experiment-template-detail.component.scss']
 })
 export class ExperimentTemplateDetailComponent {
-  experimentTemplate$: Observable<ExperimentTemplate>;
+  experimentTemplate: ExperimentTemplate;
   templateId: string;
   existExperiments: boolean = false;
-  isTemplateMine: boolean = false;
+  isTemplateEditable: boolean = false;
   
   constructor(
     protected backend: BackendApiService,
@@ -31,13 +31,15 @@ export class ExperimentTemplateDetailComponent {
   ngOnInit() {
     this.route.params.subscribe(params => {
       this.templateId = params["id"];
-      this.experimentTemplate$ = this.backend.getExperimentTemplate(params["id"]);
 
-      firstValueFrom(this.backend.getExperimentsOfTemplateCount(params["id"], false))
-        .then(count => this.existExperiments = count > 0)
+      firstValueFrom(this.backend.getExperimentTemplate(params["id"]))
+        .then(template => this.experimentTemplate = template)
+        .catch(err => console.error(err));
+      firstValueFrom(this.backend.existExperimentsOfTeplate(params["id"], false))
+        .then(exist => this.existExperiments = exist)
         .catch(err => console.error(err));
       firstValueFrom(this.backend.isExperimentTemplateEditable(params["id"]))
-        .then(mine => this.isTemplateMine = mine)
+        .then(editable => this.isTemplateEditable = editable)
         .catch(err => console.error(err));
     });
   }
@@ -110,5 +112,14 @@ export class ExperimentTemplateDetailComponent {
               .catch(err => console.error(err));
         }
       });
+  }
+
+  undoBtnClicked(): void {
+    firstValueFrom(this.backend.setExperimentTemplateUsability(this.templateId, true))
+    .then(_ => {
+      this.isTemplateEditable = true;
+      this.experimentTemplate.is_usable = true
+    })
+    .catch(err => console.error(err));
   }
 }

@@ -1,4 +1,4 @@
-<div *ngIf="experimentTemplate$ | async as experimentTemplate">
+<div *ngIf="experimentTemplate">
     <div class="header">
         <div class="header-name">
             <h1>
@@ -8,7 +8,7 @@
             <mat-icon *ngIf="!experimentTemplate.is_public" matTooltip="Private template">public_off</mat-icon>
         </div>
         
-        <div class="header-buttons" *ngIf="isTemplateMine && experimentTemplate.is_usable">
+        <div class="header-buttons" *ngIf="isTemplateEditable">
             <button mat-icon-button (click)="editBtnClicked()">
                 <mat-icon>edit</mat-icon>
             </button>
@@ -16,11 +16,16 @@
                 <mat-icon>delete</mat-icon>
             </button>
         </div>
+
+        <div class="deleted-state" *ngIf="!experimentTemplate.is_usable">
+            <span class="crashed"><mat-icon matTooltip="New experiments cannot use this template">delete</mat-icon>Deleted</span>
+            <button mat-stroked-button class="undo-button" (click)="undoBtnClicked()">
+                <mat-icon>settings_backup_restore</mat-icon>
+                Undo deletion
+            </button>
+        </div>
     </div>
     
-    <div class="state" *ngIf="!experimentTemplate.is_usable">
-        <span class="crashed"><mat-icon matTooltip="New experiments cannot use this template">delete</mat-icon>Deleted</span>
-    </div>
     <div class="state" *ngIf="experimentTemplate.is_usable && experimentTemplate.state != 'FINISHED'">
         <ng-container *ngIf="!experimentTemplate.approved">
             <span class="crashed"><mat-icon matTooltip="Experiment templates created by users are manually reviewed and then approved for use">search</mat-icon>Waiting for approval</span>
@@ -180,4 +185,4 @@
     <!-- TODO later related experiments, datasets, models... -->
 </div>
 
-<mat-spinner *ngIf="!(experimentTemplate$ | async)" class="loading-screen"></mat-spinner>
+<mat-spinner *ngIf="!experimentTemplate" class="loading-screen"></mat-spinner>
