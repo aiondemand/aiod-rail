@@ -35,8 +35,8 @@ export class ExperimentTemplateDetailComponent {
       firstValueFrom(this.backend.getExperimentTemplate(params["id"]))
         .then(template => this.experimentTemplate = template)
         .catch(err => console.error(err));
-      firstValueFrom(this.backend.existExperimentsOfTeplate(params["id"], false))
-        .then(exist => this.existExperiments = exist)
+      firstValueFrom(this.backend.getExperimentsOfTeplateCount(params["id"], false))
+        .then(count => this.existExperiments = count > 0)
         .catch(err => console.error(err));
       firstValueFrom(this.backend.isExperimentTemplateEditable(params["id"]))
         .then(editable => this.isTemplateEditable = editable)

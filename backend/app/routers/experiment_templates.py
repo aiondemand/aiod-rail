@@ -129,22 +129,22 @@ async def update_experiment_template(
     old_exp_template = await get_experiment_template_if_accessible_or_raise(
         id, user, write_access=True
     )
-    exist_experiments = (
-        await Experiment.find(Experiment.experiment_template_id == id).count() > 0
+    editable_environment = (
+        await Experiment.find(Experiment.experiment_template_id == id).count() == 0
     )
-    exist_others_experiments = (
+    editable_visibility = (
         await Experiment.find(
             Experiment.experiment_template_id == id,
             Experiment.created_by != user["email"],
         ).count()
-        > 0
+        == 0
     )
 
-    template_to_save = ExperimentTemplate.update_template(
+    template_to_save = await ExperimentTemplate.update_template(
         old_exp_template,
         experiment_template_req,
-        exist_experiments,
-        exist_others_experiments,
+        editable_environment,
+        editable_visibility,
     )
     if template_to_save is None:
         raise HTTPException(
@@ -208,25 +208,26 @@ async def approve_experiment_template(
             detail="Such experiment template doesn't exist",
         )
 
-    experiment_template.approved = is_approved
+    experiment_template.is_approved = is_approved
     experiment_template.updated_at = datetime.now(tz=timezone.utc)
-
     await ExperimentTemplate.replace(experiment_template)
-    await exp_scheduler.add_image_to_build(experiment_template.id)
+
+    if is_approved:
+        await exp_scheduler.add_image_to_build(experiment_template.id)
 
 
-@router.get("/experiment-templates/{id}/exist-experiments", response_model=bool)
-async def exist_experiments_of_template(
+@router.get("/count/experiment-templates/{id}/experiments", response_model=int)
+async def get_experiments_of_template_count(
     id: PydanticObjectId,
-    only_others: bool = False,
+    only_mine: bool = False,
     user: dict = Depends(get_current_user(required=True)),
 ) -> Any:
     await get_experiment_template_if_accessible_or_raise(id, user)
 
-    search_conditions = [Experiment.created_by != user["email"]] if only_others else []
+    search_conditions = [Experiment.created_by == user["email"]] if only_mine else []
     search_conditions.append(Experiment.experiment_template_id == id)
 
-    return await Experiment.find(*search_conditions).count() > 0
+    return await Experiment.find(*search_conditions).count()
 
 
 def find_specific_experiment_templates(
@@ -248,19 +249,19 @@ def find_specific_experiment_templates(
     if len(search_query) > 0:
         search_conditions.append(Text(search_query))
 
-    if user is None and only_mine:
-        # Authentication required to see your experiment templates
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="This endpoint requires authorization. You need to be logged in.",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    elif only_mine:
-        search_conditions.append(ExperimentTemplate.created_by == user["email"])
+    if only_mine:
+        if user is not None:
+            search_conditions.append(ExperimentTemplate.created_by == user["email"])
+        else:
+            # Authentication required to see your experiment templates
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="This endpoint requires authorization. You need to be logged in.",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
 
     if only_finalized:
         search_conditions.append(ExperimentTemplate.state == TemplateState.FINISHED)
-        search_conditions.append(ExperimentTemplate.approved == True)  # noqa: E712
     if only_usable:
         search_conditions.append(ExperimentTemplate.is_usable == True)  # noqa: E712
     if only_public:

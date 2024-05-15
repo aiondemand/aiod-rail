@@ -77,11 +77,11 @@ class Experiment(Document):
         self.is_public = new_experiment.is_public
 
     @classmethod
-    def update_experiment(
+    async def update_experiment(
         cls,
         old_experiment: Experiment,
         experiment_req: ExperimentCreate,
-        exist_runs: bool,
+        editable_assets: bool,
     ) -> Experiment | None:
         new_experiment = Experiment(
             **experiment_req.dict(), created_by=old_experiment.created_by
@@ -89,13 +89,12 @@ class Experiment(Document):
         same_assets = old_experiment.has_same_assets(new_experiment)
 
         if same_assets:
-            # Update name, descr & visibility (we can switch experiment visibility
-            # whenever we would like to)
+            # Update name, descr & visibility
             old_experiment.update_non_assets(new_experiment)
             old_experiment.updated_at = new_experiment.updated_at
             return old_experiment
 
-        if exist_runs is False:
+        if editable_assets:
             # No runs exist yet, so we can change everything in experiment
             new_experiment.created_at = old_experiment.created_at
             new_experiment.id = old_experiment.id

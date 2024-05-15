@@ -59,7 +59,7 @@ class ExperimentTemplateResponse(ExperimentTemplateBase):
     updated_at: datetime
     state: TemplateState
     dockerfile: str
-    approved: bool
+    is_approved: bool
     is_usable: bool
 
 

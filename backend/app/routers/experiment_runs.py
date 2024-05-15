@@ -78,7 +78,7 @@ async def get_experiment_run(
     user: dict = Depends(get_current_user(required=False)),
 ) -> Any:
     experiment_run = await get_experiment_run_if_accessible_or_raise(id, user)
-    return experiment_run.map_to_detailed_response()
+    return experiment_run.map_to_response(return_detailed_response=True)
 
 
 @router.get("/experiment-runs/{id}/logs", response_class=PlainTextResponse)

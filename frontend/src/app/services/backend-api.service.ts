@@ -323,8 +323,8 @@ export class BackendApiService {
     return this.http.get<number>(`${environment.BACKEND_API_URL}/count/experiment-templates${queries}`);
   }
 
-  existExperimentsOfTeplate(id: string, only_others: boolean): Observable<boolean> {
-    return this.http.get<boolean>(`${environment.BACKEND_API_URL}/experiment-templates/${id}/exist-experiments?only_others=${only_others}`);
+  getExperimentsOfTeplateCount(id: string, only_mine: boolean): Observable<number> {
+    return this.http.get<number>(`${environment.BACKEND_API_URL}/count/experiment-templates/${id}/experiments?only_mine=${only_mine}`);
   }
 
   /**

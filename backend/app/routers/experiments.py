@@ -125,10 +125,12 @@ async def update_experiment(
     old_experiment = await get_experiment_if_accessible_or_raise(
         id, user, write_access=True
     )
-    exist_runs = await ExperimentRun.find(ExperimentRun.experiment_id == id).count() > 0
+    editable_assets = (
+        await ExperimentRun.find(ExperimentRun.experiment_id == id).count() == 0
+    )
 
-    experiment_to_save = Experiment.update_experiment(
-        old_experiment, experiment_req, exist_runs
+    experiment_to_save = await Experiment.update_experiment(
+        old_experiment, experiment_req, editable_assets
     )
     if experiment_to_save is None:
         raise HTTPException(

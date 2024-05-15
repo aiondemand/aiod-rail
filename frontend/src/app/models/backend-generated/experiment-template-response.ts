@@ -31,7 +31,7 @@ export interface ExperimentTemplateResponse {
     updated_at: string;
     state: TemplateState;
     dockerfile: string;
-    approved: boolean;
+    is_approved: boolean;
     is_usable: boolean;
     is_public: boolean;
 }

@@ -57,11 +57,13 @@ class ExperimentRun(Document):
         self.state = state
         self.updated_at = datetime.now(tz=timezone.utc)
 
-    def map_to_response(self) -> ExperimentRunResponse:
-        return ExperimentRunResponse(**self.dict(), metrics=self.metrics)
+    def map_to_response(
+        self, return_detailed_response: bool = False
+    ) -> ExperimentRunResponse:
+        response = ExperimentRunResponse(**self.dict(), metrics=self.metrics)
 
-    def map_to_detailed_response(self) -> ExperimentRunDetails:
-        response = self.map_to_response()
+        if return_detailed_response is False:
+            return response
         return ExperimentRunDetails(**response.dict(), logs=self.logs)
 
     def retry_failed_run(self):

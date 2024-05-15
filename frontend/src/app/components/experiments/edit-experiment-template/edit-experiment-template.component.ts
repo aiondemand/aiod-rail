@@ -83,17 +83,17 @@ export class EditExperimentTemplateComponent {
       if (params["id"]) {
         var data$ = of(params["id"]).pipe(
           switchMap(templateId => combineLatest([
-            this.backend.existExperimentsOfTeplate(templateId, false),
-            this.backend.existExperimentsOfTeplate(templateId, true),
+            this.backend.getExperimentsOfTeplateCount(templateId, false),
+            this.backend.getExperimentsOfTeplateCount(templateId, true),
             this.backend.getExperimentTemplate(templateId)
           ])),
           retry(3)
         );
 
         firstValueFrom(data$)
-          .then(([existExperiments, existOthersExperiments, template]) => {
-            this.editableEnvironment = !existExperiments;
-            this.editableVisibility = !existOthersExperiments;
+          .then(([experimentCount, myExperimentCount, template]) => {
+            this.editableEnvironment = experimentCount == 0 ;
+            this.editableVisibility = experimentCount - myExperimentCount == 0;
 
             this.inputExperimentTemplate = template
             this.prefillOldValues();
