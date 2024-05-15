@@ -189,15 +189,16 @@ def find_specific_experiments(
     if len(search_query) > 0:
         search_conditions.append(Text(search_query))
 
-    if user is None and only_mine:
-        # Authentication required to see your experiments
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="This endpoint requires authorization. You need to be logged in.",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    elif only_mine:
-        search_conditions.append(Experiment.created_by == user["email"])
+    if only_mine:
+        if user is not None:
+            search_conditions.append(Experiment.created_by == user["email"])
+        else:
+            # Authentication required to see your experiment templates
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="This endpoint requires authorization. You need to be logged in.",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
 
     if only_usable:
         search_conditions.append(Experiment.is_usable == True)  # noqa: E712

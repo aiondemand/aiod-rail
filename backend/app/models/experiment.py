@@ -87,17 +87,18 @@ class Experiment(Document):
             **experiment_req.dict(), created_by=old_experiment.created_by
         )
         same_assets = old_experiment.has_same_assets(new_experiment)
+        experiment_to_return = None
 
         if same_assets:
             # Update name, descr & visibility
             old_experiment.update_non_assets(new_experiment)
             old_experiment.updated_at = new_experiment.updated_at
-            return old_experiment
+            experiment_to_return = old_experiment
 
-        if editable_assets:
+        elif editable_assets:
             # No runs exist yet, so we can change everything in experiment
             new_experiment.created_at = old_experiment.created_at
             new_experiment.id = old_experiment.id
-            return new_experiment
+            experiment_to_return = new_experiment
 
-        return None
+        return experiment_to_return

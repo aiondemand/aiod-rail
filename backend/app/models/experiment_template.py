@@ -204,15 +204,16 @@ class ExperimentTemplate(Document):
         new_template = ExperimentTemplate(
             **experiment_template_req.dict(), created_by=old_template.created_by
         )
+        template_to_return = None
 
         if same_environment and (same_visibility or editable_visibility):
             # We modify only name & descr (+ maybe visibility)
             old_template.update_non_environment(new_template)
             old_template.is_public = experiment_template_req.is_public
             old_template.updated_at = new_template.updated_at
-            return old_template
+            template_to_return = old_template
 
-        if editable_environment:
+        elif editable_environment:
             # If there are no experiments tied to this template,
             # we can modify everything
             new_template.created_at = old_template.created_at
@@ -223,6 +224,6 @@ class ExperimentTemplate(Document):
                 pip_requirements=experiment_template_req.pip_requirements,
                 script=experiment_template_req.script,
             )
-            return new_template
+            template_to_return = new_template
 
-        return None
+        return template_to_return
