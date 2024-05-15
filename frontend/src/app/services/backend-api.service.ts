@@ -254,7 +254,7 @@ export class BackendApiService {
    * @returns Observable<number> (count)
    */
   getExperimentsCount(query: string, experimentQueries?: ExperimentQueries): Observable<number> {
-    let queries = `?$query=${query}&${this._buildExperimentQueries(experimentQueries)}`;
+    let queries = `?query=${query}&${this._buildExperimentQueries(experimentQueries)}`;
     return this.http.get<number>(`${environment.BACKEND_API_URL}/count/experiments${queries}`);
   }
 

@@ -43,9 +43,9 @@
     <h2>Link related AI assets</h2>
     <div class="related-publications">
         <h3>Publications</h3>
-        <mat-form-field>
+        <mat-form-field> 
             <mat-label>Related publications</mat-label>
-            <mat-select (selectionChange)="onSelectPublication($event)">
+            <mat-select (selectionChange)="onSelectPublication($event)" [disabled]="!editableAssets">
                 <mat-option *ngFor="let publication of (publications$ | async)" [value]="publication">
                     {{ publication.name }}
                 </mat-option>
