@@ -17,36 +17,22 @@ from __future__ import annotations
 import json
 import pprint
 import re  # noqa: F401
+from datetime import datetime
 from typing import Any, ClassVar, Dict, List, Optional, Set
 
-from aiod_rail_sdk.models.environment_var import EnvironmentVar
-from pydantic import BaseModel, ConfigDict, StrictStr
+from pydantic import BaseModel, ConfigDict, StrictInt, StrictStr
 from typing_extensions import Self
 
 
-class ExperimentCreate(BaseModel):
+class FileDetail(BaseModel):
     """
-    ExperimentCreate
+    FileDetail
     """  # noqa: E501
 
-    name: StrictStr
-    description: StrictStr
-    publication_ids: Optional[List[StrictStr]] = None
-    experiment_template_id: StrictStr
-    dataset_ids: List[StrictStr]
-    model_ids: List[StrictStr]
-    env_vars: List[EnvironmentVar]
-    metrics: List[StrictStr]
-    __properties: ClassVar[List[str]] = [
-        "name",
-        "description",
-        "publication_ids",
-        "experiment_template_id",
-        "dataset_ids",
-        "model_ids",
-        "env_vars",
-        "metrics",
-    ]
+    filepath: StrictStr
+    size: StrictInt
+    last_modified: datetime
+    __properties: ClassVar[List[str]] = ["filepath", "size", "last_modified"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -65,7 +51,7 @@ class ExperimentCreate(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of ExperimentCreate from a JSON string"""
+        """Create an instance of FileDetail from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -85,18 +71,11 @@ class ExperimentCreate(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of each item in env_vars (list)
-        _items = []
-        if self.env_vars:
-            for _item in self.env_vars:
-                if _item:
-                    _items.append(_item.to_dict())
-            _dict["env_vars"] = _items
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of ExperimentCreate from a dict"""
+        """Create an instance of FileDetail from a dict"""
         if obj is None:
             return None
 
@@ -105,18 +84,9 @@ class ExperimentCreate(BaseModel):
 
         _obj = cls.model_validate(
             {
-                "name": obj.get("name"),
-                "description": obj.get("description"),
-                "publication_ids": obj.get("publication_ids"),
-                "experiment_template_id": obj.get("experiment_template_id"),
-                "dataset_ids": obj.get("dataset_ids"),
-                "model_ids": obj.get("model_ids"),
-                "env_vars": (
-                    [EnvironmentVar.from_dict(_item) for _item in obj["env_vars"]]
-                    if obj.get("env_vars") is not None
-                    else None
-                ),
-                "metrics": obj.get("metrics"),
+                "filepath": obj.get("filepath"),
+                "size": obj.get("size"),
+                "last_modified": obj.get("last_modified"),
             }
         )
         return _obj

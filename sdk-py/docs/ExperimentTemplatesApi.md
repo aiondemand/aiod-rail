@@ -1,6 +1,6 @@
 # aiod_rail_sdk.ExperimentTemplatesApi
 
-All URIs are relative to *http://localhost/api*
+All URIs are relative to *https://rail-dev.aiod.i3a.es/api*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
@@ -12,7 +12,7 @@ Method | HTTP request | Description
 
 
 # **approve_experiment_template_v1_experiment_templates_id_approve_patch**
-> object approve_experiment_template_v1_experiment_templates_id_approve_patch(id, password, approve_value=approve_value)
+> object approve_experiment_template_v1_experiment_templates_id_approve_patch(id, password, is_approved=is_approved)
 
 Approve Experiment Template
 
@@ -24,10 +24,10 @@ import aiod_rail_sdk
 from aiod_rail_sdk.rest import ApiException
 from pprint import pprint
 
-# Defining the host is optional and defaults to http://localhost/api
+# Defining the host is optional and defaults to https://rail-dev.aiod.i3a.es/api
 # See configuration.py for a list of all supported configuration parameters.
 configuration = aiod_rail_sdk.Configuration(
-    host = "http://localhost/api"
+    host = "https://rail-dev.aiod.i3a.es/api"
 )
 
 
@@ -37,11 +37,11 @@ with aiod_rail_sdk.ApiClient(configuration) as api_client:
     api_instance = aiod_rail_sdk.ExperimentTemplatesApi(api_client)
     id = 'id_example' # str | 
     password = 'password_example' # str | 
-    approve_value = True # bool |  (optional) (default to True)
+    is_approved = False # bool |  (optional) (default to False)
 
     try:
         # Approve Experiment Template
-        api_response = api_instance.approve_experiment_template_v1_experiment_templates_id_approve_patch(id, password, approve_value=approve_value)
+        api_response = api_instance.approve_experiment_template_v1_experiment_templates_id_approve_patch(id, password, is_approved=is_approved)
         print("The response of ExperimentTemplatesApi->approve_experiment_template_v1_experiment_templates_id_approve_patch:\n")
         pprint(api_response)
     except Exception as e:
@@ -57,7 +57,7 @@ Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **id** | **str**|  | 
  **password** | **str**|  | 
- **approve_value** | **bool**|  | [optional] [default to True]
+ **is_approved** | **bool**|  | [optional] [default to False]
 
 ### Return type
 
@@ -96,10 +96,10 @@ from aiod_rail_sdk.models.experiment_template_response import ExperimentTemplate
 from aiod_rail_sdk.rest import ApiException
 from pprint import pprint
 
-# Defining the host is optional and defaults to http://localhost/api
+# Defining the host is optional and defaults to https://rail-dev.aiod.i3a.es/api
 # See configuration.py for a list of all supported configuration parameters.
 configuration = aiod_rail_sdk.Configuration(
-    host = "http://localhost/api"
+    host = "https://rail-dev.aiod.i3a.es/api"
 )
 
 # The client must configure the authentication and authorization parameters
@@ -167,10 +167,10 @@ from aiod_rail_sdk.models.experiment_template_response import ExperimentTemplate
 from aiod_rail_sdk.rest import ApiException
 from pprint import pprint
 
-# Defining the host is optional and defaults to http://localhost/api
+# Defining the host is optional and defaults to https://rail-dev.aiod.i3a.es/api
 # See configuration.py for a list of all supported configuration parameters.
 configuration = aiod_rail_sdk.Configuration(
-    host = "http://localhost/api"
+    host = "https://rail-dev.aiod.i3a.es/api"
 )
 
 
@@ -221,7 +221,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **get_experiment_templates_count_v1_count_experiment_templates_get**
-> int get_experiment_templates_count_v1_count_experiment_templates_get(include_mine=include_mine, include_approved=include_approved, query_operator=query_operator)
+> int get_experiment_templates_count_v1_count_experiment_templates_get(only_mine=only_mine, include_pending=include_pending, only_finalized=only_finalized)
 
 Get Experiment Templates Count
 
@@ -233,10 +233,10 @@ import aiod_rail_sdk
 from aiod_rail_sdk.rest import ApiException
 from pprint import pprint
 
-# Defining the host is optional and defaults to http://localhost/api
+# Defining the host is optional and defaults to https://rail-dev.aiod.i3a.es/api
 # See configuration.py for a list of all supported configuration parameters.
 configuration = aiod_rail_sdk.Configuration(
-    host = "http://localhost/api"
+    host = "https://rail-dev.aiod.i3a.es/api"
 )
 
 # The client must configure the authentication and authorization parameters
@@ -248,13 +248,13 @@ configuration = aiod_rail_sdk.Configuration(
 with aiod_rail_sdk.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = aiod_rail_sdk.ExperimentTemplatesApi(api_client)
-    include_mine = False # bool |  (optional) (default to False)
-    include_approved = False # bool |  (optional) (default to False)
-    query_operator = aiod_rail_sdk.QueryOperator() # QueryOperator |  (optional)
+    only_mine = False # bool |  (optional) (default to False)
+    include_pending = False # bool |  (optional) (default to False)
+    only_finalized = False # bool |  (optional) (default to False)
 
     try:
         # Get Experiment Templates Count
-        api_response = api_instance.get_experiment_templates_count_v1_count_experiment_templates_get(include_mine=include_mine, include_approved=include_approved, query_operator=query_operator)
+        api_response = api_instance.get_experiment_templates_count_v1_count_experiment_templates_get(only_mine=only_mine, include_pending=include_pending, only_finalized=only_finalized)
         print("The response of ExperimentTemplatesApi->get_experiment_templates_count_v1_count_experiment_templates_get:\n")
         pprint(api_response)
     except Exception as e:
@@ -268,9 +268,9 @@ with aiod_rail_sdk.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **include_mine** | **bool**|  | [optional] [default to False]
- **include_approved** | **bool**|  | [optional] [default to False]
- **query_operator** | [**QueryOperator**](.md)|  | [optional] 
+ **only_mine** | **bool**|  | [optional] [default to False]
+ **include_pending** | **bool**|  | [optional] [default to False]
+ **only_finalized** | **bool**|  | [optional] [default to False]
 
 ### Return type
 
@@ -295,7 +295,7 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **get_experiment_templates_v1_experiment_templates_get**
-> List[ExperimentTemplateResponse] get_experiment_templates_v1_experiment_templates_get(include_mine=include_mine, include_approved=include_approved, query_operator=query_operator, offset=offset, limit=limit)
+> List[ExperimentTemplateResponse] get_experiment_templates_v1_experiment_templates_get(only_mine=only_mine, include_pending=include_pending, only_finalized=only_finalized, offset=offset, limit=limit)
 
 Get Experiment Templates
 
@@ -308,10 +308,10 @@ from aiod_rail_sdk.models.experiment_template_response import ExperimentTemplate
 from aiod_rail_sdk.rest import ApiException
 from pprint import pprint
 
-# Defining the host is optional and defaults to http://localhost/api
+# Defining the host is optional and defaults to https://rail-dev.aiod.i3a.es/api
 # See configuration.py for a list of all supported configuration parameters.
 configuration = aiod_rail_sdk.Configuration(
-    host = "http://localhost/api"
+    host = "https://rail-dev.aiod.i3a.es/api"
 )
 
 # The client must configure the authentication and authorization parameters
@@ -323,15 +323,15 @@ configuration = aiod_rail_sdk.Configuration(
 with aiod_rail_sdk.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = aiod_rail_sdk.ExperimentTemplatesApi(api_client)
-    include_mine = False # bool |  (optional) (default to False)
-    include_approved = False # bool |  (optional) (default to False)
-    query_operator = aiod_rail_sdk.QueryOperator() # QueryOperator |  (optional)
+    only_mine = False # bool |  (optional) (default to False)
+    include_pending = False # bool |  (optional) (default to False)
+    only_finalized = False # bool |  (optional) (default to False)
     offset = 0 # int |  (optional) (default to 0)
     limit = 100 # int |  (optional) (default to 100)
 
     try:
         # Get Experiment Templates
-        api_response = api_instance.get_experiment_templates_v1_experiment_templates_get(include_mine=include_mine, include_approved=include_approved, query_operator=query_operator, offset=offset, limit=limit)
+        api_response = api_instance.get_experiment_templates_v1_experiment_templates_get(only_mine=only_mine, include_pending=include_pending, only_finalized=only_finalized, offset=offset, limit=limit)
         print("The response of ExperimentTemplatesApi->get_experiment_templates_v1_experiment_templates_get:\n")
         pprint(api_response)
     except Exception as e:
@@ -345,9 +345,9 @@ with aiod_rail_sdk.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **include_mine** | **bool**|  | [optional] [default to False]
- **include_approved** | **bool**|  | [optional] [default to False]
- **query_operator** | [**QueryOperator**](.md)|  | [optional] 
+ **only_mine** | **bool**|  | [optional] [default to False]
+ **include_pending** | **bool**|  | [optional] [default to False]
+ **only_finalized** | **bool**|  | [optional] [default to False]
  **offset** | **int**|  | [optional] [default to 0]
  **limit** | **int**|  | [optional] [default to 100]
 

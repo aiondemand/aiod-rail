@@ -1,10 +1,11 @@
 # aiod_rail_sdk.ExperimentsApi
 
-All URIs are relative to *http://localhost/api*
+All URIs are relative to *https://rail-dev.aiod.i3a.es/api*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
 [**create_experiment_v1_experiments_post**](ExperimentsApi.md#create_experiment_v1_experiments_post) | **POST** /v1/experiments | Create Experiment
+[**download_file_v1_experiment_runs_id_files_download_get**](ExperimentsApi.md#download_file_v1_experiment_runs_id_files_download_get) | **GET** /v1/experiment-runs/{id}/files/download | Download File
 [**execute_experiment_run_v1_experiments_id_execute_get**](ExperimentsApi.md#execute_experiment_run_v1_experiments_id_execute_get) | **GET** /v1/experiments/{id}/execute | Execute Experiment Run
 [**get_all_experiment_runs_v1_experiment_runs_get**](ExperimentsApi.md#get_all_experiment_runs_v1_experiment_runs_get) | **GET** /v1/experiment-runs | Get All Experiment Runs
 [**get_experiment_run_logs_v1_experiment_runs_id_logs_get**](ExperimentsApi.md#get_experiment_run_logs_v1_experiment_runs_id_logs_get) | **GET** /v1/experiment-runs/{id}/logs | Get Experiment Run Logs
@@ -14,6 +15,7 @@ Method | HTTP request | Description
 [**get_experiment_v1_experiments_id_get**](ExperimentsApi.md#get_experiment_v1_experiments_id_get) | **GET** /v1/experiments/{id} | Get Experiment
 [**get_experiments_count_v1_count_experiments_get**](ExperimentsApi.md#get_experiments_count_v1_count_experiments_get) | **GET** /v1/count/experiments | Get Experiments Count
 [**get_experiments_v1_experiments_get**](ExperimentsApi.md#get_experiments_v1_experiments_get) | **GET** /v1/experiments | Get Experiments
+[**list_files_v1_experiment_runs_id_files_list_get**](ExperimentsApi.md#list_files_v1_experiment_runs_id_files_list_get) | **GET** /v1/experiment-runs/{id}/files/list | List Files
 
 
 # **create_experiment_v1_experiments_post**
@@ -31,10 +33,10 @@ from aiod_rail_sdk.models.experiment_response import ExperimentResponse
 from aiod_rail_sdk.rest import ApiException
 from pprint import pprint
 
-# Defining the host is optional and defaults to http://localhost/api
+# Defining the host is optional and defaults to https://rail-dev.aiod.i3a.es/api
 # See configuration.py for a list of all supported configuration parameters.
 configuration = aiod_rail_sdk.Configuration(
-    host = "http://localhost/api"
+    host = "https://rail-dev.aiod.i3a.es/api"
 )
 
 # The client must configure the authentication and authorization parameters
@@ -88,6 +90,76 @@ Name | Type | Description  | Notes
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
+# **download_file_v1_experiment_runs_id_files_download_get**
+> download_file_v1_experiment_runs_id_files_download_get(id, filepath)
+
+Download File
+
+### Example
+
+
+```python
+import aiod_rail_sdk
+from aiod_rail_sdk.rest import ApiException
+from pprint import pprint
+
+# Defining the host is optional and defaults to https://rail-dev.aiod.i3a.es/api
+# See configuration.py for a list of all supported configuration parameters.
+configuration = aiod_rail_sdk.Configuration(
+    host = "https://rail-dev.aiod.i3a.es/api"
+)
+
+# The client must configure the authentication and authorization parameters
+# in accordance with the API server security policy.
+# Examples for each auth method are provided below, use the example that
+# satisfies your auth use case.
+
+# Enter a context with an instance of the API client
+with aiod_rail_sdk.ApiClient(configuration) as api_client:
+    # Create an instance of the API class
+    api_instance = aiod_rail_sdk.ExperimentsApi(api_client)
+    id = 'id_example' # str | 
+    filepath = 'filepath_example' # str | 
+
+    try:
+        # Download File
+        api_instance.download_file_v1_experiment_runs_id_files_download_get(id, filepath)
+    except Exception as e:
+        print("Exception when calling ExperimentsApi->download_file_v1_experiment_runs_id_files_download_get: %s\n" % e)
+```
+
+
+
+### Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **id** | **str**|  | 
+ **filepath** | **str**|  | 
+
+### Return type
+
+void (empty response body)
+
+### Authorization
+
+[OpenIdConnect](../README.md#OpenIdConnect)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+### HTTP response details
+
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+**200** | Successful Response |  -  |
+**422** | Validation Error |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
 # **execute_experiment_run_v1_experiments_id_execute_get**
 > ExperimentRunResponse execute_experiment_run_v1_experiments_id_execute_get(id)
 
@@ -102,10 +174,10 @@ from aiod_rail_sdk.models.experiment_run_response import ExperimentRunResponse
 from aiod_rail_sdk.rest import ApiException
 from pprint import pprint
 
-# Defining the host is optional and defaults to http://localhost/api
+# Defining the host is optional and defaults to https://rail-dev.aiod.i3a.es/api
 # See configuration.py for a list of all supported configuration parameters.
 configuration = aiod_rail_sdk.Configuration(
-    host = "http://localhost/api"
+    host = "https://rail-dev.aiod.i3a.es/api"
 )
 
 # The client must configure the authentication and authorization parameters
@@ -173,12 +245,16 @@ from aiod_rail_sdk.models.experiment_run_response import ExperimentRunResponse
 from aiod_rail_sdk.rest import ApiException
 from pprint import pprint
 
-# Defining the host is optional and defaults to http://localhost/api
+# Defining the host is optional and defaults to https://rail-dev.aiod.i3a.es/api
 # See configuration.py for a list of all supported configuration parameters.
 configuration = aiod_rail_sdk.Configuration(
-    host = "http://localhost/api"
+    host = "https://rail-dev.aiod.i3a.es/api"
 )
 
+# The client must configure the authentication and authorization parameters
+# in accordance with the API server security policy.
+# Examples for each auth method are provided below, use the example that
+# satisfies your auth use case.
 
 # Enter a context with an instance of the API client
 with aiod_rail_sdk.ApiClient(configuration) as api_client:
@@ -212,7 +288,7 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-No authorization required
+[OpenIdConnect](../README.md#OpenIdConnect)
 
 ### HTTP request headers
 
@@ -241,12 +317,16 @@ import aiod_rail_sdk
 from aiod_rail_sdk.rest import ApiException
 from pprint import pprint
 
-# Defining the host is optional and defaults to http://localhost/api
+# Defining the host is optional and defaults to https://rail-dev.aiod.i3a.es/api
 # See configuration.py for a list of all supported configuration parameters.
 configuration = aiod_rail_sdk.Configuration(
-    host = "http://localhost/api"
+    host = "https://rail-dev.aiod.i3a.es/api"
 )
 
+# The client must configure the authentication and authorization parameters
+# in accordance with the API server security policy.
+# Examples for each auth method are provided below, use the example that
+# satisfies your auth use case.
 
 # Enter a context with an instance of the API client
 with aiod_rail_sdk.ApiClient(configuration) as api_client:
@@ -278,7 +358,7 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-No authorization required
+[OpenIdConnect](../README.md#OpenIdConnect)
 
 ### HTTP request headers
 
@@ -308,12 +388,16 @@ from aiod_rail_sdk.models.experiment_run_details import ExperimentRunDetails
 from aiod_rail_sdk.rest import ApiException
 from pprint import pprint
 
-# Defining the host is optional and defaults to http://localhost/api
+# Defining the host is optional and defaults to https://rail-dev.aiod.i3a.es/api
 # See configuration.py for a list of all supported configuration parameters.
 configuration = aiod_rail_sdk.Configuration(
-    host = "http://localhost/api"
+    host = "https://rail-dev.aiod.i3a.es/api"
 )
 
+# The client must configure the authentication and authorization parameters
+# in accordance with the API server security policy.
+# Examples for each auth method are provided below, use the example that
+# satisfies your auth use case.
 
 # Enter a context with an instance of the API client
 with aiod_rail_sdk.ApiClient(configuration) as api_client:
@@ -345,7 +429,7 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-No authorization required
+[OpenIdConnect](../README.md#OpenIdConnect)
 
 ### HTTP request headers
 
@@ -374,12 +458,16 @@ import aiod_rail_sdk
 from aiod_rail_sdk.rest import ApiException
 from pprint import pprint
 
-# Defining the host is optional and defaults to http://localhost/api
+# Defining the host is optional and defaults to https://rail-dev.aiod.i3a.es/api
 # See configuration.py for a list of all supported configuration parameters.
 configuration = aiod_rail_sdk.Configuration(
-    host = "http://localhost/api"
+    host = "https://rail-dev.aiod.i3a.es/api"
 )
 
+# The client must configure the authentication and authorization parameters
+# in accordance with the API server security policy.
+# Examples for each auth method are provided below, use the example that
+# satisfies your auth use case.
 
 # Enter a context with an instance of the API client
 with aiod_rail_sdk.ApiClient(configuration) as api_client:
@@ -411,7 +499,7 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-No authorization required
+[OpenIdConnect](../README.md#OpenIdConnect)
 
 ### HTTP request headers
 
@@ -441,12 +529,16 @@ from aiod_rail_sdk.models.experiment_run_response import ExperimentRunResponse
 from aiod_rail_sdk.rest import ApiException
 from pprint import pprint
 
-# Defining the host is optional and defaults to http://localhost/api
+# Defining the host is optional and defaults to https://rail-dev.aiod.i3a.es/api
 # See configuration.py for a list of all supported configuration parameters.
 configuration = aiod_rail_sdk.Configuration(
-    host = "http://localhost/api"
+    host = "https://rail-dev.aiod.i3a.es/api"
 )
 
+# The client must configure the authentication and authorization parameters
+# in accordance with the API server security policy.
+# Examples for each auth method are provided below, use the example that
+# satisfies your auth use case.
 
 # Enter a context with an instance of the API client
 with aiod_rail_sdk.ApiClient(configuration) as api_client:
@@ -482,7 +574,7 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-No authorization required
+[OpenIdConnect](../README.md#OpenIdConnect)
 
 ### HTTP request headers
 
@@ -512,12 +604,16 @@ from aiod_rail_sdk.models.experiment_response import ExperimentResponse
 from aiod_rail_sdk.rest import ApiException
 from pprint import pprint
 
-# Defining the host is optional and defaults to http://localhost/api
+# Defining the host is optional and defaults to https://rail-dev.aiod.i3a.es/api
 # See configuration.py for a list of all supported configuration parameters.
 configuration = aiod_rail_sdk.Configuration(
-    host = "http://localhost/api"
+    host = "https://rail-dev.aiod.i3a.es/api"
 )
 
+# The client must configure the authentication and authorization parameters
+# in accordance with the API server security policy.
+# Examples for each auth method are provided below, use the example that
+# satisfies your auth use case.
 
 # Enter a context with an instance of the API client
 with aiod_rail_sdk.ApiClient(configuration) as api_client:
@@ -549,7 +645,7 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-No authorization required
+[OpenIdConnect](../README.md#OpenIdConnect)
 
 ### HTTP request headers
 
@@ -566,7 +662,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **get_experiments_count_v1_count_experiments_get**
-> int get_experiments_count_v1_count_experiments_get(include_mine=include_mine, query_operator=query_operator)
+> int get_experiments_count_v1_count_experiments_get()
 
 Get Experiments Count
 
@@ -578,10 +674,10 @@ import aiod_rail_sdk
 from aiod_rail_sdk.rest import ApiException
 from pprint import pprint
 
-# Defining the host is optional and defaults to http://localhost/api
+# Defining the host is optional and defaults to https://rail-dev.aiod.i3a.es/api
 # See configuration.py for a list of all supported configuration parameters.
 configuration = aiod_rail_sdk.Configuration(
-    host = "http://localhost/api"
+    host = "https://rail-dev.aiod.i3a.es/api"
 )
 
 # The client must configure the authentication and authorization parameters
@@ -593,12 +689,10 @@ configuration = aiod_rail_sdk.Configuration(
 with aiod_rail_sdk.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = aiod_rail_sdk.ExperimentsApi(api_client)
-    include_mine = False # bool |  (optional) (default to False)
-    query_operator = aiod_rail_sdk.QueryOperator() # QueryOperator |  (optional)
 
     try:
         # Get Experiments Count
-        api_response = api_instance.get_experiments_count_v1_count_experiments_get(include_mine=include_mine, query_operator=query_operator)
+        api_response = api_instance.get_experiments_count_v1_count_experiments_get()
         print("The response of ExperimentsApi->get_experiments_count_v1_count_experiments_get:\n")
         pprint(api_response)
     except Exception as e:
@@ -609,11 +703,7 @@ with aiod_rail_sdk.ApiClient(configuration) as api_client:
 
 ### Parameters
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **include_mine** | **bool**|  | [optional] [default to False]
- **query_operator** | [**QueryOperator**](.md)|  | [optional] 
+This endpoint does not need any parameter.
 
 ### Return type
 
@@ -633,12 +723,11 @@ Name | Type | Description  | Notes
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 **200** | Successful Response |  -  |
-**422** | Validation Error |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **get_experiments_v1_experiments_get**
-> List[ExperimentResponse] get_experiments_v1_experiments_get(include_mine=include_mine, query_operator=query_operator, offset=offset, limit=limit)
+> List[ExperimentResponse] get_experiments_v1_experiments_get(offset=offset, limit=limit)
 
 Get Experiments
 
@@ -651,10 +740,10 @@ from aiod_rail_sdk.models.experiment_response import ExperimentResponse
 from aiod_rail_sdk.rest import ApiException
 from pprint import pprint
 
-# Defining the host is optional and defaults to http://localhost/api
+# Defining the host is optional and defaults to https://rail-dev.aiod.i3a.es/api
 # See configuration.py for a list of all supported configuration parameters.
 configuration = aiod_rail_sdk.Configuration(
-    host = "http://localhost/api"
+    host = "https://rail-dev.aiod.i3a.es/api"
 )
 
 # The client must configure the authentication and authorization parameters
@@ -666,14 +755,12 @@ configuration = aiod_rail_sdk.Configuration(
 with aiod_rail_sdk.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = aiod_rail_sdk.ExperimentsApi(api_client)
-    include_mine = False # bool |  (optional) (default to False)
-    query_operator = aiod_rail_sdk.QueryOperator() # QueryOperator |  (optional)
     offset = 0 # int |  (optional) (default to 0)
     limit = 100 # int |  (optional) (default to 100)
 
     try:
         # Get Experiments
-        api_response = api_instance.get_experiments_v1_experiments_get(include_mine=include_mine, query_operator=query_operator, offset=offset, limit=limit)
+        api_response = api_instance.get_experiments_v1_experiments_get(offset=offset, limit=limit)
         print("The response of ExperimentsApi->get_experiments_v1_experiments_get:\n")
         pprint(api_response)
     except Exception as e:
@@ -687,14 +774,83 @@ with aiod_rail_sdk.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **include_mine** | **bool**|  | [optional] [default to False]
- **query_operator** | [**QueryOperator**](.md)|  | [optional] 
  **offset** | **int**|  | [optional] [default to 0]
  **limit** | **int**|  | [optional] [default to 100]
 
 ### Return type
 
 [**List[ExperimentResponse]**](ExperimentResponse.md)
+
+### Authorization
+
+[OpenIdConnect](../README.md#OpenIdConnect)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+### HTTP response details
+
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+**200** | Successful Response |  -  |
+**422** | Validation Error |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **list_files_v1_experiment_runs_id_files_list_get**
+> List[FileDetail] list_files_v1_experiment_runs_id_files_list_get(id)
+
+List Files
+
+### Example
+
+
+```python
+import aiod_rail_sdk
+from aiod_rail_sdk.models.file_detail import FileDetail
+from aiod_rail_sdk.rest import ApiException
+from pprint import pprint
+
+# Defining the host is optional and defaults to https://rail-dev.aiod.i3a.es/api
+# See configuration.py for a list of all supported configuration parameters.
+configuration = aiod_rail_sdk.Configuration(
+    host = "https://rail-dev.aiod.i3a.es/api"
+)
+
+# The client must configure the authentication and authorization parameters
+# in accordance with the API server security policy.
+# Examples for each auth method are provided below, use the example that
+# satisfies your auth use case.
+
+# Enter a context with an instance of the API client
+with aiod_rail_sdk.ApiClient(configuration) as api_client:
+    # Create an instance of the API class
+    api_instance = aiod_rail_sdk.ExperimentsApi(api_client)
+    id = 'id_example' # str | 
+
+    try:
+        # List Files
+        api_response = api_instance.list_files_v1_experiment_runs_id_files_list_get(id)
+        print("The response of ExperimentsApi->list_files_v1_experiment_runs_id_files_list_get:\n")
+        pprint(api_response)
+    except Exception as e:
+        print("Exception when calling ExperimentsApi->list_files_v1_experiment_runs_id_files_list_get: %s\n" % e)
+```
+
+
+
+### Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **id** | **str**|  | 
+
+### Return type
+
+[**List[FileDetail]**](FileDetail.md)
 
 ### Authorization
 

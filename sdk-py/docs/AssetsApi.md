@@ -1,6 +1,6 @@
 # aiod_rail_sdk.AssetsApi
 
-All URIs are relative to *http://localhost/api*
+All URIs are relative to *https://rail-dev.aiod.i3a.es/api*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
@@ -16,7 +16,9 @@ Method | HTTP request | Description
 [**get_model_v1_assets_models_id_get**](AssetsApi.md#get_model_v1_assets_models_id_get) | **GET** /v1/assets/models/{id} | Get Model
 [**get_models_count_v1_assets_counts_models_get**](AssetsApi.md#get_models_count_v1_assets_counts_models_get) | **GET** /v1/assets/counts/models | Get Models Count
 [**get_models_v1_assets_models_get**](AssetsApi.md#get_models_v1_assets_models_get) | **GET** /v1/assets/models | Get Models
+[**get_my_datasets_count_v1_assets_counts_datasets_my_get**](AssetsApi.md#get_my_datasets_count_v1_assets_counts_datasets_my_get) | **GET** /v1/assets/counts/datasets/my | Get My Datasets Count
 [**get_my_datasets_v1_assets_datasets_my_get**](AssetsApi.md#get_my_datasets_v1_assets_datasets_my_get) | **GET** /v1/assets/datasets/my | Get My Datasets
+[**get_my_models_count_v1_assets_counts_models_my_get**](AssetsApi.md#get_my_models_count_v1_assets_counts_models_my_get) | **GET** /v1/assets/counts/models/my | Get My Models Count
 [**get_my_models_v1_assets_models_my_get**](AssetsApi.md#get_my_models_v1_assets_models_my_get) | **GET** /v1/assets/models/my | Get My Models
 [**get_platforms_v1_assets_platforms_get**](AssetsApi.md#get_platforms_v1_assets_platforms_get) | **GET** /v1/assets/platforms | Get Platforms
 [**get_publication_v1_assets_publications_id_get**](AssetsApi.md#get_publication_v1_assets_publications_id_get) | **GET** /v1/assets/publications/{id} | Get Publication
@@ -41,10 +43,10 @@ from aiod_rail_sdk.models.dataset import Dataset
 from aiod_rail_sdk.rest import ApiException
 from pprint import pprint
 
-# Defining the host is optional and defaults to http://localhost/api
+# Defining the host is optional and defaults to https://rail-dev.aiod.i3a.es/api
 # See configuration.py for a list of all supported configuration parameters.
 configuration = aiod_rail_sdk.Configuration(
-    host = "http://localhost/api"
+    host = "https://rail-dev.aiod.i3a.es/api"
 )
 
 # The client must configure the authentication and authorization parameters
@@ -112,10 +114,10 @@ from aiod_rail_sdk.models.dataset import Dataset
 from aiod_rail_sdk.rest import ApiException
 from pprint import pprint
 
-# Defining the host is optional and defaults to http://localhost/api
+# Defining the host is optional and defaults to https://rail-dev.aiod.i3a.es/api
 # See configuration.py for a list of all supported configuration parameters.
 configuration = aiod_rail_sdk.Configuration(
-    host = "http://localhost/api"
+    host = "https://rail-dev.aiod.i3a.es/api"
 )
 
 # The client must configure the authentication and authorization parameters
@@ -188,10 +190,10 @@ import aiod_rail_sdk
 from aiod_rail_sdk.rest import ApiException
 from pprint import pprint
 
-# Defining the host is optional and defaults to http://localhost/api
+# Defining the host is optional and defaults to https://rail-dev.aiod.i3a.es/api
 # See configuration.py for a list of all supported configuration parameters.
 configuration = aiod_rail_sdk.Configuration(
-    host = "http://localhost/api"
+    host = "https://rail-dev.aiod.i3a.es/api"
 )
 
 # The client must configure the authentication and authorization parameters
@@ -259,10 +261,10 @@ from aiod_rail_sdk.models.dataset import Dataset
 from aiod_rail_sdk.rest import ApiException
 from pprint import pprint
 
-# Defining the host is optional and defaults to http://localhost/api
+# Defining the host is optional and defaults to https://rail-dev.aiod.i3a.es/api
 # See configuration.py for a list of all supported configuration parameters.
 configuration = aiod_rail_sdk.Configuration(
-    host = "http://localhost/api"
+    host = "https://rail-dev.aiod.i3a.es/api"
 )
 
 
@@ -325,10 +327,10 @@ import aiod_rail_sdk
 from aiod_rail_sdk.rest import ApiException
 from pprint import pprint
 
-# Defining the host is optional and defaults to http://localhost/api
+# Defining the host is optional and defaults to https://rail-dev.aiod.i3a.es/api
 # See configuration.py for a list of all supported configuration parameters.
 configuration = aiod_rail_sdk.Configuration(
-    host = "http://localhost/api"
+    host = "https://rail-dev.aiod.i3a.es/api"
 )
 
 
@@ -387,10 +389,10 @@ from aiod_rail_sdk.models.dataset import Dataset
 from aiod_rail_sdk.rest import ApiException
 from pprint import pprint
 
-# Defining the host is optional and defaults to http://localhost/api
+# Defining the host is optional and defaults to https://rail-dev.aiod.i3a.es/api
 # See configuration.py for a list of all supported configuration parameters.
 configuration = aiod_rail_sdk.Configuration(
-    host = "http://localhost/api"
+    host = "https://rail-dev.aiod.i3a.es/api"
 )
 
 
@@ -455,10 +457,10 @@ import aiod_rail_sdk
 from aiod_rail_sdk.rest import ApiException
 from pprint import pprint
 
-# Defining the host is optional and defaults to http://localhost/api
+# Defining the host is optional and defaults to https://rail-dev.aiod.i3a.es/api
 # See configuration.py for a list of all supported configuration parameters.
 configuration = aiod_rail_sdk.Configuration(
-    host = "http://localhost/api"
+    host = "https://rail-dev.aiod.i3a.es/api"
 )
 
 
@@ -521,10 +523,10 @@ import aiod_rail_sdk
 from aiod_rail_sdk.rest import ApiException
 from pprint import pprint
 
-# Defining the host is optional and defaults to http://localhost/api
+# Defining the host is optional and defaults to https://rail-dev.aiod.i3a.es/api
 # See configuration.py for a list of all supported configuration parameters.
 configuration = aiod_rail_sdk.Configuration(
-    host = "http://localhost/api"
+    host = "https://rail-dev.aiod.i3a.es/api"
 )
 
 
@@ -587,10 +589,10 @@ import aiod_rail_sdk
 from aiod_rail_sdk.rest import ApiException
 from pprint import pprint
 
-# Defining the host is optional and defaults to http://localhost/api
+# Defining the host is optional and defaults to https://rail-dev.aiod.i3a.es/api
 # See configuration.py for a list of all supported configuration parameters.
 configuration = aiod_rail_sdk.Configuration(
-    host = "http://localhost/api"
+    host = "https://rail-dev.aiod.i3a.es/api"
 )
 
 
@@ -654,10 +656,10 @@ from aiod_rail_sdk.models.ml_model import MLModel
 from aiod_rail_sdk.rest import ApiException
 from pprint import pprint
 
-# Defining the host is optional and defaults to http://localhost/api
+# Defining the host is optional and defaults to https://rail-dev.aiod.i3a.es/api
 # See configuration.py for a list of all supported configuration parameters.
 configuration = aiod_rail_sdk.Configuration(
-    host = "http://localhost/api"
+    host = "https://rail-dev.aiod.i3a.es/api"
 )
 
 
@@ -720,10 +722,10 @@ import aiod_rail_sdk
 from aiod_rail_sdk.rest import ApiException
 from pprint import pprint
 
-# Defining the host is optional and defaults to http://localhost/api
+# Defining the host is optional and defaults to https://rail-dev.aiod.i3a.es/api
 # See configuration.py for a list of all supported configuration parameters.
 configuration = aiod_rail_sdk.Configuration(
-    host = "http://localhost/api"
+    host = "https://rail-dev.aiod.i3a.es/api"
 )
 
 
@@ -782,10 +784,10 @@ from aiod_rail_sdk.models.ml_model import MLModel
 from aiod_rail_sdk.rest import ApiException
 from pprint import pprint
 
-# Defining the host is optional and defaults to http://localhost/api
+# Defining the host is optional and defaults to https://rail-dev.aiod.i3a.es/api
 # See configuration.py for a list of all supported configuration parameters.
 configuration = aiod_rail_sdk.Configuration(
-    host = "http://localhost/api"
+    host = "https://rail-dev.aiod.i3a.es/api"
 )
 
 
@@ -837,6 +839,71 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
+# **get_my_datasets_count_v1_assets_counts_datasets_my_get**
+> int get_my_datasets_count_v1_assets_counts_datasets_my_get()
+
+Get My Datasets Count
+
+### Example
+
+
+```python
+import aiod_rail_sdk
+from aiod_rail_sdk.rest import ApiException
+from pprint import pprint
+
+# Defining the host is optional and defaults to https://rail-dev.aiod.i3a.es/api
+# See configuration.py for a list of all supported configuration parameters.
+configuration = aiod_rail_sdk.Configuration(
+    host = "https://rail-dev.aiod.i3a.es/api"
+)
+
+# The client must configure the authentication and authorization parameters
+# in accordance with the API server security policy.
+# Examples for each auth method are provided below, use the example that
+# satisfies your auth use case.
+
+# Enter a context with an instance of the API client
+with aiod_rail_sdk.ApiClient(configuration) as api_client:
+    # Create an instance of the API class
+    api_instance = aiod_rail_sdk.AssetsApi(api_client)
+
+    try:
+        # Get My Datasets Count
+        api_response = api_instance.get_my_datasets_count_v1_assets_counts_datasets_my_get()
+        print("The response of AssetsApi->get_my_datasets_count_v1_assets_counts_datasets_my_get:\n")
+        pprint(api_response)
+    except Exception as e:
+        print("Exception when calling AssetsApi->get_my_datasets_count_v1_assets_counts_datasets_my_get: %s\n" % e)
+```
+
+
+
+### Parameters
+
+This endpoint does not need any parameter.
+
+### Return type
+
+**int**
+
+### Authorization
+
+[OpenIdConnect](../README.md#OpenIdConnect)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+### HTTP response details
+
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+**200** | Successful Response |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
 # **get_my_datasets_v1_assets_datasets_my_get**
 > List[Dataset] get_my_datasets_v1_assets_datasets_my_get(offset=offset, limit=limit)
 
@@ -851,10 +918,10 @@ from aiod_rail_sdk.models.dataset import Dataset
 from aiod_rail_sdk.rest import ApiException
 from pprint import pprint
 
-# Defining the host is optional and defaults to http://localhost/api
+# Defining the host is optional and defaults to https://rail-dev.aiod.i3a.es/api
 # See configuration.py for a list of all supported configuration parameters.
 configuration = aiod_rail_sdk.Configuration(
-    host = "http://localhost/api"
+    host = "https://rail-dev.aiod.i3a.es/api"
 )
 
 # The client must configure the authentication and authorization parameters
@@ -910,6 +977,71 @@ Name | Type | Description  | Notes
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
+# **get_my_models_count_v1_assets_counts_models_my_get**
+> int get_my_models_count_v1_assets_counts_models_my_get()
+
+Get My Models Count
+
+### Example
+
+
+```python
+import aiod_rail_sdk
+from aiod_rail_sdk.rest import ApiException
+from pprint import pprint
+
+# Defining the host is optional and defaults to https://rail-dev.aiod.i3a.es/api
+# See configuration.py for a list of all supported configuration parameters.
+configuration = aiod_rail_sdk.Configuration(
+    host = "https://rail-dev.aiod.i3a.es/api"
+)
+
+# The client must configure the authentication and authorization parameters
+# in accordance with the API server security policy.
+# Examples for each auth method are provided below, use the example that
+# satisfies your auth use case.
+
+# Enter a context with an instance of the API client
+with aiod_rail_sdk.ApiClient(configuration) as api_client:
+    # Create an instance of the API class
+    api_instance = aiod_rail_sdk.AssetsApi(api_client)
+
+    try:
+        # Get My Models Count
+        api_response = api_instance.get_my_models_count_v1_assets_counts_models_my_get()
+        print("The response of AssetsApi->get_my_models_count_v1_assets_counts_models_my_get:\n")
+        pprint(api_response)
+    except Exception as e:
+        print("Exception when calling AssetsApi->get_my_models_count_v1_assets_counts_models_my_get: %s\n" % e)
+```
+
+
+
+### Parameters
+
+This endpoint does not need any parameter.
+
+### Return type
+
+**int**
+
+### Authorization
+
+[OpenIdConnect](../README.md#OpenIdConnect)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+### HTTP response details
+
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+**200** | Successful Response |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
 # **get_my_models_v1_assets_models_my_get**
 > List[MLModel] get_my_models_v1_assets_models_my_get(offset=offset, limit=limit)
 
@@ -924,10 +1056,10 @@ from aiod_rail_sdk.models.ml_model import MLModel
 from aiod_rail_sdk.rest import ApiException
 from pprint import pprint
 
-# Defining the host is optional and defaults to http://localhost/api
+# Defining the host is optional and defaults to https://rail-dev.aiod.i3a.es/api
 # See configuration.py for a list of all supported configuration parameters.
 configuration = aiod_rail_sdk.Configuration(
-    host = "http://localhost/api"
+    host = "https://rail-dev.aiod.i3a.es/api"
 )
 
 # The client must configure the authentication and authorization parameters
@@ -997,10 +1129,10 @@ from aiod_rail_sdk.models.platform import Platform
 from aiod_rail_sdk.rest import ApiException
 from pprint import pprint
 
-# Defining the host is optional and defaults to http://localhost/api
+# Defining the host is optional and defaults to https://rail-dev.aiod.i3a.es/api
 # See configuration.py for a list of all supported configuration parameters.
 configuration = aiod_rail_sdk.Configuration(
-    host = "http://localhost/api"
+    host = "https://rail-dev.aiod.i3a.es/api"
 )
 
 
@@ -1066,10 +1198,10 @@ from aiod_rail_sdk.models.publication import Publication
 from aiod_rail_sdk.rest import ApiException
 from pprint import pprint
 
-# Defining the host is optional and defaults to http://localhost/api
+# Defining the host is optional and defaults to https://rail-dev.aiod.i3a.es/api
 # See configuration.py for a list of all supported configuration parameters.
 configuration = aiod_rail_sdk.Configuration(
-    host = "http://localhost/api"
+    host = "https://rail-dev.aiod.i3a.es/api"
 )
 
 
@@ -1132,10 +1264,10 @@ import aiod_rail_sdk
 from aiod_rail_sdk.rest import ApiException
 from pprint import pprint
 
-# Defining the host is optional and defaults to http://localhost/api
+# Defining the host is optional and defaults to https://rail-dev.aiod.i3a.es/api
 # See configuration.py for a list of all supported configuration parameters.
 configuration = aiod_rail_sdk.Configuration(
-    host = "http://localhost/api"
+    host = "https://rail-dev.aiod.i3a.es/api"
 )
 
 
@@ -1194,10 +1326,10 @@ from aiod_rail_sdk.models.publication import Publication
 from aiod_rail_sdk.rest import ApiException
 from pprint import pprint
 
-# Defining the host is optional and defaults to http://localhost/api
+# Defining the host is optional and defaults to https://rail-dev.aiod.i3a.es/api
 # See configuration.py for a list of all supported configuration parameters.
 configuration = aiod_rail_sdk.Configuration(
-    host = "http://localhost/api"
+    host = "https://rail-dev.aiod.i3a.es/api"
 )
 
 
@@ -1263,10 +1395,10 @@ from aiod_rail_sdk.models.dataset import Dataset
 from aiod_rail_sdk.rest import ApiException
 from pprint import pprint
 
-# Defining the host is optional and defaults to http://localhost/api
+# Defining the host is optional and defaults to https://rail-dev.aiod.i3a.es/api
 # See configuration.py for a list of all supported configuration parameters.
 configuration = aiod_rail_sdk.Configuration(
-    host = "http://localhost/api"
+    host = "https://rail-dev.aiod.i3a.es/api"
 )
 
 
@@ -1334,10 +1466,10 @@ from aiod_rail_sdk.models.ml_model import MLModel
 from aiod_rail_sdk.rest import ApiException
 from pprint import pprint
 
-# Defining the host is optional and defaults to http://localhost/api
+# Defining the host is optional and defaults to https://rail-dev.aiod.i3a.es/api
 # See configuration.py for a list of all supported configuration parameters.
 configuration = aiod_rail_sdk.Configuration(
-    host = "http://localhost/api"
+    host = "https://rail-dev.aiod.i3a.es/api"
 )
 
 
@@ -1405,10 +1537,10 @@ from aiod_rail_sdk.models.publication import Publication
 from aiod_rail_sdk.rest import ApiException
 from pprint import pprint
 
-# Defining the host is optional and defaults to http://localhost/api
+# Defining the host is optional and defaults to https://rail-dev.aiod.i3a.es/api
 # See configuration.py for a list of all supported configuration parameters.
 configuration = aiod_rail_sdk.Configuration(
-    host = "http://localhost/api"
+    host = "https://rail-dev.aiod.i3a.es/api"
 )
 
 
