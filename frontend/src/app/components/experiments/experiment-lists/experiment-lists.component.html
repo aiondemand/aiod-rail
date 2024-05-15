@@ -1,4 +1,19 @@
-<mat-paginator #paginator
+<div class="header">
+    <div class="search-div">
+        <mat-form-field>
+            <mat-label>Full-text search</mat-label>
+            <input matInput #searchField
+                (keyup.enter)="searchExperiments(searchField.value)" 
+            />
+        </mat-form-field>
+        <button mat-icon-button #searchIconBtn
+            (click)="searchExperiments(searchField.value)"
+            aria-label="Search Experiments"> 
+            <mat-icon>search</mat-icon>
+        </button>
+    </div>
+
+    <mat-paginator #paginator
                class="demo-paginator"
                (page)="handlePageEvent($event)"
                [length]="pagination.length"
@@ -7,7 +22,9 @@
                [pageIndex]="pagination.pageIndex"
                [disabled]="false"
                aria-label="Select page">
-</mat-paginator>
+    </mat-paginator>
+</div>
+
 <div>
     <div *ngIf="(experiments$ | async) as experiments">
         <div class="no-experiments" *ngIf="experiments.length == 0">

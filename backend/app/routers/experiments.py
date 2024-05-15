@@ -57,7 +57,8 @@ async def get_experiments_count(
         query_operator=QueryOperator.AND,
         user=user,
     )
-    return await result_set.count()
+    out = await result_set.count()  # TODO
+    return out
 
 
 @router.get("/experiments/{id}", response_model=ExperimentResponse)
