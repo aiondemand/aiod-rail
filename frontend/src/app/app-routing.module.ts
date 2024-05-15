@@ -29,8 +29,10 @@ const routes: Routes = [
       { path: '', redirectTo: 'all', pathMatch: 'full' },
       { path: 'all', component: AllExperimentListComponent},
       { path: 'my',  component: MyExperimentListComponent, canActivate: [authGuard] },
-      { path: 'edit', component: EditExperimentComponent, canActivate: [authGuard] },
+      { path: 'create', component: EditExperimentComponent, canActivate: [authGuard] },
+      // TODO check whether :ID is valid or whether a specific experiment / template actually exists
       { path: ':id', component: ExperimentDetailComponent },
+      { path: ':id/update', component: EditExperimentComponent, canActivate: [authGuard] },
 
       // experiment runs
       { path: 'runs/:runId', component: ExperimentRunDetailComponent },
@@ -42,8 +44,9 @@ const routes: Routes = [
           { path: '', redirectTo: 'all', pathMatch: 'full' },
           { path: "all", component: AllExperimentTemplateList},
           { path: "my", component: MyExperimentTemplateList, canActivate: [authGuard] },
-          { path: 'edit', component: EditExperimentTemplateComponent, canActivate: [authGuard] },
-          { path: ':id', component: ExperimentTemplateDetailComponent } 
+          { path: 'create', component: EditExperimentTemplateComponent, canActivate: [authGuard] },
+          { path: ':id', component: ExperimentTemplateDetailComponent },
+          { path: ':id/update', component: EditExperimentTemplateComponent, canActivate: [authGuard] },
         ]
       }
     ],

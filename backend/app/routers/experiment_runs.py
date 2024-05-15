@@ -28,7 +28,7 @@ async def execute_experiment_run(
     experiment = await get_experiment_if_accessible_or_raise(
         id, user, write_access=True
     )
-    if experiment.is_usable is False:
+    if experiment.is_archived:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid experiment to execute",

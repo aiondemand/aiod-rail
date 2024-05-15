@@ -12,7 +12,7 @@ import { EnvironmentVar } from 'src/app/models/env-vars';
 import { ConfirmPopupInput } from 'src/app/models/popup-input';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmPopupComponent } from '../../general/popup/confirm-popup.component';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 
 @Component({
@@ -36,7 +36,8 @@ export class ExperimentDetailComponent {
     private backend: BackendApiService, 
     private snackBar: SnackBarService,
     private router: Router,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private route: ActivatedRoute,
   ) { }
 
   displayedEnvVarColumns: string[] = ['key', 'value'];
@@ -137,11 +138,10 @@ export class ExperimentDetailComponent {
   }
 
   editBtnClicked(): void {
-    let routeParts = ['/experiments', 'edit'];
-    let queryParams = {  
-      id: this.experiment.id
+    let routeParts = ['update'];
+    let routeExtras = { 
+      relativeTo: this.route,
     };
-    let routeExtras = { queryParams: queryParams };
 
     if (this.existRuns) {
       let str = (
@@ -194,7 +194,7 @@ export class ExperimentDetailComponent {
     }).afterClosed())
       .then(state => {
         if (state && this.existRuns) {
-          firstValueFrom(this.backend.setExperimentUsability(this.experiment.id, false))
+          firstValueFrom(this.backend.archiveExperiment(this.experiment.id, true))
             .then(_ => this.router.navigate(routeParts))
             .catch(err => console.error(err));
         }
@@ -207,10 +207,10 @@ export class ExperimentDetailComponent {
   }
 
   undoBtnClicked(): void {
-   firstValueFrom(this.backend.setExperimentUsability(this.experiment.id, true))
+   firstValueFrom(this.backend.archiveExperiment(this.experiment.id, false))
     .then(_ => {
       this.isExperimentEditable = true;
-      this.experiment.is_usable = true;
+      this.experiment.is_archived = false;
     })
     .catch(err => console.error(err));
   }

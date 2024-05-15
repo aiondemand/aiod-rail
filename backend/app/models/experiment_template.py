@@ -43,7 +43,7 @@ class ExperimentTemplate(Document):
     retry_count: int = 0
     is_approved: bool = False
     created_by: str
-    is_usable: bool = True
+    is_archived: bool = False
     is_public: bool = True
 
     @property
@@ -103,7 +103,7 @@ class ExperimentTemplate(Document):
 
     @property
     def allows_experiment_creation(self) -> bool:
-        return self.state == TemplateState.FINISHED and self.is_usable
+        return self.state == TemplateState.FINISHED and self.is_archived is False
 
     class Settings:
         name = "experimentTemplates"

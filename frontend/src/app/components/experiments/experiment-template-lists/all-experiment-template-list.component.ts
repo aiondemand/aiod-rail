@@ -15,7 +15,7 @@ export class AllExperimentTemplateList extends ExperimentTemplateListBaseCompone
       "",
       {
         only_finalized: true,
-        only_usable: true,
+        only_not_archived: true,
         only_public: true
       }
     );
@@ -30,7 +30,7 @@ export class AllExperimentTemplateList extends ExperimentTemplateListBaseCompone
       },
       {
         only_finalized: true,
-        only_usable: true,
+        only_not_archived: true,
         only_public: true
       }
     );

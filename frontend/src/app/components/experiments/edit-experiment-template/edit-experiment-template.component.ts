@@ -79,7 +79,7 @@ export class EditExperimentTemplateComponent {
   ]
 
   ngOnInit(): void {
-    this.route.queryParams.subscribe(params => {  
+    this.route.params.subscribe(params => {  
       if (params["id"]) {
         var data$ = of(params["id"]).pipe(
           switchMap(templateId => combineLatest([
@@ -155,7 +155,7 @@ export class EditExperimentTemplateComponent {
   }
 
   onSubmit() {
-    let formValue = this.experimentTemplateForm.value;
+    let form = this.experimentTemplateForm;
 
     // TODO for now this attributes will be fixed
     const fixedTask = TaskType.TextClassification;
@@ -167,18 +167,18 @@ export class EditExperimentTemplateComponent {
     };
 
     let experimentTemplate: ExperimentTemplateCreate = {
-      name: String(formValue.name?.trim()),
-      description: String(formValue.description?.trim()),
+      name: String(form.get("name")?.value?.trim()),
+      description: String(form.get("description")?.value),
       task: fixedTask,
       datasets_schema: fixedDatasetSchema,
       models_schema: fixedModelSchema,
       envs_required: this.requiredVarsData,
       envs_optional: this.optionalVarsData,
       available_metrics: this.metrics,
-      base_image: String(formValue.baseImage),
-      script: String(this.scriptCode),
-      pip_requirements: String(formValue.pipRequirements),
-      is_public: String(formValue.visibility) == "Public" ? true : false
+      base_image: String(form.get("baseImage")?.value),
+      script: this.scriptCode,
+      pip_requirements: String(form.get("pipRequirements")?.value),
+      is_public: String(form.get("visibility")) == "Public" ? true : false
     };
 
     let promisedTemplate: Promise<ExperimentTemplate>;

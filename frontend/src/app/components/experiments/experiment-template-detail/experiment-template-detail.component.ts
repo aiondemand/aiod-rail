@@ -45,11 +45,10 @@ export class ExperimentTemplateDetailComponent {
   }
 
   editBtnClicked() {
-    let routeParts = ['/experiments', 'templates', 'edit'];
-    let queryParams = {  
-      id: this.templateId
+    let routeParts = ['update'];
+    let routeExtras = { 
+      relativeTo: this.route,
     };
-    let routeExtras = { queryParams: queryParams };
 
     if (this.existExperiments) {
       let str = (
@@ -102,7 +101,7 @@ export class ExperimentTemplateDetailComponent {
     }).afterClosed())
       .then(state => {
         if (state && this.existExperiments) {
-          firstValueFrom(this.backend.setExperimentTemplateUsability(this.templateId, false))
+          firstValueFrom(this.backend.archiveExperimentTemplate(this.templateId, true))
             .then(_ => this.router.navigate(routeParts))
             .catch(err => console.error(err));
         }
@@ -115,10 +114,10 @@ export class ExperimentTemplateDetailComponent {
   }
 
   undoBtnClicked(): void {
-    firstValueFrom(this.backend.setExperimentTemplateUsability(this.templateId, true))
+    firstValueFrom(this.backend.archiveExperimentTemplate(this.templateId, false))
     .then(_ => {
       this.isTemplateEditable = true;
-      this.experimentTemplate.is_usable = true
+      this.experimentTemplate.is_archived = false
     })
     .catch(err => console.error(err));
   }

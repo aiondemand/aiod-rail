@@ -29,14 +29,14 @@ async def get_experiment_templates(
     pagination: Pagination = Depends(),
     only_mine: bool = False,
     only_finalized: bool = False,
-    only_usable: bool = False,
+    only_not_archived: bool = False,
     only_public: bool = False,
 ) -> Any:
     result_set = find_specific_experiment_templates(
         query,
         only_mine=only_mine,
         only_finalized=only_finalized,
-        only_usable=only_usable,
+        only_not_archived=only_not_archived,
         only_public=only_public,
         query_operator=QueryOperator.AND,
         user=user,
@@ -73,7 +73,7 @@ async def is_experiment_template_editable(
     return (
         user is not None
         and experiment_template.created_by == user["email"]
-        and experiment_template.is_usable
+        and experiment_template.is_archived is False
     )
 
 
@@ -83,14 +83,14 @@ async def get_experiment_templates_count(
     query: str = "",
     only_mine: bool = False,
     only_finalized: bool = False,
-    only_usable: bool = False,
+    only_not_archived: bool = False,
     only_public: bool = False,
 ) -> Any:
     result_set = find_specific_experiment_templates(
         query,
         only_mine=only_mine,
         only_finalized=only_finalized,
-        only_usable=only_usable,
+        only_not_archived=only_not_archived,
         only_public=only_public,
         query_operator=QueryOperator.AND,
         user=user,
@@ -174,16 +174,16 @@ async def remove_experiment_template(
     await ExperimentTemplate.find(ExperimentTemplate.id == id).delete()
 
 
-@router.patch("/experiment-templates/{id}/usability", response_model=None)
-async def set_experiment_template_usability(
+@router.patch("/experiment-templates/{id}/archive", response_model=None)
+async def archive_experiment_template(
     id: PydanticObjectId,
-    is_usable: bool = True,
+    is_archived: bool = False,
     user: dict = Depends(get_current_user(required=True)),
 ) -> Any:
     experiment_template = await get_experiment_template_if_accessible_or_raise(
         id, user, write_access=True
     )
-    experiment_template.is_usable = is_usable
+    experiment_template.is_archived = is_archived
 
     await ExperimentTemplate.replace(experiment_template)
 
@@ -234,7 +234,7 @@ def find_specific_experiment_templates(
     search_query: str,
     only_mine: bool,
     only_finalized: bool,
-    only_usable: bool,
+    only_not_archived: bool,
     only_public: bool,
     query_operator: QueryOperator,
     user: dict | None,
@@ -262,8 +262,8 @@ def find_specific_experiment_templates(
 
     if only_finalized:
         search_conditions.append(ExperimentTemplate.state == TemplateState.FINISHED)
-    if only_usable:
-        search_conditions.append(ExperimentTemplate.is_usable == True)  # noqa: E712
+    if only_not_archived:
+        search_conditions.append(ExperimentTemplate.is_archived == False)  # noqa: E712
     if only_public:
         search_conditions.append(ExperimentTemplate.is_public == True)  # noqa: E712
 

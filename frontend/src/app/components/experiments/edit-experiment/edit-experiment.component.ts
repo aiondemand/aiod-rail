@@ -80,7 +80,7 @@ export class EditExperimentComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.route.queryParams.subscribe(params => {
+    this.route.params.subscribe(params => {
       if (params["id"]) {
         var data$ = this.backend.getExperiment(params["id"]).pipe(
             switchMap(experiment => combineLatest([
@@ -307,7 +307,7 @@ export class EditExperimentComponent implements OnInit {
     return this.backend.getExperimentTemplates(query, {}, {
       only_finalized: true,
       only_public: true,
-      only_usable: true
+      only_not_archived: true
     });
   }
 

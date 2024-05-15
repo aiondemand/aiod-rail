@@ -275,8 +275,8 @@ export class BackendApiService {
     return this.http.put<Experiment>(`${environment.BACKEND_API_URL}/experiments/${id}`, experiment);
   }
 
-  setExperimentUsability(id: string, is_usable: boolean): Observable<void> {
-    return this.http.patch<void>(`${environment.BACKEND_API_URL}/experiments/${id}/usability?is_usable=${is_usable}`, {});
+  archiveExperiment(id: string, is_archived: boolean): Observable<void> {
+    return this.http.patch<void>(`${environment.BACKEND_API_URL}/experiments/${id}/archive?is_archived=${is_archived}`, {});
   }
 
   deleteExperiment(id: string): Observable<boolean> {
@@ -339,8 +339,8 @@ export class BackendApiService {
     return this.http.put<ExperimentTemplate>(`${environment.BACKEND_API_URL}/experiment-templates/${id}`, experimentTemplate);
   }
 
-  setExperimentTemplateUsability(id: string, is_usable: boolean): Observable<void> {
-    return this.http.patch<void>(`${environment.BACKEND_API_URL}/experiment-templates/${id}/usability?is_usable=${is_usable}`, {});
+  archiveExperimentTemplate(id: string, is_archived: boolean): Observable<void> {
+    return this.http.patch<void>(`${environment.BACKEND_API_URL}/experiment-templates/${id}/archive?is_archived=${is_archived}`, {});
   }
 
   deleteExperimentTemplate(id: string): Observable<void> {

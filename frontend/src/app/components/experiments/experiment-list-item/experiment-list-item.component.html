@@ -10,7 +10,7 @@
         </mat-card-title>
     </mat-card-header>
     <mat-card-content>
-        <div class="state" *ngIf="!experiment.is_usable">
+        <div class="state" *ngIf="experiment.is_archived">
             <span class="crashed"><mat-icon matTooltip="This experiment can no longer be executed">delete</mat-icon>Deleted</span>
         </div>
 

@@ -60,7 +60,7 @@ class ExperimentTemplateResponse(ExperimentTemplateBase):
     state: TemplateState
     dockerfile: str
     is_approved: bool
-    is_usable: bool
+    is_archived: bool
 
 
 class ExperimentTemplateId(BaseModel):

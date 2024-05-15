@@ -17,7 +17,7 @@
             </button>
         </div>
 
-        <div class="deleted-state" *ngIf="!experiment.is_usable">
+        <div class="deleted-state" *ngIf="experiment.is_archived">
             <span class="crashed"><mat-icon matTooltip="This experiment can no longer be executed">delete</mat-icon>Deleted</span>
             <button mat-stroked-button class="undo-button" (click)="undoBtnClicked()">
                 <mat-icon>settings_backup_restore</mat-icon>

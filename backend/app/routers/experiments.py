@@ -24,13 +24,13 @@ async def get_experiments(
     user: dict = Depends(get_current_user(required=False)),
     pagination: Pagination = Depends(),
     only_mine: bool = False,
-    only_usable: bool = False,
+    only_not_archived: bool = False,
     only_public: bool = False,
 ) -> Any:
     result_set = find_specific_experiments(
         query,
         only_mine=only_mine,
-        only_usable=only_usable,
+        only_not_archived=only_not_archived,
         only_public=only_public,
         query_operator=QueryOperator.AND,
         user=user,
@@ -46,13 +46,13 @@ async def get_experiments_count(
     query: str = "",
     user: dict = Depends(get_current_user(required=False)),
     only_mine: bool = False,
-    only_usable: bool = False,
+    only_not_archived: bool = False,
     only_public: bool = False,
 ) -> Any:
     result_set = find_specific_experiments(
         query,
         only_mine=only_mine,
-        only_usable=only_usable,
+        only_not_archived=only_not_archived,
         only_public=only_public,
         query_operator=QueryOperator.AND,
         user=user,
@@ -83,7 +83,7 @@ async def is_experiment_editable(
     return (
         user is not None
         and experiment.created_by == user["email"]
-        and experiment.is_usable
+        and experiment.is_archived is False
     )
 
 
@@ -157,16 +157,16 @@ async def delete_experiment(
     await Experiment.find(Experiment.id == id).delete()
 
 
-@router.patch("/experiments/{id}/usability", response_model=None)
-async def set_experiment_usability(
+@router.patch("/experiments/{id}/archive", response_model=None)
+async def archive_experiment(
     id: PydanticObjectId,
-    is_usable: bool = True,
+    is_archive: bool = False,
     user: dict = Depends(get_current_user(required=True)),
 ) -> Any:
     experiment = await get_experiment_if_accessible_or_raise(
         id, user, write_access=True
     )
-    experiment.is_usable = is_usable
+    experiment.is_archived = is_archive
 
     await Experiment.replace(experiment)
 
@@ -174,7 +174,7 @@ async def set_experiment_usability(
 def find_specific_experiments(
     search_query: str,
     only_mine: bool,
-    only_usable: bool,
+    only_not_archived: bool,
     only_public: bool,
     query_operator: QueryOperator,
     user: dict | None,
@@ -200,8 +200,8 @@ def find_specific_experiments(
                 headers={"WWW-Authenticate": "Bearer"},
             )
 
-    if only_usable:
-        search_conditions.append(Experiment.is_usable == True)  # noqa: E712
+    if only_not_archived:
+        search_conditions.append(Experiment.is_archived == False)  # noqa: E712
     if only_public:
         search_conditions.append(Experiment.is_public == True)  # noqa: E712
 

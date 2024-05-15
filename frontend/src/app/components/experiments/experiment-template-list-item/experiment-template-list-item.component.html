@@ -11,10 +11,10 @@
         </mat-card-title>
     </mat-card-header>
     <mat-card-content>
-        <div class="state" *ngIf="!template.is_usable">
+        <div class="state" *ngIf="template.is_archived">
             <span class="crashed"><mat-icon matTooltip="New experiments cannot use this template">delete</mat-icon>Deleted</span>
         </div>
-        <div class="state" *ngIf="template.is_usable && template.state != 'FINISHED'">
+        <div class="state" *ngIf="!template.is_archived && template.state != 'FINISHED'">
             <ng-container *ngIf="!template.is_approved">
                 <span class="crashed"><mat-icon matTooltip="Experiment templates created by users are manually reviewed and then approved for use">search</mat-icon>Waiting for approval</span>
             </ng-container>

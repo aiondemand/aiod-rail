@@ -13,7 +13,7 @@ export class AllExperimentListComponent extends ExperimentListBaseComponent {
     return this.backend.getExperimentsCount(
       "", 
       { 
-        only_usable: true,
+        only_not_archived: true,
         only_public: true
       }
     );
@@ -27,7 +27,7 @@ export class AllExperimentListComponent extends ExperimentListBaseComponent {
         limit: this.pagination.pageSize
       },
       {
-        only_usable: true,
+        only_not_archived: true,
         only_public: true
       }
     );

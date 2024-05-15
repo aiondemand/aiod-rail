@@ -28,4 +28,4 @@ class ExperimentResponse(ExperimentBase):
     id: PydanticObjectId
     created_at: datetime
     updated_at: datetime
-    is_usable: bool
+    is_archived: bool
