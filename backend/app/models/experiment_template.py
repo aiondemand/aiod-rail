@@ -36,7 +36,6 @@ class ExperimentTemplate(Document):
     models_schema: AssetSchema
     envs_required: list[EnvironmentVarDef]
     envs_optional: list[EnvironmentVarDef]
-    available_metrics: list[str]
     created_at: datetime = Field(default_factory=partial(datetime.now, tz=timezone.utc))
     updated_at: datetime = Field(default_factory=partial(datetime.now, tz=timezone.utc))
     state: TemplateState = TemplateState.CREATED
@@ -54,7 +53,6 @@ class ExperimentTemplate(Document):
             "models_schema",
             "envs_required",
             "envs_optional",
-            "available_metrics",
             "base_image",
             "pip_requirements",
             "script",

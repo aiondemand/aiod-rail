@@ -42,8 +42,6 @@ class ExperimentTemplateBase(BaseModel):
     models_schema: AssetSchema
     envs_required: list[EnvironmentVarDef]
     envs_optional: list[EnvironmentVarDef]
-    # TODO: Rethink the metrics logic
-    available_metrics: list[str]
     script: str
     pip_requirements: str
     is_public: bool

@@ -38,9 +38,6 @@ export class EditExperimentTemplateComponent {
     name: [''],
     description: [''],
   });
-  metricForm = this.fb.group({
-    name: ['']
-  })
 
   scriptCode: string = "";
   visibilityStrings: string[] = [
@@ -75,7 +72,7 @@ export class EditExperimentTemplateComponent {
   ) { }
 
   reserved_environment_variables: string[] = [
-    "MODEL_NAMES", "DATASET_NAMES", "METRICS"
+    "MODEL_NAMES", "DATASET_NAMES", "MODEL_IDS", "DATASET_IDS"
   ]
 
   ngOnInit(): void {
@@ -129,9 +126,6 @@ export class EditExperimentTemplateComponent {
     templ.envs_optional.forEach(env => this.optionalVarsData.push(env));
     this.optionalVarsTable?.renderRows();
 
-    templ.available_metrics.forEach(m => this.metrics.push(m));
-    this.metricForm.reset(); 
-
     if (!this.editableEnvironment) {
       this.experimentTemplateForm.get("baseImage")?.disable();
       this.experimentTemplateForm.get("pipRequirements")?.disable();
@@ -141,8 +135,6 @@ export class EditExperimentTemplateComponent {
 
       this.newOptionalEnvForm.get("name")?.disable();
       this.newOptionalEnvForm.get("description")?.disable();
-      
-      this.metricForm.get("name")?.disable();
     }
     if (!this.editableVisibility) {
       this.experimentTemplateForm.get("visibility")?.disable();
@@ -174,7 +166,6 @@ export class EditExperimentTemplateComponent {
       models_schema: fixedModelSchema,
       envs_required: this.requiredVarsData,
       envs_optional: this.optionalVarsData,
-      available_metrics: this.metrics,
       base_image: String(formValue.baseImage),
       script: String(this.scriptCode),
       pip_requirements: String(formValue.pipRequirements),
@@ -246,21 +237,6 @@ export class EditExperimentTemplateComponent {
   removeVariable(table: MatTable<EnvironmentVarDef>, dataTable: EnvironmentVarDef[], index: number) {
     dataTable.splice(index, 1);
     table.renderRows();
-  }
-
-  addMetric(): void {
-    let newMetric = String(this.metricForm.value.name?.trim())
-    if (this.metrics.includes(newMetric)) {
-      this.snackBar.show(`Metric ${newMetric} has already been added.`)
-      return;
-    }
-
-    this.metrics.push(newMetric);
-    this.metricForm.reset();
-  }
-
-  removeMetric(index: number): void {
-    this.metrics.splice(index, 1);
   }
 
   setupEditor() {

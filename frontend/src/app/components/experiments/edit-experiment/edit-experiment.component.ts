@@ -12,10 +12,6 @@ import { Publication } from 'src/app/models/publication';
 import { BackendApiService } from 'src/app/services/backend-api.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
 
-export interface MetricsWrapper {
-  name: string;
-  checked: boolean;
-}
 
 @Component({
   selector: 'app-edit-experiment',
@@ -40,7 +36,6 @@ export class EditExperimentComponent implements OnInit {
     publications: this.fb.array(Array<Publication>()),
     dataset: new FormControl<Dataset | string>('', Validators.required),
     model: new FormControl<Model | string>('', Validators.required),
-    metrics: this.fb.group({}),
     envsRequired: this.fb.group({}),
     envsOptional: this.fb.group({}),
     experimentTemplate: new FormControl<ExperimentTemplate | string>('', Validators.required)
@@ -52,14 +47,6 @@ export class EditExperimentComponent implements OnInit {
   ]
 
   selectedExprimentTemplate: ExperimentTemplate | null = null;
-
-  // TODO for now were combining FormControl with ngModel which is not ideal...
-  // However this was the only way how we managed to change the UI after having
-  // changed the values of mat-checkbox elements programmatically
-  // TODO we need to figure out how to perform the 2way binding either only using
-  // formControls or ngModel, however not both
-  chosenMetricsValues: MetricsWrapper[] = [];
-
   error: string = '';
 
   experimentTemplates$: Observable<ExperimentTemplate[]> | undefined;
@@ -186,20 +173,11 @@ export class EditExperimentComponent implements OnInit {
         return;
       }
       
-      Object.keys(this.metrics.controls).forEach(k => this.metrics.removeControl(k));
       Object.keys(this.envsRequired.controls).forEach(k => this.envsRequired.removeControl(k));
       Object.keys(this.envsOptional.controls).forEach(k => this.envsOptional.removeControl(k));
 
       this.dataset?.setValue("");
       this.model?.setValue("");
-
-      value?.available_metrics.forEach(metric => {
-        this.metrics.addControl(metric, new FormControl<boolean>(true));
-        this.metrics.get(metric)?.setValue(true);
-      });
-      this.chosenMetricsValues = value?.available_metrics.map(m => { 
-        return { name: m, checked: true }
-      });
 
       value?.envs_required.forEach(env => this.envsRequired.addControl(env.name, new FormControl<string>("", Validators.required)));
       value?.envs_optional.forEach(env => this.envsOptional.addControl(env.name, new FormControl<string>("")));
@@ -224,10 +202,6 @@ export class EditExperimentComponent implements OnInit {
 
   get experimentTemplate() {
     return this.experimentForm.get('experimentTemplate');
-  }
-
-  get metrics() {
-    return this.experimentForm.get('metrics') as FormGroup;
   }
 
   get publications() {
@@ -265,14 +239,6 @@ export class EditExperimentComponent implements OnInit {
     this.inputPublications.forEach(publ => this.publications.push(new FormControl(publ)));
     this.model?.setValue(this.inputModel);
     this.dataset?.setValue(this.inputDataset);
-
-    this.inputExperimentTemplate?.available_metrics.forEach(metric => {
-      this.metrics.addControl(metric, new FormControl<boolean>(false));
-      this.metrics.get(metric)?.setValue(exp?.metrics.includes(metric) ?? false);
-    });
-    this.chosenMetricsValues = this.inputExperimentTemplate?.available_metrics.map(m => { 
-      return { name: m, checked: exp?.metrics.includes(m) ?? false }
-    });
 
     this.inputExperimentTemplate?.envs_required.forEach(env => {
       this.envsRequired.addControl(env.name, new FormControl<string>("", Validators.required));
@@ -352,9 +318,6 @@ export class EditExperimentComponent implements OnInit {
   }
 
   onSubmit() {  
-    let selectedMetrics = Object.entries(this.metrics.value as Record<string, boolean>)
-      .filter(([_, value]) => value)
-      .map(([key, _]) => key);
     let publicationIds = (this.publications.value as Array<Publication>).map(publication => publication.identifier.toString());
 
     let all_envs: Record<string, string> = {
@@ -379,7 +342,6 @@ export class EditExperimentComponent implements OnInit {
       experiment_template_id: String(this.selectedExprimentTemplate?.id),
       dataset_ids: [String((this.dataset?.value as Dataset)?.identifier)],
       model_ids: [String((this.model?.value as Model)?.identifier)],
-      metrics: selectedMetrics,
       env_vars: envsToSend,
       is_public: String(this.visibility?.value) == "Public" ? true : false
     };

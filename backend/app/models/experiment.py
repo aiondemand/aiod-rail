@@ -29,7 +29,6 @@ class Experiment(Document):
     model_ids: list[int]
 
     env_vars: list[EnvironmentVar]
-    metrics: list[str]
 
     @property
     def assets_attribute_names(self) -> list[str]:
@@ -39,7 +38,6 @@ class Experiment(Document):
             "dataset_ids",
             "model_ids",
             "env_vars",
-            "metrics",
         ]
 
     class Settings:

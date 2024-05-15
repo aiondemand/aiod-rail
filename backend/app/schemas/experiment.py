@@ -16,7 +16,6 @@ class ExperimentBase(BaseModel):
     model_ids: list[str]
 
     env_vars: list[EnvironmentVar]
-    metrics: list[str]
     is_public: bool
 
 

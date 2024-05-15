@@ -23,7 +23,6 @@ export interface ExperimentTemplateResponse {
     models_schema: AssetSchema;
     envs_required: Array<EnvironmentVarDef>;
     envs_optional: Array<EnvironmentVarDef>;
-    available_metrics: Array<string>;
     script: string;
     pip_requirements: string;
     id: string;

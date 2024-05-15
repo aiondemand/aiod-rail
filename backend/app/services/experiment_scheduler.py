@@ -213,7 +213,8 @@ class ExperimentScheduler:
             {
                 "MODEL_NAMES": ",".join(model_names),
                 "DATASET_NAMES": ",".join(dataset_names),
-                "METRICS": ",".join(experiment.metrics),
+                "MODEL_IDS": ",".join(str(experiment.model_ids)),
+                "DATASET_IDS": ",".join(str(experiment.dataset_ids)),
             }
         )
 

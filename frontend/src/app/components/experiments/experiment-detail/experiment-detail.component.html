@@ -52,15 +52,6 @@
                 {{experimentTemplate.name}}</a>
         </span>
 
-        <div class="experiment-metrics" *ngIf="experiment.metrics.length > 0">
-            <span matTooltip="Metrics"><span class="material-symbols-outlined icon">bar_chart</span></span>
-            <mat-chip-listbox>
-                <mat-chip class="metric-chip" *ngFor="let metric of experiment.metrics" [disabled]="true">
-                    {{metric}}
-                </mat-chip>
-            </mat-chip-listbox>
-        </div>
-
         <div class="experiment-env-vars" *ngIf="experiment.env_vars.length > 0">
             <h4>Environment variables</h4>
 
