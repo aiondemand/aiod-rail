@@ -2,7 +2,7 @@ import aiod_rail_sdk
 
 class Datasets:
     # TODO change to client.py strategy
-    def __init__(self, client_config):
+    def __init__(self, client_config: aiod_rail_sdk.Configuration):
         self._configuration = client_config
 
     def count(self):

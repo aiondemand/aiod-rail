@@ -5,7 +5,7 @@ from typing import Union
 
 class ExperimentsTemplates:
     # TODO change to client.py strategy
-    def __init__(self, client_config):
+    def __init__(self, client_config: aiod_rail_sdk.Configuration):
         self._configuration = client_config
  
 
@@ -14,7 +14,7 @@ class ExperimentsTemplates:
             Creates experiment template for experiment
             Args:
                 authorization_header (dict): Authorization in form of token type and access token
-                json_file (json.module):     Experiment described in json file
+                json_file (dict):     Experiment described in json file
             
             Returns:
                 ExperimentTemplateResponse: aiod_rail_sdk.models.experiment_template_response
