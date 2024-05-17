@@ -1,14 +1,15 @@
 import json
 import aiod_rail_sdk
+from typing import Union
 
 
 class ExperimentsTemplates:
     # TODO change to client.py strategy
-    def __init__(self, host='http://localhost/api'):
-        self._host=host
-        self._configuration = aiod_rail_sdk.Configuration(host=self._host)
+    def __init__(self, client_config):
+        self._configuration = client_config
+ 
 
-    def create_experiment_template(self, authorization_header: dict, json_file: json) -> aiod_rail_sdk.ExperimentTemplateResponse:
+    def create_experiment_template_old(self, authorization_header: dict, json_file: json) -> aiod_rail_sdk.ExperimentTemplateResponse:
         """
             Creates experiment template for experiment
             Args:
@@ -32,6 +33,52 @@ class ExperimentsTemplates:
             
             except Exception as e:
                 raise(f'Exception {e}')
+            
+    def create_experiment_template(
+            self, 
+            authorization_header: dict,
+            file: Union[dict, tuple[str, str, str, dict]]
+            ) -> aiod_rail_sdk.ExperimentTemplateResponse:
+        """
+            Creates experiment template for experiment
+            Args:
+                authorization_header (dict): Authorization in form of token type and access token
+                file: (Union[dict, tuple[str, str, str, dict]]): The file can be passed either as full specified json (dictionary)
+                or as a tuple of three strings and a json (dictionary) specifying the paths to script, requirements and docker image
+                in this order and template description (name, description, task etc.)
+        """
+        json_data = None
+        if isinstance(file, dict):
+            json_data = json.dumps(file)
+        
+        elif isinstance(file, tuple) and len(file) == 4 and all(isinstance(item, (str, dict)) for item in file):
+            path_script, path_requirements, path_image, config = file
+            if isinstance(config, dict):
+                with open(path_script, 'r') as s, open(path_requirements, 'r') as r, open(path_image, 'r') as i:
+                    script = s.read()
+                    requirements = r.read()
+                    image = i.read()
+                    config.update({'script': script, 'pip_requirements': requirements, 'base_image': image})
+                    json_data = json.dumps(config)
+            else:
+                raise ValueError("Fourth element must be a dictionary")
+        else:
+            raise ValueError("Invalid input format")
+        
+        experiment_template_create_instance = aiod_rail_sdk.ExperimentTemplateCreate.from_json(json_data)
+
+        with aiod_rail_sdk.ApiClient(self._configuration) as api_client:
+            api_client.default_headers = authorization_header
+            api_instance = aiod_rail_sdk.ExperimentTemplatesApi(api_client)
+            experiment_template_create = experiment_template_create_instance
+
+            try:
+                api_response = api_instance.create_experiment_template_v1_experiment_templates_post(experiment_template_create)
+                return api_response
+            
+            except Exception as e:
+                raise(f'Exception {e}')
+            
             
     def approve_experiment_template(self, id: str, password: str = 'pass', is_approved: bool = False) -> object:
         """

@@ -1,7 +1,7 @@
 import aiod_rail_sdk
-from experiment_client import Experiments
-from experiment_template_client import ExperimentsTemplates
-from dataset_client import Datasets
+from .experiment_client import Experiments
+from .experiment_template_client import ExperimentsTemplates
+from .dataset_client import Datasets
 
 class RailClient:
     def __init__(self, configuration: aiod_rail_sdk.Configuration) -> None:
