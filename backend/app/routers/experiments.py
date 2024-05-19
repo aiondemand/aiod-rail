@@ -38,7 +38,7 @@ async def get_experiments(
     )
     experiments = await result_set.to_list()
 
-    return [exp.map_to_response() for exp in experiments]
+    return [exp.map_to_response(user) for exp in experiments]
 
 
 @router.get("/count/experiments", response_model=int)
@@ -66,25 +66,7 @@ async def get_experiment(
     user: dict = Depends(get_current_user(required=False)),
 ) -> Any:
     experiment = await get_experiment_if_accessible_or_raise(id, user)
-    return experiment.map_to_response()
-
-
-@router.get("/experiments/{id}/is_editable", response_model=bool)
-async def is_experiment_editable(
-    id: PydanticObjectId, user: dict = Depends(get_current_user(required=False))
-) -> Any:
-    experiment = await Experiment.get(id)
-    if experiment is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Specified experiment doesn't exist",
-        )
-
-    return (
-        user is not None
-        and experiment.created_by == user["email"]
-        and experiment.is_archived is False
-    )
+    return experiment.map_to_response(user)
 
 
 @router.post(
@@ -113,7 +95,7 @@ async def create_experiment(
         )
 
     await experiment.create()
-    return experiment.map_to_response()
+    return experiment.map_to_response(user)
 
 
 @router.put("/experiments/{id}", response_model=ExperimentResponse)
@@ -139,7 +121,7 @@ async def update_experiment(
         )
 
     await Experiment.replace(experiment_to_save)
-    return experiment_to_save.map_to_response()
+    return experiment_to_save.map_to_response(user)
 
 
 @router.delete("/experiments/{id}", response_model=None)
@@ -160,13 +142,13 @@ async def delete_experiment(
 @router.patch("/experiments/{id}/archive", response_model=None)
 async def archive_experiment(
     id: PydanticObjectId,
-    is_archive: bool = False,
+    is_archived: bool = False,
     user: dict = Depends(get_current_user(required=True)),
 ) -> Any:
     experiment = await get_experiment_if_accessible_or_raise(
         id, user, write_access=True
     )
-    experiment.is_archived = is_archive
+    experiment.is_archived = is_archived
 
     await Experiment.replace(experiment)
 

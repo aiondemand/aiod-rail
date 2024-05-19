@@ -28,8 +28,6 @@ export class ExperimentDetailComponent {
   model: Model;
   relatedPublications: Publication[] = [];
   experimentTemplate: ExperimentTemplate;
-
-  isExperimentEditable: boolean = false;
   existRuns: boolean = false;
 
   constructor(
@@ -56,7 +54,6 @@ export class ExperimentDetailComponent {
           this.backend.getModel(experiment.model_ids[0]),
           this.backend.getExperimentPublications(experiment),
           this.backend.getExperimentTemplate(experiment.experiment_template_id),
-          this.backend.isExperimentEditable(experiment.id),
           this.backend.getExperimentRunsCount(experiment.id),
           of(experiment)
         ])),
@@ -64,12 +61,11 @@ export class ExperimentDetailComponent {
       );
 
     firstValueFrom(data$)
-      .then(([dataset, model, publications, experimentTemplate, isExperimentEditable, experimentRunsCount, experiment]) => {
+      .then(([dataset, model, publications, experimentTemplate, experimentRunsCount, experiment]) => {
         this.dataset = dataset;
         this.model = model;
         this.relatedPublications = publications;
         this.experimentTemplate = experimentTemplate;
-        this.isExperimentEditable = isExperimentEditable;
         this.existRuns = experimentRunsCount > 0;
         this.experiment = experiment;
 
@@ -176,8 +172,8 @@ export class ExperimentDetailComponent {
       this.existRuns
       ?
       "Since there exist ExperimentRuns that execute this particular experiment, you can no longer delete this experiment. " +
-      "However, you can still forbid an execution of new ExperimentRuns that are utilize this experiment. " + 
-      "Do you wish to make this experiment unusable?" 
+      "However, you can still forbid an execution of new ExperimentRuns that utilize this experiment by archiving it. " + 
+      "Do you wish to archive this experiment?" 
       : 
       "Do you wish to delete this experiment?"
     );  
@@ -209,7 +205,7 @@ export class ExperimentDetailComponent {
   undoBtnClicked(): void {
    firstValueFrom(this.backend.archiveExperiment(this.experiment.id, false))
     .then(_ => {
-      this.isExperimentEditable = true;
+      this.experiment.is_editable = true;
       this.experiment.is_archived = false;
     })
     .catch(err => console.error(err));

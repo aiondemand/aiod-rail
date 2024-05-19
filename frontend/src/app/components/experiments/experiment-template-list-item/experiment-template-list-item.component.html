@@ -12,7 +12,7 @@
     </mat-card-header>
     <mat-card-content>
         <div class="state" *ngIf="template.is_archived">
-            <span class="crashed"><mat-icon matTooltip="New experiments cannot use this template">delete</mat-icon>Deleted</span>
+            <span class="crashed"><mat-icon matTooltip="New experiments cannot use this template">delete</mat-icon>Archived</span>
         </div>
         <div class="state" *ngIf="!template.is_archived && template.state != 'FINISHED'">
             <ng-container *ngIf="!template.is_approved">

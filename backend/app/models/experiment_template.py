@@ -132,12 +132,18 @@ class ExperimentTemplate(Document):
         with base_path.joinpath("reana.yaml").open("w") as fp:
             yaml.safe_dump(reana_cfg, fp)
 
-    def map_to_response(self) -> ExperimentTemplateResponse:
+    def map_to_response(self, user: dict | None = None) -> ExperimentTemplateResponse:
+        is_editable = (
+            user is not None
+            and self.created_by == user["email"]
+            and self.is_archived is False
+        )
         return ExperimentTemplateResponse(
             **self.dict(),
             dockerfile=self.dockerfile,
             pip_requirements=self.pip_requirements,
             script=self.script,
+            is_editable=is_editable,
         )
 
     def update_state(self, state: TemplateState) -> None:

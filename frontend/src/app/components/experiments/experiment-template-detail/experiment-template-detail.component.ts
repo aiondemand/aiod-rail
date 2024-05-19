@@ -17,7 +17,6 @@ export class ExperimentTemplateDetailComponent {
   experimentTemplate: ExperimentTemplate;
   templateId: string;
   existExperiments: boolean = false;
-  isTemplateEditable: boolean = false;
   
   constructor(
     protected backend: BackendApiService,
@@ -37,9 +36,6 @@ export class ExperimentTemplateDetailComponent {
         .catch(err => console.error(err));
       firstValueFrom(this.backend.getExperimentsOfTeplateCount(params["id"], false))
         .then(count => this.existExperiments = count > 0)
-        .catch(err => console.error(err));
-      firstValueFrom(this.backend.isExperimentTemplateEditable(params["id"]))
-        .then(editable => this.isTemplateEditable = editable)
         .catch(err => console.error(err));
     });
   }
@@ -83,8 +79,8 @@ export class ExperimentTemplateDetailComponent {
       this.existExperiments 
       ?
       "Since there exist Experiments that utilize this particular template, you can no longer delete this template. " +
-      "However, you can still forbid a creation of new experiments built upon this template. " + 
-      "Do you wish to make this template unusable for others and you henceforth?" 
+      "However, you can still forbid a creation of new experiments built upon this template by archiving it. " + 
+      "Do you wish archive this experiment template?" 
       : 
       "Do you wish to delete this experiment template?"
     );  
@@ -116,8 +112,8 @@ export class ExperimentTemplateDetailComponent {
   undoBtnClicked(): void {
     firstValueFrom(this.backend.archiveExperimentTemplate(this.templateId, false))
     .then(_ => {
-      this.isTemplateEditable = true;
-      this.experimentTemplate.is_archived = false
+      this.experimentTemplate.is_editable = true;
+      this.experimentTemplate.is_archived = false;
     })
     .catch(err => console.error(err));
   }

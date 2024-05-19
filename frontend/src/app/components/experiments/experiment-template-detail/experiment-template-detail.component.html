@@ -8,7 +8,7 @@
             <mat-icon *ngIf="!experimentTemplate.is_public" matTooltip="Private template">public_off</mat-icon>
         </div>
         
-        <div class="header-buttons" *ngIf="isTemplateEditable">
+        <div class="header-buttons" *ngIf="experimentTemplate.is_editable">
             <button mat-icon-button (click)="editBtnClicked()">
                 <mat-icon>edit</mat-icon>
             </button>
@@ -18,10 +18,10 @@
         </div>
 
         <div class="deleted-state" *ngIf="experimentTemplate.is_archived">
-            <span class="crashed"><mat-icon matTooltip="New experiments cannot use this template">delete</mat-icon>Deleted</span>
+            <span class="crashed"><mat-icon matTooltip="New experiments cannot use this template">delete</mat-icon>Archived</span>
             <button mat-stroked-button class="undo-button" (click)="undoBtnClicked()">
                 <mat-icon>settings_backup_restore</mat-icon>
-                Undo deletion
+                Unarchive
             </button>
         </div>
     </div>

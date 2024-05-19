@@ -26,5 +26,6 @@ export interface ExperimentResponse {
     updated_at: string;
     is_public: boolean;
     is_archived: boolean;
+    is_editable: boolean;
 }
 

@@ -45,7 +45,7 @@ async def get_experiment_templates(
     experiment_templates = await result_set.to_list()
 
     return [
-        experiment_template.map_to_response()
+        experiment_template.map_to_response(user)
         for experiment_template in experiment_templates
     ]
 
@@ -55,26 +55,7 @@ async def get_experiment_template(
     id: PydanticObjectId, user: dict = Depends(get_current_user(required=False))
 ) -> Any:
     experiment_template = await get_experiment_template_if_accessible_or_raise(id, user)
-    return experiment_template.map_to_response()
-
-
-@router.get("/experiment-templates/{id}/is_editable", response_model=bool)
-async def is_experiment_template_editable(
-    id: PydanticObjectId,
-    user: dict = Depends(get_current_user(required=False)),
-) -> Any:
-    experiment_template = await ExperimentTemplate.get(id)
-    if experiment_template is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Specified experiment template doesn't exist",
-        )
-
-    return (
-        user is not None
-        and experiment_template.created_by == user["email"]
-        and experiment_template.is_archived is False
-    )
+    return experiment_template.map_to_response(user)
 
 
 @router.get("/count/experiment-templates", response_model=int)
@@ -117,7 +98,7 @@ async def create_experiment_template(
         pip_requirements=experiment_template_req.pip_requirements,
         script=experiment_template_req.script,
     )
-    return experiment_template.map_to_response()
+    return experiment_template.map_to_response(user)
 
 
 @router.put("/experiment-templates/{id}", response_model=ExperimentTemplateResponse)
@@ -153,7 +134,7 @@ async def update_experiment_template(
         )
 
     await ExperimentTemplate.replace(template_to_save)
-    return template_to_save.map_to_response()
+    return template_to_save.map_to_response(user)
 
 
 @router.delete("/experiment-templates/{id}", response_model=None)

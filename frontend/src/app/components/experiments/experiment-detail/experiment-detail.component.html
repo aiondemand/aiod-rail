@@ -8,7 +8,7 @@
             <mat-icon *ngIf="!experiment.is_public" matTooltip="Private template">public_off</mat-icon>
         </div>
 
-        <div class="header-buttons" *ngIf="isExperimentEditable">
+        <div class="header-buttons" *ngIf="experiment.is_editable">
             <button mat-icon-button (click)="editBtnClicked()">
                 <mat-icon>edit</mat-icon>
             </button>
@@ -18,10 +18,10 @@
         </div>
 
         <div class="deleted-state" *ngIf="experiment.is_archived">
-            <span class="crashed"><mat-icon matTooltip="This experiment can no longer be executed">delete</mat-icon>Deleted</span>
+            <span class="crashed"><mat-icon matTooltip="This experiment can no longer be executed">delete</mat-icon>Archived</span>
             <button mat-stroked-button class="undo-button" (click)="undoBtnClicked()">
                 <mat-icon>settings_backup_restore</mat-icon>
-                Undo deletion
+                Unarchive
             </button>
         </div>
     </div>
@@ -103,7 +103,7 @@
     <h1>Runs</h1>
     <!-- Create new experiment run form -->
     <div class="experiment-run-create-btn-wrapper">
-    <button mat-raised-button color="primary" (click)="onCreateRun()" [disabled]="!isExperimentEditable">
+    <button mat-raised-button color="primary" (click)="onCreateRun()" [disabled]="!experiment.is_editable">
         <mat-icon>add_circle</mat-icon>
         Create new experiment run
     </button>

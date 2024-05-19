@@ -258,10 +258,6 @@ export class BackendApiService {
     return this.http.get<number>(`${environment.BACKEND_API_URL}/count/experiments${queries}`);
   }
 
-  isExperimentEditable(id: string): Observable<boolean> {
-    return this.http.get<boolean>(`${environment.BACKEND_API_URL}/experiments/${id}/is_editable`);
-  }
-
   /**
    * Create experiment
    * @returns Observable<Experiment>
@@ -305,10 +301,6 @@ export class BackendApiService {
    */
   getExperimentTemplate(id: string): Observable<ExperimentTemplate> {
     return this.http.get<ExperimentTemplate>(`${environment.BACKEND_API_URL}/experiment-templates/${id}`);
-  }
-
-  isExperimentTemplateEditable(id: string): Observable<boolean> {
-    return this.http.get<boolean>(`${environment.BACKEND_API_URL}/experiment-templates/${id}/is_editable`);
   }
 
   /**

@@ -45,8 +45,13 @@ class Experiment(Document):
     class Settings:
         name = "experiments"
 
-    def map_to_response(self) -> ExperimentResponse:
-        return ExperimentResponse(**self.dict())
+    def map_to_response(self, user: dict | None = None) -> ExperimentResponse:
+        is_editable = (
+            user is not None
+            and self.created_by == user["email"]
+            and self.is_archived is False
+        )
+        return ExperimentResponse(**self.dict(), is_editable=is_editable)
 
     async def is_valid(self, experiment_template: ExperimentTemplate) -> bool:
         """Validate that experiment matches its experiment template definition"""

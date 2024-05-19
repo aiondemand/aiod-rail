@@ -34,6 +34,7 @@ export interface ExperimentTemplateResponse {
     is_approved: boolean;
     is_archived: boolean;
     is_public: boolean;
+    is_editable: boolean;
 }
 export namespace ExperimentTemplateResponse {
 }
