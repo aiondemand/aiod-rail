@@ -14,6 +14,8 @@ from app.routers.experiment_templates import (
     get_experiment_template_if_accessible_or_raise,
 )
 from app.schemas.experiment import ExperimentCreate, ExperimentResponse
+from app.services.workflow_engines.base import WorkflowEngineBase
+from app.services.workflow_engines.reana import ReanaService
 
 router = APIRouter()
 
@@ -126,16 +128,20 @@ async def update_experiment(
 
 @router.delete("/experiments/{id}", response_model=None)
 async def delete_experiment(
-    id: PydanticObjectId, user: dict = Depends(get_current_user(required=True))
+    id: PydanticObjectId,
+    user: dict = Depends(get_current_user(required=True)),
+    workflow_engine: WorkflowEngineBase = Depends(ReanaService.get_service),
 ) -> Any:
     await get_experiment_if_accessible_or_raise(id, user, write_access=True)
-    exist_runs = await ExperimentRun.find(ExperimentRun.experiment_id == id).count() > 0
-    if exist_runs:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="This experiment cannot be deleted",
-        )
+    runs = await ExperimentRun.find(ExperimentRun.experiment_id == id).to_list()
 
+    for run in runs:
+        await workflow_engine.delete_workflow(run)
+        await run.delete_files()
+
+    await ExperimentRun.find(
+        operators.Or(*[ExperimentRun.id == run.id for run in runs])
+    ).delete()
     await Experiment.find(Experiment.id == id).delete()
 
 

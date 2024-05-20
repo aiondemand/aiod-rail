@@ -9,7 +9,7 @@ import { BackendApiService } from 'src/app/services/backend-api.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { ExperimentRunListComponent } from '../experiment-run-list/experiment-run-list.component';
 import { EnvironmentVar } from 'src/app/models/env-vars';
-import { ConfirmPopupInput } from 'src/app/models/popup-input';
+import { ConfirmPopupInput, ConfirmPopupResponse } from 'src/app/models/popup';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmPopupComponent } from '../../general/popup/confirm-popup.component';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -155,7 +155,7 @@ export class ExperimentDetailComponent {
         data: popupInput
       }).afterClosed())
         .then(state => {
-          if (state) {
+          if (state == ConfirmPopupResponse.Yes) {
             this.router.navigate(routeParts, routeExtras);
           }
         });
@@ -167,35 +167,41 @@ export class ExperimentDetailComponent {
 
   deleteBtnClicked(): void {
     let routeParts = ["/experiments", "my"];
-    
+
     let str = (
       this.existRuns
       ?
-      "Since there exist ExperimentRuns that execute this particular experiment, you can no longer delete this experiment. " +
-      "However, you can still forbid an execution of new ExperimentRuns that utilize this experiment by archiving it. " + 
-      "Do you wish to archive this experiment?" 
+      "Since there exist ExperimentRuns that execute this particular experiment, besides the option to delete the entire experiment with all its ExperimentRuns, " +
+      "you can also archive this Experiment making execution of new runs not possible whilst keeping the previously executed runs intact. " + 
+      "What operation do you wish to perform?"
       : 
       "Do you wish to delete this experiment?"
-    );  
+    );
+    let acceptStr = this.existRuns ? "Delete experiment and its runs" : "Yes";
+    let declineStr = this.existRuns ? "Dismiss" : "No";
+    let thirdOptStr = this.existRuns ? "Archive experiment" : "";
+
     let popupInput: ConfirmPopupInput = {
       message: str,
-      acceptBtnMessage: "Yes",
-      declineBtnMessage: "No"
+      acceptBtnMessage: acceptStr,
+      declineBtnMessage: declineStr,
+      thirdOptionBtnMessage: thirdOptStr
     }
+
     firstValueFrom(this.dialog.open(ConfirmPopupComponent, {
-      maxWidth: '450px',
+      maxWidth: this.existRuns ? '600px' : '450px',
       width: '100%',
       autoFocus: false,
       data: popupInput
     }).afterClosed())
       .then(state => {
-        if (state && this.existRuns) {
-          firstValueFrom(this.backend.archiveExperiment(this.experiment.id, true))
+        if (state == ConfirmPopupResponse.Yes) {
+          firstValueFrom(this.backend.deleteExperiment(this.experiment.id))
             .then(_ => this.router.navigate(routeParts))
             .catch(err => console.error(err));
         }
-        else if (state) {
-          firstValueFrom(this.backend.deleteExperiment(this.experiment.id))
+        else if (state == ConfirmPopupResponse.ThirdOption) {
+          firstValueFrom(this.backend.archiveExperiment(this.experiment.id, true))
             .then(_ => this.router.navigate(routeParts))
             .catch(err => console.error(err));
         }
@@ -205,7 +211,7 @@ export class ExperimentDetailComponent {
   undoBtnClicked(): void {
    firstValueFrom(this.backend.archiveExperiment(this.experiment.id, false))
     .then(_ => {
-      this.experiment.is_editable = true;
+      this.experiment.is_mine = true;
       this.experiment.is_archived = false;
     })
     .catch(err => console.error(err));

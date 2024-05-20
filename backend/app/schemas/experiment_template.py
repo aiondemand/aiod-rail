@@ -61,7 +61,7 @@ class ExperimentTemplateResponse(ExperimentTemplateBase):
     dockerfile: str
     is_approved: bool
     is_archived: bool
-    is_editable: bool
+    is_mine: bool
 
 
 class ExperimentTemplateId(BaseModel):

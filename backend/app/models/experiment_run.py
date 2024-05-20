@@ -1,4 +1,6 @@
+import asyncio
 import json
+import shutil
 from datetime import datetime, timezone
 from functools import partial
 from pathlib import Path
@@ -58,9 +60,11 @@ class ExperimentRun(Document):
         self.updated_at = datetime.now(tz=timezone.utc)
 
     def map_to_response(
-        self, return_detailed_response: bool = False
+        self, is_mine: bool, return_detailed_response: bool = False
     ) -> ExperimentRunResponse:
-        response = ExperimentRunResponse(**self.dict(), metrics=self.metrics)
+        response = ExperimentRunResponse(
+            **self.dict(), metrics=self.metrics, is_mine=is_mine
+        )
 
         if return_detailed_response is False:
             return response
@@ -71,3 +75,6 @@ class ExperimentRun(Document):
             experiment_id=self.experiment_id,
             retry_count=self.retry_count + 1,
         )
+
+    async def delete_files(self) -> None:
+        await asyncio.to_thread(shutil.rmtree, self.run_path)

@@ -29,4 +29,4 @@ class ExperimentResponse(ExperimentBase):
     created_at: datetime
     updated_at: datetime
     is_archived: bool
-    is_editable: bool
+    is_mine: bool

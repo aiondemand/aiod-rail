@@ -33,6 +33,14 @@ class WorkflowEngineBase(ABC):
         pass
 
     @abstractmethod
+    async def stop_workflow(self, experiment_run: ExperimentRun) -> bool:
+        pass
+
+    @abstractmethod
+    async def delete_workflow(self, experiment_run: ExperimentRun) -> bool:
+        pass
+
+    @abstractmethod
     async def postprocess_workflow(
         self, experiment_run: ExperimentRun, workflow_state: WorkflowState
     ) -> None:

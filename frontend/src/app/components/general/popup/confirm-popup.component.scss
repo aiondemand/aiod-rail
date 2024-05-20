@@ -16,6 +16,7 @@
 
 .buttons {
     display: flex;
+    flex: 1;
     justify-content: center;
     align-items: center;
     gap: 2em;
@@ -23,6 +24,8 @@
     button {
         width: 150px;
         min-width: 100px;
+        max-width: 150px;
+        line-height: 1em;
     }
 
     .no-btn {

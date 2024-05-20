@@ -377,6 +377,14 @@ export class BackendApiService {
     return this.http.get<ExperimentRunDetails>(`${environment.BACKEND_API_URL}/experiment-runs/${experimentRunId}`);
   }
 
+  stopExperimentRun(experimentRunId: string): Observable<void> {
+    return this.http.get<void>(`${environment.BACKEND_API_URL}/experiment-runs/${experimentRunId}/stop`);
+  }
+
+  deleteExperimentRun(experimentRunId: string): Observable<void> {
+    return this.http.delete<void>(`${environment.BACKEND_API_URL}/experiment-runs/${experimentRunId}`);
+  }
+
   /**
    * Get logs for experiment run
    * @returns Observable<string>

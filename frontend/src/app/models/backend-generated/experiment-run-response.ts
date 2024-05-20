@@ -19,6 +19,8 @@ export interface ExperimentRunResponse {
     retry_count: number;
     state: RunState;
     metrics: { [key: string]: number; };
+    is_mine: boolean;
+    experiment_id: string;
 }
 export namespace ExperimentRunResponse {
 }

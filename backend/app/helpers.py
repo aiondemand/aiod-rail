@@ -21,6 +21,8 @@ class QueryOperator(str, Enum):
 class WorkflowState(BaseModel):
     success: bool
     error_message: str = ""
+    manually_stopped: bool = False
+    manually_deleted: bool = False
 
 
 class FileDetail(BaseModel):

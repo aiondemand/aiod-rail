@@ -5,7 +5,7 @@ import { BackendApiService } from 'src/app/services/backend-api.service';
 import { Observable, first, firstValueFrom, min } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmPopupComponent } from '../../general/popup/confirm-popup.component';
-import { ConfirmPopupInput } from 'src/app/models/popup-input';
+import { ConfirmPopupInput, ConfirmPopupResponse } from 'src/app/models/popup';
 
 
 @Component({
@@ -62,7 +62,7 @@ export class ExperimentTemplateDetailComponent {
         data: popupInput
       }).afterClosed())
         .then(state => {
-          if (state) {
+          if (state == ConfirmPopupResponse.Yes) {
             this.router.navigate(routeParts, routeExtras);
           }
         });
@@ -96,12 +96,12 @@ export class ExperimentTemplateDetailComponent {
       data: popupInput
     }).afterClosed())
       .then(state => {
-        if (state && this.existExperiments) {
+        if (state == ConfirmPopupResponse.Yes && this.existExperiments) {
           firstValueFrom(this.backend.archiveExperimentTemplate(this.templateId, true))
             .then(_ => this.router.navigate(routeParts))
             .catch(err => console.error(err));
         }
-        else if (state) {
+        else if (state == ConfirmPopupResponse.Yes) {
           firstValueFrom(this.backend.deleteExperimentTemplate(this.templateId))
               .then(_ => this.router.navigate(routeParts))
               .catch(err => console.error(err));
@@ -112,7 +112,7 @@ export class ExperimentTemplateDetailComponent {
   undoBtnClicked(): void {
     firstValueFrom(this.backend.archiveExperimentTemplate(this.templateId, false))
     .then(_ => {
-      this.experimentTemplate.is_editable = true;
+      this.experimentTemplate.is_mine = true;
       this.experimentTemplate.is_archived = false;
     })
     .catch(err => console.error(err));

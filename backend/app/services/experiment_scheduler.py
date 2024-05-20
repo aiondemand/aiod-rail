@@ -145,18 +145,21 @@ class ExperimentScheduler:
             should_retry = (
                 experiment_run.retry_count < settings.MAX_EXPERIMENT_RUN_ATTEMPTS - 1
                 and workflow_state.success is False
+                and workflow_state.manually_stopped is False
+                and workflow_state.manually_deleted is False
             )
             if workflow_state.success:
                 new_state = RunState.FINISHED
             else:
                 new_state = RunState.CRASHED
 
-            experiment_run.update_state(new_state)
-            await experiment_run.replace()
-            if should_retry:
-                new_exp_run = experiment_run.retry_failed_run()
-                await new_exp_run.create()
-                await self.add_run_to_execute(new_exp_run.id)
+            if workflow_state.manually_deleted is False:
+                experiment_run.update_state(new_state)
+                await experiment_run.replace()
+                if should_retry:
+                    new_exp_run = experiment_run.retry_failed_run()
+                    await new_exp_run.create()
+                    await self.add_run_to_execute(new_exp_run.id)
 
             self.logger.info(
                 f"=== ExperimentRun id={experiment_run.id} "
@@ -173,8 +176,11 @@ class ExperimentScheduler:
             experiment_run, experiment, environment_variables
         )
         workflow_state = await self.workflow_engine.run_workflow(experiment_run)
-        await self.workflow_engine.postprocess_workflow(experiment_run, workflow_state)
 
+        if workflow_state.manually_deleted is False:
+            await self.workflow_engine.postprocess_workflow(
+                experiment_run, workflow_state
+            )
         return workflow_state
 
     async def _rebuild_image_if_necessary(
