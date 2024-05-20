@@ -7,32 +7,6 @@ class ExperimentsTemplates:
     # TODO change to client.py strategy
     def __init__(self, client_config: aiod_rail_sdk.Configuration):
         self._configuration = client_config
- 
-
-    def create_experiment_template_old(self, authorization_header: dict, json_file: json) -> aiod_rail_sdk.ExperimentTemplateResponse:
-        """
-            Creates experiment template for experiment
-            Args:
-                authorization_header (dict): Authorization in form of token type and access token
-                json_file (dict):     Experiment described in json file
-            
-            Returns:
-                ExperimentTemplateResponse: aiod_rail_sdk.models.experiment_template_response
-        """
-        json_str = json.dumps(json_file)
-        experiment_template_create_instance = aiod_rail_sdk.ExperimentTemplateCreate.from_json(json_str)
-
-        with aiod_rail_sdk.ApiClient(self._configuration) as api_client:
-            api_client.default_headers = authorization_header
-            api_instance = aiod_rail_sdk.ExperimentTemplatesApi(api_client)
-            experiment_template_create = experiment_template_create_instance
-
-            try:
-                api_response = api_instance.create_experiment_template_v1_experiment_templates_post(experiment_template_create)
-                return api_response
-            
-            except Exception as e:
-                raise(f'Exception {e}')
             
     def create_experiment_template(
             self, 

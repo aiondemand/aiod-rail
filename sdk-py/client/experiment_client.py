@@ -7,7 +7,7 @@ class Experiments:
     def __init__(self, client_config: aiod_rail_sdk.Configuration):
         self._configuration = client_config
         
-    def create_experiment(self, file) -> aiod_rail_sdk.ExperimentResponse:
+    def create_experiment(self, authorization_header: dict, file) -> aiod_rail_sdk.ExperimentResponse:
         """
             Creates experiment template for experiment
             Args:
@@ -16,8 +16,9 @@ class Experiments:
         """
         with aiod_rail_sdk.ApiClient(self._configuration) as api_client:
             api_instance = aiod_rail_sdk.ExperimentsApi(api_client)
-            experiment_create_instance = aiod_rail_sdk.ExperimentCreate.from_dict(file)
-
+            json_data = json.dumps(file)
+            experiment_create_instance = aiod_rail_sdk.ExperimentCreate.from_json(json_data)
+            api_client.default_headers = authorization_header
             try:
                 api_response = api_instance.create_experiment_v1_experiments_post(experiment_create_instance)
                 return api_response
