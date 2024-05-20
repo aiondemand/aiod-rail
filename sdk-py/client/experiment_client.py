@@ -3,7 +3,6 @@ import aiod_rail_sdk
 
 
 class Experiments:
-    # TODO change to client.py strategy
     def __init__(self, client_config: aiod_rail_sdk.Configuration):
         self._configuration = client_config
         
@@ -27,7 +26,7 @@ class Experiments:
                 raise(f'Exception {e}')
             
     
-    def run_experiment(self, authorization_header: dict, id: str):
+    def run_experiment(self, authorization_header: dict, id: str) -> aiod_rail_sdk.ExperimentRunResponse:
         """
             Runs specified experiment
             Args:
@@ -46,7 +45,7 @@ class Experiments:
 
 
 
-    def logs(self, authorization_header: dict, id: str):
+    def logs(self, authorization_header: dict, id: str) -> str:
         """
             Get experiment run logs
             Args:
@@ -62,7 +61,7 @@ class Experiments:
             except Exception as e:
                 print(f'Exception {e}')
 
-    def count(self, authorization_header: dict):
+    def count(self, authorization_header: dict) -> int:
         """
             Gets experiment count
             Args:
@@ -77,7 +76,7 @@ class Experiments:
             except Exception as e:
                 print(f'Exception {e}')
 
-    def get(self, authorization_header: dict, offset: int = 0, limit: int = 100):
+    def get(self, authorization_header: dict, offset: int = 0, limit: int = 100) -> list[aiod_rail_sdk.ExperimentResponse]:
         """
             Gets experiment
             Args:
@@ -95,7 +94,7 @@ class Experiments:
                 print(f'Exception {e}')
 
 
-    def get_by_id(self, authorization_header: dict, id: str):
+    def get_by_id(self, authorization_header: dict, id: str) -> aiod_rail_sdk.ExperimentResponse:
         """
             Gets specific experiment by it's ID
             Args:
@@ -112,7 +111,7 @@ class Experiments:
                 print(f'Exception {e}')
 
 
-    def download(self, authorization_header: dict, id: str, filepath: str):
+    def download(self, authorization_header: dict, id: str, filepath: str) -> None:
         """
             Downloads experiment specified by ID to specified filepath
             Args:

@@ -4,7 +4,6 @@ from typing import Union
 
 
 class ExperimentsTemplates:
-    # TODO change to client.py strategy
     def __init__(self, client_config: aiod_rail_sdk.Configuration):
         self._configuration = client_config
             
@@ -54,7 +53,7 @@ class ExperimentsTemplates:
                 raise(f'Exception {e}')
             
             
-    def approve_experiment_template(self, id: str, password: str = 'pass', is_approved: bool = False) -> object:
+    def approve_experiment_template(self, id: str, password: str = 'pass', is_approved: bool = False) -> None:
         """
             Approves experiment template with specified id
             Args:
@@ -93,7 +92,8 @@ class ExperimentsTemplates:
             except Exception as e:
                 raise(f'Exception {e}')
 
-    def get(self, authorization_header: dict, include_mine: bool = True, include_approved: bool = True, offset: int = 0, limit: int = 100) -> list:
+    def get(self, authorization_header: dict, include_mine: bool = True, 
+            include_approved: bool = True, offset: int = 0, limit: int = 100) -> list[aiod_rail_sdk.ExperimentTemplateResponse]:
         """
             Gets experiment templates
             Args:

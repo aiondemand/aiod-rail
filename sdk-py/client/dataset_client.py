@@ -1,11 +1,10 @@
 import aiod_rail_sdk
 
 class Datasets:
-    # TODO change to client.py strategy
     def __init__(self, client_config: aiod_rail_sdk.Configuration):
         self._configuration = client_config
 
-    def count(self):
+    def count(self) -> int:
         """
             Get total number of datasets
             
@@ -23,7 +22,7 @@ class Datasets:
                 except Exception as e:
                     raise (f'Exception {e}')
 
-    def get(self, offset: int = 0, limit: int = 100) -> list:
+    def get(self, offset: int = 0, limit: int = 100) -> list[aiod_rail_sdk.Dataset]:
         """
             Retrieves datasets in specified range
 
@@ -42,7 +41,7 @@ class Datasets:
             except Exception as e:
                 raise (f'Exception {e}')
     
-    def get_by_id(self, id: int):
+    def get_by_id(self, id: int) -> aiod_rail_sdk.Dataset:
         """
             Retrieves dataset specified by it's id
 
