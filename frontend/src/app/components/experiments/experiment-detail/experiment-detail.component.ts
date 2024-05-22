@@ -28,7 +28,6 @@ export class ExperimentDetailComponent {
   model: Model;
   relatedPublications: Publication[] = [];
   experimentTemplate: ExperimentTemplate;
-  existRuns: boolean = false;
 
   constructor(
     private backend: BackendApiService, 
@@ -54,19 +53,17 @@ export class ExperimentDetailComponent {
           this.backend.getModel(experiment.model_ids[0]),
           this.backend.getExperimentPublications(experiment),
           this.backend.getExperimentTemplate(experiment.experiment_template_id),
-          this.backend.getExperimentRunsCount(experiment.id),
           of(experiment)
         ])),
         retry(3)
       );
 
     firstValueFrom(data$)
-      .then(([dataset, model, publications, experimentTemplate, experimentRunsCount, experiment]) => {
+      .then(([dataset, model, publications, experimentTemplate, experiment]) => {
         this.dataset = dataset;
         this.model = model;
         this.relatedPublications = publications;
         this.experimentTemplate = experimentTemplate;
-        this.existRuns = experimentRunsCount > 0;
         this.experiment = experiment;
 
         this.envTableData = this.buildEnvTable();
@@ -101,14 +98,6 @@ export class ExperimentDetailComponent {
   }
 
   onCreateRun(): void {
-    // // filter out envs that are empty
-    // const nonEmptyEnvs: { [key: string]: string } = {};
-    // for (const key in this.envs) {
-    //   if (this.envs[key] !== '') {
-    //     nonEmptyEnvs[key] = this.envs[key];
-    //   }
-    // }
-
     firstValueFrom(
       this.backend.executeExperimentRun(this.experiment.id)
         .pipe(
@@ -134,80 +123,90 @@ export class ExperimentDetailComponent {
   }
 
   editBtnClicked(): void {
-    let routeParts = ['update'];
-    let routeExtras = { 
-      relativeTo: this.route,
-    };
+    firstValueFrom(this.backend.getExperimentRunsCount(this.experiment.id))
+      .then(count => {
+        let existRuns = count > 0;
+        let routeParts = ['update'];
+        let routeExtras = { 
+          relativeTo: this.route,
+        };
 
-    if (this.existRuns) {
-      let str = (
-        "This Experiment is already associated with some experiment runs. " + 
-        "Modifying parameters that could change the experiment's behavior is restricted."
-      )
-      let popupInput: ConfirmPopupInput = {
-        message: str,
-        acceptBtnMessage: "Continue"
-      };
-      firstValueFrom(this.dialog.open(ConfirmPopupComponent, {
-        maxWidth: '450px',
-        width: '100%',
-        autoFocus: false,
-        data: popupInput
-      }).afterClosed())
-        .then(state => {
-          if (state == ConfirmPopupResponse.Yes) {
-            this.router.navigate(routeParts, routeExtras);
-          }
-        });
-    }
-    else {
-      this.router.navigate(routeParts, routeExtras);
-    }
+        if (existRuns) {
+          let str = (
+            "This Experiment is already associated with some experiment runs. " + 
+            "Modifying parameters that could change the experiment's behavior is restricted."
+          )
+          let popupInput: ConfirmPopupInput = {
+            message: str,
+            acceptBtnMessage: "Continue"
+          };
+          firstValueFrom(this.dialog.open(ConfirmPopupComponent, {
+            maxWidth: '450px',
+            width: '100%',
+            autoFocus: false,
+            data: popupInput
+          }).afterClosed())
+            .then(state => {
+              if (state == ConfirmPopupResponse.Yes) {
+                this.router.navigate(routeParts, routeExtras);
+              }
+            });
+        }
+        else {
+          this.router.navigate(routeParts, routeExtras);
+        }
+      })
+      .catch(err => console.error(err));
   }
 
   deleteBtnClicked(): void {
-    let routeParts = ["/experiments", "my"];
+    firstValueFrom(this.backend.getExperimentRunsCount(this.experiment.id))
+      .then(count => {
+        let existRuns = count > 0;
+        let routeParts = ["/experiments", "my"];
 
-    let str = (
-      this.existRuns
-      ?
-      "This Experiment is already associated with some experiment runs. " + 
-      "You can either DELETE this experiment with all its Experiment Runs " + 
-      "or ARCHIVE this experiment making execution of new runs not possible " + 
-      "whilst keeping the previously executed runs intact.\n\n" +
-      "What operation do you wish to perform?"
-      : 
-      "Do you wish to DELETE this experiment?"
-    );
-    let acceptStr = this.existRuns ? "Delete experiment and all its runs" : "Yes";
-    let declineStr = this.existRuns ? "Dismiss" : "No";
-    let thirdOptStr = this.existRuns ? "Archive experiment" : "";
+        let str = (
+          existRuns
+          ?
+          "This Experiment is already associated with some experiment runs. " + 
+          "You can either DELETE this experiment with all its Experiment Runs " + 
+          "or ARCHIVE this experiment making execution of new runs not possible " + 
+          "whilst keeping the previously executed runs intact.\n\n" +
+          "What operation do you wish to perform?"
+          : 
+          "Do you wish to DELETE this experiment?"
+        );
+        let acceptStr = existRuns ? "Delete experiment and all its runs" : "Yes";
+        let declineStr = existRuns ? "Dismiss" : "No";
+        let thirdOptStr = existRuns ? "Archive experiment" : "";
 
-    let popupInput: ConfirmPopupInput = {
-      message: str,
-      acceptBtnMessage: acceptStr,
-      declineBtnMessage: declineStr,
-      thirdOptionBtnMessage: thirdOptStr
-    }
-
-    firstValueFrom(this.dialog.open(ConfirmPopupComponent, {
-      maxWidth: this.existRuns ? '600px' : '450px',
-      width: '100%',
-      autoFocus: false,
-      data: popupInput
-    }).afterClosed())
-      .then(state => {
-        if (state == ConfirmPopupResponse.Yes) {
-          firstValueFrom(this.backend.deleteExperiment(this.experiment.id))
-            .then(_ => this.router.navigate(routeParts))
-            .catch(err => console.error(err));
+        let popupInput: ConfirmPopupInput = {
+          message: str,
+          acceptBtnMessage: acceptStr,
+          declineBtnMessage: declineStr,
+          thirdOptionBtnMessage: thirdOptStr
         }
-        else if (state == ConfirmPopupResponse.ThirdOption) {
-          firstValueFrom(this.backend.archiveExperiment(this.experiment.id, true))
-            .then(_ => this.router.navigate(routeParts))
-            .catch(err => console.error(err));
-        }
-      });
+
+        firstValueFrom(this.dialog.open(ConfirmPopupComponent, {
+          maxWidth: existRuns ? '600px' : '450px',
+          width: '100%',
+          autoFocus: false,
+          data: popupInput
+        }).afterClosed())
+          .then(state => {
+            if (state == ConfirmPopupResponse.Yes) {
+              firstValueFrom(this.backend.deleteExperiment(this.experiment.id))
+                .then(_ => this.router.navigate(routeParts))
+                .catch(err => console.error(err));
+            }
+            else if (state == ConfirmPopupResponse.ThirdOption) {
+              firstValueFrom(this.backend.archiveExperiment(this.experiment.id, true))
+                .then(_ => this.router.navigate(routeParts))
+                .catch(err => console.error(err));
+            }
+          });
+      })
+      .catch(err => console.error(err));
   }
 
   undoBtnClicked(): void {
