@@ -20,7 +20,7 @@ export interface ExperimentRunDetails {
     state: RunState;
     metrics: { [key: string]: number; };
     logs: string;
-    is_mine: boolean;
+    mine: boolean;
     experiment_id: string;
 }
 export namespace ExperimentRunDetails {

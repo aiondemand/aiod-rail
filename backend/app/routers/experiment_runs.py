@@ -30,7 +30,7 @@ async def execute_experiment_run(
     experiment = await get_experiment_if_accessible_or_raise(
         id, user, write_access=True
     )
-    if experiment.is_archived:
+    if experiment.archived:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid experiment to execute",
@@ -45,7 +45,7 @@ async def execute_experiment_run(
     experiment_run = await experiment_run.create()
 
     await exp_scheduler.add_run_to_execute(experiment_run.id)
-    return experiment_run.map_to_response(is_mine=True)
+    return experiment_run.map_to_response(mine=True)
 
 
 @router.get("/experiments/{id}/runs", response_model=list[ExperimentRunResponse])
@@ -63,8 +63,8 @@ async def get_experiment_runs_of_experiment(
         limit=pagination.limit,
     ).to_list()
 
-    is_mine = user is not None and experiment.created_by == user["email"]
-    return [run.map_to_response(is_mine=is_mine) for run in runs]
+    mine = user is not None and experiment.created_by == user["email"]
+    return [run.map_to_response(mine=mine) for run in runs]
 
 
 @router.get("/count/experiments/{id}/runs", response_model=int)
@@ -84,10 +84,8 @@ async def get_experiment_run(
     experiment_run = await get_experiment_run_if_accessible_or_raise(id, user)
     experiment = await Experiment.get(experiment_run.experiment_id)
 
-    is_mine = user is not None and experiment.created_by == user["email"]
-    return experiment_run.map_to_response(
-        is_mine=is_mine, return_detailed_response=True
-    )
+    mine = user is not None and experiment.created_by == user["email"]
+    return experiment_run.map_to_response(mine=mine, return_detailed_response=True)
 
 
 @router.get("/experiment-runs/{id}/stop", response_model=None)
@@ -99,7 +97,7 @@ async def stop_experiment_run(
     # TODO this case needs to be properly addressed
     # TODO if this endpoint is executed even before the workflow has even started
     # (the code execution is in _general_workflow_preparation function for example),
-    # it will not effectively not stop the experiment run execution pipeline and
+    # it will not effectively stop the experiment run execution pipeline and
     # the workflow will be created later on
 
     experiment_run = await get_experiment_run_if_accessible_or_raise(
@@ -107,7 +105,7 @@ async def stop_experiment_run(
     )
 
     experiment = await Experiment.get(experiment_run.experiment_id)
-    if experiment.is_archived:
+    if experiment.archived:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="You cannot stop this experiment run.",
@@ -129,21 +127,21 @@ async def delete_experiment_run(
     # (the code execution is in _general_workflow_preparation function for example),
     # it will not delete the workflow, however the relevant files as well as the
     # object from the database will be deleted which will cause problems down the line
-    # of the experiment rine execution pipeline
+    # of the experiment run execution pipeline
 
     experiment_run = await get_experiment_run_if_accessible_or_raise(
         id, user, write_access=True
     )
 
     experiment = await Experiment.get(experiment_run.experiment_id)
-    if experiment.is_archived:
+    if experiment.archived:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="You cannot delete this experiment run.",
         )
 
     await workflow_engine.delete_workflow(experiment_run)
-    await ExperimentRun.find(ExperimentRun.id == id).delete()
+    await ExperimentRun.find(ExperimentRun.id == experiment_run.id).delete()
     await experiment_run.delete_files()
 
 
@@ -204,14 +202,17 @@ async def list_files_of_experiment_run(
 async def get_experiment_run_if_accessible_or_raise(
     run_id: PydanticObjectId, user: dict | None, write_access: bool = False
 ) -> ExperimentRun:
-    experiment_run = await ExperimentRun.get(run_id)
-    if experiment_run is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Specified experiment run doesn't exist",
-        )
-
-    await get_experiment_if_accessible_or_raise(
-        experiment_run.experiment_id, user, write_access=write_access
+    access_denied_error = HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail="You cannot access this experiment template",
     )
-    return experiment_run
+    experiment_run = await ExperimentRun.get(run_id)
+
+    if experiment_run is None:
+        raise access_denied_error
+    else:
+        # Check the user's accessibility to the experiment, run originated from
+        await get_experiment_if_accessible_or_raise(
+            experiment_run.experiment_id, user, write_access=write_access
+        )
+        return experiment_run

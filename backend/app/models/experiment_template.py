@@ -41,10 +41,10 @@ class ExperimentTemplate(Document):
     updated_at: datetime = Field(default_factory=partial(datetime.now, tz=timezone.utc))
     state: TemplateState = TemplateState.CREATED
     retry_count: int = 0
-    is_approved: bool = False
+    approved: bool = False
     created_by: str
-    is_archived: bool = False
-    is_public: bool = True
+    archived: bool = False
+    public: bool = True
 
     @property
     def environment_attribute_names(self) -> list[str]:
@@ -103,7 +103,7 @@ class ExperimentTemplate(Document):
 
     @property
     def allows_experiment_creation(self) -> bool:
-        return self.state == TemplateState.FINISHED and self.is_archived is False
+        return self.state == TemplateState.FINISHED and self.archived is False
 
     class Settings:
         name = "experimentTemplates"
@@ -133,13 +133,13 @@ class ExperimentTemplate(Document):
             yaml.safe_dump(reana_cfg, fp)
 
     def map_to_response(self, user: dict | None = None) -> ExperimentTemplateResponse:
-        is_mine = user is not None and self.created_by == user["email"]
+        mine = user is not None and self.created_by == user["email"]
         return ExperimentTemplateResponse(
             **self.dict(),
             dockerfile=self.dockerfile,
             pip_requirements=self.pip_requirements,
             script=self.script,
-            is_mine=is_mine,
+            mine=mine,
         )
 
     def update_state(self, state: TemplateState) -> None:
@@ -189,37 +189,37 @@ class ExperimentTemplate(Document):
             ]
         ) == len(self.environment_attribute_names)
 
-    def update_non_environment(self, new_template: ExperimentTemplate) -> None:
-        self.name = new_template.name
-        self.description = new_template.description
-
     @classmethod
     async def update_template(
         cls,
-        old_template: ExperimentTemplate,
+        original_template: ExperimentTemplate,
         experiment_template_req: ExperimentTemplateCreate,
         editable_environment: bool,
         editable_visibility: bool,
     ) -> ExperimentTemplate | None:
-        same_environment = old_template.is_same_environment(experiment_template_req)
-        same_visibility = old_template.is_public == experiment_template_req.is_public
+        same_environment = original_template.is_same_environment(
+            experiment_template_req
+        )
+        same_visibility = original_template.public == experiment_template_req.public
         new_template = ExperimentTemplate(
-            **experiment_template_req.dict(), created_by=old_template.created_by
+            **experiment_template_req.dict(), created_by=original_template.created_by
         )
         template_to_return = None
 
         if same_environment and (same_visibility or editable_visibility):
             # We modify only name & descr (+ maybe visibility)
-            old_template.update_non_environment(new_template)
-            old_template.is_public = experiment_template_req.is_public
-            old_template.updated_at = new_template.updated_at
-            template_to_return = old_template
+            original_template.name = new_template.name
+            original_template.description = new_template.description
+            original_template.public = experiment_template_req.public
+
+            original_template.updated_at = new_template.updated_at
+            template_to_return = original_template
 
         elif editable_environment:
             # If there are no experiments tied to this template,
             # we can modify everything
-            new_template.created_at = old_template.created_at
-            new_template.id = old_template.id
+            new_template.created_at = original_template.created_at
+            new_template.id = original_template.id
 
             new_template.initialize_files(
                 base_image=experiment_template_req.base_image,

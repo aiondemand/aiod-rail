@@ -19,8 +19,8 @@ class Experiment(Document):
     updated_at: datetime = Field(default_factory=partial(datetime.now, tz=timezone.utc))
     created_at: datetime = Field(default_factory=partial(datetime.now, tz=timezone.utc))
     created_by: str
-    is_public: bool = False
-    is_archived: bool = False
+    public: bool = False
+    archived: bool = False
 
     experiment_template_id: PydanticObjectId
 
@@ -46,8 +46,8 @@ class Experiment(Document):
         name = "experiments"
 
     def map_to_response(self, user: dict | None = None) -> ExperimentResponse:
-        is_mine = user is not None and self.created_by == user["email"]
-        return ExperimentResponse(**self.dict(), is_mine=is_mine)
+        mine = user is not None and self.created_by == user["email"]
+        return ExperimentResponse(**self.dict(), mine=mine)
 
     async def is_valid(self, experiment_template: ExperimentTemplate) -> bool:
         """Validate that experiment matches its experiment template definition"""
@@ -72,34 +72,32 @@ class Experiment(Document):
             ]
         ) == len(self.assets_attribute_names)
 
-    def update_non_assets(self, new_experiment: Experiment) -> None:
-        self.name = new_experiment.name
-        self.description = new_experiment.description
-        self.is_public = new_experiment.is_public
-
     @classmethod
     async def update_experiment(
         cls,
-        old_experiment: Experiment,
+        original_experiment: Experiment,
         experiment_req: ExperimentCreate,
         editable_assets: bool,
     ) -> Experiment | None:
         new_experiment = Experiment(
-            **experiment_req.dict(), created_by=old_experiment.created_by
+            **experiment_req.dict(), created_by=original_experiment.created_by
         )
-        same_assets = old_experiment.has_same_assets(new_experiment)
+        same_assets = original_experiment.has_same_assets(new_experiment)
         experiment_to_return = None
 
         if same_assets:
             # Update name, descr & visibility
-            old_experiment.update_non_assets(new_experiment)
-            old_experiment.updated_at = new_experiment.updated_at
-            experiment_to_return = old_experiment
+            original_experiment.name = new_experiment.name
+            original_experiment.description = new_experiment.description
+            original_experiment.public = new_experiment.public
+
+            original_experiment.updated_at = new_experiment.updated_at
+            experiment_to_return = original_experiment
 
         elif editable_assets:
             # No runs exist yet, so we can change everything in experiment
-            new_experiment.created_at = old_experiment.created_at
-            new_experiment.id = old_experiment.id
+            new_experiment.created_at = original_experiment.created_at
+            new_experiment.id = original_experiment.id
             experiment_to_return = new_experiment
 
         return experiment_to_return

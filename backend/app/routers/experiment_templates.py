@@ -3,13 +3,14 @@ from datetime import datetime, timezone
 from typing import Any
 
 from beanie import PydanticObjectId, operators
+from beanie.odm.operators.find.comparison import Eq
 from beanie.odm.operators.find.evaluation import Text
 from beanie.odm.queries.find import FindMany
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.authentication import get_current_user
 from app.config import settings
-from app.helpers import Pagination, QueryOperator
+from app.helpers import Pagination, QueryOperator, get_compare_operator_fn
 from app.models.experiment import Experiment
 from app.models.experiment_template import ExperimentTemplate
 from app.schemas.experiment_template import (
@@ -27,18 +28,19 @@ async def get_experiment_templates(
     user: dict = Depends(get_current_user(required=False)),
     query: str = "",
     pagination: Pagination = Depends(),
-    only_mine: bool = False,
-    only_finalized: bool = False,
-    only_not_archived: bool = False,
-    only_public: bool = False,
+    mine: bool | None = None,
+    finalized: bool | None = None,
+    approved: bool | None = None,
+    archived: bool | None = None,
+    public: bool | None = None,
 ) -> Any:
     result_set = find_specific_experiment_templates(
         query,
-        only_mine=only_mine,
-        only_finalized=only_finalized,
-        only_not_archived=only_not_archived,
-        only_public=only_public,
-        query_operator=QueryOperator.AND,
+        mine=mine,
+        finalized=finalized,
+        approved=approved,
+        archived=archived,
+        public=public,
         user=user,
         pagination=pagination,
     )
@@ -62,18 +64,19 @@ async def get_experiment_template(
 async def get_experiment_templates_count(
     user: dict = Depends(get_current_user(required=False)),
     query: str = "",
-    only_mine: bool = False,
-    only_finalized: bool = False,
-    only_not_archived: bool = False,
-    only_public: bool = False,
+    mine: bool | None = None,
+    finalized: bool | None = None,
+    approved: bool | None = None,
+    archived: bool | None = None,
+    public: bool | None = None,
 ) -> Any:
     result_set = find_specific_experiment_templates(
         query,
-        only_mine=only_mine,
-        only_finalized=only_finalized,
-        only_not_archived=only_not_archived,
-        only_public=only_public,
-        query_operator=QueryOperator.AND,
+        mine=mine,
+        finalized=finalized,
+        approved=approved,
+        archived=archived,
+        public=public,
         user=user,
     )
     return await result_set.count()
@@ -85,47 +88,47 @@ async def get_experiment_templates_count(
     response_model=ExperimentTemplateResponse,
 )
 async def create_experiment_template(
-    experiment_template_req: ExperimentTemplateCreate,
+    experiment_template: ExperimentTemplateCreate,
     user: dict = Depends(get_current_user(required=True)),
 ) -> Any:
-    experiment_template = ExperimentTemplate(
-        **experiment_template_req.dict(), created_by=user["email"]
+    experiment_template_obj = ExperimentTemplate(
+        **experiment_template.dict(), created_by=user["email"]
     )
-    experiment_template = await experiment_template.create()
+    experiment_template_obj = await experiment_template_obj.create()
 
-    experiment_template.initialize_files(
-        base_image=experiment_template_req.base_image,
-        pip_requirements=experiment_template_req.pip_requirements,
-        script=experiment_template_req.script,
+    experiment_template_obj.initialize_files(
+        base_image=experiment_template.base_image,
+        pip_requirements=experiment_template.pip_requirements,
+        script=experiment_template.script,
     )
-    return experiment_template.map_to_response(user)
+    return experiment_template_obj.map_to_response(user)
 
 
 @router.put("/experiment-templates/{id}", response_model=ExperimentTemplateResponse)
 async def update_experiment_template(
     id: PydanticObjectId,
-    experiment_template_req: ExperimentTemplateCreate,
+    experiment_template: ExperimentTemplateCreate,
     user: dict = Depends(get_current_user(required=True)),
 ) -> Any:
-    old_exp_template = await get_experiment_template_if_accessible_or_raise(
+    original_template = await get_experiment_template_if_accessible_or_raise(
         id, user, write_access=True
     )
-    editable_environment = (
-        await Experiment.find(Experiment.experiment_template_id == id).count() == 0
+    has_experiments = (
+        await Experiment.find(Experiment.experiment_template_id == id).count() > 0
     )
-    editable_visibility = (
+    has_experiments_of_others = (
         await Experiment.find(
             Experiment.experiment_template_id == id,
             Experiment.created_by != user["email"],
         ).count()
-        == 0
+        > 0
     )
 
     template_to_save = await ExperimentTemplate.update_template(
-        old_exp_template,
-        experiment_template_req,
-        editable_environment,
-        editable_visibility,
+        original_template,
+        experiment_template,
+        editable_environment=has_experiments is False,
+        editable_visibility=has_experiments_of_others is False,
     )
     if template_to_save is None:
         raise HTTPException(
@@ -158,13 +161,13 @@ async def remove_experiment_template(
 @router.patch("/experiment-templates/{id}/archive", response_model=None)
 async def archive_experiment_template(
     id: PydanticObjectId,
-    is_archived: bool = False,
+    archived: bool = False,
     user: dict = Depends(get_current_user(required=True)),
 ) -> Any:
     experiment_template = await get_experiment_template_if_accessible_or_raise(
         id, user, write_access=True
     )
-    experiment_template.is_archived = is_archived
+    experiment_template.archived = archived
 
     await ExperimentTemplate.replace(experiment_template)
 
@@ -173,7 +176,7 @@ async def archive_experiment_template(
 async def approve_experiment_template(
     id: PydanticObjectId,
     password: str,
-    is_approved: bool = False,
+    approved: bool = False,
     exp_scheduler: ExperimentScheduler = Depends(ExperimentScheduler.get_service),
 ) -> Any:
     if password != settings.PASSWORD_FOR_TEMPLATE_APPROVAL:
@@ -189,11 +192,11 @@ async def approve_experiment_template(
             detail="Such experiment template doesn't exist",
         )
 
-    experiment_template.is_approved = is_approved
+    experiment_template.approved = approved
     experiment_template.updated_at = datetime.now(tz=timezone.utc)
     await ExperimentTemplate.replace(experiment_template)
 
-    if is_approved:
+    if approved:
         await exp_scheduler.add_image_to_build(experiment_template.id)
 
 
@@ -213,26 +216,38 @@ async def get_experiments_of_template_count(
 
 def find_specific_experiment_templates(
     search_query: str,
-    only_mine: bool,
-    only_finalized: bool,
-    only_not_archived: bool,
-    only_public: bool,
-    query_operator: QueryOperator,
+    mine: bool | None,
+    finalized: bool | None,
+    approved: bool | None,
+    archived: bool | None,
+    public: bool | None,
     user: dict | None,
+    query_operator: QueryOperator = QueryOperator.AND,
     pagination: Pagination = None,
 ) -> FindMany[ExperimentTemplate]:
-    search_conditions = []
     page_kwargs = (
         {"skip": pagination.offset, "limit": pagination.limit}
         if pagination is not None
         else {}
     )
+    # initial condition -> retrieve only those objects that are accessible to a user
+    search_conditions = [
+        operators.Or(
+            ExperimentTemplate.public == True,  # noqa: E712
+            Eq(
+                ExperimentTemplate.created_by, user["email"] if user is not None else ""
+            ),
+        )
+    ]
+
+    # applying filters
     if len(search_query) > 0:
         search_conditions.append(Text(search_query))
-
-    if only_mine:
+    if mine is not None:
         if user is not None:
-            search_conditions.append(ExperimentTemplate.created_by == user["email"])
+            search_conditions.append(
+                get_compare_operator_fn(mine)(Experiment.created_by, user["email"])
+            )
         else:
             # Authentication required to see your experiment templates
             raise HTTPException(
@@ -241,40 +256,44 @@ def find_specific_experiment_templates(
                 headers={"WWW-Authenticate": "Bearer"},
             )
 
-    if only_finalized:
-        search_conditions.append(ExperimentTemplate.state == TemplateState.FINISHED)
-    if only_not_archived:
-        search_conditions.append(ExperimentTemplate.is_archived == False)  # noqa: E712
-    if only_public:
-        search_conditions.append(ExperimentTemplate.is_public == True)  # noqa: E712
-
-    if len(search_conditions) > 0:
-        multi_query = (
-            operators.Or(*search_conditions)
-            if query_operator == QueryOperator.OR
-            else operators.And(*search_conditions)
+    if finalized is not None:
+        search_conditions.append(
+            get_compare_operator_fn(finalized)(
+                ExperimentTemplate.state, TemplateState.FINISHED
+            )
         )
-        return ExperimentTemplate.find(multi_query, **page_kwargs)
+    if approved is not None:
+        search_conditions.append(ExperimentTemplate.approved == approved)
+    if archived is not None:
+        search_conditions.append(ExperimentTemplate.archived == archived)
+    if public is not None:
+        search_conditions.append(ExperimentTemplate.public == public)
 
-    return ExperimentTemplate.find_all(**page_kwargs)
+    multi_query = (
+        operators.Or(*search_conditions)
+        if query_operator == QueryOperator.OR
+        else operators.And(*search_conditions)
+    )
+    return ExperimentTemplate.find(multi_query, **page_kwargs)
 
 
 async def get_experiment_template_if_accessible_or_raise(
     template_id: PydanticObjectId, user: dict | None, write_access: bool = False
 ) -> ExperimentTemplate:
+    access_denied_error = HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail="You cannot access this experiment template",
+    )
     template = await ExperimentTemplate.get(template_id)
-    if template is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Specified experiment template doesn't exist",
-        )
-    if write_access is False and template.is_public:
-        return template
 
-    # TODO: Add experiment access management
-    if user is None or template.created_by != user["email"]:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="You cannot access this experiment template.",
-        )
-    return template
+    if template is None:
+        raise access_denied_error
+    else:
+        # Public templates are readable by everyone
+        if write_access is False and template.public:
+            return template
+        # TODO: Add experiment template access management
+        elif user is not None and template.created_by == user["email"]:
+            return template
+        else:
+            return access_denied_error

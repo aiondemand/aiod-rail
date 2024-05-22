@@ -139,7 +139,11 @@ class ReanaService(WorkflowEngineBase):
                     )
         except WorkflowConnectionException as e:
             raise e
-        except Exception:
+        except Exception as e:
+            action = "delete" if delete_workflow else "stop"
+            self.logger.error(
+                f"There was error when trying to {action} a REANA workflow", exc_info=e
+            )
             # TODO: Handle exception properly
             return False
         return True
@@ -176,9 +180,11 @@ class ReanaService(WorkflowEngineBase):
             exp_dirpath.joinpath(LOGS_FILENAME).write_text(logs, encoding="utf-8")
         except ReanaConnectionException as e:
             raise e
-        except Exception:
-            # TODO: Handle exception properly
-            pass
+        except Exception as e:
+            self.logger.error(
+                "There was an error when postprocessing an experiment run", exc_info=e
+            )
+            return
 
         # save metrics.json
         metrics_filepath = f"{RUN_OUTPUT_FOLDER}/{METRICS_FILENAME}"
@@ -196,7 +202,11 @@ class ReanaService(WorkflowEngineBase):
             )
         except ReanaConnectionException as e:
             raise e
-        except Exception:
+        except Exception as e:
+            self.logger.error(
+                "There was error when trying to download a file from REANA workflow",
+                exc_info=e,
+            )
             return None
 
         savedir.mkdir(parents=True, exist_ok=True)

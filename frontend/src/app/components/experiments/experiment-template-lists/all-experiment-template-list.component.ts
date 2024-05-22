@@ -14,9 +14,10 @@ export class AllExperimentTemplateList extends ExperimentTemplateListBaseCompone
     return this.backend.getExperimentTemplatesCount(
       "",
       {
-        only_finalized: true,
-        only_not_archived: true,
-        only_public: true
+        finalized: true,
+        approved: true,
+        public: true,
+        archived: false,
       }
     );
   }
@@ -29,9 +30,10 @@ export class AllExperimentTemplateList extends ExperimentTemplateListBaseCompone
         limit: this.pagination.pageSize
       },
       {
-        only_finalized: true,
-        only_not_archived: true,
-        only_public: true
+        finalized: true,
+        approved: true,
+        public: true,
+        archived: false,
       }
     );
   }

@@ -31,10 +31,10 @@ export interface ExperimentTemplateResponse {
     updated_at: string;
     state: TemplateState;
     dockerfile: string;
-    is_approved: boolean;
-    is_archived: boolean;
-    is_public: boolean;
-    is_mine: boolean;
+    approved: boolean;
+    archived: boolean;
+    public: boolean;
+    mine: boolean;
 }
 export namespace ExperimentTemplateResponse {
 }

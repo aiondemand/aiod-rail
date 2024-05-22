@@ -60,11 +60,9 @@ class ExperimentRun(Document):
         self.updated_at = datetime.now(tz=timezone.utc)
 
     def map_to_response(
-        self, is_mine: bool, return_detailed_response: bool = False
-    ) -> ExperimentRunResponse:
-        response = ExperimentRunResponse(
-            **self.dict(), metrics=self.metrics, is_mine=is_mine
-        )
+        self, mine: bool, return_detailed_response: bool = False
+    ) -> ExperimentRunResponse | ExperimentRunDetails:
+        response = ExperimentRunResponse(**self.dict(), metrics=self.metrics, mine=mine)
 
         if return_detailed_response is False:
             return response

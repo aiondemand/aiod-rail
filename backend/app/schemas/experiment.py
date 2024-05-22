@@ -17,7 +17,7 @@ class ExperimentBase(BaseModel):
 
     env_vars: list[EnvironmentVar]
     metrics: list[str]
-    is_public: bool
+    public: bool
 
 
 class ExperimentCreate(ExperimentBase):
@@ -28,5 +28,5 @@ class ExperimentResponse(ExperimentBase):
     id: PydanticObjectId
     created_at: datetime
     updated_at: datetime
-    is_archived: bool
-    is_mine: bool
+    archived: bool
+    mine: bool

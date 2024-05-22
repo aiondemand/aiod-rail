@@ -258,7 +258,7 @@ export class EditExperimentComponent implements OnInit {
   
     this.name?.setValue(exp.name);
     this.description?.setValue(exp.description);
-    this.visibility?.setValue(exp.is_public ? "Public" : "Private");
+    this.visibility?.setValue(exp.public ? "Public" : "Private");
     this.experimentTemplate?.setValue(this.inputExperimentTemplate);
     this.selectedExprimentTemplate = this.inputExperimentTemplate;
   
@@ -305,9 +305,10 @@ export class EditExperimentComponent implements OnInit {
       this.selectedExprimentTemplate = null;
     }
     return this.backend.getExperimentTemplates(query, {}, {
-      only_finalized: true,
-      only_public: true,
-      only_not_archived: true
+      finalized: true,
+      approved: true,
+      public: true,
+      archived: false
     });
   }
 
@@ -381,7 +382,7 @@ export class EditExperimentComponent implements OnInit {
       model_ids: [String((this.model?.value as Model)?.identifier)],
       metrics: selectedMetrics,
       env_vars: envsToSend,
-      is_public: String(this.visibility?.value) == "Public" ? true : false
+      public: String(this.visibility?.value) == "Public" ? true : false
     };
 
     let promisedExperiment: Promise<Experiment>;

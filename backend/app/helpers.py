@@ -3,6 +3,7 @@ from datetime import datetime
 from enum import Enum
 from pathlib import Path
 
+from beanie.odm.operators.find.comparison import NE, BaseFindComparisonOperator, Eq
 from pydantic import BaseModel
 
 from app.config import settings
@@ -34,6 +35,10 @@ class FileDetail(BaseModel):
 def create_env_file(env_vars: dict[str, str], path: Path) -> None:
     lines = [f"{k}={v}" for k, v in env_vars.items()]
     path.write_text("\n".join(lines))
+
+
+def get_compare_operator_fn(eq: bool) -> BaseFindComparisonOperator:
+    return Eq if eq else NE
 
 
 # TODO

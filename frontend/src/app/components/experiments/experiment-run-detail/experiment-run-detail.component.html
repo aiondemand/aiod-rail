@@ -4,15 +4,19 @@
     <div class="header">
         <h1>Experiment run - {{experimentRun.id}}</h1>
         
-        <!-- TODO add these buttons to this component as well -->
-        <!-- <div class="header-menu">
-            <button mat-icon-button matTooltip="Stop run" *ngIf="experimentRun.is_mine && !experiment.is_archived && experimentRun.state == 'IN_PROGRESS'" (click)="stopRun()">
+        <div class="header-menu">
+            <!-- TODO add stopping functionality -->
+            <!-- <button mat-icon-button matTooltip="Stop run" *ngIf="experimentRun.mine && !experiment.archived && experimentRun.state == 'IN_PROGRESS'" (click)="stopRun()">
                 <mat-icon>stop</mat-icon>
-            </button>
-            <button mat-icon-button matTooltip="Delete run" *ngIf="experimentRun.is_mine && !experiment.is_archived" (click)="deleteRun()">
+            </button> -->
+            <button 
+                mat-icon-button matTooltip="Delete run" 
+                *ngIf="experimentRun.mine && !experiment.archived && (experimentRun.state == 'FINISHED' || experimentRun.state == 'CRASHED')" 
+                (click)="deleteRun()"
+            >
                 <mat-icon>delete</mat-icon>
             </button>
-        </div> -->
+        </div>
     </div>
 
     <div class="experiment-run-details">

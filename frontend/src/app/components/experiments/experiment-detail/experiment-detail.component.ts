@@ -141,8 +141,8 @@ export class ExperimentDetailComponent {
 
     if (this.existRuns) {
       let str = (
-        "Since there exist ExperimentRuns that execute this particular experiment, " + 
-        "you cannot further modify the parameters that could change the experiment behavior."
+        "This Experiment is already associated with some experiment runs. " + 
+        "Modifying parameters that could change the experiment's behavior is restricted."
       )
       let popupInput: ConfirmPopupInput = {
         message: str,
@@ -171,13 +171,15 @@ export class ExperimentDetailComponent {
     let str = (
       this.existRuns
       ?
-      "Since there exist ExperimentRuns that execute this particular experiment, besides the option to delete the entire experiment with all its ExperimentRuns, " +
-      "you can also archive this Experiment making execution of new runs not possible whilst keeping the previously executed runs intact. " + 
+      "This Experiment is already associated with some experiment runs. " + 
+      "You can either DELETE this experiment with all its Experiment Runs " + 
+      "or ARCHIVE this experiment making execution of new runs not possible " + 
+      "whilst keeping the previously executed runs intact.\n\n" +
       "What operation do you wish to perform?"
       : 
-      "Do you wish to delete this experiment?"
+      "Do you wish to DELETE this experiment?"
     );
-    let acceptStr = this.existRuns ? "Delete experiment and its runs" : "Yes";
+    let acceptStr = this.existRuns ? "Delete experiment and all its runs" : "Yes";
     let declineStr = this.existRuns ? "Dismiss" : "No";
     let thirdOptStr = this.existRuns ? "Archive experiment" : "";
 
@@ -211,8 +213,8 @@ export class ExperimentDetailComponent {
   undoBtnClicked(): void {
    firstValueFrom(this.backend.archiveExperiment(this.experiment.id, false))
     .then(_ => {
-      this.experiment.is_mine = true;
-      this.experiment.is_archived = false;
+      this.experiment.mine = true;
+      this.experiment.archived = false;
     })
     .catch(err => console.error(err));
   }

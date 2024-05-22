@@ -4,11 +4,11 @@
 
 <form *ngIf="!loading" class="create-experiment-form" [formGroup]="experimentForm" (ngSubmit)="onSubmit()">
     <div *ngIf="!inputExperiment">
-        <h1>Create an Experiment</h1>
+        <h1>Create Experiment</h1>
     </div>
 
     <div *ngIf="inputExperiment">
-        <h1>Update an Experiment</h1>
+        <h1>Edit Experiment</h1>
     </div>
 
     <div class="form-error-message" *ngIf="error">
@@ -62,7 +62,7 @@
     <mat-divider></mat-divider>
 
     <div class="experiment-templates">
-        <h2>Experiment template specific information</h2>
+        <h2>Experiment Template specific information</h2>
         <i>Only approved experiment templates are visible</i>
         
         <mat-form-field>
@@ -148,7 +148,7 @@
     </div>
 
     <button mat-raised-button color="primary" type="submit" [disabled]="!experimentForm.valid">
-        <span *ngIf="!inputExperiment">Create experiment</span>
+        <span *ngIf="!inputExperiment">Create Experiment</span>
         <span *ngIf="inputExperiment">Update experiment</span>
     </button>
 </form>

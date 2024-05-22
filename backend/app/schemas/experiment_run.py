@@ -13,7 +13,7 @@ class ExperimentRunBase(BaseModel):
     retry_count: int
     state: RunState
     metrics: dict[str, float]
-    is_mine: bool
+    mine: bool
     experiment_id: PydanticObjectId
 
 

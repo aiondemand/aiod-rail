@@ -10,6 +10,7 @@ import { BackendApiService } from 'src/app/services/backend-api.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { ConfirmPopupComponent } from '../../general/popup/confirm-popup.component';
 import { MatDialog } from '@angular/material/dialog';
+import { Router } from '@angular/router';
 
 interface FileNode {
   name: string;
@@ -233,6 +234,7 @@ export class ExperimentRunDetailComponent {
     private backend: BackendApiService,
     private snackBar: SnackBarService,
     private dialog: MatDialog,
+    private router: Router,
   ) { }
 
   wandbLink(logs: string | null): string {
@@ -258,5 +260,28 @@ export class ExperimentRunDetailComponent {
     else {
       return '';
     }
+  }
+
+  deleteRun(): void {
+    let popupInput: ConfirmPopupInput = {
+      message: "Do you wish to DELETE this run?",
+      acceptBtnMessage: "Yes",
+      declineBtnMessage: "No",
+    }
+    firstValueFrom(this.dialog.open(ConfirmPopupComponent, {
+      maxWidth: '450px',
+      width: '100%',
+      autoFocus: false,
+      data: popupInput
+    }).afterClosed())
+      .then(state => {
+        if (state == ConfirmPopupResponse.Yes) {
+          firstValueFrom(this.backend.deleteExperimentRun(this.experimentRun.id))
+            .then(_ => {
+              this.router.navigate(['/experiments', this.experiment.id]);
+            })
+            .catch(err => console.error(err));
+        }
+      });
   }
 }

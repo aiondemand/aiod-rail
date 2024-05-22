@@ -14,7 +14,7 @@ export class MyExperimentTemplateList extends ExperimentTemplateListBaseComponen
     return this.backend.getExperimentTemplatesCount(
       "",
       {
-        only_mine: true
+        mine: true
       }
     );
   }
@@ -27,7 +27,7 @@ export class MyExperimentTemplateList extends ExperimentTemplateListBaseComponen
         limit: this.pagination.pageSize
       },
       {
-        only_mine: true
+        mine: true
       }
     );
   }

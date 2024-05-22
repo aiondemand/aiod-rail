@@ -4,11 +4,11 @@
 
 <form *ngIf="!loading" class="create-experiment-template-form" [formGroup]="experimentTemplateForm" (ngSubmit)="onSubmit()">
     <div *ngIf="!inputExperimentTemplate">
-        <h1>Create an Experiment template</h1>
+        <h1>Create Experiment template</h1>
     </div>
 
     <div *ngIf="inputExperimentTemplate">
-        <h1>Update an Experiment template</h1>
+        <h1>Edit Experiment template</h1>
     </div>
     
     <div class="basic-data-section">

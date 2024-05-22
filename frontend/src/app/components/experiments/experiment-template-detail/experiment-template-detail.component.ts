@@ -48,9 +48,9 @@ export class ExperimentTemplateDetailComponent {
 
     if (this.existExperiments) {
       let str = (
-        "Since there exist Experiments that utilize this particular template, " + 
-        "you cannot further modify the parameters that could change the template behavior."
-      )
+        "This Experiment Template is already utilized by some existing Experiment. " + 
+        "Modifying parameters that could change the template's behavior is restricted"
+      );
       let popupInput: ConfirmPopupInput = {
         message: str,
         acceptBtnMessage: "Continue"
@@ -78,11 +78,12 @@ export class ExperimentTemplateDetailComponent {
     let str = (
       this.existExperiments 
       ?
-      "Since there exist Experiments that utilize this particular template, you can no longer delete this template. " +
-      "However, you can still forbid a creation of new experiments built upon this template by archiving it. " + 
-      "Do you wish archive this experiment template?" 
+      "This Experiment Template is already utilized by some existing Experiment. " + 
+      "You can no longer delete this template, but you can still forbid creation " + 
+      "of new experiments built upon this template by archiving it.\n\n" + 
+      "Do you wish ARCHIVE this experiment template?" 
       : 
-      "Do you wish to delete this experiment template?"
+      "Do you wish to DELETE this experiment template?"
     );  
     let popupInput: ConfirmPopupInput = {
       message: str,
@@ -112,8 +113,8 @@ export class ExperimentTemplateDetailComponent {
   undoBtnClicked(): void {
     firstValueFrom(this.backend.archiveExperimentTemplate(this.templateId, false))
     .then(_ => {
-      this.experimentTemplate.is_mine = true;
-      this.experimentTemplate.is_archived = false;
+      this.experimentTemplate.mine = true;
+      this.experimentTemplate.archived = false;
     })
     .catch(err => console.error(err));
   }

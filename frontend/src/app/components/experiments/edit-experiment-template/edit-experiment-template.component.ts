@@ -120,7 +120,7 @@ export class EditExperimentTemplateComponent {
     this.experimentTemplateForm.get("description")?.setValue(templ.description);
     this.experimentTemplateForm.get("baseImage")?.setValue(this.parseBaseImageFromDockerfile(templ.dockerfile));
     this.experimentTemplateForm.get("pipRequirements")?.setValue(templ.pip_requirements);
-    this.experimentTemplateForm.get("visibility")?.setValue(templ.is_public ? "Public" : "Private");
+    this.experimentTemplateForm.get("visibility")?.setValue(templ.public ? "Public" : "Private");
     this.scriptCode = templ.script;
     
     templ.envs_required.forEach(env => this.requiredVarsData.push(env));
@@ -178,7 +178,7 @@ export class EditExperimentTemplateComponent {
       base_image: String(form.get("baseImage")?.value),
       script: this.scriptCode,
       pip_requirements: String(form.get("pipRequirements")?.value),
-      is_public: String(form.get("visibility")?.value) == "Public" ? true : false
+      public: String(form.get("visibility")?.value) == "Public" ? true : false
     };
 
     let promisedTemplate: Promise<ExperimentTemplate>;

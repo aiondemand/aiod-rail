@@ -12,6 +12,11 @@
     color: black;
     font-size: 0.75em;
     text-align: center;
+
+    pre {
+        white-space: pre-wrap;
+        font-family: Roboto, "Helvetica Neue", sans-serif;
+    }
 }
 
 .buttons {

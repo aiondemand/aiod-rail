@@ -21,6 +21,6 @@ export interface ExperimentCreate {
     model_ids: Array<string>;
     env_vars: Array<EnvironmentVar>;
     metrics: Array<string>;
-    is_public: boolean;
+    public: boolean;
 }
 
