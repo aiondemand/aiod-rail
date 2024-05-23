@@ -47,7 +47,7 @@ export class DatasetListComponent implements OnInit {
     this.updateDatasets();
   }
 
-  search_datasets(query: string) {
+  searchDatasets(query: string) {
     if (query.length == 0 && this.searchQuery == query) {
       return;
     }

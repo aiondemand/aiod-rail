@@ -94,8 +94,13 @@ async def create_experiment_template(
     experiment_template_obj = ExperimentTemplate(
         **experiment_template.dict(), created_by=user["email"]
     )
-    experiment_template_obj = await experiment_template_obj.create()
+    if experiment_template_obj.is_valid() is False:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid Experiment Template",
+        )
 
+    experiment_template_obj = await experiment_template_obj.create()
     experiment_template_obj.initialize_files(
         base_image=experiment_template.base_image,
         pip_requirements=experiment_template.pip_requirements,

@@ -15,6 +15,12 @@ RUN_TEMP_OUTPUT_FOLDER = "output-temp"
 RUN_OUTPUT_FOLDER = "output"
 REPOSITORY_NAME = "rail-exp-templates"
 TEMP_DIRNAME = "temp"
+RESERVED_ENV_VARS = [
+    "MODEL_NAMES",
+    "DATASET_NAMES",
+    "MODEL_IDS",
+    "DATASET_IDS",
+]
 
 
 class AIoDApiConfig(BaseModel):

@@ -30,7 +30,7 @@ async def execute_experiment_run(
     experiment = await get_experiment_if_accessible_or_raise(
         id, user, write_access=True
     )
-    if experiment.archived:
+    if experiment.allows_experiment_execution is False:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid experiment to execute",
@@ -105,7 +105,7 @@ async def stop_experiment_run(
     )
 
     experiment = await Experiment.get(experiment_run.experiment_id)
-    if experiment.archived:
+    if experiment.allows_experiment_execution is False:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="You cannot stop this experiment run.",
@@ -134,7 +134,7 @@ async def delete_experiment_run(
     )
 
     experiment = await Experiment.get(experiment_run.experiment_id)
-    if experiment.archived:
+    if experiment.allows_experiment_execution is False:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="You cannot delete this experiment run.",

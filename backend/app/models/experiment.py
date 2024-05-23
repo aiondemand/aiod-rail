@@ -29,7 +29,6 @@ class Experiment(Document):
     model_ids: list[int]
 
     env_vars: list[EnvironmentVar]
-    metrics: list[str]
 
     @property
     def assets_attribute_names(self) -> list[str]:
@@ -39,8 +38,11 @@ class Experiment(Document):
             "dataset_ids",
             "model_ids",
             "env_vars",
-            "metrics",
         ]
+
+    @property
+    def allows_experiment_execution(self) -> bool:
+        return self.archived is False
 
     class Settings:
         name = "experiments"
@@ -77,14 +79,27 @@ class Experiment(Document):
         cls,
         original_experiment: Experiment,
         experiment_req: ExperimentCreate,
+        new_template: ExperimentTemplate,
         editable_assets: bool,
     ) -> Experiment | None:
         new_experiment = Experiment(
             **experiment_req.dict(), created_by=original_experiment.created_by
         )
+        same_template = (
+            original_experiment.experiment_template_id
+            == new_experiment.experiment_template_id
+        )
         same_assets = original_experiment.has_same_assets(new_experiment)
-        experiment_to_return = None
 
+        if not await new_experiment.is_valid(new_template) or (
+            # we check whether we update a new experiment template to
+            # an archived one
+            same_template is False
+            and new_template.allows_experiment_creation is False
+        ):
+            return None
+
+        experiment_to_return = None
         if same_assets:
             # Update name, descr & visibility
             original_experiment.name = new_experiment.name

@@ -79,7 +79,7 @@ async def create_experiment(
     experiment: ExperimentCreate,
     user: dict = Depends(get_current_user(required=True)),
 ) -> Any:
-    template: ExperimentTemplate = await get_experiment_template_if_accessible_or_raise(
+    template = await get_experiment_template_if_accessible_or_raise(
         experiment.experiment_template_id, user, write_access=False
     )
     if template.allows_experiment_creation is False:
@@ -111,9 +111,15 @@ async def update_experiment(
     has_experiment_runs = (
         await ExperimentRun.find(ExperimentRun.experiment_id == id).count() > 0
     )
+    template = await get_experiment_template_if_accessible_or_raise(
+        experiment.experiment_template_id, user, write_access=False
+    )
 
     experiment_to_save = await Experiment.update_experiment(
-        original_experiment, experiment, editable_assets=has_experiment_runs is False
+        original_experiment,
+        experiment,
+        template,
+        editable_assets=has_experiment_runs is False,
     )
     if experiment_to_save is None:
         raise HTTPException(

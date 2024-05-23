@@ -20,7 +20,6 @@ export interface ExperimentCreate {
     dataset_ids: Array<string>;
     model_ids: Array<string>;
     env_vars: Array<EnvironmentVar>;
-    metrics: Array<string>;
     public: boolean;
 }
 

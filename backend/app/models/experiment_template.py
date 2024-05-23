@@ -14,6 +14,7 @@ from pydantic import Field
 from app.config import (
     EXPERIMENT_TEMPLATE_DIR_PREFIX,
     REPOSITORY_NAME,
+    RESERVED_ENV_VARS,
     RUN_TEMP_OUTPUT_FOLDER,
     settings,
 )
@@ -36,7 +37,6 @@ class ExperimentTemplate(Document):
     models_schema: AssetSchema
     envs_required: list[EnvironmentVarDef]
     envs_optional: list[EnvironmentVarDef]
-    available_metrics: list[str]
     created_at: datetime = Field(default_factory=partial(datetime.now, tz=timezone.utc))
     updated_at: datetime = Field(default_factory=partial(datetime.now, tz=timezone.utc))
     state: TemplateState = TemplateState.CREATED
@@ -54,7 +54,6 @@ class ExperimentTemplate(Document):
             "models_schema",
             "envs_required",
             "envs_optional",
-            "available_metrics",
             "base_image",
             "pip_requirements",
             "script",
@@ -107,6 +106,12 @@ class ExperimentTemplate(Document):
 
     class Settings:
         name = "experimentTemplates"
+
+    def is_valid(self) -> bool:
+        env_names = [e.name for e in self.envs_required + self.envs_optional]
+        allowed_names = [name not in RESERVED_ENV_VARS for name in env_names]
+
+        return sum(allowed_names) == len(env_names)
 
     def initialize_files(self, base_image, pip_requirements, script):
         base_path = self.experiment_template_path
@@ -197,15 +202,18 @@ class ExperimentTemplate(Document):
         editable_environment: bool,
         editable_visibility: bool,
     ) -> ExperimentTemplate | None:
+        new_template = ExperimentTemplate(
+            **experiment_template_req.dict(), created_by=original_template.created_by
+        )
+        if new_template.is_valid() is False:
+            return None
+
         same_environment = original_template.is_same_environment(
             experiment_template_req
         )
         same_visibility = original_template.public == experiment_template_req.public
-        new_template = ExperimentTemplate(
-            **experiment_template_req.dict(), created_by=original_template.created_by
-        )
-        template_to_return = None
 
+        template_to_return = None
         if same_environment and (same_visibility or editable_visibility):
             # We modify only name & descr (+ maybe visibility)
             original_template.name = new_template.name
