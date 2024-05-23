@@ -1,0 +1,18 @@
+<div class="section-container">
+  <div class="left-panel">
+    <mat-sidenav mode="side" [opened]="true">
+      <mat-nav-list>
+        <a mat-list-item routerLink="all_experiments" routerLinkActive="active">All experiments</a>
+
+        <mat-divider></mat-divider>
+
+        <a mat-list-item routerLink="all_templates" routerLinkActive="active">All templates</a>
+        <a mat-list-item routerLink="pending_templates" routerLinkActive="active">Pending templates</a>
+      </mat-nav-list>
+    </mat-sidenav>
+  </div>
+
+  <div class="content-panel">
+    <router-outlet></router-outlet>
+  </div>
+</div>

@@ -58,6 +58,7 @@ import { HIGHLIGHT_OPTIONS, HighlightModule, HighlightOptions } from 'ngx-highli
 import { CodeEditorModule } from '@ngstack/code-editor';
 import { FeedbackComponent } from './components/general/feedback/feedback.component';
 import { AboutComponent } from './components/general/about/about.component';
+import { AdminComponent } from "./components/admin/admin.component";
 import { NgOptimizedImage } from "@angular/common";
 import { MatTreeModule } from '@angular/material/tree';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
@@ -65,6 +66,9 @@ import { EditExperimentTemplateComponent } from './components/experiments/edit-e
 import { ConfirmPopupComponent } from './components/general/popup/confirm-popup.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import {
+  PendingExperimentTemplateList
+} from "./components/admin/experiment-template-list/pending-experiment-template-list.component";
 
 
 
@@ -94,10 +98,12 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
     AllExperimentListComponent,
     AllExperimentTemplateList,
     MyExperimentTemplateList,
+    PendingExperimentTemplateList,
     ExperimentTemplateListItemComponent,
     ExperimentTemplateDetailComponent,
     FeedbackComponent,
     AboutComponent,
+    AdminComponent,
     EditExperimentTemplateComponent,
     ConfirmPopupComponent
   ],

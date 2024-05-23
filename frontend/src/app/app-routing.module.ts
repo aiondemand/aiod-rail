@@ -6,7 +6,7 @@ import { DatasetListComponent } from './components/datasets/dataset-list/dataset
 import { DatasetDetailComponent } from './components/datasets/dataset-detail/dataset-detail.component';
 import { SavedDatasetsComponent } from './components/datasets/saved-datasets/saved-datasets.component';
 import { CreateDatasetComponent } from './components/datasets/create-dataset/create-dataset.component';
-import { authGuard } from './guards/auth.guard';
+import { adminGuard, authGuard } from './guards/auth.guard';
 import { EditExperimentComponent } from './components/experiments/edit-experiment/edit-experiment.component';
 import { ExperimentDetailComponent } from './components/experiments/experiment-detail/experiment-detail.component';
 import { ExperimentRunDetailComponent } from './components/experiments/experiment-run-detail/experiment-run-detail.component';
@@ -16,7 +16,11 @@ import { ExperimentTemplateDetailComponent } from './components/experiments/expe
 import { AllExperimentTemplateList } from './components/experiments/experiment-template-lists/all-experiment-template-list.component';
 import { MyExperimentTemplateList } from './components/experiments/experiment-template-lists/my-experiment-template-list.component';
 import { AboutComponent } from './components/general/about/about.component';
+import { AdminComponent } from './components/admin/admin.component';
 import { EditExperimentTemplateComponent } from './components/experiments/edit-experiment-template/edit-experiment-template.component';
+import {
+  PendingExperimentTemplateList
+} from "./components/admin/experiment-template-list/pending-experiment-template-list.component";
 
 const routes: Routes = [
   { path: '', redirectTo: 'about', pathMatch: 'full' },
@@ -36,10 +40,10 @@ const routes: Routes = [
 
       // experiment runs
       { path: 'runs/:runId', component: ExperimentRunDetailComponent },
-      
+
       // experiment templates
       {
-        path: 'templates', 
+        path: 'templates',
         children: [
           { path: '', redirectTo: 'all', pathMatch: 'full' },
           { path: "all", component: AllExperimentTemplateList},
@@ -54,20 +58,29 @@ const routes: Routes = [
   {
     path: 'datasets', component: DatasetsComponent,
     children: [
-      { path: '', redirectTo: 'all', pathMatch: 'full' }, 
+      { path: '', redirectTo: 'all', pathMatch: 'full' },
       { path: 'all', component: DatasetListComponent },
       { path: 'my', component: SavedDatasetsComponent, canActivate: [authGuard] },
       { path: 'create', component: CreateDatasetComponent },
       { path: ':id', component: DatasetDetailComponent }
     ]
   },
+  {
+    path: 'admin', component: AdminComponent, canActivate: [authGuard, adminGuard],
+    children: [
+      { path: '', redirectTo: 'all_experiments', pathMatch: 'full' },
+      // { path: 'all_experiments', component: },
+      // { path: 'all_templates', component: },
+      { path: 'pending_templates', component: PendingExperimentTemplateList }
+    ]
+  },
   // { path: 'publications', component: PublicationsComponent }
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, { 
-    bindToComponentInputs: true, 
-    anchorScrolling: 'enabled', 
+  imports: [RouterModule.forRoot(routes, {
+    bindToComponentInputs: true,
+    anchorScrolling: 'enabled',
   })],
   exports: [RouterModule]
 })
