@@ -10,7 +10,7 @@ from app.config import TEMP_DIRNAME
 from app.helpers import FileDetail, Pagination
 from app.models.experiment import Experiment
 from app.models.experiment_run import ExperimentRun
-from app.routers.experiments import get_experiment_if_accessible_or_raise
+from app.routers.experiments import delete_run, get_experiment_if_accessible_or_raise
 from app.schemas.experiment_run import ExperimentRunDetails, ExperimentRunResponse
 from app.schemas.states import RunState
 from app.services.experiment_scheduler import ExperimentScheduler
@@ -140,9 +140,7 @@ async def delete_experiment_run(
             detail="You cannot delete this experiment run.",
         )
 
-    await workflow_engine.delete_workflow(experiment_run)
-    await ExperimentRun.find(ExperimentRun.id == experiment_run.id).delete()
-    await experiment_run.delete_files()
+    await delete_run(experiment_run, workflow_engine)
 
 
 @router.get("/experiment-runs/{id}/logs", response_class=PlainTextResponse)

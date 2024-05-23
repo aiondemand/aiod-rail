@@ -210,7 +210,7 @@ class ExperimentTemplate(Document):
             # We modify only name & descr (+ maybe visibility)
             original_template.name = new_template.name
             original_template.description = new_template.description
-            original_template.public = experiment_template_req.public
+            original_template.public = new_template.public
 
             original_template.updated_at = new_template.updated_at
             template_to_return = original_template

@@ -231,21 +231,18 @@ def find_specific_experiment_templates(
         else {}
     )
     # initial condition -> retrieve only those objects that are accessible to a user
-    search_conditions = [
-        operators.Or(
-            ExperimentTemplate.public == True,  # noqa: E712
-            Eq(
-                ExperimentTemplate.created_by, user["email"] if user is not None else ""
-            ),
-        )
-    ]
+    accessibility_condition = operators.Or(
+        ExperimentTemplate.public == True,  # noqa: E712
+        Eq(ExperimentTemplate.created_by, user["email"] if user is not None else ""),
+    )
 
     # applying filters
+    filter_conditions = []
     if len(search_query) > 0:
-        search_conditions.append(Text(search_query))
+        filter_conditions.append(Text(search_query))
     if mine is not None:
         if user is not None:
-            search_conditions.append(
+            filter_conditions.append(
                 get_compare_operator_fn(mine)(Experiment.created_by, user["email"])
             )
         else:
@@ -257,24 +254,29 @@ def find_specific_experiment_templates(
             )
 
     if finalized is not None:
-        search_conditions.append(
+        filter_conditions.append(
             get_compare_operator_fn(finalized)(
                 ExperimentTemplate.state, TemplateState.FINISHED
             )
         )
     if approved is not None:
-        search_conditions.append(ExperimentTemplate.approved == approved)
+        filter_conditions.append(ExperimentTemplate.approved == approved)
     if archived is not None:
-        search_conditions.append(ExperimentTemplate.archived == archived)
+        filter_conditions.append(ExperimentTemplate.archived == archived)
     if public is not None:
-        search_conditions.append(ExperimentTemplate.public == public)
+        filter_conditions.append(ExperimentTemplate.public == public)
 
-    multi_query = (
-        operators.Or(*search_conditions)
-        if query_operator == QueryOperator.OR
-        else operators.And(*search_conditions)
-    )
-    return ExperimentTemplate.find(multi_query, **page_kwargs)
+    if len(filter_conditions) > 0:
+        filter_multi_query = (
+            operators.Or(*filter_conditions)
+            if query_operator == QueryOperator.OR
+            else operators.And(*filter_conditions)
+        )
+        final_query = operators.And(accessibility_condition, filter_multi_query)
+    else:
+        final_query = accessibility_condition
+
+    return ExperimentTemplate.find(final_query, **page_kwargs)
 
 
 async def get_experiment_template_if_accessible_or_raise(

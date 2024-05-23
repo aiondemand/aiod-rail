@@ -135,9 +135,7 @@ async def delete_experiment(
 
     runs = await ExperimentRun.find(ExperimentRun.experiment_id == id).to_list()
     for run in runs:
-        await workflow_engine.delete_workflow(run)
-        await ExperimentRun.find(ExperimentRun.id == run.id).delete()
-        await run.delete_files()
+        await delete_run(run, workflow_engine)
 
     await Experiment.find(Experiment.id == id).delete()
 
@@ -171,21 +169,18 @@ def find_specific_experiments(
         else {}
     )
     # initial condition -> retrieve only those objects that are accessible to a user
-    search_conditions = [
-        operators.Or(
-            ExperimentTemplate.public == True,  # noqa: E712
-            Eq(
-                ExperimentTemplate.created_by, user["email"] if user is not None else ""
-            ),
-        )
-    ]
+    accessibility_condition = operators.Or(
+        ExperimentTemplate.public == True,  # noqa: E712
+        Eq(ExperimentTemplate.created_by, user["email"] if user is not None else ""),
+    )
 
     # applying filters
+    filter_conditions = []
     if len(search_query) > 0:
-        search_conditions.append(Text(search_query))
+        filter_conditions.append(Text(search_query))
     if mine is not None:
         if user is not None:
-            search_conditions.append(
+            filter_conditions.append(
                 get_compare_operator_fn(mine)(Experiment.created_by, user["email"])
             )
         else:
@@ -196,16 +191,21 @@ def find_specific_experiments(
                 headers={"WWW-Authenticate": "Bearer"},
             )
     if archived:
-        search_conditions.append(Experiment.archived == archived)  # noqa: E712
+        filter_conditions.append(Experiment.archived == archived)  # noqa: E712
     if public:
-        search_conditions.append(Experiment.public == public)  # noqa: E712
+        filter_conditions.append(Experiment.public == public)  # noqa: E712
 
-    multi_query = (
-        operators.Or(*search_conditions)
-        if query_operator == QueryOperator.OR
-        else operators.And(*search_conditions)
-    )
-    return Experiment.find(multi_query, **page_kwargs)
+    if len(filter_conditions) > 0:
+        filter_multi_query = (
+            operators.Or(*filter_conditions)
+            if query_operator == QueryOperator.OR
+            else operators.And(*filter_conditions)
+        )
+        final_query = operators.And(accessibility_condition, filter_multi_query)
+    else:
+        final_query = accessibility_condition
+
+    return Experiment.find(final_query, **page_kwargs)
 
 
 async def get_experiment_if_accessible_or_raise(
@@ -228,3 +228,16 @@ async def get_experiment_if_accessible_or_raise(
             return experiment
         else:
             raise access_denied_error
+
+
+# TODO for now we shall put this function here to avoid circular imports
+# TODO later add 'user' and 'public' attributes to experiment run so
+# that we dont need to check these properties via retrieving the experiment
+# they executed
+# TODO this may also result in dependencies being less intertwined between routers
+# TODO Ideally we dont want to call any logic/functions from this router to
+# routers/experiment_runs.py file
+async def delete_run(run: ExperimentRun, workflow_engine: WorkflowEngineBase) -> None:
+    await workflow_engine.delete_workflow(run)
+    await ExperimentRun.find(ExperimentRun.id == run.id).delete()
+    await run.delete_files()
