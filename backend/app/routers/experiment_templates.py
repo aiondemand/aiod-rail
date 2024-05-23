@@ -288,7 +288,7 @@ async def get_experiment_template_if_accessible_or_raise(
     template_id: PydanticObjectId, user: dict | None, write_access: bool = False
 ) -> ExperimentTemplate:
     access_denied_error = HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND,
+        status_code=status.HTTP_401_UNAUTHORIZED,
         detail="You cannot access this experiment template",
     )
     template = await ExperimentTemplate.get(template_id)

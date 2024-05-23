@@ -23,6 +23,9 @@ class ExperimentRun(Document):
     updated_at: datetime = Field(default_factory=partial(datetime.now, tz=timezone.utc))
     retry_count: int = 0
     state: RunState = RunState.CREATED
+    created_by: str
+    public: bool
+    archived: bool = False
     experiment_id: Indexed(PydanticObjectId)  # type: ignore
 
     @property
@@ -60,8 +63,9 @@ class ExperimentRun(Document):
         self.updated_at = datetime.now(tz=timezone.utc)
 
     def map_to_response(
-        self, mine: bool, return_detailed_response: bool = False
+        self, user: dict | None = None, return_detailed_response: bool = False
     ) -> ExperimentRunResponse | ExperimentRunDetails:
+        mine = user is not None and self.created_by == user["email"]
         response = ExperimentRunResponse(**self.dict(), metrics=self.metrics, mine=mine)
 
         if return_detailed_response is False:
@@ -70,6 +74,9 @@ class ExperimentRun(Document):
 
     def retry_failed_run(self):
         return ExperimentRun(
+            created_by=self.created_by,
+            public=self.public,
+            archived=self.archived,
             experiment_id=self.experiment_id,
             retry_count=self.retry_count + 1,
         )
