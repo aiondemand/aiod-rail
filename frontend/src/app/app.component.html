@@ -21,7 +21,7 @@
         <a mat-tab-link [routerLink]="['/about']"  #rlc="routerLinkActive" routerLinkActive="active" [active]="rlc.isActive">
           About
         </a>
-        <a *ngIf="hasAdminRole()" mat-tab-link [routerLink]="['/admin']"  #rlc="routerLinkActive" routerLinkActive="active" [active]="rlc.isActive">
+        <a *ngIf="isAdminUser" mat-tab-link [routerLink]="['/admin']"  #rlc="routerLinkActive" routerLinkActive="active" [active]="rlc.isActive">
           Admin
         </a>
     </nav>

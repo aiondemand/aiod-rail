@@ -4,17 +4,16 @@ import { ExperimentTemplate } from 'src/app/models/experiment-template';
 import { ExperimentTemplateListBaseComponent } from "../../experiments/experiment-template-lists/experiment-template-list-base.component";
 
 @Component({
-  selector: 'app-pending-experiment-template-list',
+  selector: 'app-all-experiment-template-list',
   templateUrl: '../../experiments/experiment-template-lists/experiment-template-lists.component.html',
   styleUrls: ['../../experiments/experiment-template-lists/experiment-template-lists.component.scss']
 })
-export class PendingExperimentTemplateListComponent extends ExperimentTemplateListBaseComponent {
+export class AllExperimentTemplateListComponent extends ExperimentTemplateListBaseComponent {
 
   protected override getExperimentTemplatesCount(): Observable<number> {
     return this.backend.getExperimentTemplatesCount(
       "",
       {
-        approved: false
       }
     );
   }
@@ -27,7 +26,6 @@ export class PendingExperimentTemplateListComponent extends ExperimentTemplateLi
         limit: this.pagination.pageSize
       },
       {
-        approved: false
       }
     );
   }

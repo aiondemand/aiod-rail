@@ -8,7 +8,7 @@ import { ExperimentTemplate } from 'src/app/models/experiment-template';
   templateUrl: './experiment-template-lists.component.html',
   styleUrls: ['./experiment-template-lists.component.scss']
 })
-export class MyExperimentTemplateList extends ExperimentTemplateListBaseComponent {
+export class MyExperimentTemplateListComponent extends ExperimentTemplateListBaseComponent {
 
   protected override getExperimentTemplatesCount(): Observable<number> {
     return this.backend.getExperimentTemplatesCount(

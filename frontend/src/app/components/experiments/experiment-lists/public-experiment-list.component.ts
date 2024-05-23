@@ -1,19 +1,20 @@
 import { Component } from '@angular/core';
 import { ExperimentListBaseComponent } from './experiment-list-base.component';
-import { Observable } from 'rxjs/internal/Observable';
 import { Experiment } from 'src/app/models/experiment';
+import { Observable, of } from 'rxjs';
 
 @Component({
-  selector: 'app-my-experiment-list',
+  selector: 'app-public-experiment-list',
   templateUrl: './experiment-lists.component.html',
   styleUrls: ['./experiment-lists.component.scss']
 })
-export class MyExperimentListComponent extends ExperimentListBaseComponent {
+export class PublicExperimentListComponent extends ExperimentListBaseComponent {
   protected override getExperimentsCount(): Observable<number> {
     return this.backend.getExperimentsCount(
       "",
       {
-        mine: true
+        archived: false,
+        public: true
       }
     );
   }
@@ -26,7 +27,8 @@ export class MyExperimentListComponent extends ExperimentListBaseComponent {
         limit: this.pagination.pageSize
       },
       {
-        mine: true,
+        archived: false,
+        public: true
       }
     );
   }

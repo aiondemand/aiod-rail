@@ -20,7 +20,7 @@ export class AppComponent {
       shareReplay()
     );
 
-  hasAdminRole(): boolean {
-    return this.authService.hasAdminRole;
+  get isAdminUser(): boolean {
+    return this.authService.isLoggedIn && this.authService.hasAdminRole;
   }
 }

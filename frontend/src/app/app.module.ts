@@ -47,10 +47,13 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { ExperimentRunListComponent } from './components/experiments/experiment-run-list/experiment-run-list.component';
 import { ExperimentRunDetailComponent } from './components/experiments/experiment-run-detail/experiment-run-detail.component';
 import { MatTableModule } from '@angular/material/table';
-import { AllExperimentListComponent } from './components/experiments/experiment-lists/all-experiment-list.component';
+import { PublicExperimentListComponent } from './components/experiments/experiment-lists/public-experiment-list.component';
 import { MyExperimentListComponent } from './components/experiments/experiment-lists/my-experiment-list.component';
-import { AllExperimentTemplateList } from './components/experiments/experiment-template-lists/all-experiment-template-list.component';
-import { MyExperimentTemplateList } from './components/experiments/experiment-template-lists/my-experiment-template-list.component';
+import { AllExperimentListComponent } from "./components/admin/experiment-list/all-experiment-list.component";
+import { PublicExperimentTemplateListComponent } from './components/experiments/experiment-template-lists/public-experiment-template-list.component';
+import { MyExperimentTemplateListComponent } from './components/experiments/experiment-template-lists/my-experiment-template-list.component';
+import { AllExperimentTemplateListComponent } from "./components/admin/experiment-template-list/all-experiment-template-list.component";
+import { PendingExperimentTemplateListComponent } from "./components/admin/experiment-template-list/pending-experiment-template-list.component";
 import { ExperimentTemplateListItemComponent } from './components/experiments/experiment-template-list-item/experiment-template-list-item.component';
 import { ExperimentTemplateDetailComponent } from './components/experiments/experiment-template-detail/experiment-template-detail.component';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
@@ -66,9 +69,6 @@ import { EditExperimentTemplateComponent } from './components/experiments/edit-e
 import { ConfirmPopupComponent } from './components/general/popup/confirm-popup.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import {
-  PendingExperimentTemplateList
-} from "./components/admin/experiment-template-list/pending-experiment-template-list.component";
 
 
 
@@ -94,11 +94,13 @@ import {
     ExperimentListItemComponent,
     ExperimentRunListComponent,
     ExperimentRunDetailComponent,
+    PublicExperimentListComponent,
     MyExperimentListComponent,
     AllExperimentListComponent,
-    AllExperimentTemplateList,
-    MyExperimentTemplateList,
-    PendingExperimentTemplateList,
+    PublicExperimentTemplateListComponent,
+    MyExperimentTemplateListComponent,
+    AllExperimentTemplateListComponent,
+    PendingExperimentTemplateListComponent,
     ExperimentTemplateListItemComponent,
     ExperimentTemplateDetailComponent,
     FeedbackComponent,

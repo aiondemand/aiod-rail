@@ -57,7 +57,7 @@ export  abstract class ExperimentListBaseComponent {
   }
 
   _updateExperiments() {
-    this.experiments$  = this.updateExperiments().pipe(
+    this.experiments$  = this.getExperiments().pipe(
       catchError(error => {
         if (error.status == 401) {
           this.snackBar.showError("An authorization error occurred. Try logging out and then logging in again.");
@@ -67,7 +67,7 @@ export  abstract class ExperimentListBaseComponent {
     );
   }
 
-  protected abstract updateExperiments(): Observable<Experiment[]>;
+  protected abstract getExperiments(): Observable<Experiment[]>;
 
   protected abstract getExperimentsCount(): Observable<number>;
 }

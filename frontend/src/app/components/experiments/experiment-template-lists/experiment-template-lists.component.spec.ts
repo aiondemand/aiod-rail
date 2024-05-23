@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { AllExperimentTemplateList } from './all-experiment-template-list.component';
+import { PublicExperimentTemplateListComponent } from './public-experiment-template-list.component';
 
 
-describe('AllExperimentTemplateList', () => {
-  let component: AllExperimentTemplateList;
-  let fixture: ComponentFixture<AllExperimentTemplateList>;
+describe('PublicExperimentTemplateList', () => {
+  let component: PublicExperimentTemplateListComponent;
+  let fixture: ComponentFixture<PublicExperimentTemplateListComponent>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [AllExperimentTemplateList]
+      declarations: [PublicExperimentTemplateListComponent]
     });
-    fixture = TestBed.createComponent(AllExperimentTemplateList);
+    fixture = TestBed.createComponent(PublicExperimentTemplateListComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
