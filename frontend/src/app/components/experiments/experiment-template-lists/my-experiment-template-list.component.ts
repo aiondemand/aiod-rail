@@ -19,7 +19,7 @@ export class MyExperimentTemplateList extends ExperimentTemplateListBaseComponen
     );
   }
 
-  protected override updateExperimentTemplates(): Observable<ExperimentTemplate[]> {
+  protected override getExperimentTemplates(): Observable<ExperimentTemplate[]> {
     return this.backend.getExperimentTemplates(
       "",
       {

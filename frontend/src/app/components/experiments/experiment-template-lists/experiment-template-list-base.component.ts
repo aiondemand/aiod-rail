@@ -2,14 +2,14 @@ import { Injectable } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { PageEvent } from '@angular/material/paginator';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable, catchError, count, firstValueFrom, of } from 'rxjs';
+import { Observable, catchError, firstValueFrom, of } from 'rxjs';
 import { ExperimentTemplate } from 'src/app/models/experiment-template';
 import { BackendApiService } from 'src/app/services/backend-api.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { environment } from 'src/environments/environment';
 
 @Injectable()
-export  abstract class ExperimentTemplateListBaseComponent {
+export abstract class ExperimentTemplateListBaseComponent {
   protected experimentTemplates$: Observable<ExperimentTemplate[] | null>;
   protected pagination = {
     pageSize: environment.DEFAULT_PAGE_SIZE,
@@ -46,7 +46,7 @@ export  abstract class ExperimentTemplateListBaseComponent {
       this.pagination.pageIndex = params['pageIndex']
         ? parseInt(params['pageIndex']) : 0;
 
-        this.updateTemplates();
+      this.getTemplates();
     });
 
     firstValueFrom(this.getExperimentTemplatesCount())
@@ -69,11 +69,11 @@ export  abstract class ExperimentTemplateListBaseComponent {
       queryParamsHandling: 'merge'
     });
 
-    this.updateTemplates();
+    this.getTemplates();
   }
 
-  updateTemplates() {
-    this.experimentTemplates$ = this.updateExperimentTemplates().pipe(
+  getTemplates() {
+    this.experimentTemplates$ = this.getExperimentTemplates().pipe(
       catchError((error) => {
         if (error.status == 401) {
           this.snackBar.showError("An authorization error occurred. Try logging out and then logging in again.");
@@ -83,7 +83,7 @@ export  abstract class ExperimentTemplateListBaseComponent {
     );
   }
 
-  protected abstract updateExperimentTemplates(): Observable<ExperimentTemplate[]>;
+  protected abstract getExperimentTemplates(): Observable<ExperimentTemplate[]>;
 
   protected abstract getExperimentTemplatesCount(): Observable<number>
 }
