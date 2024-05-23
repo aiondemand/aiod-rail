@@ -1,7 +1,7 @@
 import pytest
 from fastapi import HTTPException, status
 
-from app.authentication import get_current_user
+from app.auth import get_current_user
 
 
 @pytest.mark.asyncio

@@ -5,7 +5,7 @@ from beanie import PydanticObjectId
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import PlainTextResponse, StreamingResponse
 
-from app.authentication import get_current_user
+from app.auth import get_current_user
 from app.config import TEMP_DIRNAME
 from app.helpers import FileDetail, Pagination
 from app.models.experiment import Experiment

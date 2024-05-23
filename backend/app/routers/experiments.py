@@ -6,7 +6,7 @@ from beanie.odm.operators.find.evaluation import Text
 from beanie.odm.queries.find import FindMany
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from app.authentication import get_current_user
+from app.auth import get_current_user
 from app.helpers import Pagination, QueryOperator, get_compare_operator_fn
 from app.models.experiment import Experiment
 from app.models.experiment_run import ExperimentRun

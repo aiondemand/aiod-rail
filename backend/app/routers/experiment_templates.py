@@ -1,5 +1,4 @@
 import shutil
-from datetime import datetime, timezone
 from typing import Any
 
 from beanie import PydanticObjectId, operators
@@ -8,7 +7,7 @@ from beanie.odm.operators.find.evaluation import Text
 from beanie.odm.queries.find import FindMany
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from app.authentication import get_current_user
+from app.auth import get_current_user
 from app.config import settings
 from app.helpers import Pagination, QueryOperator, get_compare_operator_fn
 from app.models.experiment import Experiment
@@ -18,7 +17,6 @@ from app.schemas.experiment_template import (
     ExperimentTemplateResponse,
 )
 from app.schemas.states import TemplateState
-from app.services.experiment_scheduler import ExperimentScheduler
 
 router = APIRouter()
 
@@ -172,34 +170,6 @@ async def archive_experiment_template(
     await ExperimentTemplate.replace(experiment_template)
 
 
-@router.patch("/experiment-templates/{id}/approve", response_model=None)
-async def approve_experiment_template(
-    id: PydanticObjectId,
-    password: str,
-    approved: bool = False,
-    exp_scheduler: ExperimentScheduler = Depends(ExperimentScheduler.get_service),
-) -> Any:
-    if password != settings.PASSWORD_FOR_TEMPLATE_APPROVAL:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Wrong password given",
-        )
-
-    experiment_template = await ExperimentTemplate.get(id)
-    if experiment_template is None:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Such experiment template doesn't exist",
-        )
-
-    experiment_template.approved = approved
-    experiment_template.updated_at = datetime.now(tz=timezone.utc)
-    await ExperimentTemplate.replace(experiment_template)
-
-    if approved:
-        await exp_scheduler.add_image_to_build(experiment_template.id)
-
-
 @router.get("/count/experiment-templates/{id}/experiments", response_model=int)
 async def get_experiments_of_template_count(
     id: PydanticObjectId,
@@ -287,6 +257,11 @@ async def get_experiment_template_if_accessible_or_raise(
         detail="You cannot access this experiment template",
     )
     template = await ExperimentTemplate.get(template_id)
+    if template is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Specified experiment template doesn't exist",
+        )
 
     if template is None:
         raise access_denied_error

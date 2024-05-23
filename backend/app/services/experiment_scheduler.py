@@ -64,7 +64,7 @@ class ExperimentScheduler:
     async def init_image_build_queue(self) -> None:
         template_ids = (
             await ExperimentTemplate.find(
-                ExperimentTemplate.approved == True,  # noqa: E712
+                ExperimentTemplate.is_approved == True,  # noqa: E712
                 ExperimentTemplate.state != TemplateState.FINISHED,
                 ExperimentTemplate.state != TemplateState.CRASHED,
                 ExperimentTemplate.retry_count < settings.MAX_IMAGE_BUILDS_ATTEMPTS,

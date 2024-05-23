@@ -3,7 +3,7 @@ from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Response, UploadFile, status
 
-from app.authentication import get_current_user, get_current_user_token
+from app.auth import get_current_user, get_current_user_token
 from app.config import settings
 from app.helpers import Pagination
 from app.schemas.dataset import Dataset

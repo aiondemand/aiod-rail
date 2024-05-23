@@ -6,7 +6,7 @@ import httpx
 from fastapi import HTTPException
 from pydantic import Json
 
-from app.authentication import get_current_user
+from app.auth import get_current_user
 from app.config import settings
 from app.helpers import Pagination
 from app.schemas.dataset import Dataset
