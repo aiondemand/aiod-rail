@@ -1,5 +1,41 @@
-<div *ngIf="experimentTemplate$ | async as experimentTemplate">
-    <h1>{{experimentTemplate.name}} <span>(template)</span></h1> 
+<div *ngIf="experimentTemplate">
+    <div class="header">
+        <div class="header-name">
+            <h1>
+                {{experimentTemplate.name}}
+            </h1> 
+            <mat-icon *ngIf="experimentTemplate.public" matTooltip="Public template">public</mat-icon>
+            <mat-icon *ngIf="!experimentTemplate.public" matTooltip="Private template">public_off</mat-icon>
+        </div>
+        
+        <div class="header-buttons" *ngIf="experimentTemplate.mine && !experimentTemplate.archived">
+            <button mat-icon-button matTooltip="Edit" (click)="editBtnClicked()">
+                <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button matTooltip="Delete" (click)="deleteBtnClicked()">
+                <mat-icon>delete</mat-icon>
+            </button>
+        </div>
+
+        <div class="deleted-state" *ngIf="experimentTemplate.archived">
+            <span class="crashed"><mat-icon matTooltip="New experiments cannot use this template">delete</mat-icon>Archived</span>
+            <button mat-stroked-button class="undo-button" *ngIf="experimentTemplate.mine" (click)="undoBtnClicked()">
+                <mat-icon>settings_backup_restore</mat-icon>
+                Unarchive
+            </button>
+        </div>
+    </div>
+    
+    <div class="state" *ngIf="!experimentTemplate.archived && experimentTemplate.state != 'FINISHED'">
+        <ng-container *ngIf="!experimentTemplate.approved">
+            <span class="crashed"><mat-icon matTooltip="Experiment templates are manually reviewed before being approved for use">search</mat-icon>Waiting for approval</span>
+        </ng-container>
+        <ng-container *ngIf="experimentTemplate.approved">
+            <span *ngIf="experimentTemplate.state == 'CREATED'"><mat-icon>schedule</mat-icon>Scheduled</span>
+            <span class="in-progress" *ngIf="experimentTemplate.state == 'IN_PROGRESS'"><mat-icon>rotate_right</mat-icon>Building image</span>
+            <span class="crashed" *ngIf="experimentTemplate.state == 'CRASHED'"><mat-icon>error</mat-icon>Crashed</span>
+        </ng-container>
+    </div>
 
     <div class="description-section">
         <pre>{{experimentTemplate.description}}</pre>
@@ -145,9 +181,8 @@
     </div>
     
 
-    
 
     <!-- TODO later related experiments, datasets, models... -->
 </div>
 
-<mat-spinner *ngIf="!(experimentTemplate$ | async)" class="loading-screen"></mat-spinner>
+<mat-spinner *ngIf="!experimentTemplate" class="loading-screen"></mat-spinner>

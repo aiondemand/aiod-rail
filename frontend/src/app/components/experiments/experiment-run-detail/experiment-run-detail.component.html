@@ -1,7 +1,23 @@
-<mat-spinner *ngIf="!experimentRun"></mat-spinner>
+<mat-spinner *ngIf="!experimentRun || !experiment"></mat-spinner>
 
-<ng-container *ngIf="experimentRun">
-    <h1>Experiment run - {{experimentRun.id}}</h1>
+<ng-container *ngIf="experimentRun && experiment">
+    <div class="header">
+        <h1>Experiment run - {{experimentRun.id}}</h1>
+        
+        <div class="header-menu">
+            <!-- TODO add stopping functionality -->
+            <!-- <button mat-icon-button matTooltip="Stop run" *ngIf="experimentRun.mine && !experiment.archived && experimentRun.state == 'IN_PROGRESS'" (click)="stopRun()">
+                <mat-icon>stop</mat-icon>
+            </button> -->
+            <button 
+                mat-icon-button matTooltip="Delete run" 
+                *ngIf="experimentRun.mine && !experiment.archived && (experimentRun.state == 'FINISHED' || experimentRun.state == 'CRASHED')" 
+                (click)="deleteRun()"
+            >
+                <mat-icon>delete</mat-icon>
+            </button>
+        </div>
+    </div>
 
     <div class="experiment-run-details">
         <h2>Details</h2>

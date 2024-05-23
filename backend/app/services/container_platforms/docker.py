@@ -56,9 +56,8 @@ class DockerService(ContainerPlatformBase):
     async def build_image(self, experiment_template: ExperimentTemplate) -> bool:
         template_id = experiment_template.id
         image_name = experiment_template.image_name
-        exp_template_savepath = settings.get_experiment_template_path(
-            template_id=template_id
-        )
+        template_path = experiment_template.experiment_template_path
+
         self.logger.info(
             f"\tBuilding image (attempt={experiment_template.retry_count}) "
             + f"for ExperimentTemplate id={template_id}"
@@ -67,7 +66,7 @@ class DockerService(ContainerPlatformBase):
         try:
             await asyncio.to_thread(
                 self.docker_client.images.build,
-                path=str(exp_template_savepath),
+                path=str(template_path),
                 tag=f"{image_name}",
                 pull=True,
                 rm=True,

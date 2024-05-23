@@ -1,42 +1,103 @@
+from __future__ import annotations
+
 from datetime import datetime, timezone
 from functools import partial
 
-from beanie import Document, PydanticObjectId
+import pymongo
+from beanie import Document, Indexed, PydanticObjectId
+from deepdiff import DeepDiff
 from pydantic import Field
 
 from app.models.experiment_template import ExperimentTemplate
 from app.schemas.env_vars import EnvironmentVar
-from app.schemas.states import TemplateState
+from app.schemas.experiment import ExperimentCreate, ExperimentResponse
 
 
 class Experiment(Document):
-    name: str
+    name: Indexed(str, index_type=pymongo.TEXT)  # type: ignore
     description: str
-    publication_ids: list[str]
     updated_at: datetime = Field(default_factory=partial(datetime.now, tz=timezone.utc))
     created_at: datetime = Field(default_factory=partial(datetime.now, tz=timezone.utc))
     created_by: str
+    public: bool = False
+    archived: bool = False
 
     experiment_template_id: PydanticObjectId
+
+    publication_ids: list[int]
     dataset_ids: list[int]
     model_ids: list[int]
+
     env_vars: list[EnvironmentVar]
     metrics: list[str]
+
+    @property
+    def assets_attribute_names(self) -> list[str]:
+        return [
+            "experiment_template_id",
+            "publication_ids",
+            "dataset_ids",
+            "model_ids",
+            "env_vars",
+            "metrics",
+        ]
 
     class Settings:
         name = "experiments"
 
-    async def is_valid(self) -> bool:
-        """Validate that experiment matches its experiment template definition"""
-        experiment_template = await ExperimentTemplate.get(self.experiment_template_id)
+    def map_to_response(self, user: dict | None = None) -> ExperimentResponse:
+        mine = user is not None and self.created_by == user["email"]
+        return ExperimentResponse(**self.dict(), mine=mine)
 
+    async def is_valid(self, experiment_template: ExperimentTemplate) -> bool:
+        """Validate that experiment matches its experiment template definition"""
         return (
             await experiment_template.validate_models(self.model_ids)
             and await experiment_template.validate_datasets(self.dataset_ids)
             and experiment_template.validate_env_vars(self.env_vars)
         )
 
-    async def uses_finished_template(self) -> bool:
-        """Check whether docker image of ExperimentTemplate has been uploaded"""
-        experiment_template = await ExperimentTemplate.get(self.experiment_template_id)
-        return experiment_template.state == TemplateState.FINISHED
+    def has_same_assets(self, experiment: Experiment) -> bool:
+        return sum(
+            [
+                bool(
+                    DeepDiff(
+                        getattr(self, attr_name),
+                        getattr(experiment, attr_name),
+                        ignore_order=True,
+                    )
+                )
+                is False
+                for attr_name in self.assets_attribute_names
+            ]
+        ) == len(self.assets_attribute_names)
+
+    @classmethod
+    async def update_experiment(
+        cls,
+        original_experiment: Experiment,
+        experiment_req: ExperimentCreate,
+        editable_assets: bool,
+    ) -> Experiment | None:
+        new_experiment = Experiment(
+            **experiment_req.dict(), created_by=original_experiment.created_by
+        )
+        same_assets = original_experiment.has_same_assets(new_experiment)
+        experiment_to_return = None
+
+        if same_assets:
+            # Update name, descr & visibility
+            original_experiment.name = new_experiment.name
+            original_experiment.description = new_experiment.description
+            original_experiment.public = new_experiment.public
+
+            original_experiment.updated_at = new_experiment.updated_at
+            experiment_to_return = original_experiment
+
+        elif editable_assets:
+            # No runs exist yet, so we can change everything in experiment
+            new_experiment.created_at = original_experiment.created_at
+            new_experiment.id = original_experiment.id
+            experiment_to_return = new_experiment
+
+        return experiment_to_return

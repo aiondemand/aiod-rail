@@ -2,10 +2,15 @@ import { FlatTreeControl } from '@angular/cdk/tree';
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
 import { Observable, Subscription, catchError, firstValueFrom, interval, mergeMap, of, retry, switchMap, tap } from 'rxjs';
+import { Experiment } from 'src/app/models/experiment';
 import { ExperimentRunDetails } from 'src/app/models/experiment-run';
 import { FileDetail } from 'src/app/models/file-detail';
+import { ConfirmPopupInput, ConfirmPopupResponse } from 'src/app/models/popup';
 import { BackendApiService } from 'src/app/services/backend-api.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
+import { ConfirmPopupComponent } from '../../general/popup/confirm-popup.component';
+import { MatDialog } from '@angular/material/dialog';
+import { Router } from '@angular/router';
 
 interface FileNode {
   name: string;
@@ -28,6 +33,8 @@ interface FlattenedNode {
   styleUrls: ['./experiment-run-detail.component.scss']
 })
 export class ExperimentRunDetailComponent {
+  experiment: Experiment;
+  
   fileTreeStructure: FileNode[] = [];
   treeControl: FlatTreeControl<FlattenedNode> | null = null;
   treeViewDataSource: MatTreeFlatDataSource<FileNode, FlattenedNode> | null = null;
@@ -38,6 +45,10 @@ export class ExperimentRunDetailComponent {
   set runId(id: string) {
     this.subscription = this.backend.getExperimentRun(id).pipe(
       switchMap(run => {
+        firstValueFrom(this.backend.getExperiment(run.experiment_id))
+          .then(exp => this.experiment = exp)
+          .catch(err => console.error(err));
+
         if (run.state == 'CREATED' || run.state == 'IN_PROGRESS') {
           this.experimentRun = run;
           return interval(5000).pipe(switchMap(_ => this.backend.getExperimentRun(id)));
@@ -81,7 +92,7 @@ export class ExperimentRunDetailComponent {
               this.treeViewDataSource = new MatTreeFlatDataSource(this.treeControl, treeFlattener);
               this.treeViewDataSource.data = this.fileTreeStructure;
             })
-            .catch(err => console.log(err))
+            .catch(err => console.error(err))
         }
       },
       error: err => {
@@ -221,9 +232,10 @@ export class ExperimentRunDetailComponent {
 
   constructor(
     private backend: BackendApiService,
-    private snackBar: SnackBarService
-  ) { 
-  }
+    private snackBar: SnackBarService,
+    private dialog: MatDialog,
+    private router: Router,
+  ) { }
 
   wandbLink(logs: string | null): string {
     if (!logs) return '';
@@ -248,5 +260,28 @@ export class ExperimentRunDetailComponent {
     else {
       return '';
     }
+  }
+
+  deleteRun(): void {
+    let popupInput: ConfirmPopupInput = {
+      message: "Do you wish to DELETE this run?",
+      acceptBtnMessage: "Yes",
+      declineBtnMessage: "No",
+    }
+    firstValueFrom(this.dialog.open(ConfirmPopupComponent, {
+      maxWidth: '450px',
+      width: '100%',
+      autoFocus: false,
+      data: popupInput
+    }).afterClosed())
+      .then(state => {
+        if (state == ConfirmPopupResponse.Yes) {
+          firstValueFrom(this.backend.deleteExperimentRun(this.experimentRun.id))
+            .then(_ => {
+              this.router.navigate(['/experiments', this.experiment.id]);
+            })
+            .catch(err => console.error(err));
+        }
+      });
   }
 }

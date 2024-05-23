@@ -32,6 +32,9 @@ export interface ExperimentTemplateResponse {
     state: TemplateState;
     dockerfile: string;
     approved: boolean;
+    archived: boolean;
+    public: boolean;
+    mine: boolean;
 }
 export namespace ExperimentTemplateResponse {
 }

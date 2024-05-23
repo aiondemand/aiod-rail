@@ -2,13 +2,21 @@
     <mat-card-header [routerLink]="['/experiments/templates', template.id]">
         <mat-card-subtitle>{{template.id}}</mat-card-subtitle>
         <mat-card-title>
-            <h3>{{template.name}}</h3>
+            
+            <span class="template-name">
+                <h3>{{template.name}}</h3>
+                <mat-icon *ngIf="template.public" matTooltip="Public template">public</mat-icon>
+                <mat-icon *ngIf="!template.public" matTooltip="Private template">public_off</mat-icon>
+            </span>
         </mat-card-title>
     </mat-card-header>
     <mat-card-content>
-        <div class="state" *ngIf="template.state != 'FINISHED'">
+        <div class="state" *ngIf="template.archived">
+            <span class="crashed"><mat-icon matTooltip="New experiments cannot use this template">delete</mat-icon>Archived</span>
+        </div>
+        <div class="state" *ngIf="!template.archived && template.state != 'FINISHED'">
             <ng-container *ngIf="!template.approved">
-                <span class="crashed"><mat-icon matTooltip="Experiment templates created by users are manually reviewed and then approved for use">search</mat-icon>Waiting for approval</span>
+                <span class="crashed"><mat-icon matTooltip="Experiment templates are manually reviewed before being approved for use">search</mat-icon>Waiting for approval</span>
             </ng-container>
             <ng-container *ngIf="template.approved">
                 <span *ngIf="template.state == 'CREATED'"><mat-icon>schedule</mat-icon>Scheduled</span>

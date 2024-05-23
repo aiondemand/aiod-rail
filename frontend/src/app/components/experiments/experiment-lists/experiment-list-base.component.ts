@@ -34,7 +34,8 @@ export  abstract class ExperimentListBaseComponent {
     });
 
     firstValueFrom(this.getExperimentsCount())
-      .then(count => this.pagination.length = count);
+      .then(count => this.pagination.length = count)
+      .catch(err => console.error(err));
   }
 
   handlePageEvent(e: PageEvent) {
@@ -69,6 +70,4 @@ export  abstract class ExperimentListBaseComponent {
   protected abstract updateExperiments(): Observable<Experiment[]>;
 
   protected abstract getExperimentsCount(): Observable<number>;
-
-  protected abstract isAllExperiments(): boolean;
 }

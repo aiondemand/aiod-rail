@@ -232,10 +232,11 @@ export class BackendApiService {
    * @returns Observable<Experiment[]>
    */
   getExperiments(
+    query: string,
     pageQueries?: PageQueries,
     experimentQueries?: ExperimentQueries
   ): Observable<Experiment[]> {
-    let queries = `?${this._buildPageQueries(pageQueries)}&${this._buildExperimentQueries(experimentQueries)}`;
+    let queries = `?query=${query}&${this._buildPageQueries(pageQueries)}&${this._buildExperimentQueries(experimentQueries)}`;
     return this.http.get<Experiment[]>(`${environment.BACKEND_API_URL}/experiments${queries}`);
   }
 
@@ -252,8 +253,8 @@ export class BackendApiService {
    * Get count of experiments
    * @returns Observable<number> (count)
    */
-  getExperimentsCount(experimentQueries?: ExperimentQueries): Observable<number> {
-    let queries = `?${this._buildExperimentQueries(experimentQueries)}`;
+  getExperimentsCount(query: string, experimentQueries?: ExperimentQueries): Observable<number> {
+    let queries = `?query=${query}&${this._buildExperimentQueries(experimentQueries)}`;
     return this.http.get<number>(`${environment.BACKEND_API_URL}/count/experiments${queries}`);
   }
 
@@ -266,6 +267,18 @@ export class BackendApiService {
     return this.http.post<Experiment>(`${environment.BACKEND_API_URL}/experiments`, experiment);
   }
 
+  updateExperiment(id: string, experiment: ExperimentCreate): Observable<Experiment> {
+    return this.http.put<Experiment>(`${environment.BACKEND_API_URL}/experiments/${id}`, experiment);
+  }
+
+  archiveExperiment(id: string, archived: boolean): Observable<void> {
+    return this.http.patch<void>(`${environment.BACKEND_API_URL}/experiments/${id}/archive?archived=${archived}`, {});
+  }
+
+  deleteExperiment(id: string): Observable<boolean> {
+    return this.http.delete<boolean>(`${environment.BACKEND_API_URL}/experiments/${id}`);
+  }
+
   ////////////////////////////// EXPERIMENT TEMPLATES //////////////////////////////
 
   /**
@@ -273,10 +286,11 @@ export class BackendApiService {
    * @returns Observable<ExperimentTemplate[]>
    */
   getExperimentTemplates(
+    query: string,
     pageQueries?: PageQueries,
     templateQueries?: ExperimentTemplateQueries
   ): Observable<ExperimentTemplate[]> {
-    let queries = `?${this._buildPageQueries(pageQueries)}&${this._buildExperimentTemplateQueries(templateQueries)}`;
+    let queries = `?query=${query}&${this._buildPageQueries(pageQueries)}&${this._buildExperimentTemplateQueries(templateQueries)}`;
     return this.http.get<ExperimentTemplate[]>(`${environment.BACKEND_API_URL}/experiment-templates${queries}`);
   }
 
@@ -294,10 +308,15 @@ export class BackendApiService {
    * @returns Observable<number> (count)
    */
   getExperimentTemplatesCount(
+    query: string,
     templateQueries?: ExperimentTemplateQueries
   ): Observable<number> {
-    let queries = `?${this._buildExperimentTemplateQueries(templateQueries)}`;
+    let queries = `?query=${query}&${this._buildExperimentTemplateQueries(templateQueries)}`;
     return this.http.get<number>(`${environment.BACKEND_API_URL}/count/experiment-templates${queries}`);
+  }
+
+  getExperimentsOfTeplateCount(id: string, only_mine: boolean): Observable<number> {
+    return this.http.get<number>(`${environment.BACKEND_API_URL}/count/experiment-templates/${id}/experiments?only_mine=${only_mine}`);
   }
 
   /**
@@ -308,6 +327,18 @@ export class BackendApiService {
     return this.http.post<ExperimentTemplate>(`${environment.BACKEND_API_URL}/experiment-templates`, experimentTemplate);
   }
 
+  updateExperimentTemplate(id: string, experimentTemplate: ExperimentTemplateCreate): Observable<ExperimentTemplate> {
+    return this.http.put<ExperimentTemplate>(`${environment.BACKEND_API_URL}/experiment-templates/${id}`, experimentTemplate);
+  }
+
+  archiveExperimentTemplate(id: string, archived: boolean): Observable<void> {
+    return this.http.patch<void>(`${environment.BACKEND_API_URL}/experiment-templates/${id}/archive?archived=${archived}`, {});
+  }
+
+  deleteExperimentTemplate(id: string): Observable<void> {
+    return this.http.delete<void>(`${environment.BACKEND_API_URL}/experiment-templates/${id}`);
+  }
+
   ////////////////////////////// EXPERIMENT RUNS //////////////////////////////
 
   /**
@@ -316,12 +347,8 @@ export class BackendApiService {
    * @param pageQueries
    * @param experimentId
    */
-  getExperimentRuns(experimentId: string = "", pageQueries?: PageQueries): Observable<ExperimentRun[]> {
+  getExperimentRuns(experimentId: string, pageQueries?: PageQueries): Observable<ExperimentRun[]> {
     let pageQueriesStr = `?${this._buildPageQueries(pageQueries)}`;
-
-    if (experimentId == "") {
-      return this.http.get<ExperimentRun[]>(`${environment.BACKEND_API_URL}/experiment-runs${pageQueriesStr}`);
-    }
     return this.http.get<ExperimentRun[]>(`${environment.BACKEND_API_URL}/experiments/${experimentId}/runs${pageQueriesStr}`);
   }
 
@@ -334,7 +361,6 @@ export class BackendApiService {
     return this.http.get<FileDetail[]>(`${environment.BACKEND_API_URL}/experiment-runs/${experimentId}/files/list`);
   }
 
-  // TODO how to download file from backend
   downloadFileFromExperimentRun(experimentId: string, filepath: string): Observable<any> {
     return this.http.get(
       `${environment.BACKEND_API_URL}/experiment-runs/${experimentId}/files/download?filepath=${filepath}`,
@@ -349,6 +375,14 @@ export class BackendApiService {
    */
   getExperimentRun(experimentRunId: string): Observable<ExperimentRunDetails> {
     return this.http.get<ExperimentRunDetails>(`${environment.BACKEND_API_URL}/experiment-runs/${experimentRunId}`);
+  }
+
+  stopExperimentRun(experimentRunId: string): Observable<void> {
+    return this.http.get<void>(`${environment.BACKEND_API_URL}/experiment-runs/${experimentRunId}/stop`);
+  }
+
+  deleteExperimentRun(experimentRunId: string): Observable<void> {
+    return this.http.delete<void>(`${environment.BACKEND_API_URL}/experiment-runs/${experimentRunId}`);
   }
 
   /**
@@ -384,8 +418,16 @@ export class BackendApiService {
   }
 
   _buildExperimentQueries(experimentQueries?: ExperimentQueries): string {
-    // TODO: Add query parameters
-    return "";
+    if (experimentQueries == undefined) {
+      return "";
+    }
+
+    let q: string = "";
+    let key: keyof ExperimentQueries;
+    for (key in experimentQueries) {
+      q += `${key}=${experimentQueries[key]}&`;
+    }
+    return q.slice(0, q.length - 1);
   }
 
   _buildExperimentTemplateQueries(templateQueries?: ExperimentTemplateQueries): string {
@@ -394,7 +436,7 @@ export class BackendApiService {
     }
 
     let q: string = "";
-    let key: keyof ExperimentTemplateQueries
+    let key: keyof ExperimentTemplateQueries;
     for (key in templateQueries) {
       q += `${key}=${templateQueries[key]}&`;
     }

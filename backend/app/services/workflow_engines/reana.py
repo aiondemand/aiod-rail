@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 import logging
 import os
+import re
 import shutil
 import subprocess
 from pathlib import Path
@@ -44,35 +45,9 @@ class ReanaService(WorkflowEngineBase):
         experiment: Experiment,
         environment_variables: dict[str, str],
     ) -> bool:
-        try:
-            # delete existing workflows tied to this experiment run if any exists
-            workflow_name = experiment_run.workflow_name
-            workflow_runs = await self._async_reana_call(
-                "get_workflows", type="batch", workflow=workflow_name
-            )
-            for workflow in workflow_runs:
-                if workflow["status"] == "deleted":
-                    continue
-                if workflow["status"] == "running":
-                    await self._async_reana_call(
-                        "stop_workflow", workflow=workflow_name, force_stop=True
-                    )
-                await self._async_reana_call(
-                    "delete_workflow",
-                    workflow=workflow_name,
-                    all_runs=True,
-                    workspace=True,
-                )
-        except WorkflowConnectionException as e:
-            raise e
-        except Exception as e:
-            self.logger.warning(
-                f"REANA Workflow of ExperimentRun id={experiment_run.id} "
-                + "was not successfully deleted",
-                exc_info=e,
-            )
+        await self.delete_workflow(experiment)
 
-        exp_run_folder = settings.get_experiment_run_path(experiment_run.id)
+        exp_run_folder = experiment_run.run_path
         exp_template_folder = settings.get_experiment_template_path(
             experiment.experiment_template_id
         )
@@ -84,7 +59,7 @@ class ReanaService(WorkflowEngineBase):
 
     async def run_workflow(self, experiment_run: ExperimentRun) -> WorkflowState:
         exp_run_id = experiment_run.id
-        exp_run_folder = settings.get_experiment_run_path(exp_run_id)
+        exp_run_folder = experiment_run.run_path
         workflow_name = experiment_run.workflow_name
 
         self.logger.info(f"\tRunning REANA workflow for ExperimentRun id={exp_run_id}")
@@ -108,16 +83,77 @@ class ReanaService(WorkflowEngineBase):
             return WorkflowState(success=False, error_message=error_return_msg)
 
         if result.returncode != 0:
-            self.logger.error(error_log_msg)
-            return WorkflowState(success=False, error_message=error_return_msg)
+            manually_stopped = self._is_manually_stopped(experiment_run, result.stderr)
+            manually_deleted = self._is_manually_deleted(experiment_run, result.stderr)
+            if manually_stopped is False and manually_deleted is False:
+                self.logger.error(error_log_msg)
+
+            return WorkflowState(
+                success=False,
+                error_message=error_return_msg,
+                manually_stopped=manually_stopped,
+                manually_deleted=manually_deleted,
+            )
+
         return WorkflowState(success=True)
+
+    def _is_manually_stopped(self, experiment_run: ExperimentRun, stderr: str) -> bool:
+        pattern = experiment_run.workflow_name + r"\.[0-9]+ has been stopped"
+        return len(re.findall(pattern, stderr)) > 0
+
+    def _is_manually_deleted(self, experiment_run: ExperimentRun, stderr: str) -> bool:
+        pattern = experiment_run.workflow_name + r".[0-9]+ has been deleted"
+        return len(re.findall(pattern, stderr)) > 0
+
+    async def stop_workflow(self, experiment_run: ExperimentRun) -> bool:
+        return await self._stop_and_delete_worfklow(
+            experiment_run, delete_workflow=False
+        )
+
+    async def delete_workflow(self, experiment_run: ExperimentRun) -> bool:
+        return await self._stop_and_delete_worfklow(
+            experiment_run, delete_workflow=True
+        )
+
+    async def _stop_and_delete_worfklow(
+        self, experiment_run: ExperimentRun, delete_workflow: bool = False
+    ) -> bool:
+        try:
+            workflow_name = experiment_run.workflow_name
+            workflow_runs = await self._async_reana_call(
+                "get_workflows", type="batch", workflow=workflow_name
+            )
+            for workflow in workflow_runs:
+                if workflow["status"] == "deleted":
+                    continue
+                if workflow["status"] == "running":
+                    await self._async_reana_call(
+                        "stop_workflow", workflow=workflow_name, force_stop=True
+                    )
+                if delete_workflow:
+                    await self._async_reana_call(
+                        "delete_workflow",
+                        workflow=workflow_name,
+                        all_runs=True,
+                        workspace=True,
+                    )
+        except WorkflowConnectionException as e:
+            raise e
+        except Exception as e:
+            action = "delete" if delete_workflow else "stop"
+            self.logger.error(
+                f"There was error when trying to {action} a REANA workflow", exc_info=e
+            )
+            # TODO: Handle exception properly
+            return False
+        return True
 
     async def postprocess_workflow(
         self, experiment_run: ExperimentRun, workflow_state: WorkflowState
     ) -> None:
         workflow_name = experiment_run.workflow_name
-        exp_dirpath = settings.get_experiment_run_path(experiment_run.id)
-        exp_output_dirpath = settings.get_experiment_run_output_path(experiment_run.id)
+        exp_dirpath = experiment_run.run_path
+        exp_output_dirpath = experiment_run.run_output_path
 
         try:
             await self._async_reana_call(
@@ -144,9 +180,11 @@ class ReanaService(WorkflowEngineBase):
             exp_dirpath.joinpath(LOGS_FILENAME).write_text(logs, encoding="utf-8")
         except ReanaConnectionException as e:
             raise e
-        except Exception:
-            # TODO: Handle exception properly
-            pass
+        except Exception as e:
+            self.logger.error(
+                "There was an error when postprocessing an experiment run", exc_info=e
+            )
+            return
 
         # save metrics.json
         metrics_filepath = f"{RUN_OUTPUT_FOLDER}/{METRICS_FILENAME}"
@@ -164,7 +202,11 @@ class ReanaService(WorkflowEngineBase):
             )
         except ReanaConnectionException as e:
             raise e
-        except Exception:
+        except Exception as e:
+            self.logger.error(
+                "There was error when trying to download a file from REANA workflow",
+                exc_info=e,
+            )
             return None
 
         savedir.mkdir(parents=True, exist_ok=True)
