@@ -21,10 +21,7 @@ keycloak_openid = KeycloakOpenID(
     verify=True,
 )
 
-api_key_header = APIKeyHeader(
-    name="X-API-Key", 
-    auto_error=False
-)
+api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False)
 
 
 async def get_current_user_token(token=Security(oidc)):
@@ -32,20 +29,19 @@ async def get_current_user_token(token=Security(oidc)):
 
 
 def get_current_user(
-        required: bool,
-        from_token: bool = True,
-        from_api_key: bool = False  # By default only for users authenticated through OIDC
-    ) -> Callable[[str, str], Awaitable[dict | None]]:
+    required: bool,
+    from_token: bool = True,
+    from_api_key: bool = False,  # By default only for users authenticated through OIDC
+) -> Callable[[str, str], Awaitable[dict | None]]:
     async def _get_user(
-        token: str = Security(oidc), 
-        api_key: str = Security(api_key_header)
+        token: str = Security(oidc), api_key: str = Security(api_key_header)
     ) -> dict | None:
         if not from_token and not from_api_key:
             raise ValueError("Either from_token or from_api_key must be set to True")
-        
+
         if not required and not token and not api_key:
             return None
-        
+
         if from_token and token:
             return await _verify_token(token)
         if from_api_key and api_key:
@@ -67,7 +63,7 @@ def get_current_user(
             detail="This endpoint requires authorization. You need to be logged in or provide an API key.",
             headers={"WWW-Authenticate": "Bearer"},
         )
-        
+
     return _get_user
 
 

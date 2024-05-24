@@ -54,8 +54,8 @@ async def get_experiment_templates(
 
 @router.get("/experiment-templates/{id}", response_model=ExperimentTemplateResponse)
 async def get_experiment_template(
-    id: PydanticObjectId, 
-    user: dict = Depends(get_current_user(required=False, from_api_key=True))
+    id: PydanticObjectId,
+    user: dict = Depends(get_current_user(required=False, from_api_key=True)),
 ) -> Any:
     experiment_template = await get_experiment_template_if_accessible_or_raise(id, user)
     return experiment_template.map_to_response(user)
@@ -143,8 +143,8 @@ async def update_experiment_template(
 
 @router.delete("/experiment-templates/{id}", response_model=None)
 async def remove_experiment_template(
-    id: PydanticObjectId, 
-    user: dict = Depends(get_current_user(required=True, from_api_key=True))
+    id: PydanticObjectId,
+    user: dict = Depends(get_current_user(required=True, from_api_key=True)),
 ) -> Any:
     await get_experiment_template_if_accessible_or_raise(id, user, write_access=True)
     exist_experiments = (
