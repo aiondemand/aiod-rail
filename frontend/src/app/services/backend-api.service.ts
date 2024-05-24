@@ -96,10 +96,10 @@ export class BackendApiService {
       // TODO: Implement in MyLibrary and Backend
       // Filter only datasets their name contains th  e query
       map(datasets => query && datasets
-        ? datasets.filter(dataset => dataset.name.includes(query)) 
+        ? datasets.filter(dataset => dataset.name.includes(query))
         : datasets
       )
-    );      
+    );
   }
 
   getMyModels(query: string = "", pageQueries?: PageQueries): Observable<Model[]> {
@@ -108,8 +108,8 @@ export class BackendApiService {
     return this.http.get<Model[]>(`${environment.BACKEND_API_URL}/assets/models/my${queries}`).pipe(
       // TODO: Implement in MyLibrary and Backend
       // Filter only models their name contains the query
-      map(models => query && models 
-        ? models.filter(model => model.name.includes(query)) 
+      map(models => query && models
+        ? models.filter(model => model.name.includes(query))
         : models
       )
     );
@@ -337,6 +337,10 @@ export class BackendApiService {
 
   deleteExperimentTemplate(id: string): Observable<void> {
     return this.http.delete<void>(`${environment.BACKEND_API_URL}/experiment-templates/${id}`);
+  }
+
+  approveExperimentTemplate(id: string, approve: boolean): Observable<void> {
+    return this.http.patch<void>(`${environment.BACKEND_API_URL}/experiment-templates/${id}/approve?approve=${approve}`, {});
   }
 
   ////////////////////////////// EXPERIMENT RUNS //////////////////////////////
