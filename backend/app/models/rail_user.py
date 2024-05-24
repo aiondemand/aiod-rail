@@ -2,15 +2,15 @@ import secrets
 
 from beanie import Document
 
-from app.schemas.user import UserResponse
+from app.schemas.rail_user import RailUserResponse
 
 
-class User(Document):
+class RailUser(Document):
     email: str
     api_key: str = ""
 
     class Settings:
-        name = "users"
+        name = "rail_users"
 
     @classmethod
     def generate_api_key(cls) -> str:
@@ -19,5 +19,5 @@ class User(Document):
     def to_dict(self) -> dict:
         return {"email": self.email, "api_key": self.api_key}
 
-    def map_to_response(self) -> UserResponse:
-        return UserResponse(email=self.email, api_key=self.api_key)
+    def map_to_response(self) -> RailUserResponse:
+        return RailUserResponse(email=self.email, api_key=self.api_key)

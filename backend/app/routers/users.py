@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, logger, status
 
 from app.authentication import get_current_user
-from app.models.user import User
-from app.schemas.user import UserResponse
+from app.models.rail_user import RailUser
+from app.schemas.rail_user import RailUserResponse
 
 router = APIRouter()
 
@@ -10,12 +10,12 @@ router = APIRouter()
 @router.get("/users/profile")
 async def get_user_profile(
     user: dict = Depends(get_current_user(required=True)),
-) -> UserResponse:
+) -> RailUserResponse:
     try:
-        user_obj = await User.find_one({"email": user["email"]})
+        user_obj = await RailUser.find_one({"email": user["email"]})
 
         if not user_obj:
-            user_obj = await User(email=user["email"]).create()
+            user_obj = await RailUser(email=user["email"]).create()
     except Exception:
         logger.error("Error while fetching or creating user profile")
         raise HTTPException(
@@ -30,7 +30,7 @@ async def get_user_profile(
 async def get_user_api_key(
     user: dict = Depends(get_current_user(required=False)),
 ) -> str:
-    user = await User.find_one({"email": user["email"]})
+    user = await RailUser.find_one({"email": user["email"]})
 
     if not user or "api_key" not in user:
         raise HTTPException(
@@ -44,12 +44,12 @@ async def get_user_api_key(
 async def create_or_change_user_api_key(
     user: dict = Depends(get_current_user(required=True)),
 ) -> str:
-    user_obj = await User.find_one({"email": user["email"]})
+    user_obj = await RailUser.find_one({"email": user["email"]})
 
     if not user_obj:
         try:
-            user_obj = await User(
-                email=user["email"], api_key=User.generate_api_key()
+            user_obj = await RailUser(
+                email=user["email"], api_key=RailUser.generate_api_key()
             ).create()
         except Exception:
             logger.error("Error while creating user profile and API key")
@@ -59,8 +59,8 @@ async def create_or_change_user_api_key(
             )
     elif "api_key" not in user_obj or not user_obj.api_key:
         try:
-            user_obj.api_key = User.generate_api_key()
-            await User.replace(user_obj)
+            user_obj.api_key = RailUser.generate_api_key()
+            await RailUser.replace(user_obj)
         except Exception:
             logger.error("Error while creating API key")
             raise HTTPException(

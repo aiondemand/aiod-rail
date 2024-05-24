@@ -12,7 +12,7 @@ from app.config import TEMP_DIRNAME, settings
 from app.models.experiment import Experiment
 from app.models.experiment_run import ExperimentRun
 from app.models.experiment_template import ExperimentTemplate
-from app.models.user import User
+from app.models.rail_user import RailUser
 from app.routers import aiod, experiment_runs, experiment_templates, experiments, users
 from app.services.aiod import aiod_client_wrapper, aiod_library_client_wrapper
 from app.services.container_platforms.base import ContainerPlatformBase
@@ -56,7 +56,7 @@ async def app_init():
     ]
     await init_beanie(
         database=app.db,
-        document_models=[ExperimentTemplate, Experiment, ExperimentRun, User],
+        document_models=[ExperimentTemplate, Experiment, ExperimentRun, RailUser],
     )
 
     # initialize container platform and workflow engine

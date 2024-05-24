@@ -6,7 +6,7 @@ from fastapi.security import APIKeyHeader, OpenIdConnect
 from keycloak import KeycloakError, KeycloakOpenID
 
 from app.config import settings
-from app.models.user import User
+from app.models.rail_user import RailUser
 
 oidc = OpenIdConnect(
     openIdConnectUrl=settings.AIOD_KEYCLOAK.OIDC_URL,
@@ -66,7 +66,7 @@ def get_current_user(
             # TODO: Fetch userinfo based on user email from Keycloak
             # needs special role/rights in Keycloak for the client
             # In this way, this will return the same user info.
-            user_obj = await User.find_one({"api_key": api_key})
+            user_obj = await RailUser.find_one({"api_key": api_key})
             if user_obj is not None:
                 return user_obj.to_dict()
             else:

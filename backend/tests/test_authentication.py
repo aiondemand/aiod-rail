@@ -61,7 +61,7 @@ async def test_get_current_user_raises_if_token_not_verified(
 
 
 @pytest.mark.asyncio
-@patch("app.models.user.User.find_one", new_callable=AsyncMock)
+@patch("app.models.rail_user.RailUser.find_one", new_callable=AsyncMock)
 async def test_get_current_user_returns_user_from_api_key(mock_find_one: AsyncMock):
     mock_user = Mock()
     mock_user.to_dict.return_value = {"email": "john@doe.com", "api_key": "1234"}
@@ -76,7 +76,7 @@ async def test_get_current_user_returns_user_from_api_key(mock_find_one: AsyncMo
 
 
 @pytest.mark.asyncio
-@patch("app.models.user.User.find_one", new_callable=AsyncMock)
+@patch("app.models.rail_user.RailUser.find_one", new_callable=AsyncMock)
 async def test_get_current_user_raises_if_api_key_invalid(mock_find_one: AsyncMock):
     mock_find_one.return_value = None
 
