@@ -172,9 +172,12 @@ async def archive_experiment_template(
     experiment_template = await get_experiment_template_if_accessible_or_raise(
         id, user, write_access=True
     )
-    experiment_template.archived = archived
-
-    await ExperimentTemplate.replace(experiment_template)
+    await experiment_template.set(
+        {
+            ExperimentTemplate.archived: archived,
+            ExperimentTemplate.updated_at: datetime.now(tz=timezone.utc),
+        }
+    )
 
 
 @router.patch("/experiment-templates/{id}/approve", response_model=None)
@@ -197,9 +200,12 @@ async def approve_experiment_template(
             detail="Such experiment template doesn't exist",
         )
 
-    experiment_template.approved = approved
-    experiment_template.updated_at = datetime.now(tz=timezone.utc)
-    await ExperimentTemplate.replace(experiment_template)
+    await experiment_template.set(
+        {
+            ExperimentTemplate.approved: approved,
+            ExperimentTemplate.updated_at: datetime.now(tz=timezone.utc),
+        }
+    )
 
     if approved:
         await exp_scheduler.add_image_to_build(experiment_template.id)
@@ -303,4 +309,4 @@ async def get_experiment_template_if_accessible_or_raise(
         elif user is not None and template.created_by == user["email"]:
             return template
         else:
-            return access_denied_error
+            raise access_denied_error

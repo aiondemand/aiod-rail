@@ -1,5 +1,6 @@
+from datetime import datetime, timezone
 from functools import partial
-from typing import Any, Callable
+from typing import Any, Awaitable, Callable
 
 from beanie import PydanticObjectId, operators
 from beanie.odm.operators.find.comparison import Eq
@@ -11,7 +12,6 @@ from app.authentication import get_current_user
 from app.helpers import Pagination, QueryOperator, get_compare_operator_fn
 from app.models.experiment import Experiment
 from app.models.experiment_run import ExperimentRun
-from app.models.experiment_template import ExperimentTemplate
 from app.routers.experiment_runs import delete_run, set_archived_run, set_public_run
 from app.routers.experiment_templates import (
     get_experiment_template_if_accessible_or_raise,
@@ -187,7 +187,12 @@ async def update_experiment(
         )
 
     await run_cascade_operation(
-        runs, partial(set_public_run, value=experiment_to_save.public)
+        runs,
+        partial(
+            set_public_run,
+            value=experiment_to_save.public,
+            updated_at=experiment_to_save.updated_at,
+        ),
     )
     await Experiment.replace(experiment_to_save)
     return experiment_to_save.map_to_response(user)
@@ -217,12 +222,16 @@ async def archive_experiment(
     experiment = await get_experiment_if_accessible_or_raise(
         id, user, write_access=True
     )
-    experiment.archived = archived
+    updated_at = datetime.now(tz=timezone.utc)
 
     runs = await ExperimentRun.find(ExperimentRun.experiment_id == id).to_list()
-    await run_cascade_operation(runs, partial(set_archived_run, value=archived))
+    await run_cascade_operation(
+        runs, partial(set_archived_run, value=archived, updated_at=updated_at)
+    )
 
-    await Experiment.replace(experiment)
+    await experiment.set(
+        {Experiment.archived: archived, Experiment.updated_at: updated_at}
+    )
 
 
 def find_specific_experiments(
@@ -241,8 +250,8 @@ def find_specific_experiments(
     )
     # initial condition -> retrieve only those objects that are accessible to a user
     accessibility_condition = operators.Or(
-        ExperimentTemplate.public == True,  # noqa: E712
-        Eq(ExperimentTemplate.created_by, user["email"] if user is not None else ""),
+        Experiment.public == True,  # noqa: E712
+        Eq(Experiment.created_by, user["email"] if user is not None else ""),
     )
 
     # applying filters
@@ -302,7 +311,7 @@ async def get_experiment_if_accessible_or_raise(
 
 
 async def run_cascade_operation(
-    runs: list[ExperimentRun], operation_fn: Callable[[ExperimentRun], None]
+    runs: list[ExperimentRun], operation_fn: Callable[[ExperimentRun], Awaitable[None]]
 ) -> None:
     for run in runs:
         await operation_fn(run)

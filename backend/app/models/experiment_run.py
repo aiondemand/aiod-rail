@@ -58,9 +58,13 @@ class ExperimentRun(Document):
     class Settings:
         name = "experimentRuns"
 
-    def update_state(self, state: RunState) -> None:
+    async def update_state_in_db(self, state: RunState) -> None:
         self.state = state
         self.updated_at = datetime.now(tz=timezone.utc)
+
+        await self.set(
+            {ExperimentRun.state: self.state, ExperimentRun.updated_at: self.updated_at}
+        )
 
     def map_to_response(
         self, user: dict | None = None, return_detailed_response: bool = False

@@ -8,6 +8,13 @@ from app.schemas.env_vars import EnvironmentVarDef
 from app.schemas.states import TemplateState
 
 
+class ReservedEnvVars(str, Enum):
+    MODEL_NAMES = "MODEL_NAMES"
+    DATASET_NAMES = "DATASET_NAMES"
+    MODEL_IDS = "MODEL_IDS"
+    DATASET_IDS = "DATASET_IDS"
+
+
 class TaskType(str, Enum):
     IMAGE_CLASSIFICATION = "IMAGE_CLASSIFICATION"
     OBJECT_DETECTION = "OBJECT_DETECTION"

@@ -12,8 +12,7 @@ from app.models.experiment import Experiment
 from app.models.experiment_run import ExperimentRun
 from app.models.experiment_template import ExperimentTemplate
 from app.schemas.experiment_run import ExperimentRunId
-from app.schemas.experiment_template import ExperimentTemplateId
-from app.schemas.reserved_env_vars import ReservedEnvVars
+from app.schemas.experiment_template import ExperimentTemplateId, ReservedEnvVars
 from app.schemas.states import RunState, TemplateState
 from app.services.aiod import get_dataset_name, get_model_name
 from app.services.container_platforms.base import ContainerPlatformBase
@@ -129,8 +128,7 @@ class ExperimentScheduler:
             if image_exists is False:
                 return
 
-            experiment_run.update_state(RunState.IN_PROGRESS)
-            await experiment_run.replace()
+            await experiment_run.update_state_in_db(RunState.IN_PROGRESS)
             self.logger.info(
                 f"=== ExperimentRun id={experiment_run.id} "
                 + f"(retry_count={experiment_run.retry_count}) "
@@ -155,8 +153,8 @@ class ExperimentScheduler:
                 new_state = RunState.CRASHED
 
             if workflow_state.manually_deleted is False:
-                experiment_run.update_state(new_state)
-                await experiment_run.replace()
+                await experiment_run.update_state_in_db(new_state)
+
                 if should_retry:
                     new_exp_run = experiment_run.retry_failed_run()
                     await new_exp_run.create()
@@ -192,10 +190,9 @@ class ExperimentScheduler:
             return True
 
         # image rebuilding
-        experiment_template.update_state(TemplateState.CREATED)
-        experiment_template.retry_count = 0
-        await experiment_template.replace()
-
+        await experiment_template.update_state_in_db(
+            TemplateState.CREATED, retry_count=0
+        )
         successful_image_rebuild = await self._build_image_multiple_attempts(
             experiment_template
         )
@@ -204,8 +201,7 @@ class ExperimentScheduler:
                 f"ExperimentRun id={experiment_run.id} has not started "
                 + "as the corresponding image was not successfully rebuilt"
             )
-            experiment_run.update_state(RunState.CRASHED)
-            await experiment_run.replace()
+            await experiment_run.update_state_in_db(RunState.CRASHED)
 
         return successful_image_rebuild
 
@@ -264,8 +260,7 @@ class ExperimentScheduler:
         self, experiment_template: ExperimentTemplate
     ) -> bool:
         while True:
-            experiment_template.update_state(TemplateState.IN_PROGRESS)
-            await experiment_template.replace()
+            await experiment_template.update_state_in_db(TemplateState.IN_PROGRESS)
 
             image_build_state = await self.container_platform.build_image(
                 experiment_template
@@ -282,10 +277,10 @@ class ExperimentScheduler:
             else:
                 new_state = TemplateState.CRASHED
 
-            experiment_template.update_state(new_state)
-            experiment_template.retry_count += int(should_retry)
-            await experiment_template.replace()
-
+            await experiment_template.update_state_in_db(
+                new_state,
+                retry_count=experiment_template.retry_count + int(should_retry),
+            )
             if should_retry:
                 continue
             return image_build_state

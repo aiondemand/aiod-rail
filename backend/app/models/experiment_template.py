@@ -22,9 +22,9 @@ from app.schemas.experiment_template import (
     AssetSchema,
     ExperimentTemplateCreate,
     ExperimentTemplateResponse,
+    ReservedEnvVars,
     TaskType,
 )
-from app.schemas.reserved_env_vars import ReservedEnvVars
 from app.schemas.states import TemplateState
 from app.services.aiod import get_dataset_name, get_model_name
 
@@ -150,9 +150,21 @@ class ExperimentTemplate(Document):
             mine=mine,
         )
 
-    def update_state(self, state: TemplateState) -> None:
+    async def update_state_in_db(
+        self, state: TemplateState, retry_count: int | None = None
+    ) -> None:
         self.state = state
         self.updated_at = datetime.now(tz=timezone.utc)
+        if retry_count is not None:
+            self.retry_count = retry_count
+
+        await self.set(
+            {
+                ExperimentTemplate.state: self.state,
+                ExperimentTemplate.updated_at: self.updated_at,
+                ExperimentTemplate.retry_count: self.retry_count,
+            }
+        )
 
     async def validate_models(self, model_ids: list[int]) -> bool:
         model_names = [await get_model_name(x) for x in model_ids]
