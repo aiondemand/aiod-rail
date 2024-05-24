@@ -12,6 +12,7 @@ import { BackendApiService } from './services/backend-api.service';
 })
 export class AppComponent {
   private breakpointObserver = inject(BreakpointObserver);
+  isLoggedIn = false;
   
   constructor(private oauthService: OAuthService, private backend: BackendApiService) { 
     this.oauthService.events
@@ -19,9 +20,15 @@ export class AppComponent {
       .subscribe((_) => this.oauthService.loadUserProfile());
   }
 
+  ngOnInit() {
+    this.isLoggedIn = this.oauthService.hasValidIdToken();
+  }
+
   isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset)
     .pipe(
       map(result => result.matches),
       shareReplay()
     );
+
+
 }

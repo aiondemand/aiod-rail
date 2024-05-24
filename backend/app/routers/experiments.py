@@ -24,7 +24,7 @@ router = APIRouter()
 @router.get("/experiments", response_model=list[ExperimentResponse])
 async def get_experiments(
     query: str = "",
-    user: dict = Depends(get_current_user(required=False)),
+    user: dict = Depends(get_current_user(required=False, from_api_key=True)),
     pagination: Pagination = Depends(),
     mine: bool | None = None,
     archived: bool | None = None,
@@ -46,7 +46,7 @@ async def get_experiments(
 @router.get("/count/experiments", response_model=int)
 async def get_experiments_count(
     query: str = "",
-    user: dict = Depends(get_current_user(required=False)),
+    user: dict = Depends(get_current_user(required=False, from_api_key=True)),
     mine: bool | None = None,
     archived: bool | None = None,
     public: bool | None = None,
@@ -64,7 +64,7 @@ async def get_experiments_count(
 @router.get("/experiments/{id}", response_model=ExperimentResponse)
 async def get_experiment(
     id: PydanticObjectId,
-    user: dict = Depends(get_current_user(required=False)),
+    user: dict = Depends(get_current_user(required=False, from_api_key=True)),
 ) -> Any:
     experiment = await get_experiment_if_accessible_or_raise(id, user)
     return experiment.map_to_response(user)
@@ -77,7 +77,7 @@ async def get_experiment(
 )
 async def create_experiment(
     experiment: ExperimentCreate,
-    user: dict = Depends(get_current_user(required=True)),
+    user: dict = Depends(get_current_user(required=True, from_api_key=True)),
 ) -> Any:
     template: ExperimentTemplate = await get_experiment_template_if_accessible_or_raise(
         experiment.experiment_template_id, user, write_access=False
@@ -103,7 +103,7 @@ async def create_experiment(
 async def update_experiment(
     id: PydanticObjectId,
     experiment: ExperimentCreate,
-    user: dict = Depends(get_current_user(required=True)),
+    user: dict = Depends(get_current_user(required=True, from_api_key=True)),
 ) -> Any:
     original_experiment = await get_experiment_if_accessible_or_raise(
         id, user, write_access=True
@@ -128,7 +128,7 @@ async def update_experiment(
 @router.delete("/experiments/{id}", response_model=None)
 async def delete_experiment(
     id: PydanticObjectId,
-    user: dict = Depends(get_current_user(required=True)),
+    user: dict = Depends(get_current_user(required=True, from_api_key=True)),
     workflow_engine: WorkflowEngineBase = Depends(ReanaService.get_service),
 ) -> Any:
     await get_experiment_if_accessible_or_raise(id, user, write_access=True)
@@ -144,7 +144,7 @@ async def delete_experiment(
 async def archive_experiment(
     id: PydanticObjectId,
     archived: bool = False,
-    user: dict = Depends(get_current_user(required=True)),
+    user: dict = Depends(get_current_user(required=True, from_api_key=True)),
 ) -> Any:
     experiment = await get_experiment_if_accessible_or_raise(
         id, user, write_access=True

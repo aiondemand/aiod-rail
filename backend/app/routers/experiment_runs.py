@@ -23,7 +23,7 @@ router = APIRouter()
 @router.get("/experiments/{id}/execute", response_model=ExperimentRunResponse)
 async def execute_experiment_run(
     id: PydanticObjectId,
-    user: dict = Depends(get_current_user(required=True)),
+    user: dict = Depends(get_current_user(required=True, from_api_key=True)),
     exp_scheduler: ExperimentScheduler = Depends(ExperimentScheduler.get_service),
     workflow_engine: WorkflowEngineBase = Depends(WorkflowEngineBase.get_service),
 ) -> Any:
@@ -52,7 +52,7 @@ async def execute_experiment_run(
 async def get_experiment_runs_of_experiment(
     id: PydanticObjectId,
     pagination: Pagination = Depends(),
-    user: dict = Depends(get_current_user(required=False)),
+    user: dict = Depends(get_current_user(required=False, from_api_key=True)),
 ) -> Any:
     await get_experiment_if_accessible_or_raise(id, user)
 
@@ -70,7 +70,7 @@ async def get_experiment_runs_of_experiment(
 @router.get("/count/experiments/{id}/runs", response_model=int)
 async def get_experiment_runs_of_experiment_count(
     id: PydanticObjectId,
-    user: dict = Depends(get_current_user(required=False)),
+    user: dict = Depends(get_current_user(required=False, from_api_key=True)),
 ) -> Any:
     await get_experiment_if_accessible_or_raise(id, user)
     return await ExperimentRun.find(ExperimentRun.experiment_id == id).count()
@@ -79,7 +79,7 @@ async def get_experiment_runs_of_experiment_count(
 @router.get("/experiment-runs/{id}", response_model=ExperimentRunDetails | None)
 async def get_experiment_run(
     id: PydanticObjectId,
-    user: dict = Depends(get_current_user(required=False)),
+    user: dict = Depends(get_current_user(required=False, from_api_key=True)),
 ) -> Any:
     experiment_run = await get_experiment_run_if_accessible_or_raise(id, user)
     experiment = await Experiment.get(experiment_run.experiment_id)
@@ -91,7 +91,7 @@ async def get_experiment_run(
 @router.get("/experiment-runs/{id}/stop", response_model=None)
 async def stop_experiment_run(
     id: PydanticObjectId,
-    user: dict = Depends(get_current_user(required=True)),
+    user: dict = Depends(get_current_user(required=True, from_api_key=True)),
     workflow_engine: WorkflowEngineBase = Depends(ReanaService.get_service),
 ) -> Any:
     # TODO this case needs to be properly addressed
@@ -119,7 +119,7 @@ async def stop_experiment_run(
 @router.delete("/experiment-runs/{id}", response_model=None)
 async def delete_experiment_run(
     id: PydanticObjectId,
-    user: dict = Depends(get_current_user(required=True)),
+    user: dict = Depends(get_current_user(required=True, from_api_key=True)),
     workflow_engine: WorkflowEngineBase = Depends(ReanaService.get_service),
 ) -> Any:
     # TODO this case needs to be properly addressed
@@ -146,7 +146,7 @@ async def delete_experiment_run(
 @router.get("/experiment-runs/{id}/logs", response_class=PlainTextResponse)
 async def get_experiment_run_logs(
     id: PydanticObjectId,
-    user: dict = Depends(get_current_user(required=True)),
+    user: dict = Depends(get_current_user(required=True, from_api_key=True)),
 ) -> str:
     experiment_run = await get_experiment_run_if_accessible_or_raise(id, user)
     return experiment_run.logs
@@ -157,7 +157,7 @@ async def download_file_from_experiment_run(
     id: PydanticObjectId,
     filepath: str,
     workflow_engine: WorkflowEngineBase = Depends(ReanaService.get_service),
-    user: dict = Depends(get_current_user(required=True)),
+    user: dict = Depends(get_current_user(required=True, from_api_key=True)),
 ) -> bytes:
     experiment_run = await get_experiment_run_if_accessible_or_raise(id, user)
 
@@ -191,7 +191,7 @@ async def download_file_from_experiment_run(
 async def list_files_of_experiment_run(
     id: PydanticObjectId,
     workflow_engine: WorkflowEngineBase = Depends(ReanaService.get_service),
-    user: dict = Depends(get_current_user(required=True)),
+    user: dict = Depends(get_current_user(required=True, from_api_key=True)),
 ) -> list[FileDetail]:
     experiment_run = await get_experiment_run_if_accessible_or_raise(id, user)
     return await workflow_engine.list_files(experiment_run)
