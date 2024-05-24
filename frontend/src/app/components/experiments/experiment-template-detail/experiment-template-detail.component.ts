@@ -2,10 +2,11 @@ import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ExperimentTemplate } from 'src/app/models/experiment-template';
 import { BackendApiService } from 'src/app/services/backend-api.service';
-import { Observable, first, firstValueFrom, min } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmPopupComponent } from '../../general/popup/confirm-popup.component';
 import { ConfirmPopupInput, ConfirmPopupResponse } from 'src/app/models/popup';
+import { AuthService } from '../../../services/auth.service';
 
 
 @Component({
@@ -16,12 +17,13 @@ import { ConfirmPopupInput, ConfirmPopupResponse } from 'src/app/models/popup';
 export class ExperimentTemplateDetailComponent {
   experimentTemplate: ExperimentTemplate;
   templateId: string;
-  
+
   constructor(
     protected backend: BackendApiService,
     protected route: ActivatedRoute,
     protected router: Router,
-    protected dialog: MatDialog
+    protected dialog: MatDialog,
+    private authService: AuthService
   ) { }
 
   displayedEnvVarColumns: string[] = ['name', 'description'];
@@ -41,13 +43,13 @@ export class ExperimentTemplateDetailComponent {
       .then(count => {
         let existExperiments = count > 0;
         let routeParts = ['update'];
-        let routeExtras = { 
+        let routeExtras = {
           relativeTo: this.route,
         };
 
         if (existExperiments) {
           let str = (
-            "This Experiment Template is already utilized by some existing Experiment. " + 
+            "This Experiment Template is already utilized by some existing Experiment. " +
             "Modifying parameters that could change the template's behavior is restricted"
           );
           let popupInput: ConfirmPopupInput = {
@@ -78,17 +80,17 @@ export class ExperimentTemplateDetailComponent {
       .then(count => {
         let existExperiments = count > 0;
         let routeParts = ["/experiments", "templates", "my"];
-    
+
         let str = (
-          existExperiments 
+          existExperiments
           ?
-          "This Experiment Template is already utilized by some existing Experiment. " + 
-          "You can no longer delete this template, but you can still forbid creation " + 
-          "of new experiments built upon this template by archiving it.\n\n" + 
-          "Do you wish ARCHIVE this experiment template?" 
-          : 
+          "This Experiment Template is already utilized by some existing Experiment. " +
+          "You can no longer delete this template, but you can still forbid creation " +
+          "of new experiments built upon this template by archiving it.\n\n" +
+          "Do you wish ARCHIVE this experiment template?"
+          :
           "Do you wish to DELETE this experiment template?"
-        );  
+        );
         let popupInput: ConfirmPopupInput = {
           message: str,
           acceptBtnMessage: "Yes",
@@ -121,6 +123,18 @@ export class ExperimentTemplateDetailComponent {
     .then(_ => {
       this.experimentTemplate.mine = true;
       this.experimentTemplate.archived = false;
+    })
+    .catch(err => console.error(err));
+  }
+
+  get isAdminUser(): boolean {
+    return this.authService.isLoggedIn && this.authService.hasAdminRole;
+  }
+
+  approveBtnClicked(): void {
+    firstValueFrom(this.backend.approveExperimentTemplate(this.templateId, true))
+    .then(_ => {
+      this.experimentTemplate.approved = true;
     })
     .catch(err => console.error(err));
   }

@@ -12,7 +12,7 @@ import { AuthService } from './services/auth.service';
 export class AppComponent {
   private breakpointObserver = inject(BreakpointObserver);
 
-  constructor(public authService: AuthService) {}
+  constructor(private authService: AuthService) {}
 
   isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset)
     .pipe(

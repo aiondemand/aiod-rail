@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ExperimentTemplate } from 'src/app/models/experiment-template';
-import { ExperimentTemplateListBaseComponent } from "../../experiments/experiment-template-lists/experiment-template-list-base.component";
+import { ExperimentTemplateListBaseComponent } from '../../experiments/experiment-template-lists/experiment-template-list-base.component';
 
 @Component({
   selector: 'app-pending-experiment-template-list',

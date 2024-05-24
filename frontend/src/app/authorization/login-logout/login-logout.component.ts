@@ -8,7 +8,7 @@ import { AuthService } from '../../services/auth.service';
 })
 export class LoginLogoutComponent {
 
-  constructor(public authService: AuthService) {
+  constructor(private authService: AuthService) {
   }
 
   login(): void {

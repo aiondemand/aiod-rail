@@ -12,12 +12,12 @@ import { ExperimentDetailComponent } from './components/experiments/experiment-d
 import { ExperimentRunDetailComponent } from './components/experiments/experiment-run-detail/experiment-run-detail.component';
 import { PublicExperimentListComponent } from './components/experiments/experiment-lists/public-experiment-list.component';
 import { MyExperimentListComponent } from './components/experiments/experiment-lists/my-experiment-list.component';
-import { AllExperimentListComponent } from "./components/admin/experiment-list/all-experiment-list.component";
+import { AllExperimentListComponent } from './components/admin/experiment-list/all-experiment-list.component';
 import { ExperimentTemplateDetailComponent } from './components/experiments/experiment-template-detail/experiment-template-detail.component';
 import { PublicExperimentTemplateListComponent } from './components/experiments/experiment-template-lists/public-experiment-template-list.component';
 import { MyExperimentTemplateListComponent } from './components/experiments/experiment-template-lists/my-experiment-template-list.component';
-import { AllExperimentTemplateListComponent } from "./components/admin/experiment-template-list/all-experiment-template-list.component";
-import { PendingExperimentTemplateListComponent } from "./components/admin/experiment-template-list/pending-experiment-template-list.component";
+import { AllExperimentTemplateListComponent } from './components/admin/experiment-template-lists/all-experiment-template-list.component';
+import { PendingExperimentTemplateListComponent } from './components/admin/experiment-template-lists/pending-experiment-template-list.component';
 import { AboutComponent } from './components/general/about/about.component';
 import { AdminComponent } from './components/admin/admin.component';
 import { EditExperimentTemplateComponent } from './components/experiments/edit-experiment-template/edit-experiment-template.component';
@@ -68,10 +68,10 @@ const routes: Routes = [
   {
     path: 'admin', component: AdminComponent, canActivate: [authGuard, adminGuard],
     children: [
-      { path: '', redirectTo: 'all_experiments', pathMatch: 'full' },
-      { path: 'all_experiments', component: AllExperimentListComponent },
-      { path: 'all_templates', component: AllExperimentTemplateListComponent },
-      { path: 'pending_templates', component: PendingExperimentTemplateListComponent }
+      { path: '', redirectTo: 'experiments/all', pathMatch: 'full' },
+      { path: 'experiments/all', component: AllExperimentListComponent },
+      { path: 'experiments/templates/all', component: AllExperimentTemplateListComponent },
+      { path: 'experiments/templates/pending', component: PendingExperimentTemplateListComponent },
     ]
   },
   // { path: 'publications', component: PublicationsComponent }

@@ -52,8 +52,8 @@ import { MyExperimentListComponent } from './components/experiments/experiment-l
 import { AllExperimentListComponent } from "./components/admin/experiment-list/all-experiment-list.component";
 import { PublicExperimentTemplateListComponent } from './components/experiments/experiment-template-lists/public-experiment-template-list.component';
 import { MyExperimentTemplateListComponent } from './components/experiments/experiment-template-lists/my-experiment-template-list.component';
-import { AllExperimentTemplateListComponent } from "./components/admin/experiment-template-list/all-experiment-template-list.component";
-import { PendingExperimentTemplateListComponent } from "./components/admin/experiment-template-list/pending-experiment-template-list.component";
+import { AllExperimentTemplateListComponent } from "./components/admin/experiment-template-lists/all-experiment-template-list.component";
+import { PendingExperimentTemplateListComponent } from "./components/admin/experiment-template-lists/pending-experiment-template-list.component";
 import { ExperimentTemplateListItemComponent } from './components/experiments/experiment-template-list-item/experiment-template-list-item.component';
 import { ExperimentTemplateDetailComponent } from './components/experiments/experiment-template-detail/experiment-template-detail.component';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
