@@ -139,7 +139,7 @@ async def execute_experiment_run(
     experiment = await get_experiment_if_accessible_or_raise(
         id, user, write_access=True
     )
-    if experiment.allows_experiment_execution is False:
+    if experiment.allows_execution is False:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid experiment to execute",

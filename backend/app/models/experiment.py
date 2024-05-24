@@ -41,7 +41,7 @@ class Experiment(Document):
         ]
 
     @property
-    def allows_experiment_execution(self) -> bool:
+    def allows_execution(self) -> bool:
         return self.archived is False
 
     class Settings:
@@ -60,7 +60,7 @@ class Experiment(Document):
         )
 
     def has_same_assets(self, experiment: Experiment) -> bool:
-        return sum(
+        return all(
             [
                 bool(
                     DeepDiff(
@@ -72,7 +72,7 @@ class Experiment(Document):
                 is False
                 for attr_name in self.assets_attribute_names
             ]
-        ) == len(self.assets_attribute_names)
+        )
 
     @classmethod
     async def update_experiment(

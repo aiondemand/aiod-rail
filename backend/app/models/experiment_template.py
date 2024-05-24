@@ -14,7 +14,6 @@ from pydantic import Field
 from app.config import (
     EXPERIMENT_TEMPLATE_DIR_PREFIX,
     REPOSITORY_NAME,
-    RESERVED_ENV_VARS,
     RUN_TEMP_OUTPUT_FOLDER,
     settings,
 )
@@ -25,6 +24,7 @@ from app.schemas.experiment_template import (
     ExperimentTemplateResponse,
     TaskType,
 )
+from app.schemas.reserved_env_vars import ReservedEnvVars
 from app.schemas.states import TemplateState
 from app.services.aiod import get_dataset_name, get_model_name
 
@@ -108,10 +108,13 @@ class ExperimentTemplate(Document):
         name = "experimentTemplates"
 
     def is_valid(self) -> bool:
-        env_names = [e.name for e in self.envs_required + self.envs_optional]
-        allowed_names = [name not in RESERVED_ENV_VARS for name in env_names]
-
-        return sum(allowed_names) == len(env_names)
+        reserved_vars = list(ReservedEnvVars)
+        return all(
+            [
+                e.name not in reserved_vars
+                for e in self.envs_required + self.envs_optional
+            ]
+        )
 
     def initialize_files(self, base_image, pip_requirements, script):
         base_path = self.experiment_template_path
@@ -180,7 +183,7 @@ class ExperimentTemplate(Document):
     def is_same_environment(
         self, experiment_template_req: ExperimentTemplateCreate
     ) -> bool:
-        return sum(
+        return all(
             [
                 bool(
                     DeepDiff(
@@ -192,7 +195,7 @@ class ExperimentTemplate(Document):
                 is False
                 for attr_name in self.environment_attribute_names
             ]
-        ) == len(self.environment_attribute_names)
+        )
 
     @classmethod
     async def update_template(

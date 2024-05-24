@@ -13,6 +13,7 @@ from app.models.experiment_run import ExperimentRun
 from app.models.experiment_template import ExperimentTemplate
 from app.schemas.experiment_run import ExperimentRunId
 from app.schemas.experiment_template import ExperimentTemplateId
+from app.schemas.reserved_env_vars import ReservedEnvVars
 from app.schemas.states import RunState, TemplateState
 from app.services.aiod import get_dataset_name, get_model_name
 from app.services.container_platforms.base import ContainerPlatformBase
@@ -211,18 +212,27 @@ class ExperimentScheduler:
     async def _general_workflow_preparation(
         self, experiment_run: ExperimentRun, experiment: Experiment
     ) -> dict[str, str]:
-        model_names = [await get_model_name(x) for x in experiment.model_ids]
-        dataset_names = [await get_dataset_name(x) for x in experiment.dataset_ids]
+        model_names_env = ",".join(
+            [await get_model_name(x) for x in experiment.model_ids]
+        )
+        dataset_names_env = ",".join(
+            [await get_dataset_name(x) for x in experiment.dataset_ids]
+        )
+        model_ids_env = [str(id) for id in experiment.model_ids]
+        dataset_ids_env = [str(id) for id in experiment.dataset_ids]
+        reserved_env_values = [
+            model_names_env,
+            dataset_names_env,
+            model_ids_env,
+            dataset_ids_env,
+        ]
 
         environment_variables = {env.key: env.value for env in experiment.env_vars}
-        environment_variables.update(
-            {
-                "MODEL_NAMES": ",".join(model_names),
-                "DATASET_NAMES": ",".join(dataset_names),
-                "MODEL_IDS": ",".join(str(experiment.model_ids)),
-                "DATASET_IDS": ",".join(str(experiment.dataset_ids)),
-            }
-        )
+        reserved_vars = {
+            name.value: val
+            for name, val in zip(list(ReservedEnvVars), reserved_env_values)
+        }
+        environment_variables.update(reserved_vars)
 
         exp_run_folder = experiment_run.run_path
         if exp_run_folder.exists():
