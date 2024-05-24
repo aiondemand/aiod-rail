@@ -13,11 +13,14 @@ import { BackendApiService } from './services/backend-api.service';
 export class AppComponent {
   private breakpointObserver = inject(BreakpointObserver);
   isLoggedIn = false;
-  
-  constructor(private oauthService: OAuthService, private backend: BackendApiService) { 
+
+  constructor(private oauthService: OAuthService, private backend: BackendApiService) {
     this.oauthService.events
       .pipe(filter((e) => e.type === 'token_received'))
-      .subscribe((_) => this.oauthService.loadUserProfile());
+      .subscribe((_) => {
+        this.oauthService.loadUserProfile();
+        this.isLoggedIn = this.oauthService.hasValidIdToken();
+      });
   }
 
   ngOnInit() {
@@ -29,6 +32,4 @@ export class AppComponent {
       map(result => result.matches),
       shareReplay()
     );
-
-
 }

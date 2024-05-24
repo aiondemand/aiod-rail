@@ -36,20 +36,20 @@ def get_current_user(
     """
     Get the current user based on the provided token or API key (returns an async function).
     If both token and api_key are defined, the token will be used.
-    
+
     Args:
         required (bool): Whether the user is required to be authenticated.
         from_token (bool): Whether the user can be authenticated through OIDC.
         from_api_key (bool): Whether the user can be authenticated through an API key.
     """
-    
+
     async def _get_user(
         token: str = Security(oidc), api_key: str = Security(api_key_header)
     ) -> dict | None:
         """
         Get the current user based on the provided token or API key.
         If both token and api_key are defined, the token will be used.
-        
+
         Args:
             token (str): The token provided by the user.
             api_key (str): The API key provided by the user.
