@@ -94,8 +94,13 @@ async def create_experiment_template(
     experiment_template_obj = ExperimentTemplate(
         **experiment_template.dict(), created_by=user["email"]
     )
-    experiment_template_obj = await experiment_template_obj.create()
+    if experiment_template_obj.is_valid() is False:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid Experiment Template",
+        )
 
+    experiment_template_obj = await experiment_template_obj.create()
     experiment_template_obj.initialize_files(
         base_image=experiment_template.base_image,
         pip_requirements=experiment_template.pip_requirements,
@@ -167,9 +172,12 @@ async def archive_experiment_template(
     experiment_template = await get_experiment_template_if_accessible_or_raise(
         id, user, write_access=True
     )
-    experiment_template.archived = archived
-
-    await ExperimentTemplate.replace(experiment_template)
+    await experiment_template.set(
+        {
+            ExperimentTemplate.archived: archived,
+            ExperimentTemplate.updated_at: datetime.now(tz=timezone.utc),
+        }
+    )
 
 
 @router.patch("/experiment-templates/{id}/approve", response_model=None)
@@ -192,9 +200,12 @@ async def approve_experiment_template(
             detail="Such experiment template doesn't exist",
         )
 
-    experiment_template.approved = approved
-    experiment_template.updated_at = datetime.now(tz=timezone.utc)
-    await ExperimentTemplate.replace(experiment_template)
+    await experiment_template.set(
+        {
+            ExperimentTemplate.approved: approved,
+            ExperimentTemplate.updated_at: datetime.now(tz=timezone.utc),
+        }
+    )
 
     if approved:
         await exp_scheduler.add_image_to_build(experiment_template.id)
@@ -283,7 +294,7 @@ async def get_experiment_template_if_accessible_or_raise(
     template_id: PydanticObjectId, user: dict | None, write_access: bool = False
 ) -> ExperimentTemplate:
     access_denied_error = HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND,
+        status_code=status.HTTP_401_UNAUTHORIZED,
         detail="You cannot access this experiment template",
     )
     template = await ExperimentTemplate.get(template_id)
@@ -298,4 +309,4 @@ async def get_experiment_template_if_accessible_or_raise(
         elif user is not None and template.created_by == user["email"]:
             return template
         else:
-            return access_denied_error
+            raise access_denied_error
