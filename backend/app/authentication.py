@@ -56,17 +56,15 @@ def get_current_user(
         """
         if not from_token and not from_api_key:
             raise ValueError("Either from_token or from_api_key must be set to True")
-
-        if not required and not token and not api_key:
+        elif not required and not token and not api_key:
             return None
-
-        if from_token and token:
+        elif from_token and token:
             return await _verify_token(token)
-        if from_api_key and api_key:
+        elif from_api_key and api_key:
             # TODO: Fetch userinfo based on user email from Keycloak
             # needs special role/rights in Keycloak for the client
             # In this way, this will return the same user info.
-            user_obj = await RailUser.find_one({"api_key": api_key})
+            user_obj = await RailUser.find_one(RailUser.api_key == api_key)
             if user_obj is not None:
                 return user_obj.to_dict()
             else:
@@ -75,12 +73,12 @@ def get_current_user(
                     detail="Invalid API key",
                     headers={"WWW-Authenticate": "Bearer"},
                 )
-
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="This endpoint requires authorization. You need to be logged in or provide an API key.",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="This endpoint requires authorization. You need to be logged in or provide an API key.",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
 
     return _get_user
 

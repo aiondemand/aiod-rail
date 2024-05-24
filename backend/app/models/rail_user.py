@@ -20,4 +20,4 @@ class RailUser(Document):
         return {"email": self.email, "api_key": self.api_key}
 
     def map_to_response(self) -> RailUserResponse:
-        return RailUserResponse(email=self.email, api_key=self.api_key)
+        return RailUserResponse(**self.to_dict())

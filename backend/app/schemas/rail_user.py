@@ -6,9 +6,5 @@ class RailUser(BaseModel):
     api_key: str = ""
 
 
-class RailUserCreate(RailUser):
-    pass
-
-
 class RailUserResponse(RailUser):
     pass
