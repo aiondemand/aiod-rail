@@ -1,7 +1,6 @@
 from typing import Any
 
 from beanie import PydanticObjectId, operators
-from beanie.odm.operators.find.comparison import Eq
 from beanie.odm.operators.find.evaluation import Text
 from beanie.odm.queries.find import FindMany
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -168,11 +167,6 @@ def find_specific_experiments(
         if pagination is not None
         else {}
     )
-    # initial condition -> retrieve only those objects that are accessible to a user
-    accessibility_condition = operators.Or(
-        ExperimentTemplate.public == True,  # noqa: E712
-        Eq(ExperimentTemplate.created_by, user["email"] if user is not None else ""),
-    )
 
     # applying filters
     filter_conditions = []
@@ -191,9 +185,11 @@ def find_specific_experiments(
                 headers={"WWW-Authenticate": "Bearer"},
             )
     if archived:
-        filter_conditions.append(Experiment.archived == archived)  # noqa: E712
+        filter_conditions.append(Experiment.archived == archived)
     if public:
-        filter_conditions.append(Experiment.public == public)  # noqa: E712
+        filter_conditions.append(Experiment.public == public)
+
+    accessibility_condition = Experiment.get_query_readable_by_user(user)
 
     if len(filter_conditions) > 0:
         filter_multi_query = (
@@ -220,11 +216,9 @@ async def get_experiment_if_accessible_or_raise(
     if experiment is None:
         raise access_denied_error
     else:
-        # Public experiments are readable by everyone
-        if write_access is False and experiment.public:
+        if write_access and experiment.is_editable_by_user(user):
             return experiment
-        # TODO: Add experiment access management
-        elif user is not None and experiment.created_by == user["email"]:
+        elif not write_access and experiment.is_readable_by_user(user):
             return experiment
         else:
             raise access_denied_error

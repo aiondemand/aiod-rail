@@ -202,7 +202,7 @@ async def get_experiment_run_if_accessible_or_raise(
 ) -> ExperimentRun:
     access_denied_error = HTTPException(
         status_code=status.HTTP_404_NOT_FOUND,
-        detail="You cannot access this experiment template",
+        detail="You cannot access this experiment run",
     )
     experiment_run = await ExperimentRun.get(run_id)
 
@@ -210,7 +210,11 @@ async def get_experiment_run_if_accessible_or_raise(
         raise access_denied_error
     else:
         # Check the user's accessibility to the experiment, run originated from
-        await get_experiment_if_accessible_or_raise(
-            experiment_run.experiment_id, user, write_access=write_access
-        )
-        return experiment_run
+        try:
+            await get_experiment_if_accessible_or_raise(
+                experiment_run.experiment_id, user, write_access=write_access
+            )
+        except HTTPException:
+            raise access_denied_error
+        else:
+            return experiment_run

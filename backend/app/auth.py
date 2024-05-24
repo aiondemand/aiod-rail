@@ -36,18 +36,22 @@ def get_current_user(required: bool):
 
 async def is_admin(token: str = Security(oidc)):
     user_info = await _get_userinfo(token)
-    user_roles = (
-        user_info.get("resource_access", {})
-        .get(settings.AIOD_KEYCLOAK.CLIENT_ID, {})
-        .get("roles", [])
-    )
 
-    if "admin_access" not in user_roles:
+    if not has_admin_role(user_info):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="You don't have enough privileges",
             headers={"WWW-Authenticate": "Bearer"},
         )
+
+
+def has_admin_role(user_info: dict) -> bool:
+    user_client_roles = (
+        user_info.get("resource_access", {})
+        .get(settings.AIOD_KEYCLOAK.CLIENT_ID, {})
+        .get("roles", [])
+    )
+    return "admin_access" in user_client_roles
 
 
 async def _get_userinfo(token: str) -> dict:

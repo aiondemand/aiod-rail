@@ -2,7 +2,6 @@ import shutil
 from typing import Any
 
 from beanie import PydanticObjectId, operators
-from beanie.odm.operators.find.comparison import Eq
 from beanie.odm.operators.find.evaluation import Text
 from beanie.odm.queries.find import FindMany
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -200,11 +199,6 @@ def find_specific_experiment_templates(
         if pagination is not None
         else {}
     )
-    # initial condition -> retrieve only those objects that are accessible to a user
-    accessibility_condition = operators.Or(
-        ExperimentTemplate.public == True,  # noqa: E712
-        Eq(ExperimentTemplate.created_by, user["email"] if user is not None else ""),
-    )
 
     # applying filters
     filter_conditions = []
@@ -236,6 +230,8 @@ def find_specific_experiment_templates(
     if public is not None:
         filter_conditions.append(ExperimentTemplate.public == public)
 
+    accessibility_condition = ExperimentTemplate.get_query_readable_by_user(user)
+
     if len(filter_conditions) > 0:
         filter_multi_query = (
             operators.Or(*filter_conditions)
@@ -266,11 +262,9 @@ async def get_experiment_template_if_accessible_or_raise(
     if template is None:
         raise access_denied_error
     else:
-        # Public templates are readable by everyone
-        if write_access is False and template.public:
+        if write_access and template.is_editable_by_user(user):
             return template
-        # TODO: Add experiment template access management
-        elif user is not None and template.created_by == user["email"]:
+        elif not write_access and template.is_readable_by_user(user):
             return template
         else:
-            return access_denied_error
+            raise access_denied_error
