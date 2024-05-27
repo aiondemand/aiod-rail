@@ -64,7 +64,7 @@ def get_current_user(
             # TODO: Fetch userinfo based on user email from Keycloak
             # needs special role/rights in Keycloak for the client
             # In this way, this will return the same user info.
-            user_obj = await RailUser.find_one({"api_key": api_key})
+            user_obj = await RailUser.find_one(RailUser.api_key == api_key)
             if user_obj is not None:
                 return user_obj.to_dict()
             else:
