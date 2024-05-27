@@ -5,7 +5,7 @@
     </div>
 
     <ng-container *ngIf="isLoggedIn">
-        <div class="user-wrapper">
+        <div class="user-wrapper" routerLink="profile">
             <img class="user-icon" src="../assets/account_circle_FILL0_wght400_GRAD0_opsz48.png">
             <div class="user-username">{{userName}}</div>
         </div>

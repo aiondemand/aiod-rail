@@ -1,4 +1,6 @@
-from typing import Any
+from datetime import datetime, timezone
+from functools import partial
+from typing import Any, Awaitable, Callable
 
 from beanie import PydanticObjectId, operators
 from beanie.odm.operators.find.evaluation import Text
@@ -9,11 +11,13 @@ from app.auth import get_current_user
 from app.helpers import Pagination, QueryOperator, get_compare_operator_fn
 from app.models.experiment import Experiment
 from app.models.experiment_run import ExperimentRun
-from app.models.experiment_template import ExperimentTemplate
+from app.routers.experiment_runs import delete_run, set_archived_run, set_public_run
 from app.routers.experiment_templates import (
     get_experiment_template_if_accessible_or_raise,
 )
 from app.schemas.experiment import ExperimentCreate, ExperimentResponse
+from app.schemas.experiment_run import ExperimentRunResponse
+from app.services.experiment_scheduler import ExperimentScheduler
 from app.services.workflow_engines.base import WorkflowEngineBase
 from app.services.workflow_engines.reana import ReanaService
 
@@ -23,7 +27,7 @@ router = APIRouter()
 @router.get("/experiments", response_model=list[ExperimentResponse])
 async def get_experiments(
     query: str = "",
-    user: dict = Depends(get_current_user(required=False)),
+    user: dict = Depends(get_current_user(required=False, from_api_key=True)),
     pagination: Pagination = Depends(),
     mine: bool | None = None,
     archived: bool | None = None,
@@ -45,7 +49,7 @@ async def get_experiments(
 @router.get("/count/experiments", response_model=int)
 async def get_experiments_count(
     query: str = "",
-    user: dict = Depends(get_current_user(required=False)),
+    user: dict = Depends(get_current_user(required=False, from_api_key=True)),
     mine: bool | None = None,
     archived: bool | None = None,
     public: bool | None = None,
@@ -63,10 +67,36 @@ async def get_experiments_count(
 @router.get("/experiments/{id}", response_model=ExperimentResponse)
 async def get_experiment(
     id: PydanticObjectId,
-    user: dict = Depends(get_current_user(required=False)),
+    user: dict = Depends(get_current_user(required=False, from_api_key=True)),
 ) -> Any:
     experiment = await get_experiment_if_accessible_or_raise(id, user)
     return experiment.map_to_response(user)
+
+
+@router.get("/experiments/{id}/runs", response_model=list[ExperimentRunResponse])
+async def get_experiment_runs_of_experiment(
+    id: PydanticObjectId,
+    pagination: Pagination = Depends(),
+    user: dict = Depends(get_current_user(required=False, from_api_key=True)),
+) -> Any:
+    await get_experiment_if_accessible_or_raise(id, user)
+
+    runs = await ExperimentRun.find(
+        ExperimentRun.experiment_id == id,
+        skip=pagination.offset,
+        limit=pagination.limit,
+    ).to_list()
+
+    return [run.map_to_response(user) for run in runs]
+
+
+@router.get("/count/experiments/{id}/runs", response_model=int)
+async def get_experiment_runs_of_experiment_count(
+    id: PydanticObjectId,
+    user: dict = Depends(get_current_user(required=False, from_api_key=True)),
+) -> Any:
+    await get_experiment_if_accessible_or_raise(id, user)
+    return await ExperimentRun.find(ExperimentRun.experiment_id == id).count()
 
 
 @router.post(
@@ -76,9 +106,9 @@ async def get_experiment(
 )
 async def create_experiment(
     experiment: ExperimentCreate,
-    user: dict = Depends(get_current_user(required=True)),
+    user: dict = Depends(get_current_user(required=True, from_api_key=True)),
 ) -> Any:
-    template: ExperimentTemplate = await get_experiment_template_if_accessible_or_raise(
+    template = await get_experiment_template_if_accessible_or_raise(
         experiment.experiment_template_id, user, write_access=False
     )
     if template.allows_experiment_creation is False:
@@ -98,21 +128,56 @@ async def create_experiment(
     return experiment_obj.map_to_response(user)
 
 
+@router.get("/experiments/{id}/execute", response_model=ExperimentRunResponse)
+async def execute_experiment_run(
+    id: PydanticObjectId,
+    user: dict = Depends(get_current_user(required=True, from_api_key=True)),
+    exp_scheduler: ExperimentScheduler = Depends(ExperimentScheduler.get_service),
+    workflow_engine: WorkflowEngineBase = Depends(WorkflowEngineBase.get_service),
+) -> Any:
+    experiment = await get_experiment_if_accessible_or_raise(
+        id, user, write_access=True
+    )
+    if experiment.allows_execution is False:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid experiment to execute",
+        )
+    if not await workflow_engine.is_available():
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Workflow engine is currently unavailable",
+        )
+
+    experiment_run = ExperimentRun(
+        experiment_id=experiment.id, created_by=user["email"], public=experiment.public
+    )
+    experiment_run = await experiment_run.create()
+
+    await exp_scheduler.add_run_to_execute(experiment_run.id)
+    return experiment_run.map_to_response(user)
+
+
 @router.put("/experiments/{id}", response_model=ExperimentResponse)
 async def update_experiment(
     id: PydanticObjectId,
     experiment: ExperimentCreate,
-    user: dict = Depends(get_current_user(required=True)),
+    user: dict = Depends(get_current_user(required=True, from_api_key=True)),
 ) -> Any:
     original_experiment = await get_experiment_if_accessible_or_raise(
         id, user, write_access=True
     )
-    has_experiment_runs = (
-        await ExperimentRun.find(ExperimentRun.experiment_id == id).count() > 0
+    runs = await ExperimentRun.find(ExperimentRun.experiment_id == id).to_list()
+    template = await get_experiment_template_if_accessible_or_raise(
+        experiment.experiment_template_id, user, write_access=False
     )
+    has_experiment_runs = len(runs) > 0
 
     experiment_to_save = await Experiment.update_experiment(
-        original_experiment, experiment, editable_assets=has_experiment_runs is False
+        original_experiment,
+        experiment,
+        template,
+        editable_assets=has_experiment_runs is False,
     )
     if experiment_to_save is None:
         raise HTTPException(
@@ -120,6 +185,14 @@ async def update_experiment(
             detail="Performed changes to the experiment are not allowed",
         )
 
+    await run_cascade_operation(
+        runs,
+        partial(
+            set_public_run,
+            value=experiment_to_save.public,
+            updated_at=experiment_to_save.updated_at,
+        ),
+    )
     await Experiment.replace(experiment_to_save)
     return experiment_to_save.map_to_response(user)
 
@@ -127,15 +200,15 @@ async def update_experiment(
 @router.delete("/experiments/{id}", response_model=None)
 async def delete_experiment(
     id: PydanticObjectId,
-    user: dict = Depends(get_current_user(required=True)),
+    user: dict = Depends(get_current_user(required=True, from_api_key=True)),
     workflow_engine: WorkflowEngineBase = Depends(ReanaService.get_service),
 ) -> Any:
     await get_experiment_if_accessible_or_raise(id, user, write_access=True)
 
     runs = await ExperimentRun.find(ExperimentRun.experiment_id == id).to_list()
-    for run in runs:
-        await delete_run(run, workflow_engine)
-
+    await run_cascade_operation(
+        runs, partial(delete_run, workflow_engine=workflow_engine)
+    )
     await Experiment.find(Experiment.id == id).delete()
 
 
@@ -143,14 +216,21 @@ async def delete_experiment(
 async def archive_experiment(
     id: PydanticObjectId,
     archived: bool = False,
-    user: dict = Depends(get_current_user(required=True)),
+    user: dict = Depends(get_current_user(required=True, from_api_key=True)),
 ) -> Any:
     experiment = await get_experiment_if_accessible_or_raise(
         id, user, write_access=True
     )
-    experiment.archived = archived
+    updated_at = datetime.now(tz=timezone.utc)
 
-    await Experiment.replace(experiment)
+    runs = await ExperimentRun.find(ExperimentRun.experiment_id == id).to_list()
+    await run_cascade_operation(
+        runs, partial(set_archived_run, value=archived, updated_at=updated_at)
+    )
+
+    await experiment.set(
+        {Experiment.archived: archived, Experiment.updated_at: updated_at}
+    )
 
 
 def find_specific_experiments(
@@ -208,7 +288,7 @@ async def get_experiment_if_accessible_or_raise(
     experiment_id: PydanticObjectId, user: dict | None, write_access: bool = False
 ) -> Experiment:
     access_denied_error = HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND,
+        status_code=status.HTTP_401_UNAUTHORIZED,
         detail="You cannot access this experiment",
     )
     experiment = await Experiment.get(experiment_id)
@@ -224,14 +304,8 @@ async def get_experiment_if_accessible_or_raise(
             raise access_denied_error
 
 
-# TODO for now we shall put this function here to avoid circular imports
-# TODO later add 'user' and 'public' attributes to experiment run so
-# that we dont need to check these properties via retrieving the experiment
-# they executed
-# TODO this may also result in dependencies being less intertwined between routers
-# TODO Ideally we dont want to call any logic/functions from this router to
-# routers/experiment_runs.py file
-async def delete_run(run: ExperimentRun, workflow_engine: WorkflowEngineBase) -> None:
-    await workflow_engine.delete_workflow(run)
-    await ExperimentRun.find(ExperimentRun.id == run.id).delete()
-    await run.delete_files()
+async def run_cascade_operation(
+    runs: list[ExperimentRun], operation_fn: Callable[[ExperimentRun], Awaitable[None]]
+) -> None:
+    for run in runs:
+        await operation_fn(run)

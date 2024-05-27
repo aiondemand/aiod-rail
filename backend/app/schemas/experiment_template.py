@@ -8,6 +8,13 @@ from app.schemas.env_vars import EnvironmentVarDef
 from app.schemas.states import TemplateState
 
 
+class ReservedEnvVars(str, Enum):
+    MODEL_NAMES = "MODEL_NAMES"
+    DATASET_NAMES = "DATASET_NAMES"
+    MODEL_IDS = "MODEL_IDS"
+    DATASET_IDS = "DATASET_IDS"
+
+
 class TaskType(str, Enum):
     IMAGE_CLASSIFICATION = "IMAGE_CLASSIFICATION"
     OBJECT_DETECTION = "OBJECT_DETECTION"
@@ -42,8 +49,6 @@ class ExperimentTemplateBase(BaseModel):
     models_schema: AssetSchema
     envs_required: list[EnvironmentVarDef]
     envs_optional: list[EnvironmentVarDef]
-    # TODO: Rethink the metrics logic
-    available_metrics: list[str]
     script: str
     pip_requirements: str
     public: bool

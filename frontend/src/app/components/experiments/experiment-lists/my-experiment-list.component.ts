@@ -11,7 +11,7 @@ import { Experiment } from 'src/app/models/experiment';
 export class MyExperimentListComponent extends ExperimentListBaseComponent {
   protected override getExperimentsCount(): Observable<number> {
     return this.backend.getExperimentsCount(
-      "",
+      this.searchQuery,
       {
         mine: true
       }
@@ -20,7 +20,7 @@ export class MyExperimentListComponent extends ExperimentListBaseComponent {
 
   protected override getExperiments(): Observable<Experiment[]>  {
     return this.backend.getExperiments(
-      "",
+      this.searchQuery,
       {
         offset: this.pagination.pageIndex * this.pagination.pageSize,
         limit: this.pagination.pageSize

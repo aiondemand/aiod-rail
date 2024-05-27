@@ -1,4 +1,5 @@
 import shutil
+from datetime import datetime, timezone
 from typing import Any
 
 from beanie import PydanticObjectId, operators
@@ -22,7 +23,7 @@ router = APIRouter()
 
 @router.get("/experiment-templates", response_model=list[ExperimentTemplateResponse])
 async def get_experiment_templates(
-    user: dict = Depends(get_current_user(required=False)),
+    user: dict = Depends(get_current_user(required=False, from_api_key=True)),
     query: str = "",
     pagination: Pagination = Depends(),
     mine: bool | None = None,
@@ -51,7 +52,8 @@ async def get_experiment_templates(
 
 @router.get("/experiment-templates/{id}", response_model=ExperimentTemplateResponse)
 async def get_experiment_template(
-    id: PydanticObjectId, user: dict = Depends(get_current_user(required=False))
+    id: PydanticObjectId,
+    user: dict = Depends(get_current_user(required=False, from_api_key=True)),
 ) -> Any:
     experiment_template = await get_experiment_template_if_accessible_or_raise(id, user)
     return experiment_template.map_to_response(user)
@@ -59,7 +61,7 @@ async def get_experiment_template(
 
 @router.get("/count/experiment-templates", response_model=int)
 async def get_experiment_templates_count(
-    user: dict = Depends(get_current_user(required=False)),
+    user: dict = Depends(get_current_user(required=False, from_api_key=True)),
     query: str = "",
     mine: bool | None = None,
     finalized: bool | None = None,
@@ -86,13 +88,18 @@ async def get_experiment_templates_count(
 )
 async def create_experiment_template(
     experiment_template: ExperimentTemplateCreate,
-    user: dict = Depends(get_current_user(required=True)),
+    user: dict = Depends(get_current_user(required=True, from_api_key=True)),
 ) -> Any:
     experiment_template_obj = ExperimentTemplate(
         **experiment_template.dict(), created_by=user["email"]
     )
-    experiment_template_obj = await experiment_template_obj.create()
+    if experiment_template_obj.is_valid() is False:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid Experiment Template",
+        )
 
+    experiment_template_obj = await experiment_template_obj.create()
     experiment_template_obj.initialize_files(
         base_image=experiment_template.base_image,
         pip_requirements=experiment_template.pip_requirements,
@@ -105,7 +112,7 @@ async def create_experiment_template(
 async def update_experiment_template(
     id: PydanticObjectId,
     experiment_template: ExperimentTemplateCreate,
-    user: dict = Depends(get_current_user(required=True)),
+    user: dict = Depends(get_current_user(required=True, from_api_key=True)),
 ) -> Any:
     original_template = await get_experiment_template_if_accessible_or_raise(
         id, user, write_access=True
@@ -139,7 +146,8 @@ async def update_experiment_template(
 
 @router.delete("/experiment-templates/{id}", response_model=None)
 async def remove_experiment_template(
-    id: PydanticObjectId, user: dict = Depends(get_current_user(required=True))
+    id: PydanticObjectId,
+    user: dict = Depends(get_current_user(required=True, from_api_key=True)),
 ) -> Any:
     await get_experiment_template_if_accessible_or_raise(id, user, write_access=True)
     exist_experiments = (
@@ -159,21 +167,24 @@ async def remove_experiment_template(
 async def archive_experiment_template(
     id: PydanticObjectId,
     archived: bool = False,
-    user: dict = Depends(get_current_user(required=True)),
+    user: dict = Depends(get_current_user(required=True, from_api_key=True)),
 ) -> Any:
     experiment_template = await get_experiment_template_if_accessible_or_raise(
         id, user, write_access=True
     )
-    experiment_template.archived = archived
-
-    await ExperimentTemplate.replace(experiment_template)
+    await experiment_template.set(
+        {
+            ExperimentTemplate.archived: archived,
+            ExperimentTemplate.updated_at: datetime.now(tz=timezone.utc),
+        }
+    )
 
 
 @router.get("/count/experiment-templates/{id}/experiments", response_model=int)
 async def get_experiments_of_template_count(
     id: PydanticObjectId,
     only_mine: bool = False,
-    user: dict = Depends(get_current_user(required=True)),
+    user: dict = Depends(get_current_user(required=True, from_api_key=True)),
 ) -> Any:
     await get_experiment_template_if_accessible_or_raise(id, user)
 
@@ -249,7 +260,7 @@ async def get_experiment_template_if_accessible_or_raise(
     template_id: PydanticObjectId, user: dict | None, write_access: bool = False
 ) -> ExperimentTemplate:
     access_denied_error = HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND,
+        status_code=status.HTTP_401_UNAUTHORIZED,
         detail="You cannot access this experiment template",
     )
     template = await ExperimentTemplate.get(template_id)

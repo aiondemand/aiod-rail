@@ -3,11 +3,11 @@
         <mat-form-field>
             <mat-label>Full-text search</mat-label>
             <input matInput #searchField
-                (keyup.enter)="search_datasets(searchField.value)" 
+                (keyup.enter)="searchDatasets(searchField.value)" 
             />
         </mat-form-field>
         <button mat-icon-button #searchIconBtn
-            (click)="search_datasets(searchField.value)"
+            (click)="searchDatasets(searchField.value)"
             aria-label="Search datasets"> 
             <mat-icon>search</mat-icon>
         </button>

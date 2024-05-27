@@ -173,23 +173,6 @@
         </div>
     </div>
 
-    <mat-divider></mat-divider>
-
-    <div *ngIf="experimentTemplate.available_metrics.length > 0">
-        <h2>Supported metrics</h2>
-        <p>
-            TODO Metrics that were defined to be saved.
-        </p>
-
-        <mat-chip-listbox>
-            <mat-chip class="metric-chip" *ngFor="let metric of experimentTemplate.available_metrics" [disabled]="true">
-                {{metric}}
-            </mat-chip>
-        </mat-chip-listbox>
-    </div>
-
-
-
     <!-- TODO later related experiments, datasets, models... -->
 </div>
 

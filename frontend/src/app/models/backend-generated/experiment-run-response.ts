@@ -20,6 +20,8 @@ export interface ExperimentRunResponse {
     state: RunState;
     metrics: { [key: string]: number; };
     mine: boolean;
+    archived: boolean;
+    public: boolean;
     experiment_id: string;
 }
 export namespace ExperimentRunResponse {

@@ -19,8 +19,9 @@ import { MyExperimentTemplateListComponent } from './components/experiments/expe
 import { AllExperimentTemplateListComponent } from './components/admin/experiment-template-lists/all-experiment-template-list.component';
 import { PendingExperimentTemplateListComponent } from './components/admin/experiment-template-lists/pending-experiment-template-list.component';
 import { AboutComponent } from './components/general/about/about.component';
-import { AdminComponent } from './components/admin/admin.component';
 import { EditExperimentTemplateComponent } from './components/experiments/edit-experiment-template/edit-experiment-template.component';
+import { ProfileComponent } from './components/profile/profile.component';
+import { AdminComponent } from './components/admin/admin.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'about', pathMatch: 'full' },
@@ -64,6 +65,9 @@ const routes: Routes = [
       { path: 'create', component: CreateDatasetComponent },
       { path: ':id', component: DatasetDetailComponent }
     ]
+  },
+  {
+    path: 'profile', component: ProfileComponent, canActivate: [authGuard]
   },
   {
     path: 'admin', component: AdminComponent, canActivate: [authGuard, adminGuard],

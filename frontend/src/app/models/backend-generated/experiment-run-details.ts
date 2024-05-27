@@ -21,6 +21,8 @@ export interface ExperimentRunDetails {
     metrics: { [key: string]: number; };
     logs: string;
     mine: boolean;
+    archived: boolean;
+    public: boolean;
     experiment_id: string;
 }
 export namespace ExperimentRunDetails {

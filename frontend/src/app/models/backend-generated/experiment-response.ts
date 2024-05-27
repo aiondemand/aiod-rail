@@ -20,7 +20,6 @@ export interface ExperimentResponse {
     dataset_ids: Array<string>;
     model_ids: Array<string>;
     env_vars: Array<EnvironmentVar>;
-    metrics: Array<string>;
     id: string;
     created_at: string;
     updated_at: string;
