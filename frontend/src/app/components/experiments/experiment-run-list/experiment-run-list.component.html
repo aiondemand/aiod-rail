@@ -37,10 +37,10 @@
                     <mat-icon>visibility</mat-icon>
                 </a>
                 <!-- TODO add stopping functionality -->
-                <!-- <button mat-icon-button matTooltip="Stop run" *ngIf="run.mine && !experiment.archived && run.state == 'IN_PROGRESS'" (click)="stopRun(run.id)">
+                <!-- <button mat-icon-button matTooltip="Stop run" *ngIf="run.mine && !run.archived && run.state == 'IN_PROGRESS'" (click)="stopRun(run.id)">
                     <mat-icon>stop</mat-icon>
                 </button> -->
-                <button mat-icon-button matTooltip="Delete run" *ngIf="run.mine && !experiment.archived && (run.state == 'FINISHED' || run.state == 'CRASHED')" (click)="deleteRun(run.id)">
+                <button mat-icon-button matTooltip="Delete run" *ngIf="run.mine && !run.archived && (run.state == 'FINISHED' || run.state == 'CRASHED')" (click)="deleteRun(run.id)">
                     <mat-icon>delete</mat-icon>
                 </button>
             </td>

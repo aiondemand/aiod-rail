@@ -84,7 +84,15 @@
             If you're not interested in using aforementioned 
             <a [routerLink]="['.']" fragment="env-href-link"><b>RESERVED ENVIRONMENT VARIABLES</b></a>, 
             you may omit them, but in such a case injection of Experiment parameters will not 
-            be achieved and the template will not be easily modificable.
+            be achieved and the template will not be easily modifiable.
+        </p>
+
+        <p>
+            If you would like to output the results of executed experiments of this template explicitly,
+            you need to save these results within the environment on the following path: <b>output-temp/metrics.json</b>
+
+            After having run an experiment run, this file is read and the results are print out. 
+            For now, only a flat object with numerical values is supported.
         </p>
 
         <p class="italic-editor-name"><i>script.py</i></p>
@@ -125,7 +133,8 @@
         <ul>
             <li><b>MODEL_NAMES</b> -- contains a list of model names (e.g., HuggingFace unique identifiers) that represent the models you want to use in your code</li> 
             <li><b>DATASET_NAMES</b> -- contains a list of dataset name (e.g., HuggingFace unique identifiers) that represent the datasets you want to use in your code</li>
-            <li><b>METRICS</b> -- contains a list of metrics that you can store and log in RAIL framework</li>
+            <li><b>MODEL_IDS</b> -- contains a list of AIoD model IDs that represent the models you want to use in your code</li>
+            <li><b>DATASET_IDS</b> -- contains a list of AIoD dataset IDs that represent the datasets you want to use in your code</li>
         </ul>
 
         <p>
@@ -234,39 +243,6 @@
                 <tr mat-row *matRowDef="let row; columns: displayedEnvVarColumns;"></tr>
             </table>
         </div>
-    </div>
-
-    <mat-divider></mat-divider>
-
-    <div class="metrics-section">
-        <h2>Metrics to measure</h2>
-        <p>
-            Define the names of the metrics that your executable script computes and further can save in JSON format.
-            The defined metrics need to be saved on path <b>output-temp/metrics.json</b> if our application
-            was to read them properly. For now, we only allow the JSON file to be a flat dictionary with numerical values.
-        </p>
-
-        <mat-chip-set>
-            <mat-chip *ngFor="let metric of metrics, index as idx" (removed)="removeMetric(idx)">
-                {{metric}}
-                <button matChipRemove *ngIf="editableEnvironment">
-                    <mat-icon>cancel</mat-icon>
-                </button>
-            </mat-chip>
-        </mat-chip-set>
-
-        <form class="add-env-controls" [formGroup]="metricForm">
-            <mat-form-field>
-                <mat-label>Metrics</mat-label>
-                <input matInput placeholder="New metric..." formControlName="name">
-            </mat-form-field>
-
-            <span class="empty-space"></span>
-
-            <button mat-raised-button type="submit" [disabled]="!metricForm.get('name')?.value || !editableEnvironment" (click)="addMetric()"> 
-                Add metric
-            </button>
-        </form>
     </div>
 
     <mat-divider></mat-divider>

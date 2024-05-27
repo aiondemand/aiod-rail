@@ -31,7 +31,7 @@ async def get_current_user_token(token=Security(oidc)):
 def get_current_user(
     required: bool,
     from_token: bool = True,
-    from_api_key: bool = False,  # By default only for users authenticated through OIDC
+    from_api_key: bool = False,  # By default, only for users authenticated through OIDC
 ) -> Callable[[str, str], Awaitable[dict | None]]:
     """
     Get the current user based on the provided token or API key (returns an async function).

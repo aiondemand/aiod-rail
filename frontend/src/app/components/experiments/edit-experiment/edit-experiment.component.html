@@ -77,14 +77,6 @@
     </div>
 
     <div class="experiment-type-specific-inputs" *ngIf="selectedExprimentTemplate as experimentTemplateValue">
-        <div class="metrics" *ngIf="chosenMetricsValues.length > 0" formGroupName="metrics">
-            <h3>Select metrics that will be calculated and shown on RAIL</h3>
-            <div class="metrics-list">
-                <mat-checkbox *ngFor="let metric of chosenMetricsValues" [formControlName]="metric.name" [(ngModel)]="metric.checked">
-                    {{ metric.name }}
-                </mat-checkbox>
-            </div>
-        </div>
         <div class="models">
             <h3>Select a model</h3>
             <mat-form-field>

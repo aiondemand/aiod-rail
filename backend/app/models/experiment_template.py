@@ -22,6 +22,7 @@ from app.schemas.experiment_template import (
     AssetSchema,
     ExperimentTemplateCreate,
     ExperimentTemplateResponse,
+    ReservedEnvVars,
     TaskType,
 )
 from app.schemas.states import TemplateState
@@ -36,7 +37,6 @@ class ExperimentTemplate(Document):
     models_schema: AssetSchema
     envs_required: list[EnvironmentVarDef]
     envs_optional: list[EnvironmentVarDef]
-    available_metrics: list[str]
     created_at: datetime = Field(default_factory=partial(datetime.now, tz=timezone.utc))
     updated_at: datetime = Field(default_factory=partial(datetime.now, tz=timezone.utc))
     state: TemplateState = TemplateState.CREATED
@@ -54,7 +54,6 @@ class ExperimentTemplate(Document):
             "models_schema",
             "envs_required",
             "envs_optional",
-            "available_metrics",
             "base_image",
             "pip_requirements",
             "script",
@@ -108,6 +107,15 @@ class ExperimentTemplate(Document):
     class Settings:
         name = "experimentTemplates"
 
+    def is_valid(self) -> bool:
+        reserved_vars = list(ReservedEnvVars)
+        return all(
+            [
+                e.name not in reserved_vars
+                for e in self.envs_required + self.envs_optional
+            ]
+        )
+
     def initialize_files(self, base_image, pip_requirements, script):
         base_path = self.experiment_template_path
         base_path.mkdir(exist_ok=True, parents=True)
@@ -142,9 +150,21 @@ class ExperimentTemplate(Document):
             mine=mine,
         )
 
-    def update_state(self, state: TemplateState) -> None:
+    async def update_state_in_db(
+        self, state: TemplateState, retry_count: int | None = None
+    ) -> None:
         self.state = state
         self.updated_at = datetime.now(tz=timezone.utc)
+        if retry_count is not None:
+            self.retry_count = retry_count
+
+        await self.set(
+            {
+                ExperimentTemplate.state: self.state,
+                ExperimentTemplate.updated_at: self.updated_at,
+                ExperimentTemplate.retry_count: self.retry_count,
+            }
+        )
 
     async def validate_models(self, model_ids: list[int]) -> bool:
         model_names = [await get_model_name(x) for x in model_ids]
@@ -175,7 +195,7 @@ class ExperimentTemplate(Document):
     def is_same_environment(
         self, experiment_template_req: ExperimentTemplateCreate
     ) -> bool:
-        return sum(
+        return all(
             [
                 bool(
                     DeepDiff(
@@ -187,7 +207,7 @@ class ExperimentTemplate(Document):
                 is False
                 for attr_name in self.environment_attribute_names
             ]
-        ) == len(self.environment_attribute_names)
+        )
 
     @classmethod
     async def update_template(
@@ -197,15 +217,18 @@ class ExperimentTemplate(Document):
         editable_environment: bool,
         editable_visibility: bool,
     ) -> ExperimentTemplate | None:
+        new_template = ExperimentTemplate(
+            **experiment_template_req.dict(), created_by=original_template.created_by
+        )
+        if new_template.is_valid() is False:
+            return None
+
         same_environment = original_template.is_same_environment(
             experiment_template_req
         )
         same_visibility = original_template.public == experiment_template_req.public
-        new_template = ExperimentTemplate(
-            **experiment_template_req.dict(), created_by=original_template.created_by
-        )
-        template_to_return = None
 
+        template_to_return = None
         if same_environment and (same_visibility or editable_visibility):
             # We modify only name & descr (+ maybe visibility)
             original_template.name = new_template.name
