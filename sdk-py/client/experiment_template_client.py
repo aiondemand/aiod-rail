@@ -13,12 +13,15 @@ class ExperimentsTemplates:
             file: Union[dict, tuple[str, str, str, dict]]
             ) -> aiod_rail_sdk.ExperimentTemplateResponse:
         """
-            Creates experiment template for experiment
+            Creates experiment template for experiment.
             Args:
                 authorization_header (dict): Authorization in form of token type and access token
                 file: (Union[dict, tuple[str, str, str, dict]]): The file can be passed either as full specified json (dictionary)
-                or as a tuple of three strings and a json (dictionary) specifying the paths to script, requirements and docker image
-                in this order and template description (name, description, task etc.)
+                                                                 or as a tuple of three strings and a json (dictionary) specifying 
+                                                                 the paths to script, requirements and docker image in this order 
+                                                                 and template description (name, description, task etc.).
+            Returns:
+                aiod_rail_sdk.ExperimentTemplateResponse: Created experiment template.
         """
         json_data = None
         if isinstance(file, dict):
@@ -55,13 +58,14 @@ class ExperimentsTemplates:
             
     def approve_experiment_template(self, id: str, password: str = 'pass', is_approved: bool = False) -> None:
         """
-            Approves experiment template with specified id
+            Approves experiment template with specified ID.
             Args:
-                id (str): ID of experiment template to be approved
-                password (str): Password required to be able to approve the experiment template
-                approve_value (bool): Boolean value to approve/reject the experiment template
+                id (str): ID of experiment template to be approved.
+                password (str): Password required to be able to approve the experiment template.
+                approve_value (bool, optional): Boolean value to approve/reject the experiment template. Defaults to False.
+            
             Returns:
-                object
+                None.
         """
         with aiod_rail_sdk.ApiClient(self._configuration) as api_client:
             api_instance = aiod_rail_sdk.ExperimentTemplatesApi(api_client)
@@ -74,11 +78,14 @@ class ExperimentsTemplates:
 
     def count(self, authorization_header: dict, include_mine: bool = True, include_approved: bool = False) -> int:
         """
-            Gets experiment templates count
+            Gets experiment templates count.
             Args:
-                authorization_header (dict): Authorization in form of token type and access token
-                include_mine (bool): If own personal experiment templates should be included in count (default False)
-                include_approved (bool): If already approved experiments should be counted as well (default False)
+                authorization_header (dict): Authorization in form of token type and access token.
+                include_mine (bool, optional): If own personal experiment templates should be included in count. Defaults to True.
+                include_approved (bool, optional): If already approved experiments should be counted as well. Defaults to False.
+
+            Returns:
+                int: Number of experiment templates.
         """
         with aiod_rail_sdk.ApiClient(self._configuration) as api_client:
             api_client.default_headers = authorization_header
@@ -95,13 +102,16 @@ class ExperimentsTemplates:
     def get(self, authorization_header: dict, include_mine: bool = True, 
             include_approved: bool = True, offset: int = 0, limit: int = 100) -> list[aiod_rail_sdk.ExperimentTemplateResponse]:
         """
-            Gets experiment templates
+            Gets experiment templates in specified range.
             Args:
-                authorization_header (dict): Authorization in form of token type and access token
-                include_mine (bool): If own personal experiment templates should be included (default True)
-                include_approved (bool): If already approved experiments should be listed as well (default True)
-                offset (int): Starting index of experiment template range from which to retrieve (default 0)
-                limit (int): Ending index of experiment template range to which to retrieve (default 100)
+                authorization_header (dict): Authorization in form of token type and access token.
+                include_mine (bool, optional): If own personal experiment templates should be included. Defaults to True.
+                include_approved (bool, optional): If already approved experiments should be listed as well. Defaults to True.
+                offset (int, optional): Starting index of experiment template range from which to retrieve Defaults to 0.
+                limit (int, optional): Ending index of experiment template range to which to retrieve. Defaults to 100.
+
+            Returns:
+                list[aiod_rail_sdk.ExperimentTemplateResponse]: List of all experiments in given range
         """
         with aiod_rail_sdk.ApiClient(self._configuration) as api_client:
             api_client.default_headers = authorization_header
@@ -117,11 +127,11 @@ class ExperimentsTemplates:
 
     def get_by_id(self, id: str) -> aiod_rail_sdk.ExperimentTemplateResponse:
         """
-            Gets specific experiment template by it's id
+            Gets specific experiment template by it's ID.
             Args:
-                id (str): ID of experiment template to be retrieved
+                id (str): ID of experiment template to be retrieved.
             Returns:
-                ExperimentTemplateResponse: aiod_rail_sdk.models.experiment_template_response
+                aiod_rail_sdk.ExperimentTemplateResponse: Experiment template given by ID.
         """
         with aiod_rail_sdk.ApiClient(self._configuration) as api_client:
             api_instance = aiod_rail_sdk.ExperimentTemplatesApi(api_client)

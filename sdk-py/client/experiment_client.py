@@ -8,10 +8,13 @@ class Experiments:
         
     def create_experiment(self, authorization_header: dict, file) -> aiod_rail_sdk.ExperimentResponse:
         """
-            Creates experiment template for experiment
+            Creates experiment from specified experiment template.
             Args:
-                authorization_header (dict): Authorization in form of token type and access token
-                file: (dict):     Experiment described in json file
+                authorization_header (dict): Authorization in form of token type and access token.
+                file (dict): Experiment template described in json file.
+
+            Returns:
+                aiod_rail_sdk.ExperimentResponse: Experiment created from given template.
         """
         with aiod_rail_sdk.ApiClient(self._configuration) as api_client:
             api_instance = aiod_rail_sdk.ExperimentsApi(api_client)
@@ -28,10 +31,13 @@ class Experiments:
     
     def run_experiment(self, authorization_header: dict, id: str) -> aiod_rail_sdk.ExperimentRunResponse:
         """
-            Runs specified experiment
+            Runs specified experiment.
             Args:
-                authorization_header (dict): Authorization in form of token type and access token
-                id (str): ID of experiment to be run
+                authorization_header (dict): Authorization in form of token type and access token.
+                id (str): ID of experiment to be run.
+            #TODO
+            Returns:
+
         """
         with aiod_rail_sdk.ApiClient(self._configuration) as api_client:
             api_instance = aiod_rail_sdk.ExperimentsApi(api_client)
@@ -47,10 +53,13 @@ class Experiments:
 
     def logs(self, authorization_header: dict, id: str) -> str:
         """
-            Get experiment run logs
+            Get experiment run logs.
             Args:
-                authorization_header (dict): Authorization in form of token type and access token
-                id (str): ID of experiment from which logs are to be retrieved
+                authorization_header (dict): Authorization in form of token type and access token.
+                id (str): ID of experiment run from which logs are to be retrieved.
+            
+            Returns:
+                str: Logs of experiment run given by ID.
         """
         with aiod_rail_sdk.ApiClient(self._configuration) as api_client:
             api_instance = aiod_rail_sdk.ExperimentsApi(api_client)
@@ -63,9 +72,12 @@ class Experiments:
 
     def count(self, authorization_header: dict) -> int:
         """
-            Gets experiment count
+            Gets experiment count.
             Args:
-                authorization_header (dict): Authorization in form of token type and access token
+                authorization_header (dict): Authorization in form of token type and access token.
+            
+            Returns:
+                int: Number of experiments.
         """
         with aiod_rail_sdk.ApiClient(self._configuration) as api_client:
             api_instance = aiod_rail_sdk.ExperimentsApi(api_client)
@@ -78,11 +90,14 @@ class Experiments:
 
     def get(self, authorization_header: dict, offset: int = 0, limit: int = 100) -> list[aiod_rail_sdk.ExperimentResponse]:
         """
-            Gets experiment
+            Gets experiments in specified range.
             Args:
-                authorization_header (dict): Authorization in form of token type and access token
-                offset (int): Starting index of experiment range from which to retrieve (default 0)
-                limit (int): Ending index of experiment range to which to retrieve (default 100)
+                authorization_header (dict): Authorization in form of token type and access token.
+                offset (int, optional): Starting index of experiment range from which to retrieve (default 0).
+                limit (int, optional): Ending index of experiment range to which to retrieve (default 100).
+            
+            Returns:
+                list[aiod_rail_sdk.ExperimentResponse]: The list of experiments.
         """
         with aiod_rail_sdk.ApiClient(self._configuration) as api_client:
             api_instance = aiod_rail_sdk.ExperimentsApi(api_client)
@@ -96,10 +111,13 @@ class Experiments:
 
     def get_by_id(self, authorization_header: dict, id: str) -> aiod_rail_sdk.ExperimentResponse:
         """
-            Gets specific experiment by it's ID
+            Gets specific experiment by it's ID.
             Args:
-                authorization_header (dict): Authorization in form of token type and access token
-                id (str): ID of experiment to be retrieved
+                authorization_header (dict): Authorization in form of token type and access token.
+                id (str): ID of experiment to be retrieved.
+            
+            Returns:
+                aiod_rail_sdk.ExperimentResponse: Experiment specified by given ID.
         """
         with aiod_rail_sdk.ApiClient(self._configuration) as api_client:
             api_instance = aiod_rail_sdk.ExperimentsApi(api_client)
@@ -113,11 +131,14 @@ class Experiments:
 
     def download(self, authorization_header: dict, id: str, filepath: str) -> None:
         """
-            Downloads experiment specified by ID to specified filepath
+            Downloads experiment specified by ID to specified filepath.
             Args:
-                authorization_header (dict): Authorization in form of token type and access token
-                id (str): ID of experiment to be downloaded
-                filepath (str): path to which file will be stored
+                authorization_header (dict): Authorization in form of token type and access token.
+                id (str): ID of experiment to be downloaded.
+                filepath (str): Path to which file will be stored.
+            
+            Returns:
+                None.
         """
         with aiod_rail_sdk.ApiClient(self._configuration) as api_client:
             api_instance = aiod_rail_sdk.ExperimentsApi(api_client)

@@ -6,13 +6,13 @@ class Datasets:
 
     def count(self) -> int:
         """
-            Get total number of datasets
+            Get total number of datasets.
             
             Args:
                 None
 
             Returns:
-                int: Total number of datasets
+                int: Number of datasets.
         """
         with aiod_rail_sdk.ApiClient(self._configuration) as api_client:
                 api_instance = aiod_rail_sdk.AssetsApi(api_client)
@@ -24,14 +24,14 @@ class Datasets:
 
     def get(self, offset: int = 0, limit: int = 100) -> list[aiod_rail_sdk.Dataset]:
         """
-            Retrieves datasets in specified range
+            Retrieves datasets in specified range.
 
             Args:
-                offset (int): Starting index of dataset range from which to retrieve
-                limit (int): Ending index of dataset range to which to retrieve
+                offset (int, optional): Starting index of dataset range from which to retrieve. Defaults to 0.
+                limit (int, optional): Ending index of dataset range to which to retrieve. Defaults to 100.
 
             Returns:
-                List[Dataset]: List of aiod_rail_sdk.models.dataset.Dataset classes
+               list[aiod_rail_sdk.Dataset]: The list of datasets.
         """
         with aiod_rail_sdk.ApiClient(self._configuration) as api_client:
             api_instance = aiod_rail_sdk.AssetsApi(api_client)
@@ -43,13 +43,13 @@ class Datasets:
     
     def get_by_id(self, id: int) -> aiod_rail_sdk.Dataset:
         """
-            Retrieves dataset specified by it's id
+            Retrieves dataset specified by it's ID.
 
             Args:
-                id (int): Index of dataset in database
+                id (int): Index of dataset in database.
 
             Returns:
-                 Dataset: aiod_rail_sdk.models.dataset.Dataset class
+                 aiod_rail_sdk.Dataset: The dataset corresponding to the given ID.
         """
         with aiod_rail_sdk.ApiClient(self._configuration) as api_client:
             api_instance = aiod_rail_sdk.AssetsApi(api_client)
