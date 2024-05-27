@@ -32,7 +32,7 @@ def get_current_user(
     required: bool,
     from_token: bool = True,
     from_api_key: bool = False,  # By default, only for users authenticated through OIDC
-) -> Callable[[str, str], Awaitable[dict | None]]:
+) -> Callable[[str | None, str | None], Awaitable[dict | None]]:
     """
     Get the current user based on the provided token or API key (returns an async function).
     If both token and api_key are defined, the token will be used.
@@ -64,7 +64,7 @@ def get_current_user(
             # TODO: Fetch userinfo based on user email from Keycloak
             # needs special role/rights in Keycloak for the client
             # In this way, this will return the same user info.
-            user_obj = await RailUser.find_one(RailUser.api_key == api_key)
+            user_obj = await RailUser.find_one({"api_key": api_key})
             if user_obj is not None:
                 return user_obj.to_dict()
             else:

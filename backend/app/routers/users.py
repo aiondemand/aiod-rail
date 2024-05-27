@@ -33,7 +33,7 @@ async def get_user_profile(
 
 @router.get("/users/api_key", response_model=str)
 async def get_user_api_key(
-    user: dict = Depends(get_current_user(required=False)),
+    user: dict = Depends(get_current_user(required=True)),
 ) -> Any:
     user_obj = await RailUser.find_one(RailUser.email == user["email"])
 

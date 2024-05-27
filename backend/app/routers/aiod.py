@@ -99,11 +99,14 @@ async def get_my_datasets_count(
         )
 
 
-@router.post("/datasets", response_model=Dataset)
+@router.post(
+    "/datasets",
+    dependencies=[Depends(get_current_user(required=True, from_api_key=False))],
+    response_model=Dataset,
+)
 async def create_dataset(
     dataset: Dataset,
     token: str = Depends(get_current_user_token),
-    user: dict = Depends(get_current_user(required=True, from_api_key=True)),
 ) -> Any:
     # Create a new dataset in AIoD (just metadata)
     res = await aiod_client_wrapper.client.post(
