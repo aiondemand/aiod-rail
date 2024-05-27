@@ -12,11 +12,19 @@ import { BackendApiService } from './services/backend-api.service';
 })
 export class AppComponent {
   private breakpointObserver = inject(BreakpointObserver);
-  
-  constructor(private oauthService: OAuthService, private backend: BackendApiService) { 
+  isLoggedIn = false;
+
+  constructor(private oauthService: OAuthService, private backend: BackendApiService) {
     this.oauthService.events
       .pipe(filter((e) => e.type === 'token_received'))
-      .subscribe((_) => this.oauthService.loadUserProfile());
+      .subscribe((_) => {
+        this.oauthService.loadUserProfile();
+        this.isLoggedIn = this.oauthService.hasValidIdToken();
+      });
+  }
+
+  ngOnInit() {
+    this.isLoggedIn = this.oauthService.hasValidIdToken();
   }
 
   isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset)

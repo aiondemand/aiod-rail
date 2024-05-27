@@ -1,0 +1,10 @@
+@import '../../../variables.scss';
+
+button {
+    margin-top: $margin-default;
+    margin-right: $margin-default;
+}
+
+mat-form-field, input {
+    min-width: 320px;
+}

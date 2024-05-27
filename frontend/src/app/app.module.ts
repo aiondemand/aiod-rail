@@ -65,6 +65,7 @@ import { EditExperimentTemplateComponent } from './components/experiments/edit-e
 import { ConfirmPopupComponent } from './components/general/popup/confirm-popup.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { ProfileComponent } from './components/profile/profile.component';
 
 
 
@@ -99,7 +100,8 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
     FeedbackComponent,
     AboutComponent,
     EditExperimentTemplateComponent,
-    ConfirmPopupComponent
+    ConfirmPopupComponent,
+    ProfileComponent
   ],
   imports: [
     BrowserModule,
