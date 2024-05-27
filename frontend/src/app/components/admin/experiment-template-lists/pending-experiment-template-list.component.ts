@@ -12,7 +12,7 @@ export class PendingExperimentTemplateListComponent extends ExperimentTemplateLi
 
   protected override getExperimentTemplatesCount(): Observable<number> {
     return this.backend.getExperimentTemplatesCount(
-      "",
+      this.searchQuery,
       {
         approved: false
       }
@@ -21,7 +21,7 @@ export class PendingExperimentTemplateListComponent extends ExperimentTemplateLi
 
   protected getExperimentTemplates(): Observable<ExperimentTemplate[]> {
     return this.backend.getExperimentTemplates(
-      "",
+      this.searchQuery,
       {
         offset: this.pagination.pageIndex * this.pagination.pageSize,
         limit: this.pagination.pageSize

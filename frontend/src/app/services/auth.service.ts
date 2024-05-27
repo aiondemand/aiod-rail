@@ -1,13 +1,15 @@
 import { Injectable } from '@angular/core';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { authConfig } from 'src/keycloak.config';
-import {filter} from "rxjs";
-import {environment} from "../../environments/environment";
+import { filter } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
+  isLoggedIn = false;
+
   constructor(private oauthService: OAuthService) {
     this.oauthService.configure(authConfig);
     this.oauthService.loadDiscoveryDocumentAndTryLogin();
@@ -17,7 +19,14 @@ export class AuthService {
       .pipe(
         filter((e) => e.type === 'token_received')
       )
-      .subscribe((_) => this.oauthService.loadUserProfile());
+      .subscribe((_) => {
+        this.oauthService.loadUserProfile();
+        this.isLoggedIn = this.oauthService.hasValidIdToken();
+      });
+  }
+
+  ngOnInit() {
+    this.isLoggedIn = this.oauthService.hasValidIdToken();
   }
 
   login(): void {
@@ -26,10 +35,6 @@ export class AuthService {
 
   logout(): void {
     this.oauthService.logOut();
-  }
-
-  get isLoggedIn(): boolean {
-    return this.oauthService.hasValidIdToken()
   }
 
   get hasAdminRole(): boolean {

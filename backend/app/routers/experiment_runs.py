@@ -149,11 +149,9 @@ async def get_experiment_run_if_accessible_or_raise(
     if experiment_run is None:
         raise access_denied_error
     else:
-        # Public experiment runs are readable by everyone
-        if write_access is False and experiment_run.public:
+        if write_access and experiment_run.is_editable_by_user(user):
             return experiment_run
-        # TODO: Add experiment access management
-        elif user is not None and experiment_run.created_by == user["email"]:
+        elif not write_access and experiment_run.is_readable_by_user(user):
             return experiment_run
         else:
             raise access_denied_error

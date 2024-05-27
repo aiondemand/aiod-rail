@@ -3,7 +3,7 @@ from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from app.authentication import get_current_user
+from app.auth import get_current_user
 from app.models.rail_user import RailUser
 from app.schemas.rail_user import RailUserResponse
 

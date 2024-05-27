@@ -49,11 +49,11 @@ import { ExperimentRunDetailComponent } from './components/experiments/experimen
 import { MatTableModule } from '@angular/material/table';
 import { PublicExperimentListComponent } from './components/experiments/experiment-lists/public-experiment-list.component';
 import { MyExperimentListComponent } from './components/experiments/experiment-lists/my-experiment-list.component';
-import { AllExperimentListComponent } from "./components/admin/experiment-list/all-experiment-list.component";
+import { AllExperimentListComponent } from './components/admin/experiment-list/all-experiment-list.component';
 import { PublicExperimentTemplateListComponent } from './components/experiments/experiment-template-lists/public-experiment-template-list.component';
 import { MyExperimentTemplateListComponent } from './components/experiments/experiment-template-lists/my-experiment-template-list.component';
-import { AllExperimentTemplateListComponent } from "./components/admin/experiment-template-lists/all-experiment-template-list.component";
-import { PendingExperimentTemplateListComponent } from "./components/admin/experiment-template-lists/pending-experiment-template-list.component";
+import { AllExperimentTemplateListComponent } from './components/admin/experiment-template-lists/all-experiment-template-list.component';
+import { PendingExperimentTemplateListComponent } from './components/admin/experiment-template-lists/pending-experiment-template-list.component';
 import { ExperimentTemplateListItemComponent } from './components/experiments/experiment-template-list-item/experiment-template-list-item.component';
 import { ExperimentTemplateDetailComponent } from './components/experiments/experiment-template-detail/experiment-template-detail.component';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
@@ -61,8 +61,8 @@ import { HIGHLIGHT_OPTIONS, HighlightModule, HighlightOptions } from 'ngx-highli
 import { CodeEditorModule } from '@ngstack/code-editor';
 import { FeedbackComponent } from './components/general/feedback/feedback.component';
 import { AboutComponent } from './components/general/about/about.component';
-import { AdminComponent } from "./components/admin/admin.component";
-import { NgOptimizedImage } from "@angular/common";
+import { AdminComponent } from './components/admin/admin.component';
+import { NgOptimizedImage } from '@angular/common';
 import { MatTreeModule } from '@angular/material/tree';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { EditExperimentTemplateComponent } from './components/experiments/edit-experiment-template/edit-experiment-template.component';

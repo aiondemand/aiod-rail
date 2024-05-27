@@ -12,7 +12,7 @@ export class AllExperimentTemplateListComponent extends ExperimentTemplateListBa
 
   protected override getExperimentTemplatesCount(): Observable<number> {
     return this.backend.getExperimentTemplatesCount(
-      "",
+      this.searchQuery,
       {
       }
     );
@@ -20,7 +20,7 @@ export class AllExperimentTemplateListComponent extends ExperimentTemplateListBa
 
   protected getExperimentTemplates(): Observable<ExperimentTemplate[]> {
     return this.backend.getExperimentTemplates(
-      "",
+      this.searchQuery,
       {
         offset: this.pagination.pageIndex * this.pagination.pageSize,
         limit: this.pagination.pageSize

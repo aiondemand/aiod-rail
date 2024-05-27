@@ -28,10 +28,12 @@ async def approve_experiment_template(
             detail="Such experiment template doesn't exist",
         )
 
-    experiment_template.approved = approve
-    experiment_template.updated_at = datetime.now(tz=timezone.utc)
-
-    await ExperimentTemplate.replace(experiment_template)
+    await experiment_template.set(
+        {
+            ExperimentTemplate.approved: approve,
+            ExperimentTemplate.updated_at: datetime.now(tz=timezone.utc),
+        }
+    )
 
     if approve:
         await exp_scheduler.add_image_to_build(experiment_template.id)

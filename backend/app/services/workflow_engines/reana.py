@@ -45,7 +45,7 @@ class ReanaService(WorkflowEngineBase):
         experiment: Experiment,
         environment_variables: dict[str, str],
     ) -> bool:
-        await self.delete_workflow(experiment)
+        await self.delete_workflow(experiment_run)
 
         exp_run_folder = experiment_run.run_path
         exp_template_folder = settings.get_experiment_template_path(
