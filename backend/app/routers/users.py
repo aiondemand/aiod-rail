@@ -62,7 +62,7 @@ async def create_or_change_user_api_key(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail="Error while creating user profile and API key",
             )
-    elif not user_obj.api_key:
+    else:
         try:
             user_obj.api_key = RailUser.generate_api_key()
             await RailUser.replace(user_obj)
