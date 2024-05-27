@@ -5,7 +5,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class EllipsisPipe implements PipeTransform {
 
-  transform(value: string, limit: number): any {
+  transform(value: string, limit?: number): any {
     if(limit && value.length > limit) {
       return value.substring(0, limit).concat('...');
     }
