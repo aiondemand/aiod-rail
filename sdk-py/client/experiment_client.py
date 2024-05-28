@@ -198,7 +198,7 @@ class Experiments:
             except Exception as e:
                 raise (f"Exception {e}")
 
-    def get_experiments_run(self, id: str, offset: int = 0, limit: int = 100):
+    def get_experiments_run(self, id: str, offset: int = 0, limit: int = 100) -> None:
         """
         Gets runs of specified experiment in selected range.
         Args:
