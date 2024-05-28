@@ -9,7 +9,6 @@ import pymongo
 import yaml
 from beanie import Document, Indexed, operators
 from beanie.odm.operators.find import BaseFindOperator
-from beanie.odm.operators.find.comparison import Eq
 from deepdiff import DeepDiff
 from pydantic import Field
 
@@ -164,13 +163,13 @@ class ExperimentTemplate(Document):
     @classmethod
     def get_query_readable_by_user(cls, user: dict | None) -> BaseFindOperator:
         if user is None:
-            return Eq(cls.public, True)
+            return operators.Eq(cls.public, True)
         elif has_admin_role(user):
-            return operators.Or(Eq(cls.public, True), Eq(cls.public, False))
+            return operators.Exists(cls.id, True)
         else:
             return operators.Or(
-                Eq(cls.public, True),
-                Eq(cls.created_by, user["email"]),
+                operators.Eq(cls.public, True),
+                operators.Eq(cls.created_by, user["email"]),
             )
 
     def is_editable_by_user(self, user: dict | None) -> bool:

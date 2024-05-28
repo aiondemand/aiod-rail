@@ -3,11 +3,10 @@ from datetime import datetime, timezone
 from typing import Any
 
 from beanie import PydanticObjectId, operators
-from beanie.odm.operators.find.evaluation import Text
 from beanie.odm.queries.find import FindMany
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from app.auth import get_current_user
+from app.auth import get_current_user, raise_requires_auth
 from app.config import settings
 from app.helpers import Pagination, QueryOperator, get_compare_operator_fn
 from app.models.experiment import Experiment
@@ -214,7 +213,7 @@ def find_specific_experiment_templates(
     # applying filters
     filter_conditions = []
     if len(search_query) > 0:
-        filter_conditions.append(Text(search_query))
+        filter_conditions.append(operators.Text(search_query))
     if mine is not None:
         if user is not None:
             filter_conditions.append(
@@ -222,11 +221,7 @@ def find_specific_experiment_templates(
             )
         else:
             # Authentication required to see your experiment templates
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="This endpoint requires authorization. You need to be logged in.",
-                headers={"WWW-Authenticate": "Bearer"},
-            )
+            raise_requires_auth()
 
     if finalized is not None:
         filter_conditions.append(

@@ -105,7 +105,7 @@ def has_admin_role(user_info: dict) -> bool:
 
 async def _get_userinfo(token: str) -> dict:
     if token is None:
-        _raise_requires_auth()
+        raise_requires_auth()
 
     token = token.replace("Bearer ", "")
 
@@ -117,7 +117,7 @@ async def _get_userinfo(token: str) -> dict:
 
 async def _get_introspect(token: str) -> dict:
     if token is None:
-        _raise_requires_auth()
+        raise_requires_auth()
 
     token = token.replace("Bearer ", "")
 
@@ -127,7 +127,7 @@ async def _get_introspect(token: str) -> dict:
         _raise_invalid_token(e)
 
 
-def _raise_requires_auth():
+def raise_requires_auth():
     raise HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="This endpoint requires authorization. You need to be logged in.",
