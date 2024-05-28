@@ -71,7 +71,7 @@ class ExperimentsTemplates:
             api_instance = aiod_rail_sdk.ExperimentTemplatesApi(api_client)
 
             try:
-                api_response = api_instance.approve_experiment_template_v1_experiment_templates_id_approve_patch(id, password, is_approved=is_approved)
+                api_response = api_instance.approve_experiment_template_v1_experiment_templates_id_approve_patch(id, password, approved=is_approved)
                 return api_response
             except Exception as e:
                 raise(f'Exception {e}')
