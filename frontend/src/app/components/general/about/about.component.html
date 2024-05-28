@@ -1,7 +1,7 @@
 <div class="section-container">
     <div class="content-panel">
         <h1>RAIL: Research and Innovation AI Lab</h1>
-        
+
         <p>
             RAIL is a tool that allows AI practitioners to explore and use AI assets directly in AIoD.
             RAIL is developed within the <a href="https://ai4europe.eu" target="_blank">AI4Europe project</a> as one of the core services of the <a href="https://ai4europe.eu" target="_blank">AI on Demand platform.</a>
@@ -37,14 +37,14 @@
             <li>
                 <a [routerLink]="['/datasets', 'create']">Upload your dataset</a> to HuggingFace directly in RAIL. It will be then immediately available in RAIL and in the AI on Demand platform. <b>[available soon]</b>
             </li>
-            <li><a [routerLink]="['/experiments', 'create']">Create an Experiment</a> that links your dataset and a model you want to evaluate the data on. An Experiment must be linked to a particular Experiment template, 
-                that represents a definition of <i>runtime environment</i>, <i>software dependencies</i> and <i>code</i> - in your case, you need an Experiment template 
-                that takes HuggingFace dataset and model and perform a classification task. If no such Experiment template is available in the 
-                <a [routerLink]="['/experiments', 'templates', 'all']">list of all templates</a>, you can <a [routerLink]="['/experiments', 'templates', 'create']">
+            <li><a [routerLink]="['/experiments', 'create']">Create an Experiment</a> that links your dataset and a model you want to evaluate the data on. An Experiment must be linked to a particular Experiment template,
+                that represents a definition of <i>runtime environment</i>, <i>software dependencies</i> and <i>code</i> - in your case, you need an Experiment template
+                that takes HuggingFace dataset and model and perform a classification task. If no such Experiment template is available in the
+                <a [routerLink]="['/experiments', 'templates', 'public']">list of all public templates</a>, you can <a [routerLink]="['/experiments', 'templates', 'create']">
                     create your own</a> (and share it with others or reuse it on your own).</li>
             <li>Execute the Experiment. The Experiment will be executed by creating an instance of your experiment called Experiment Run that will be run in the AI on Demand platform and the results will be available in RAIL.</li>
         </ol>
-        
+
 
         <!-- ============================================================ -->
         <h2>Explore AI Assets available in AIoD</h2>
@@ -59,10 +59,10 @@
         <p>
             RAIL allows AI practitioners to compose AI assets available in AIoD into executable experiments that are reproducible and reusable by introducing two main concepts:
         </p>
-    
+
         <h3>Experiment template</h3>
         <p>
-            <a [routerLink]="['/experiments', 'templates', 'all']">Experiment template</a> is a combination of <i>runtime environment</i>, <i>software dependencies</i> and <i>code</i>.
+            <a [routerLink]="['/experiments', 'templates', 'public']">Experiment template</a> is a combination of <i>runtime environment</i>, <i>software dependencies</i> and <i>code</i>.
         </p>
         <ul>
             <li><b>Runtime environment</b> is a specification of the environment in which the experiment is executed. It includes the specification of the hardware and software environment.</li>
@@ -78,7 +78,7 @@
 
         <h3>Experiment</h3>
         <p>
-            <a [routerLink]="['/experiments', 'all']">Experiment</a> is a particular executable instance of an Experiment template. Experiments are composed of AI assets and are executed in the AIoD platform. Experiments are reproducible and reusable.
+            <a [routerLink]="['/experiments', 'public']">Experiment</a> is a particular executable instance of an Experiment template. Experiments are composed of AI assets and are executed in the AIoD platform. Experiments are reproducible and reusable.
         </p>
         <p>
             When you create an experiment, you select an Experiment template that you want to use as a basis for your experiment. Then, you select particular AI assets and values of environment variables that you want to use in your experiment.

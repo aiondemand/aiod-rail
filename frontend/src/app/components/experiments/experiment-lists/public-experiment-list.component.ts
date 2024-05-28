@@ -4,15 +4,15 @@ import { Experiment } from 'src/app/models/experiment';
 import { Observable, of } from 'rxjs';
 
 @Component({
-  selector: 'app-all-experiment-list',
+  selector: 'app-public-experiment-list',
   templateUrl: './experiment-lists.component.html',
   styleUrls: ['./experiment-lists.component.scss']
 })
-export class AllExperimentListComponent extends ExperimentListBaseComponent {
+export class PublicExperimentListComponent extends ExperimentListBaseComponent {
   protected override getExperimentsCount(): Observable<number> {
     return this.backend.getExperimentsCount(
       this.searchQuery,
-      { 
+      {
         archived: false,
         public: true
       }

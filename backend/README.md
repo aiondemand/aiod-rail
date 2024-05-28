@@ -28,7 +28,6 @@ As a database we use a containerized MongoDB server (through Docker), the REST A
       defined in variable `DOCKER_REGISTRY_URL`
     - `DOCKER_REGISTRY_PASSWORD`: Define a password for a Docker Hub profile that has push permissions to a repository
       defined in variable `DOCKER_REGISTRY_URL`
-    - `PASSWORD_FOR_TEMPLATE_APPROVAL`: Define a password that authorizes you to approve a new experiment template
     - `AIOD_KEYCLOAK__*`: Variables related to authentication using Keycloak
 1. Start the service using the following command: `docker compose up -d --build`
 

@@ -5,9 +5,11 @@ from datetime import datetime, timezone
 from functools import partial
 from pathlib import Path
 
-from beanie import Document, Indexed, PydanticObjectId
+from beanie import Document, Indexed, PydanticObjectId, operators
+from beanie.odm.operators.find import BaseFindOperator
 from pydantic import Field
 
+from app.auth import has_admin_role
 from app.config import (
     EXPERIMENT_RUN_DIR_PREFIX,
     LOGS_FILENAME,
@@ -75,6 +77,32 @@ class ExperimentRun(Document):
         if return_detailed_response is False:
             return response
         return ExperimentRunDetails(**response.dict(), logs=self.logs)
+
+    def is_readable_by_user(self, user: dict | None) -> bool:
+        if self.public:
+            return True
+        elif user is None:
+            return False
+        else:
+            return self.created_by == user["email"] or has_admin_role(user)
+
+    @classmethod
+    def get_query_readable_by_user(cls, user: dict | None) -> BaseFindOperator:
+        if user is None:
+            return operators.Eq(cls.public, True)
+        elif has_admin_role(user):
+            return operators.Exists(cls.id, True)
+        else:
+            return operators.Or(
+                operators.Eq(cls.public, True),
+                operators.Eq(cls.created_by, user["email"]),
+            )
+
+    def is_editable_by_user(self, user: dict | None) -> bool:
+        if user is not None and self.created_by == user["email"]:
+            return True
+        else:
+            return False
 
     def retry_failed_run(self):
         return ExperimentRun(

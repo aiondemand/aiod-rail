@@ -38,7 +38,7 @@ export abstract class ExperimentListBaseComponent {
   handlePageEvent(e: PageEvent) {
     this.pagination.pageSize = e.pageSize;
     this.pagination.pageIndex = e.pageIndex;
-    
+
     this.updateExperiments();
   }
 
@@ -50,7 +50,7 @@ export abstract class ExperimentListBaseComponent {
     this.searchQuery = query;
     this.pagination.pageIndex = 0;
 
-    this.updateExperiments(); 
+    this.updateExperiments();
   }
 
   updateExperiments() {
@@ -66,7 +66,7 @@ export abstract class ExperimentListBaseComponent {
     }
     if (this.searchQuery.length > 0) {
       queryParams.searchQuery = this.searchQuery;
-    }    
+    }
 
     this.router.navigate([], {
       relativeTo: this.route,

@@ -1,4 +1,4 @@
-import { Platform } from "../models/platform";
+import { Platform } from '../models/platform';
 
 export function formatPlatformName(platform: string | Platform): string {
     const platformName = typeof platform == 'string' ? platform : platform.name;

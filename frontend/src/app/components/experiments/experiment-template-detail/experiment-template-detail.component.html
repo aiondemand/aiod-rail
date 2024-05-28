@@ -3,18 +3,26 @@
         <div class="header-name">
             <h1>
                 {{experimentTemplate.name}}
-            </h1> 
+            </h1>
             <mat-icon *ngIf="experimentTemplate.public" matTooltip="Public template">public</mat-icon>
             <mat-icon *ngIf="!experimentTemplate.public" matTooltip="Private template">public_off</mat-icon>
         </div>
-        
-        <div class="header-buttons" *ngIf="experimentTemplate.mine && !experimentTemplate.archived">
-            <button mat-icon-button matTooltip="Edit" (click)="editBtnClicked()">
-                <mat-icon>edit</mat-icon>
-            </button>
-            <button mat-icon-button matTooltip="Delete" (click)="deleteBtnClicked()">
-                <mat-icon>delete</mat-icon>
-            </button>
+
+        <div class="header-buttons">
+            <div *ngIf="!experimentTemplate.approved && isAdminUser">
+                <button mat-icon-button matTooltip="Approve" (click)="approveBtnClicked()">
+                    <mat-icon>approval</mat-icon>
+                </button>
+            </div>
+
+            <div *ngIf="experimentTemplate.mine && !experimentTemplate.archived">
+                <button mat-icon-button matTooltip="Edit" (click)="editBtnClicked()">
+                    <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button matTooltip="Delete" (click)="deleteBtnClicked()">
+                    <mat-icon>delete</mat-icon>
+                </button>
+            </div>
         </div>
 
         <div class="deleted-state" *ngIf="experimentTemplate.archived">
@@ -25,7 +33,7 @@
             </button>
         </div>
     </div>
-    
+
     <div class="state" *ngIf="!experimentTemplate.archived && experimentTemplate.state != 'FINISHED'">
         <ng-container *ngIf="!experimentTemplate.approved">
             <span class="crashed"><mat-icon matTooltip="Experiment templates are manually reviewed before being approved for use">search</mat-icon>Waiting for approval</span>
@@ -42,7 +50,7 @@
     </div>
 
     <mat-divider></mat-divider>
-    
+
     <div class="template-details-section">
         <h2>Template details and runtime</h2>
 
@@ -72,8 +80,8 @@
         <!-- Script -->
         <div class="header-with-info">
             <h4>Executable (script)</h4>
-            <mat-icon matTooltip="This script.py will be executed within the Docker container with installed dependencies. 
-            The script may save outputs (models, data) and results (metrics) during its execution. 
+            <mat-icon matTooltip="This script.py will be executed within the Docker container with installed dependencies.
+            The script may save outputs (models, data) and results (metrics) during its execution.
             These will be available in the detail of Experiment Run.">info</mat-icon>
         </div>
 
@@ -82,16 +90,16 @@
             <pre class="code"><code [highlight]="experimentTemplate.script" [lineNumbers]="true" [languages]="['python']"></code></pre>
         </div>
 
-    </div>    
+    </div>
 
     <mat-divider></mat-divider>
 
     <!-- TODO later uncomment -->
     <!-- <h2>Compatible models and datasets</h2>
     <p>
-        The compatibility of Datasets and Models with an ExperimentTemplate is <b>fully determined 
-        by the script.py.</b> For example, if the author of the script coded the script in a way 
-        that it can work with only one dataset from HuggingFace, then no more than one HuggingFace 
+        The compatibility of Datasets and Models with an ExperimentTemplate is <b>fully determined
+        by the script.py.</b> For example, if the author of the script coded the script in a way
+        that it can work with only one dataset from HuggingFace, then no more than one HuggingFace
         dataset will be allowed. The constraints are defined by the author of the ExperimentTemplate.
     </p>
 
@@ -110,14 +118,14 @@
             <p>Platforms: <b>HuggingFace</b></p>
         </div>
 
-    
+
     <mat-divider></mat-divider> -->
-    
+
     <h2>Supported environment variables</h2>
     <p>
-        The environment variables that can be set by the user in an Experiment derived 
-        from this ExperimentTemplate. These variables are used in script.py and can 
-        influence the execution of the script. The meaning of the variables is fully 
+        The environment variables that can be set by the user in an Experiment derived
+        from this ExperimentTemplate. These variables are used in script.py and can
+        influence the execution of the script. The meaning of the variables is fully
         determined by script.py and its author.
     </p>
 

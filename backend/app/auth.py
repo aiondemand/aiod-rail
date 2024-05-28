@@ -59,7 +59,7 @@ def get_current_user(
         elif not required and not token and not api_key:
             return None
         elif from_token and token:
-            return await _verify_token(token)
+            return await _get_userinfo(token)
         elif from_api_key and api_key:
             # TODO: Fetch userinfo based on user email from Keycloak
             # needs special role/rights in Keycloak for the client
@@ -83,24 +83,60 @@ def get_current_user(
     return _get_user
 
 
-async def _verify_token(token: str) -> dict:
-    try:
-        token = token.replace("Bearer ", "")
-        return keycloak_openid.userinfo(token)  # perform a request to keycloak
-    except KeycloakError as e:
-        error_msg = e.error_message
-        error_detail = "Invalid authentication token"
+async def is_admin(token: str = Security(oidc)):
+    user_info = await _get_userinfo(token)
 
-        if isinstance(error_msg, bytes):
-            error_msg = error_msg.decode("utf-8")
-
-        if error_msg:
-            error_detail = f"{error_detail}: '{error_msg}'"
-
-        logging.error(error_detail)
-
+    if not has_admin_role(user_info):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=error_detail,
+            detail="You don't have enough privileges",
             headers={"WWW-Authenticate": "Bearer"},
         )
+
+
+def has_admin_role(user_info: dict) -> bool:
+    user_client_roles = (
+        user_info.get("resource_access", {})
+        .get(settings.AIOD_KEYCLOAK.CLIENT_ID, {})
+        .get("roles", [])
+    )
+    return "admin_access" in user_client_roles
+
+
+async def _get_userinfo(token: str) -> dict:
+    if token is None:
+        raise_requires_auth()
+
+    token = token.replace("Bearer ", "")
+
+    try:
+        return keycloak_openid.userinfo(token)
+    except KeycloakError as e:
+        _raise_invalid_token(e)
+
+
+def raise_requires_auth():
+    raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="This endpoint requires authorization. You need to be logged in.",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+
+
+def _raise_invalid_token(ex: KeycloakError):
+    error_msg = ex.error_message
+    error_detail = "Invalid authentication token"
+
+    if isinstance(error_msg, bytes):
+        error_msg = error_msg.decode("utf-8")
+
+    if error_msg:
+        error_detail = f"{error_detail}: '{error_msg}'"
+
+    logging.error(error_detail)
+
+    raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail=error_detail,
+        headers={"WWW-Authenticate": "Bearer"},
+    )

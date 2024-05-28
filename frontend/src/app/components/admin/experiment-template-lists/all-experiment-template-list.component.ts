@@ -1,25 +1,24 @@
 import { Component } from '@angular/core';
-import { ExperimentTemplateListBaseComponent } from './experiment-template-list-base.component';
 import { Observable } from 'rxjs';
 import { ExperimentTemplate } from 'src/app/models/experiment-template';
+import { ExperimentTemplateListBaseComponent } from '../../experiments/experiment-template-lists/experiment-template-list-base.component';
 
 @Component({
-  selector: 'app-my-experiment-template-list',
-  templateUrl: './experiment-template-lists.component.html',
-  styleUrls: ['./experiment-template-lists.component.scss']
+  selector: 'app-all-experiment-template-list',
+  templateUrl: '../../experiments/experiment-template-lists/experiment-template-lists.component.html',
+  styleUrls: ['../../experiments/experiment-template-lists/experiment-template-lists.component.scss']
 })
-export class MyExperimentTemplateListComponent extends ExperimentTemplateListBaseComponent {
+export class AllExperimentTemplateListComponent extends ExperimentTemplateListBaseComponent {
 
   protected override getExperimentTemplatesCount(): Observable<number> {
     return this.backend.getExperimentTemplatesCount(
       this.searchQuery,
       {
-        mine: true
       }
     );
   }
 
-  protected override getExperimentTemplates(): Observable<ExperimentTemplate[]> {
+  protected getExperimentTemplates(): Observable<ExperimentTemplate[]> {
     return this.backend.getExperimentTemplates(
       this.searchQuery,
       {
@@ -27,7 +26,6 @@ export class MyExperimentTemplateListComponent extends ExperimentTemplateListBas
         limit: this.pagination.pageSize
       },
       {
-        mine: true
       }
     );
   }

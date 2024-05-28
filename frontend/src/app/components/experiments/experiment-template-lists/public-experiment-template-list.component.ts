@@ -4,11 +4,11 @@ import { Observable } from 'rxjs';
 import { ExperimentTemplate } from 'src/app/models/experiment-template';
 
 @Component({
-  selector: 'app-all-experiment-template-list',
+  selector: 'app-public-experiment-template-list',
   templateUrl: './experiment-template-lists.component.html',
   styleUrls: ['./experiment-template-lists.component.scss']
 })
-export class AllExperimentTemplateList extends ExperimentTemplateListBaseComponent {
+export class PublicExperimentTemplateListComponent extends ExperimentTemplateListBaseComponent {
 
   protected override getExperimentTemplatesCount(): Observable<number> {
     return this.backend.getExperimentTemplatesCount(
