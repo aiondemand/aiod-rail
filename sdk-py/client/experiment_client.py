@@ -198,7 +198,7 @@ class Experiments:
             except Exception as e:
                 raise (f"Exception {e}")
 
-    def get_experiments_run(self, id: int, offset: int = 0, limit: int = 100):
+    def get_experiments_run(self, id: str, offset: int = 0, limit: int = 100):
         """
         Gets runs of specified experiment in selected range.
         Args:
@@ -220,7 +220,7 @@ class Experiments:
             except Exception as e:
                 print(f"Exception {e}")
 
-    def get_experiments_run_count(self, id: int) -> int:
+    def get_experiments_run_count(self, id: str) -> int:
         """
         Gets count of experiments runs.
         Args:
@@ -234,6 +234,62 @@ class Experiments:
             try:
                 api_response = api_instance.get_experiment_runs_of_experiment_count_v1_count_experiments_id_runs_get(
                     id=id
+                )
+                return api_response
+            except Exception as e:
+                print(f"Exception {e}")
+
+    def delete_experiment_run(self, id: str) -> None:
+        """
+        Deletes experiment run.
+        Args:
+            id (str): ID of experiment run to be deleted.
+        Returns:
+            None.
+        """
+        with aiod_rail_sdk.ApiClient(self._configuration) as api_client:
+            api_instance = aiod_rail_sdk.ExperimentRunsApi(api_client)
+
+            try:
+                api_instance.delete_experiment_run_v1_experiment_runs_id_delete(id)
+            except Exception as e:
+                print(f"Exception {e}")
+
+    def download_experiment_run(self, id: str, filepath: str) -> None:
+        """
+        Downloads experiment run.
+        Args:
+            id (str): ID of experiment run to be downloaded.
+            filepath (str): Local path to which run will be downloaded.
+        Returns:
+            None.
+        """
+        with aiod_rail_sdk.ApiClient(self._configuration) as api_client:
+            api_instance = aiod_rail_sdk.ExperimentRunsApi(api_client)
+
+            try:
+                api_instance.download_file_from_experiment_run_v1_experiment_runs_id_files_download_get(
+                    id=id, filepath=filepath
+                )
+            except Exception as e:
+                print(f"Exception {e}")
+
+    def logs_experiment_run(self, id: str) -> str:
+        """
+        Gets logs of experiment run.
+        Args:
+            id (str): ID of experiment run of which logs will be fetched.
+        Returns:
+            None.
+        """
+        with aiod_rail_sdk.ApiClient(self._configuration) as api_client:
+            api_instance = aiod_rail_sdk.ExperimentRunsApi(api_client)
+
+            try:
+                api_response = (
+                    api_instance.get_experiment_run_logs_v1_experiment_runs_id_logs_get(
+                        id=id
+                    )
                 )
                 return api_response
             except Exception as e:
