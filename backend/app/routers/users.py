@@ -65,7 +65,7 @@ async def create_or_change_user_api_key(
     else:
         try:
             user_obj.api_key = RailUser.generate_api_key()
-            await RailUser.replace(user_obj)
+            await user_obj.set({RailUser.api_key: RailUser.generate_api_key()})
         except Exception:
             logger.error("Error while creating API key")
             raise HTTPException(
