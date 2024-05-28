@@ -22,10 +22,10 @@ export interface ExperimentTemplateCreate {
     models_schema: AssetSchema;
     envs_required: Array<EnvironmentVarDef>;
     envs_optional: Array<EnvironmentVarDef>;
-    available_metrics: Array<string>;
     script: string;
     pip_requirements: string;
     base_image: string;
+    public: boolean;
 }
 export namespace ExperimentTemplateCreate {
 }

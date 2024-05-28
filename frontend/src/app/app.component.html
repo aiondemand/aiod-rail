@@ -31,6 +31,9 @@
       <a mat-tab-link [routerLink]="['/about']"  #rlc="routerLinkActive" routerLinkActive="active" [active]="rlc.isActive">
         About
       </a>
+      <a *ngIf="isLoggedIn" mat-tab-link [routerLink]="['/profile']"  #rlc="routerLinkActive" routerLinkActive="active" [active]="rlc.isActive">
+        Profile
+      </a>
     </nav>
     <mat-tab-nav-panel #tabPanel>
       <router-outlet></router-outlet>

@@ -28,12 +28,10 @@ def wandb_check():
     return set(necessary_envs).issubset(os.environ)
 
 
-def process_metrics(all_metrics: dict, metrics_filter: list):
-    metrics_of_interest = {k: all_metrics.get(k) for k in metrics_filter}
-
+def save_metrics(metrics: dict):
     os.makedirs("./output-temp", exist_ok=True)
     with open("./output-temp/metrics.json", "w") as f:
-        json.dump(metrics_of_interest, f)
+        json.dump(metrics, f)
 
     if wandb_check():
         wandb.init(
@@ -41,14 +39,15 @@ def process_metrics(all_metrics: dict, metrics_filter: list):
             name=os.environ["WANDB_NAME"],
             entity=os.environ["WANDB_ENTITY"],
         )
-        wandb.log(metrics_of_interest)
+        wandb.log(metrics)
         wandb.finish()
 
 
 if __name__ == "__main__":
     model_name = os.getenv("MODEL_NAMES").split(",")[0]
     dataset_name = os.getenv("DATASET_NAMES").split(",")[0]
-    metrics_to_compute = os.getenv("METRICS", default="").split(",")
+    model_id = os.getenv("MODEL_IDS").split(",")[0]
+    dataset_id = os.getenv("DATASET_IDS").split(",")[0]
     split_name = os.getenv("SPLIT_NAME", default="train")
 
     for attempt in range(5):
@@ -117,4 +116,4 @@ if __name__ == "__main__":
         "recall_macro": recall_macro,
         "f1_macro": f1_macro,
     }
-    process_metrics(metrics, metrics_to_compute)
+    save_metrics(metrics)

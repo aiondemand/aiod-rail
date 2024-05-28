@@ -12,7 +12,7 @@ from app.models.experiment import Experiment
 from app.models.experiment_run import ExperimentRun
 from app.models.experiment_template import ExperimentTemplate
 from app.schemas.experiment_run import ExperimentRunId
-from app.schemas.experiment_template import ExperimentTemplateId
+from app.schemas.experiment_template import ExperimentTemplateId, ReservedEnvVars
 from app.schemas.states import RunState, TemplateState
 from app.services.aiod import get_dataset_name, get_model_name
 from app.services.container_platforms.base import ContainerPlatformBase
@@ -128,8 +128,7 @@ class ExperimentScheduler:
             if image_exists is False:
                 return
 
-            experiment_run.update_state(RunState.IN_PROGRESS)
-            await experiment_run.replace()
+            await experiment_run.update_state_in_db(RunState.IN_PROGRESS)
             self.logger.info(
                 f"=== ExperimentRun id={experiment_run.id} "
                 + f"(retry_count={experiment_run.retry_count}) "
@@ -145,18 +144,21 @@ class ExperimentScheduler:
             should_retry = (
                 experiment_run.retry_count < settings.MAX_EXPERIMENT_RUN_ATTEMPTS - 1
                 and workflow_state.success is False
+                and workflow_state.manually_stopped is False
+                and workflow_state.manually_deleted is False
             )
             if workflow_state.success:
                 new_state = RunState.FINISHED
             else:
                 new_state = RunState.CRASHED
 
-            experiment_run.update_state(new_state)
-            await experiment_run.replace()
-            if should_retry:
-                new_exp_run = experiment_run.retry_failed_run()
-                await new_exp_run.create()
-                await self.add_run_to_execute(new_exp_run.id)
+            if workflow_state.manually_deleted is False:
+                await experiment_run.update_state_in_db(new_state)
+
+                if should_retry:
+                    new_exp_run = experiment_run.retry_failed_run()
+                    await new_exp_run.create()
+                    await self.add_run_to_execute(new_exp_run.id)
 
             self.logger.info(
                 f"=== ExperimentRun id={experiment_run.id} "
@@ -173,8 +175,11 @@ class ExperimentScheduler:
             experiment_run, experiment, environment_variables
         )
         workflow_state = await self.workflow_engine.run_workflow(experiment_run)
-        await self.workflow_engine.postprocess_workflow(experiment_run, workflow_state)
 
+        if workflow_state.manually_deleted is False:
+            await self.workflow_engine.postprocess_workflow(
+                experiment_run, workflow_state
+            )
         return workflow_state
 
     async def _rebuild_image_if_necessary(
@@ -185,10 +190,9 @@ class ExperimentScheduler:
             return True
 
         # image rebuilding
-        experiment_template.update_state(TemplateState.CREATED)
-        experiment_template.retry_count = 0
-        await experiment_template.replace()
-
+        await experiment_template.update_state_in_db(
+            TemplateState.CREATED, retry_count=0
+        )
         successful_image_rebuild = await self._build_image_multiple_attempts(
             experiment_template
         )
@@ -197,27 +201,36 @@ class ExperimentScheduler:
                 f"ExperimentRun id={experiment_run.id} has not started "
                 + "as the corresponding image was not successfully rebuilt"
             )
-            experiment_run.update_state(RunState.CRASHED)
-            await experiment_run.replace()
+            await experiment_run.update_state_in_db(RunState.CRASHED)
 
         return successful_image_rebuild
 
     async def _general_workflow_preparation(
         self, experiment_run: ExperimentRun, experiment: Experiment
     ) -> dict[str, str]:
-        model_names = [await get_model_name(x) for x in experiment.model_ids]
-        dataset_names = [await get_dataset_name(x) for x in experiment.dataset_ids]
+        model_names_env = ",".join(
+            [await get_model_name(x) for x in experiment.model_ids]
+        )
+        dataset_names_env = ",".join(
+            [await get_dataset_name(x) for x in experiment.dataset_ids]
+        )
+        model_ids_env = [str(id) for id in experiment.model_ids]
+        dataset_ids_env = [str(id) for id in experiment.dataset_ids]
+        reserved_env_values = [
+            model_names_env,
+            dataset_names_env,
+            model_ids_env,
+            dataset_ids_env,
+        ]
 
         environment_variables = {env.key: env.value for env in experiment.env_vars}
-        environment_variables.update(
-            {
-                "MODEL_NAMES": ",".join(model_names),
-                "DATASET_NAMES": ",".join(dataset_names),
-                "METRICS": ",".join(experiment.metrics),
-            }
-        )
+        reserved_vars = {
+            name.value: val
+            for name, val in zip(list(ReservedEnvVars), reserved_env_values)
+        }
+        environment_variables.update(reserved_vars)
 
-        exp_run_folder = settings.get_experiment_run_path(experiment_run.id)
+        exp_run_folder = experiment_run.run_path
         if exp_run_folder.exists():
             shutil.rmtree(exp_run_folder)
         exp_run_folder.mkdir(parents=True)
@@ -247,8 +260,7 @@ class ExperimentScheduler:
         self, experiment_template: ExperimentTemplate
     ) -> bool:
         while True:
-            experiment_template.update_state(TemplateState.IN_PROGRESS)
-            await experiment_template.replace()
+            await experiment_template.update_state_in_db(TemplateState.IN_PROGRESS)
 
             image_build_state = await self.container_platform.build_image(
                 experiment_template
@@ -265,10 +277,10 @@ class ExperimentScheduler:
             else:
                 new_state = TemplateState.CRASHED
 
-            experiment_template.update_state(new_state)
-            experiment_template.retry_count += int(should_retry)
-            await experiment_template.replace()
-
+            await experiment_template.update_state_in_db(
+                new_state,
+                retry_count=experiment_template.retry_count + int(should_retry),
+            )
             if should_retry:
                 continue
             return image_build_state

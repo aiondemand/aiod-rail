@@ -1,5 +1,31 @@
 <div *ngIf="experiment">
-    <h1>{{experiment.name}}</h1>
+    <div class="header">
+        <div class="header-name">
+            <h1>
+                {{experiment.name}}
+            </h1> 
+            <mat-icon *ngIf="experiment.public" matTooltip="Public template">public</mat-icon>
+            <mat-icon *ngIf="!experiment.public" matTooltip="Private template">public_off</mat-icon>
+        </div>
+
+        <div class="header-buttons" *ngIf="experiment.mine && !experiment.archived">
+            <button mat-icon-button matTooltip="Edit" (click)="editBtnClicked()">
+                <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button matTooltip="Delete" (click)="deleteBtnClicked()">
+                <mat-icon>delete</mat-icon>
+            </button>
+        </div>
+
+        <div class="deleted-state" *ngIf="experiment.archived">
+            <span class="crashed"><mat-icon matTooltip="This experiment can no longer be executed">delete</mat-icon>Archived</span>
+            <button mat-stroked-button class="undo-button" *ngIf="experiment.mine" (click)="undoBtnClicked()">
+                <mat-icon>settings_backup_restore</mat-icon>
+                Unarchive
+            </button>
+        </div>
+    </div>
+
     <div class="experiment-basic-information">
         <span class="detail" matTooltip="Identifier">
             <mat-icon class="icon">badge</mat-icon>ID: {{experiment.id | defaultIfEmpty:"Unknown"}}
@@ -25,15 +51,6 @@
                 [routerLink]="['/experiments', 'templates', experimentTemplate.id]">Experiment template:
                 {{experimentTemplate.name}}</a>
         </span>
-
-        <div class="experiment-metrics" *ngIf="experiment.metrics.length > 0">
-            <span matTooltip="Metrics"><span class="material-symbols-outlined icon">bar_chart</span></span>
-            <mat-chip-listbox>
-                <mat-chip class="metric-chip" *ngFor="let metric of experiment.metrics" [disabled]="true">
-                    {{metric}}
-                </mat-chip>
-            </mat-chip-listbox>
-        </div>
 
         <div class="experiment-env-vars" *ngIf="experiment.env_vars.length > 0">
             <h4>Environment variables</h4>
@@ -77,12 +94,10 @@
     <h1>Runs</h1>
     <!-- Create new experiment run form -->
     <div class="experiment-run-create-btn-wrapper">
-    <button mat-raised-button color="primary" (click)="onCreateRun()" [disabled]="experimentTemplate.state != 'FINISHED'"
-        >+ Create new experiment run
+    <button mat-raised-button color="primary" (click)="onCreateRun()" [disabled]="!experiment.mine || experiment.archived">
+        <mat-icon>add_circle</mat-icon>
+        Create new experiment run
     </button>
-    <span *ngIf="experimentTemplate.state != 'FINISHED'">
-        Experiment Template hasn't been finished yet (state: {{experimentTemplate.state}})
-    </span>
     </div>
     <app-experiment-run-list #runList [experiment]="experiment"></app-experiment-run-list>
 </div>

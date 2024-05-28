@@ -4,11 +4,15 @@ export interface PageQueries {
 }
 
 export interface ExperimentTemplateQueries {
-  only_mine?: boolean;
-  include_pending?: boolean;
-  only_finalized?: boolean;
+  mine?: boolean;
+  finalized?: boolean;
+  approved?: boolean;
+  archived?: boolean,
+  public?: boolean,
 }
 
 export interface ExperimentQueries {
-  // TODO: Add query parameters
+  mine?: boolean;
+  archived?: boolean;
+  public?: boolean;
 }

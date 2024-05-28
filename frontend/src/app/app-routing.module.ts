@@ -2,22 +2,22 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { ExperimentsComponent } from './components/experiments/experiments.component';
 import { DatasetsComponent } from './components/datasets/datasets.component';
-import { PublicationsComponent } from './components/publications/publications.component';
 import { DatasetListComponent } from './components/datasets/dataset-list/dataset-list.component';
 import { DatasetDetailComponent } from './components/datasets/dataset-detail/dataset-detail.component';
 import { SavedDatasetsComponent } from './components/datasets/saved-datasets/saved-datasets.component';
 import { CreateDatasetComponent } from './components/datasets/create-dataset/create-dataset.component';
 import { authGuard } from './guards/auth.guard';
-import { CreateExperimentComponent } from './components/experiments/create-experiment/create-experiment.component';
+import { EditExperimentComponent } from './components/experiments/edit-experiment/edit-experiment.component';
 import { ExperimentDetailComponent } from './components/experiments/experiment-detail/experiment-detail.component';
 import { ExperimentRunDetailComponent } from './components/experiments/experiment-run-detail/experiment-run-detail.component';
 import { AllExperimentListComponent } from './components/experiments/experiment-lists/all-experiment-list.component';
 import { MyExperimentListComponent } from './components/experiments/experiment-lists/my-experiment-list.component';
 import { ExperimentTemplateDetailComponent } from './components/experiments/experiment-template-detail/experiment-template-detail.component';
-import { CreateExperimentTemplateComponent } from './components/experiments/create-experiment-template/create-experiment-template.component';
 import { AllExperimentTemplateList } from './components/experiments/experiment-template-lists/all-experiment-template-list.component';
 import { MyExperimentTemplateList } from './components/experiments/experiment-template-lists/my-experiment-template-list.component';
 import { AboutComponent } from './components/general/about/about.component';
+import { EditExperimentTemplateComponent } from './components/experiments/edit-experiment-template/edit-experiment-template.component';
+import { ProfileComponent } from './components/profile/profile.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'about', pathMatch: 'full' },
@@ -30,11 +30,10 @@ const routes: Routes = [
       { path: '', redirectTo: 'all', pathMatch: 'full' },
       { path: 'all', component: AllExperimentListComponent},
       { path: 'my',  component: MyExperimentListComponent, canActivate: [authGuard] },
-      { path: 'create', component: CreateExperimentComponent, canActivate: [authGuard] },
-      { 
-        path: ':id', 
-        component: ExperimentDetailComponent
-      },
+      { path: 'create', component: EditExperimentComponent, canActivate: [authGuard] },
+      // TODO check whether :ID is valid or whether a specific experiment / template actually exists
+      { path: ':id', component: ExperimentDetailComponent },
+      { path: ':id/update', component: EditExperimentComponent, canActivate: [authGuard] },
 
       // experiment runs
       { path: 'runs/:runId', component: ExperimentRunDetailComponent },
@@ -46,8 +45,9 @@ const routes: Routes = [
           { path: '', redirectTo: 'all', pathMatch: 'full' },
           { path: "all", component: AllExperimentTemplateList},
           { path: "my", component: MyExperimentTemplateList, canActivate: [authGuard] },
-          { path: 'create', component: CreateExperimentTemplateComponent, canActivate: [authGuard] },
-          { path: ':id', component: ExperimentTemplateDetailComponent }
+          { path: 'create', component: EditExperimentTemplateComponent, canActivate: [authGuard] },
+          { path: ':id', component: ExperimentTemplateDetailComponent },
+          { path: ':id/update', component: EditExperimentTemplateComponent, canActivate: [authGuard] },
         ]
       }
     ],
@@ -62,6 +62,9 @@ const routes: Routes = [
       { path: ':id', component: DatasetDetailComponent }
     ]
   },
+  {
+    path: 'profile', component: ProfileComponent, canActivate: [authGuard]
+  }
   // { path: 'publications', component: PublicationsComponent }
 ];
 

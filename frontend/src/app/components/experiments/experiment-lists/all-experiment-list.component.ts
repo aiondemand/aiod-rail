@@ -9,17 +9,27 @@ import { Observable, of } from 'rxjs';
   styleUrls: ['./experiment-lists.component.scss']
 })
 export class AllExperimentListComponent extends ExperimentListBaseComponent {
-  protected override isAllExperiments(): boolean {
-    return true;
-  }
-
   protected override getExperimentsCount(): Observable<number> {
-    // TODO: Add support for public experiments
-    return of(0);
+    return this.backend.getExperimentsCount(
+      this.searchQuery,
+      { 
+        archived: false,
+        public: true
+      }
+    );
   }
 
-  protected override updateExperiments(): Observable<Experiment[]> {
-    // TODO: Add support for public experiments
-    return of([]);
+  protected override getExperiments(): Observable<Experiment[]>  {
+    return this.backend.getExperiments(
+      this.searchQuery,
+      {
+        offset: this.pagination.pageIndex * this.pagination.pageSize,
+        limit: this.pagination.pageSize
+      },
+      {
+        archived: false,
+        public: true
+      }
+    );
   }
 }

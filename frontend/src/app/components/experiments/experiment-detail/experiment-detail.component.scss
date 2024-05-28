@@ -1,5 +1,55 @@
 @import '../../../../variables.scss';
 
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .header-name {
+        display: flex;
+        align-items: center;
+        gap: 0.75em;
+
+        mat-icon {
+            color: rgb(220, 220, 220);
+            transform: scale(1.5);
+        }
+    }
+
+    .header-buttons {
+        display: flex;
+        gap: 0.25em;
+
+        color: grey;
+
+        button:hover {
+            color: black;
+        }
+    }
+}
+
+.deleted-state {
+    display: flex;
+    gap: 1em;
+    
+    span {
+        display: flex;
+        align-items: center;
+        gap: 0.25em;
+    }
+    
+    font-size: 0.7em;
+    
+    .crashed {
+        color: red;
+    }
+
+    .undo-button {
+        border-color: red;
+        font-size: 1em;
+    }
+}
+
 
 .experiment-short-description {
     // show maximally 2 lines of text

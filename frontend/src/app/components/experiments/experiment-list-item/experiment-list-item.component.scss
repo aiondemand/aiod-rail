@@ -14,6 +14,33 @@ mat-card {
     }
 }
 
+.experiment-name {
+    display: flex;
+    align-items: center;
+    gap: 0.3em;
+
+    mat-icon {
+        color: rgb(220, 220, 220);
+    }
+}
+
+.state {
+    margin-bottom: 1em;
+    margin-left: 0.5em;
+    
+    span {
+        display: flex;
+        align-items: center;
+        gap: 0.25em;
+    }
+    
+    font-size: 0.7em;
+    
+    .crashed {
+        color: red;
+    }
+}
+
 .experiment-information {
     display: flex;
     flex-wrap: wrap;

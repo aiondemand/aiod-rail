@@ -6,6 +6,20 @@
         <mat-icon>filter_alt</mat-icon>
     </button> -->
 
+    <div class="search-div">
+        <mat-form-field>
+            <mat-label>Full-text search</mat-label>
+            <input matInput #searchField
+                (keyup.enter)="searchTemplates(searchField.value)" 
+            />
+        </mat-form-field>
+        <button mat-icon-button #searchIconBtn
+            (click)="searchTemplates(searchField.value)"
+            aria-label="Search Experiment templates"> 
+            <mat-icon>search</mat-icon>
+        </button>
+    </div>
+
     <mat-paginator #paginator
                    class="demo-paginator"
                    (page)="handlePageEvent($event)"

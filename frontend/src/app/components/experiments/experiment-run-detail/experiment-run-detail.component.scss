@@ -1,5 +1,21 @@
 @import '../../../../variables.scss';
 
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .header-menu {
+        display: flex;
+        gap: 0.25em;
+        color: grey;
+
+        button:hover {
+            color: black;
+        }
+    }
+}
+
 
 .logs {
     // margin-top: 0;
