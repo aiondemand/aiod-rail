@@ -155,6 +155,7 @@ class ReanaService(WorkflowEngineBase):
         exp_dirpath = experiment_run.run_path
         exp_output_dirpath = experiment_run.run_output_path
 
+        # general postprocessing
         try:
             await self._async_reana_call(
                 "prune_workspace",
@@ -162,13 +163,22 @@ class ReanaService(WorkflowEngineBase):
                 include_inputs=False,
                 include_outputs=False,
             )
-            await self._async_reana_call(
-                "mv_files",
-                source=RUN_TEMP_OUTPUT_FOLDER,
-                target=RUN_OUTPUT_FOLDER,
-                workflow=workflow_name,
+            if await self._exists_file(experiment_run, f"{RUN_TEMP_OUTPUT_FOLDER}/"):
+                await self._async_reana_call(
+                    "mv_files",
+                    source=RUN_TEMP_OUTPUT_FOLDER,
+                    target=RUN_OUTPUT_FOLDER,
+                    workflow=workflow_name,
+                )
+        except ReanaConnectionException as e:
+            raise e
+        except Exception as e:
+            self.logger.error(
+                "There was an error when postprocessing an experiment run", exc_info=e
             )
-            # retrieve logs
+
+        # retrieve logs
+        try:
             logs = (
                 await self._async_reana_call(
                     "get_workflow_logs", workflow=workflow_name
@@ -182,13 +192,16 @@ class ReanaService(WorkflowEngineBase):
             raise e
         except Exception as e:
             self.logger.error(
-                "There was an error when postprocessing an experiment run", exc_info=e
+                "There was an error when retreving logs from an experiment run",
+                exc_info=e,
             )
-            return
 
         # save metrics.json
         metrics_filepath = f"{RUN_OUTPUT_FOLDER}/{METRICS_FILENAME}"
-        await self.download_file(experiment_run, metrics_filepath, exp_output_dirpath)
+        if await self._exists_file(experiment_run, metrics_filepath):
+            await self.download_file(
+                experiment_run, metrics_filepath, exp_output_dirpath
+            )
 
     async def download_file(
         self, experiment_run: ExperimentRun, filepath: str, savedir: Path
@@ -229,6 +242,12 @@ class ReanaService(WorkflowEngineBase):
             )
             for file in files
         ]
+
+    async def _exists_file(self, experiment_run: ExperimentRun, filepath: str) -> bool:
+        matching_files = await self._async_reana_call(
+            "list_files", workflow=experiment_run.workflow_name, file_name=filepath
+        )
+        return len(matching_files) > 0
 
     async def _async_reana_call(self, function_name, *args, **kwargs):
         return await asyncio.to_thread(self._reana_call, function_name, *args, **kwargs)
