@@ -4,18 +4,17 @@ from typing import Union
 
 
 class ExperimentsTemplates:
-    def __init__(self, client_config: aiod_rail_sdk.Configuration):
+    def __init__(self, 
+                 client_config: aiod_rail_sdk.Configuration):
         self._configuration = client_config
             
     def create_experiment_template(
             self, 
-            authorization_header: dict,
             file: Union[dict, tuple[str, str, str, dict]]
             ) -> aiod_rail_sdk.ExperimentTemplateResponse:
         """
             Creates experiment template for experiment.
             Args:
-                authorization_header (dict): Authorization in form of token type and access token
                 file: (Union[dict, tuple[str, str, str, dict]]): The file can be passed either as full specified json (dictionary)
                                                                  or as a tuple of three strings and a json (dictionary) specifying 
                                                                  the paths to script, requirements and docker image in this order 
@@ -44,7 +43,6 @@ class ExperimentsTemplates:
         experiment_template_create_instance = aiod_rail_sdk.ExperimentTemplateCreate.from_json(json_data)
 
         with aiod_rail_sdk.ApiClient(self._configuration) as api_client:
-            api_client.default_headers = authorization_header
             api_instance = aiod_rail_sdk.ExperimentTemplatesApi(api_client)
             experiment_template_create = experiment_template_create_instance
 
@@ -56,7 +54,10 @@ class ExperimentsTemplates:
                 raise(f'Exception {e}')
             
             
-    def approve_experiment_template(self, id: str, password: str = 'pass', is_approved: bool = False) -> None:
+    def approve_experiment_template(self, 
+                                    id: str, 
+                                    password: str = 'pass', 
+                                    is_approved: bool = False) -> None:
         """
             Approves experiment template with specified ID.
             Args:
@@ -76,11 +77,12 @@ class ExperimentsTemplates:
             except Exception as e:
                 raise(f'Exception {e}')
 
-    def count(self, authorization_header: dict, include_mine: bool = True, include_approved: bool = False) -> int:
+    def count(self, 
+              include_mine: bool = True, 
+              include_approved: bool = False) -> int:
         """
             Gets experiment templates count.
             Args:
-                authorization_header (dict): Authorization in form of token type and access token.
                 include_mine (bool, optional): If own personal experiment templates should be included in count. Defaults to True.
                 include_approved (bool, optional): If already approved experiments should be counted as well. Defaults to False.
 
@@ -88,7 +90,6 @@ class ExperimentsTemplates:
                 int: Number of experiment templates.
         """
         with aiod_rail_sdk.ApiClient(self._configuration) as api_client:
-            api_client.default_headers = authorization_header
             api_instance = aiod_rail_sdk.ExperimentTemplatesApi(api_client)
             
             try:
@@ -99,12 +100,13 @@ class ExperimentsTemplates:
             except Exception as e:
                 raise(f'Exception {e}')
 
-    def get(self, authorization_header: dict, include_mine: bool = True, 
-            include_approved: bool = True, offset: int = 0, limit: int = 100) -> list[aiod_rail_sdk.ExperimentTemplateResponse]:
+    def get(self, include_mine: bool = True, 
+            include_approved: bool = True, 
+            offset: int = 0, 
+            limit: int = 100) -> list[aiod_rail_sdk.ExperimentTemplateResponse]:
         """
             Gets experiment templates in specified range.
             Args:
-                authorization_header (dict): Authorization in form of token type and access token.
                 include_mine (bool, optional): If own personal experiment templates should be included. Defaults to True.
                 include_approved (bool, optional): If already approved experiments should be listed as well. Defaults to True.
                 offset (int, optional): Starting index of experiment template range from which to retrieve Defaults to 0.
@@ -114,7 +116,6 @@ class ExperimentsTemplates:
                 list[aiod_rail_sdk.ExperimentTemplateResponse]: List of all experiments in given range
         """
         with aiod_rail_sdk.ApiClient(self._configuration) as api_client:
-            api_client.default_headers = authorization_header
             api_instance = aiod_rail_sdk.ExperimentTemplatesApi(api_client)
             
             try:
@@ -125,7 +126,8 @@ class ExperimentsTemplates:
             except Exception as e:
                 raise(f'Exception {e}')
 
-    def get_by_id(self, id: str) -> aiod_rail_sdk.ExperimentTemplateResponse:
+    def get_by_id(self, 
+                  id: str) -> aiod_rail_sdk.ExperimentTemplateResponse:
         """
             Gets specific experiment template by it's ID.
             Args:

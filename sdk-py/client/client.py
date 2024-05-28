@@ -15,16 +15,19 @@ class RailClient:
             datasets (Datasets): Provides access to aiod_rail_sdk Dataset.
 
     """
-    def __init__(self, configuration: aiod_rail_sdk.Configuration) -> None:
+    def __init__(self, 
+                 configuration: aiod_rail_sdk.Configuration, 
+                 api_key) -> None:
         """
             Creates RailClient to access SDK.
             Args:
-                config (aiod_rail_sdk.Configuration): configuration specified by host, to which SDK will send requests.
-            
+                config (aiod_rail_sdk.Configuration): Configuration specified by host, to which SDK will send requests.
+                api_key (str): API-KEY generated in Profile section after singing in AI on Demand.
             Returns:
                 None
         """
         self.config = configuration
+        self.config.api_key['APIKeyHeader'] = api_key
         self._experiments: Experiments = None
         self._expetiments_templates: ExperimentsTemplates = None
         self._datasets: Datasets = None
