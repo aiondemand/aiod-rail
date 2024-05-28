@@ -72,8 +72,11 @@ class ExperimentsTemplates:
             api_instance = aiod_rail_sdk.ExperimentTemplatesApi(api_client)
 
             try:
-                api_response = api_instance.approve_experiment_template_v1_experiment_templates_id_approve_patch(id, password, approved=is_approved)
-                return api_response
+                api_instance.approve_experiment_template_v1_experiment_templates_id_approve_patch(
+                    id=id, 
+                    password=password, 
+                    approved=is_approved
+                    )
             except Exception as e:
                 raise(f'Exception {e}')
 
@@ -181,7 +184,7 @@ class ExperimentsTemplates:
             api_instance = aiod_rail_sdk.ExperimentTemplatesApi(api_client)
             
             try:
-                api_instance.remove_experiment_template_v1_experiment_templates_id_delete(id)
+                api_instance.remove_experiment_template_v1_experiment_templates_id_delete(id=id)
             except Exception as e:
                 raise(f'Exception {e}')
 
@@ -200,7 +203,10 @@ class ExperimentsTemplates:
             api_instance = aiod_rail_sdk.ExperimentTemplatesApi(api_client)
             
             try:
-                api_instance.archive_experiment_template_v1_experiment_templates_id_archive_patch(id=id, archived=archived)
+                api_instance.archive_experiment_template_v1_experiment_templates_id_archive_patch(
+                    id=id, 
+                    archived=archived
+                    )
             except Exception as e:
                 raise(f'Exception {e}')
 
@@ -242,7 +248,10 @@ class ExperimentsTemplates:
             api_instance = aiod_rail_sdk.ExperimentTemplatesApi(api_client)
             
             try:
-                api_response = api_instance.update_experiment_template_v1_experiment_templates_id_put(id, experiment_template_create=experiment_template_create_instance)
+                api_response = api_instance.update_experiment_template_v1_experiment_templates_id_put(
+                    id=id,
+                    experiment_template_create=experiment_template_create_instance
+                    )
                 return api_response
             except Exception as e:
                 raise(f'Exception {e}')
