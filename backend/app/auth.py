@@ -115,18 +115,6 @@ async def _get_userinfo(token: str) -> dict:
         _raise_invalid_token(e)
 
 
-async def _get_introspect(token: str) -> dict:
-    if token is None:
-        raise_requires_auth()
-
-    token = token.replace("Bearer ", "")
-
-    try:
-        return keycloak_openid.introspect(token)
-    except KeycloakError as e:
-        _raise_invalid_token(e)
-
-
 def raise_requires_auth():
     raise HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
