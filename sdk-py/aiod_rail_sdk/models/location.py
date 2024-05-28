@@ -90,14 +90,12 @@ class Location(BaseModel):
 
         _obj = cls.model_validate(
             {
-                "address": (
-                    Address.from_dict(obj["address"])
-                    if obj.get("address") is not None
-                    else None
-                ),
-                "geo": (
-                    Geo.from_dict(obj["geo"]) if obj.get("geo") is not None else None
-                ),
+                "address": Address.from_dict(obj["address"])
+                if obj.get("address") is not None
+                else None,
+                "geo": Geo.from_dict(obj["geo"])
+                if obj.get("geo") is not None
+                else None,
             }
         )
         return _obj

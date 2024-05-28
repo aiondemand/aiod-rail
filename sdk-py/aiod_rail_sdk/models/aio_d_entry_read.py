@@ -102,9 +102,9 @@ class AIoDEntryRead(BaseModel):
         _obj = cls.model_validate(
             {
                 "editor": obj.get("editor"),
-                "status": (
-                    obj.get("status") if obj.get("status") is not None else "draft"
-                ),
+                "status": obj.get("status")
+                if obj.get("status") is not None
+                else "draft",
                 "date_modified": obj.get("date_modified"),
                 "date_created": obj.get("date_created"),
             }

@@ -39,6 +39,7 @@ from aiod_rail_sdk.models.ml_model import MLModel
 from aiod_rail_sdk.models.note import Note
 from aiod_rail_sdk.models.platform import Platform
 from aiod_rail_sdk.models.publication import Publication
+from aiod_rail_sdk.models.rail_user_response import RailUserResponse
 from aiod_rail_sdk.models.run_state import RunState
 from aiod_rail_sdk.models.runnable_distribution import RunnableDistribution
 from aiod_rail_sdk.models.task_type import TaskType

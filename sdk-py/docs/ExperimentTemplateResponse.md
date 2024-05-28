@@ -12,15 +12,17 @@ Name | Type | Description | Notes
 **models_schema** | [**AssetSchema**](AssetSchema.md) |  | 
 **envs_required** | [**List[EnvironmentVarDef]**](EnvironmentVarDef.md) |  | 
 **envs_optional** | [**List[EnvironmentVarDef]**](EnvironmentVarDef.md) |  | 
-**available_metrics** | **List[str]** |  | 
 **script** | **str** |  | 
 **pip_requirements** | **str** |  | 
+**public** | **bool** |  | 
 **id** | **str** |  | 
 **created_at** | **datetime** |  | 
 **updated_at** | **datetime** |  | 
 **state** | [**TemplateState**](TemplateState.md) |  | 
 **dockerfile** | **str** |  | 
 **approved** | **bool** |  | 
+**archived** | **bool** |  | 
+**mine** | **bool** |  | 
 
 ## Example
 

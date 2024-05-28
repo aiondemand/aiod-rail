@@ -274,7 +274,7 @@ class AssetsApi:
                 _header_params["Content-Type"] = _default_content_type
 
         # authentication setting
-        _auth_settings: List[str] = ["OpenIdConnect"]
+        _auth_settings: List[str] = ["APIKeyHeader", "OpenIdConnect"]
 
         return self.api_client.param_serialize(
             method="POST",

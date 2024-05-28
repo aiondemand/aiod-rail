@@ -21,7 +21,14 @@ from datetime import datetime
 from typing import Any, ClassVar, Dict, List, Optional, Set, Union
 
 from aiod_rail_sdk.models.run_state import RunState
-from pydantic import BaseModel, ConfigDict, StrictFloat, StrictInt, StrictStr
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    StrictBool,
+    StrictFloat,
+    StrictInt,
+    StrictStr,
+)
 from typing_extensions import Self
 
 
@@ -36,6 +43,10 @@ class ExperimentRunResponse(BaseModel):
     retry_count: StrictInt
     state: RunState
     metrics: Dict[str, Union[StrictFloat, StrictInt]]
+    archived: StrictBool
+    public: StrictBool
+    mine: StrictBool
+    experiment_id: StrictStr
     __properties: ClassVar[List[str]] = [
         "id",
         "created_at",
@@ -43,6 +54,10 @@ class ExperimentRunResponse(BaseModel):
         "retry_count",
         "state",
         "metrics",
+        "archived",
+        "public",
+        "mine",
+        "experiment_id",
     ]
 
     model_config = ConfigDict(
@@ -101,6 +116,10 @@ class ExperimentRunResponse(BaseModel):
                 "retry_count": obj.get("retry_count"),
                 "state": obj.get("state"),
                 "metrics": obj.get("metrics"),
+                "archived": obj.get("archived"),
+                "public": obj.get("public"),
+                "mine": obj.get("mine"),
+                "experiment_id": obj.get("experiment_id"),
             }
         )
         return _obj

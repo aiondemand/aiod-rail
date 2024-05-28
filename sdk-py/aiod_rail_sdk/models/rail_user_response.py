@@ -19,18 +19,18 @@ import pprint
 import re  # noqa: F401
 from typing import Any, ClassVar, Dict, List, Optional, Set
 
-from aiod_rail_sdk.models.validation_error import ValidationError
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, StrictStr
 from typing_extensions import Self
 
 
-class HTTPValidationError(BaseModel):
+class RailUserResponse(BaseModel):
     """
-    HTTPValidationError
+    RailUserResponse
     """  # noqa: E501
 
-    detail: Optional[List[ValidationError]] = None
-    __properties: ClassVar[List[str]] = ["detail"]
+    email: StrictStr
+    api_key: Optional[StrictStr] = ""
+    __properties: ClassVar[List[str]] = ["email", "api_key"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -49,7 +49,7 @@ class HTTPValidationError(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of HTTPValidationError from a JSON string"""
+        """Create an instance of RailUserResponse from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -69,18 +69,11 @@ class HTTPValidationError(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of each item in detail (list)
-        _items = []
-        if self.detail:
-            for _item in self.detail:
-                if _item:
-                    _items.append(_item.to_dict())
-            _dict["detail"] = _items
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of HTTPValidationError from a dict"""
+        """Create an instance of RailUserResponse from a dict"""
         if obj is None:
             return None
 
@@ -89,9 +82,8 @@ class HTTPValidationError(BaseModel):
 
         _obj = cls.model_validate(
             {
-                "detail": [ValidationError.from_dict(_item) for _item in obj["detail"]]
-                if obj.get("detail") is not None
-                else None
+                "email": obj.get("email"),
+                "api_key": obj.get("api_key") if obj.get("api_key") is not None else "",
             }
         )
         return _obj

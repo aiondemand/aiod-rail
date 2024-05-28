@@ -20,7 +20,7 @@ import re  # noqa: F401
 from typing import Any, ClassVar, Dict, List, Optional, Set
 
 from aiod_rail_sdk.models.environment_var import EnvironmentVar
-from pydantic import BaseModel, ConfigDict, StrictStr
+from pydantic import BaseModel, ConfigDict, StrictBool, StrictStr
 from typing_extensions import Self
 
 
@@ -31,21 +31,21 @@ class ExperimentCreate(BaseModel):
 
     name: StrictStr
     description: StrictStr
-    publication_ids: Optional[List[StrictStr]] = None
     experiment_template_id: StrictStr
+    publication_ids: Optional[List[StrictStr]] = None
     dataset_ids: List[StrictStr]
     model_ids: List[StrictStr]
     env_vars: List[EnvironmentVar]
-    metrics: List[StrictStr]
+    public: StrictBool
     __properties: ClassVar[List[str]] = [
         "name",
         "description",
-        "publication_ids",
         "experiment_template_id",
+        "publication_ids",
         "dataset_ids",
         "model_ids",
         "env_vars",
-        "metrics",
+        "public",
     ]
 
     model_config = ConfigDict(
@@ -107,16 +107,16 @@ class ExperimentCreate(BaseModel):
             {
                 "name": obj.get("name"),
                 "description": obj.get("description"),
-                "publication_ids": obj.get("publication_ids"),
                 "experiment_template_id": obj.get("experiment_template_id"),
+                "publication_ids": obj.get("publication_ids"),
                 "dataset_ids": obj.get("dataset_ids"),
                 "model_ids": obj.get("model_ids"),
-                "env_vars": (
-                    [EnvironmentVar.from_dict(_item) for _item in obj["env_vars"]]
-                    if obj.get("env_vars") is not None
-                    else None
-                ),
-                "metrics": obj.get("metrics"),
+                "env_vars": [
+                    EnvironmentVar.from_dict(_item) for _item in obj["env_vars"]
+                ]
+                if obj.get("env_vars") is not None
+                else None,
+                "public": obj.get("public"),
             }
         )
         return _obj

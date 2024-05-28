@@ -11,6 +11,10 @@ Name | Type | Description | Notes
 **retry_count** | **int** |  | 
 **state** | [**RunState**](RunState.md) |  | 
 **metrics** | **Dict[str, float]** |  | 
+**archived** | **bool** |  | 
+**public** | **bool** |  | 
+**mine** | **bool** |  | 
+**experiment_id** | **str** |  | 
 **logs** | **str** |  | 
 
 ## Example

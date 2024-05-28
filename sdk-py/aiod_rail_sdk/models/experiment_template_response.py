@@ -40,15 +40,17 @@ class ExperimentTemplateResponse(BaseModel):
     models_schema: AssetSchema
     envs_required: List[EnvironmentVarDef]
     envs_optional: List[EnvironmentVarDef]
-    available_metrics: List[StrictStr]
     script: StrictStr
     pip_requirements: StrictStr
+    public: StrictBool
     id: StrictStr
     created_at: datetime
     updated_at: datetime
     state: TemplateState
     dockerfile: StrictStr
     approved: StrictBool
+    archived: StrictBool
+    mine: StrictBool
     __properties: ClassVar[List[str]] = [
         "name",
         "description",
@@ -57,15 +59,17 @@ class ExperimentTemplateResponse(BaseModel):
         "models_schema",
         "envs_required",
         "envs_optional",
-        "available_metrics",
         "script",
         "pip_requirements",
+        "public",
         "id",
         "created_at",
         "updated_at",
         "state",
         "dockerfile",
         "approved",
+        "archived",
+        "mine",
     ]
 
     model_config = ConfigDict(
@@ -141,41 +145,33 @@ class ExperimentTemplateResponse(BaseModel):
                 "name": obj.get("name"),
                 "description": obj.get("description"),
                 "task": obj.get("task"),
-                "datasets_schema": (
-                    AssetSchema.from_dict(obj["datasets_schema"])
-                    if obj.get("datasets_schema") is not None
-                    else None
-                ),
-                "models_schema": (
-                    AssetSchema.from_dict(obj["models_schema"])
-                    if obj.get("models_schema") is not None
-                    else None
-                ),
-                "envs_required": (
-                    [
-                        EnvironmentVarDef.from_dict(_item)
-                        for _item in obj["envs_required"]
-                    ]
-                    if obj.get("envs_required") is not None
-                    else None
-                ),
-                "envs_optional": (
-                    [
-                        EnvironmentVarDef.from_dict(_item)
-                        for _item in obj["envs_optional"]
-                    ]
-                    if obj.get("envs_optional") is not None
-                    else None
-                ),
-                "available_metrics": obj.get("available_metrics"),
+                "datasets_schema": AssetSchema.from_dict(obj["datasets_schema"])
+                if obj.get("datasets_schema") is not None
+                else None,
+                "models_schema": AssetSchema.from_dict(obj["models_schema"])
+                if obj.get("models_schema") is not None
+                else None,
+                "envs_required": [
+                    EnvironmentVarDef.from_dict(_item) for _item in obj["envs_required"]
+                ]
+                if obj.get("envs_required") is not None
+                else None,
+                "envs_optional": [
+                    EnvironmentVarDef.from_dict(_item) for _item in obj["envs_optional"]
+                ]
+                if obj.get("envs_optional") is not None
+                else None,
                 "script": obj.get("script"),
                 "pip_requirements": obj.get("pip_requirements"),
+                "public": obj.get("public"),
                 "id": obj.get("id"),
                 "created_at": obj.get("created_at"),
                 "updated_at": obj.get("updated_at"),
                 "state": obj.get("state"),
                 "dockerfile": obj.get("dockerfile"),
                 "approved": obj.get("approved"),
+                "archived": obj.get("archived"),
+                "mine": obj.get("mine"),
             }
         )
         return _obj

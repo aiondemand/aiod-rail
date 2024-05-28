@@ -17,11 +17,9 @@ from aiod_rail_sdk.api_client import ApiClient, RequestSerialized
 from aiod_rail_sdk.api_response import ApiResponse
 from aiod_rail_sdk.models.experiment_create import ExperimentCreate
 from aiod_rail_sdk.models.experiment_response import ExperimentResponse
-from aiod_rail_sdk.models.experiment_run_details import ExperimentRunDetails
 from aiod_rail_sdk.models.experiment_run_response import ExperimentRunResponse
-from aiod_rail_sdk.models.file_detail import FileDetail
 from aiod_rail_sdk.rest import RESTResponseType
-from pydantic import Field, StrictFloat, StrictInt, StrictStr, validate_call
+from pydantic import Field, StrictBool, StrictFloat, StrictInt, StrictStr, validate_call
 from typing_extensions import Annotated
 
 
@@ -36,6 +34,260 @@ class ExperimentsApi:
         if api_client is None:
             api_client = ApiClient.get_default()
         self.api_client = api_client
+
+    @validate_call
+    def archive_experiment_v1_experiments_id_archive_patch(
+        self,
+        id: StrictStr,
+        archived: Optional[StrictBool] = None,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> object:
+        """Archive Experiment
+
+
+        :param id: (required)
+        :type id: str
+        :param archived:
+        :type archived: bool
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._archive_experiment_v1_experiments_id_archive_patch_serialize(
+            id=id,
+            archived=archived,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {  # noqa: F841
+            "200": "object",
+            "422": "HTTPValidationError",
+        }
+        response_data = self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
+
+    @validate_call
+    def archive_experiment_v1_experiments_id_archive_patch_with_http_info(
+        self,
+        id: StrictStr,
+        archived: Optional[StrictBool] = None,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[object]:
+        """Archive Experiment
+
+
+        :param id: (required)
+        :type id: str
+        :param archived:
+        :type archived: bool
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._archive_experiment_v1_experiments_id_archive_patch_serialize(
+            id=id,
+            archived=archived,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {  # noqa: F841
+            "200": "object",
+            "422": "HTTPValidationError",
+        }
+        response_data = self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
+
+    @validate_call
+    def archive_experiment_v1_experiments_id_archive_patch_without_preload_content(
+        self,
+        id: StrictStr,
+        archived: Optional[StrictBool] = None,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """Archive Experiment
+
+
+        :param id: (required)
+        :type id: str
+        :param archived:
+        :type archived: bool
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._archive_experiment_v1_experiments_id_archive_patch_serialize(
+            id=id,
+            archived=archived,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {  # noqa: F841
+            "200": "object",
+            "422": "HTTPValidationError",
+        }
+        response_data = self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+    def _archive_experiment_v1_experiments_id_archive_patch_serialize(
+        self,
+        id,
+        archived,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+        _host = None
+
+        _collection_formats: Dict[str, str] = {}
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[str, Union[str, bytes]] = {}
+        _body_params: Optional[bytes] = None
+
+        # process the path parameters
+        if id is not None:
+            _path_params["id"] = id
+        # process the query parameters
+        if archived is not None:
+            _query_params.append(("archived", archived))
+
+        # process the header parameters
+        # process the form parameters
+        # process the body parameter
+
+        # set the HTTP header `Accept`
+        _header_params["Accept"] = self.api_client.select_header_accept(
+            ["application/json"]
+        )
+
+        # authentication setting
+        _auth_settings: List[str] = ["APIKeyHeader", "OpenIdConnect"]
+
+        return self.api_client.param_serialize(
+            method="PATCH",
+            resource_path="/v1/experiments/{id}/archive",
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
+            body=_body_params,
+            post_params=_form_params,
+            files=_files,
+            auth_settings=_auth_settings,
+            collection_formats=_collection_formats,
+            _host=_host,
+            _request_auth=_request_auth,
+        )
 
     @validate_call
     def create_experiment_v1_experiments_post(
@@ -268,7 +520,7 @@ class ExperimentsApi:
                 _header_params["Content-Type"] = _default_content_type
 
         # authentication setting
-        _auth_settings: List[str] = ["OpenIdConnect"]
+        _auth_settings: List[str] = ["APIKeyHeader", "OpenIdConnect"]
 
         return self.api_client.param_serialize(
             method="POST",
@@ -286,10 +538,9 @@ class ExperimentsApi:
         )
 
     @validate_call
-    def download_file_v1_experiment_runs_id_files_download_get(
+    def delete_experiment_v1_experiments_id_delete(
         self,
         id: StrictStr,
-        filepath: StrictStr,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -301,14 +552,12 @@ class ExperimentsApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> None:
-        """Download File
+    ) -> object:
+        """Delete Experiment
 
 
         :param id: (required)
         :type id: str
-        :param filepath: (required)
-        :type filepath: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -331,9 +580,8 @@ class ExperimentsApi:
         :return: Returns the result object.
         """  # noqa: E501
 
-        _param = self._download_file_v1_experiment_runs_id_files_download_get_serialize(
+        _param = self._delete_experiment_v1_experiments_id_delete_serialize(
             id=id,
-            filepath=filepath,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -341,7 +589,7 @@ class ExperimentsApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {  # noqa: F841
-            "200": None,
+            "200": "object",
             "422": "HTTPValidationError",
         }
         response_data = self.api_client.call_api(
@@ -354,10 +602,9 @@ class ExperimentsApi:
         ).data
 
     @validate_call
-    def download_file_v1_experiment_runs_id_files_download_get_with_http_info(
+    def delete_experiment_v1_experiments_id_delete_with_http_info(
         self,
         id: StrictStr,
-        filepath: StrictStr,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -369,14 +616,12 @@ class ExperimentsApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[None]:
-        """Download File
+    ) -> ApiResponse[object]:
+        """Delete Experiment
 
 
         :param id: (required)
         :type id: str
-        :param filepath: (required)
-        :type filepath: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -399,9 +644,8 @@ class ExperimentsApi:
         :return: Returns the result object.
         """  # noqa: E501
 
-        _param = self._download_file_v1_experiment_runs_id_files_download_get_serialize(
+        _param = self._delete_experiment_v1_experiments_id_delete_serialize(
             id=id,
-            filepath=filepath,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -409,7 +653,7 @@ class ExperimentsApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {  # noqa: F841
-            "200": None,
+            "200": "object",
             "422": "HTTPValidationError",
         }
         response_data = self.api_client.call_api(
@@ -422,10 +666,9 @@ class ExperimentsApi:
         )
 
     @validate_call
-    def download_file_v1_experiment_runs_id_files_download_get_without_preload_content(
+    def delete_experiment_v1_experiments_id_delete_without_preload_content(
         self,
         id: StrictStr,
-        filepath: StrictStr,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -438,13 +681,11 @@ class ExperimentsApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> RESTResponseType:
-        """Download File
+        """Delete Experiment
 
 
         :param id: (required)
         :type id: str
-        :param filepath: (required)
-        :type filepath: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -467,9 +708,8 @@ class ExperimentsApi:
         :return: Returns the result object.
         """  # noqa: E501
 
-        _param = self._download_file_v1_experiment_runs_id_files_download_get_serialize(
+        _param = self._delete_experiment_v1_experiments_id_delete_serialize(
             id=id,
-            filepath=filepath,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -477,7 +717,7 @@ class ExperimentsApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {  # noqa: F841
-            "200": None,
+            "200": "object",
             "422": "HTTPValidationError",
         }
         response_data = self.api_client.call_api(
@@ -485,10 +725,9 @@ class ExperimentsApi:
         )
         return response_data.response
 
-    def _download_file_v1_experiment_runs_id_files_download_get_serialize(
+    def _delete_experiment_v1_experiments_id_delete_serialize(
         self,
         id,
-        filepath,
         _request_auth,
         _content_type,
         _headers,
@@ -509,9 +748,6 @@ class ExperimentsApi:
         if id is not None:
             _path_params["id"] = id
         # process the query parameters
-        if filepath is not None:
-            _query_params.append(("filepath", filepath))
-
         # process the header parameters
         # process the form parameters
         # process the body parameter
@@ -522,11 +758,11 @@ class ExperimentsApi:
         )
 
         # authentication setting
-        _auth_settings: List[str] = ["OpenIdConnect"]
+        _auth_settings: List[str] = ["APIKeyHeader", "OpenIdConnect"]
 
         return self.api_client.param_serialize(
-            method="GET",
-            resource_path="/v1/experiment-runs/{id}/files/download",
+            method="DELETE",
+            resource_path="/v1/experiments/{id}",
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,
@@ -760,7 +996,7 @@ class ExperimentsApi:
         )
 
         # authentication setting
-        _auth_settings: List[str] = ["OpenIdConnect"]
+        _auth_settings: List[str] = ["APIKeyHeader", "OpenIdConnect"]
 
         return self.api_client.param_serialize(
             method="GET",
@@ -778,738 +1014,7 @@ class ExperimentsApi:
         )
 
     @validate_call
-    def get_all_experiment_runs_v1_experiment_runs_get(
-        self,
-        offset: Optional[StrictInt] = None,
-        limit: Optional[StrictInt] = None,
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[
-                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
-            ],
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> List[ExperimentRunResponse]:
-        """Get All Experiment Runs
-
-
-        :param offset:
-        :type offset: int
-        :param limit:
-        :type limit: int
-        :param _request_timeout: timeout setting for this request. If one
-                                 number provided, it will be total request
-                                 timeout. It can also be a pair (tuple) of
-                                 (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
-        :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
-        :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
-        :return: Returns the result object.
-        """  # noqa: E501
-
-        _param = self._get_all_experiment_runs_v1_experiment_runs_get_serialize(
-            offset=offset,
-            limit=limit,
-            _request_auth=_request_auth,
-            _content_type=_content_type,
-            _headers=_headers,
-            _host_index=_host_index,
-        )
-
-        _response_types_map: Dict[str, Optional[str]] = {  # noqa: F841
-            "200": "List[ExperimentRunResponse]",
-            "422": "HTTPValidationError",
-        }
-        response_data = self.api_client.call_api(
-            *_param, _request_timeout=_request_timeout
-        )
-        response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        ).data
-
-    @validate_call
-    def get_all_experiment_runs_v1_experiment_runs_get_with_http_info(
-        self,
-        offset: Optional[StrictInt] = None,
-        limit: Optional[StrictInt] = None,
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[
-                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
-            ],
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[List[ExperimentRunResponse]]:
-        """Get All Experiment Runs
-
-
-        :param offset:
-        :type offset: int
-        :param limit:
-        :type limit: int
-        :param _request_timeout: timeout setting for this request. If one
-                                 number provided, it will be total request
-                                 timeout. It can also be a pair (tuple) of
-                                 (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
-        :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
-        :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
-        :return: Returns the result object.
-        """  # noqa: E501
-
-        _param = self._get_all_experiment_runs_v1_experiment_runs_get_serialize(
-            offset=offset,
-            limit=limit,
-            _request_auth=_request_auth,
-            _content_type=_content_type,
-            _headers=_headers,
-            _host_index=_host_index,
-        )
-
-        _response_types_map: Dict[str, Optional[str]] = {  # noqa: F841
-            "200": "List[ExperimentRunResponse]",
-            "422": "HTTPValidationError",
-        }
-        response_data = self.api_client.call_api(
-            *_param, _request_timeout=_request_timeout
-        )
-        response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        )
-
-    @validate_call
-    def get_all_experiment_runs_v1_experiment_runs_get_without_preload_content(
-        self,
-        offset: Optional[StrictInt] = None,
-        limit: Optional[StrictInt] = None,
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[
-                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
-            ],
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> RESTResponseType:
-        """Get All Experiment Runs
-
-
-        :param offset:
-        :type offset: int
-        :param limit:
-        :type limit: int
-        :param _request_timeout: timeout setting for this request. If one
-                                 number provided, it will be total request
-                                 timeout. It can also be a pair (tuple) of
-                                 (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
-        :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
-        :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
-        :return: Returns the result object.
-        """  # noqa: E501
-
-        _param = self._get_all_experiment_runs_v1_experiment_runs_get_serialize(
-            offset=offset,
-            limit=limit,
-            _request_auth=_request_auth,
-            _content_type=_content_type,
-            _headers=_headers,
-            _host_index=_host_index,
-        )
-
-        _response_types_map: Dict[str, Optional[str]] = {  # noqa: F841
-            "200": "List[ExperimentRunResponse]",
-            "422": "HTTPValidationError",
-        }
-        response_data = self.api_client.call_api(
-            *_param, _request_timeout=_request_timeout
-        )
-        return response_data.response
-
-    def _get_all_experiment_runs_v1_experiment_runs_get_serialize(
-        self,
-        offset,
-        limit,
-        _request_auth,
-        _content_type,
-        _headers,
-        _host_index,
-    ) -> RequestSerialized:
-        _host = None
-
-        _collection_formats: Dict[str, str] = {}
-
-        _path_params: Dict[str, str] = {}
-        _query_params: List[Tuple[str, str]] = []
-        _header_params: Dict[str, Optional[str]] = _headers or {}
-        _form_params: List[Tuple[str, str]] = []
-        _files: Dict[str, Union[str, bytes]] = {}
-        _body_params: Optional[bytes] = None
-
-        # process the path parameters
-        # process the query parameters
-        if offset is not None:
-            _query_params.append(("offset", offset))
-
-        if limit is not None:
-            _query_params.append(("limit", limit))
-
-        # process the header parameters
-        # process the form parameters
-        # process the body parameter
-
-        # set the HTTP header `Accept`
-        _header_params["Accept"] = self.api_client.select_header_accept(
-            ["application/json"]
-        )
-
-        # authentication setting
-        _auth_settings: List[str] = ["OpenIdConnect"]
-
-        return self.api_client.param_serialize(
-            method="GET",
-            resource_path="/v1/experiment-runs",
-            path_params=_path_params,
-            query_params=_query_params,
-            header_params=_header_params,
-            body=_body_params,
-            post_params=_form_params,
-            files=_files,
-            auth_settings=_auth_settings,
-            collection_formats=_collection_formats,
-            _host=_host,
-            _request_auth=_request_auth,
-        )
-
-    @validate_call
-    def get_experiment_run_logs_v1_experiment_runs_id_logs_get(
-        self,
-        id: StrictStr,
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[
-                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
-            ],
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> str:
-        """Get Experiment Run Logs
-
-
-        :param id: (required)
-        :type id: str
-        :param _request_timeout: timeout setting for this request. If one
-                                 number provided, it will be total request
-                                 timeout. It can also be a pair (tuple) of
-                                 (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
-        :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
-        :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
-        :return: Returns the result object.
-        """  # noqa: E501
-
-        _param = self._get_experiment_run_logs_v1_experiment_runs_id_logs_get_serialize(
-            id=id,
-            _request_auth=_request_auth,
-            _content_type=_content_type,
-            _headers=_headers,
-            _host_index=_host_index,
-        )
-
-        _response_types_map: Dict[str, Optional[str]] = {  # noqa: F841
-            "200": "str",
-            "422": "HTTPValidationError",
-        }
-        response_data = self.api_client.call_api(
-            *_param, _request_timeout=_request_timeout
-        )
-        response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        ).data
-
-    @validate_call
-    def get_experiment_run_logs_v1_experiment_runs_id_logs_get_with_http_info(
-        self,
-        id: StrictStr,
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[
-                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
-            ],
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[str]:
-        """Get Experiment Run Logs
-
-
-        :param id: (required)
-        :type id: str
-        :param _request_timeout: timeout setting for this request. If one
-                                 number provided, it will be total request
-                                 timeout. It can also be a pair (tuple) of
-                                 (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
-        :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
-        :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
-        :return: Returns the result object.
-        """  # noqa: E501
-
-        _param = self._get_experiment_run_logs_v1_experiment_runs_id_logs_get_serialize(
-            id=id,
-            _request_auth=_request_auth,
-            _content_type=_content_type,
-            _headers=_headers,
-            _host_index=_host_index,
-        )
-
-        _response_types_map: Dict[str, Optional[str]] = {  # noqa: F841
-            "200": "str",
-            "422": "HTTPValidationError",
-        }
-        response_data = self.api_client.call_api(
-            *_param, _request_timeout=_request_timeout
-        )
-        response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        )
-
-    @validate_call
-    def get_experiment_run_logs_v1_experiment_runs_id_logs_get_without_preload_content(
-        self,
-        id: StrictStr,
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[
-                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
-            ],
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> RESTResponseType:
-        """Get Experiment Run Logs
-
-
-        :param id: (required)
-        :type id: str
-        :param _request_timeout: timeout setting for this request. If one
-                                 number provided, it will be total request
-                                 timeout. It can also be a pair (tuple) of
-                                 (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
-        :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
-        :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
-        :return: Returns the result object.
-        """  # noqa: E501
-
-        _param = self._get_experiment_run_logs_v1_experiment_runs_id_logs_get_serialize(
-            id=id,
-            _request_auth=_request_auth,
-            _content_type=_content_type,
-            _headers=_headers,
-            _host_index=_host_index,
-        )
-
-        _response_types_map: Dict[str, Optional[str]] = {  # noqa: F841
-            "200": "str",
-            "422": "HTTPValidationError",
-        }
-        response_data = self.api_client.call_api(
-            *_param, _request_timeout=_request_timeout
-        )
-        return response_data.response
-
-    def _get_experiment_run_logs_v1_experiment_runs_id_logs_get_serialize(
-        self,
-        id,
-        _request_auth,
-        _content_type,
-        _headers,
-        _host_index,
-    ) -> RequestSerialized:
-        _host = None
-
-        _collection_formats: Dict[str, str] = {}
-
-        _path_params: Dict[str, str] = {}
-        _query_params: List[Tuple[str, str]] = []
-        _header_params: Dict[str, Optional[str]] = _headers or {}
-        _form_params: List[Tuple[str, str]] = []
-        _files: Dict[str, Union[str, bytes]] = {}
-        _body_params: Optional[bytes] = None
-
-        # process the path parameters
-        if id is not None:
-            _path_params["id"] = id
-        # process the query parameters
-        # process the header parameters
-        # process the form parameters
-        # process the body parameter
-
-        # set the HTTP header `Accept`
-        _header_params["Accept"] = self.api_client.select_header_accept(
-            ["text/plain", "application/json"]
-        )
-
-        # authentication setting
-        _auth_settings: List[str] = ["OpenIdConnect"]
-
-        return self.api_client.param_serialize(
-            method="GET",
-            resource_path="/v1/experiment-runs/{id}/logs",
-            path_params=_path_params,
-            query_params=_query_params,
-            header_params=_header_params,
-            body=_body_params,
-            post_params=_form_params,
-            files=_files,
-            auth_settings=_auth_settings,
-            collection_formats=_collection_formats,
-            _host=_host,
-            _request_auth=_request_auth,
-        )
-
-    @validate_call
-    def get_experiment_run_v1_experiment_runs_id_get(
-        self,
-        id: StrictStr,
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[
-                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
-            ],
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ExperimentRunDetails:
-        """Get Experiment Run
-
-
-        :param id: (required)
-        :type id: str
-        :param _request_timeout: timeout setting for this request. If one
-                                 number provided, it will be total request
-                                 timeout. It can also be a pair (tuple) of
-                                 (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
-        :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
-        :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
-        :return: Returns the result object.
-        """  # noqa: E501
-
-        _param = self._get_experiment_run_v1_experiment_runs_id_get_serialize(
-            id=id,
-            _request_auth=_request_auth,
-            _content_type=_content_type,
-            _headers=_headers,
-            _host_index=_host_index,
-        )
-
-        _response_types_map: Dict[str, Optional[str]] = {  # noqa: F841
-            "200": "ExperimentRunDetails",
-            "422": "HTTPValidationError",
-        }
-        response_data = self.api_client.call_api(
-            *_param, _request_timeout=_request_timeout
-        )
-        response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        ).data
-
-    @validate_call
-    def get_experiment_run_v1_experiment_runs_id_get_with_http_info(
-        self,
-        id: StrictStr,
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[
-                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
-            ],
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[ExperimentRunDetails]:
-        """Get Experiment Run
-
-
-        :param id: (required)
-        :type id: str
-        :param _request_timeout: timeout setting for this request. If one
-                                 number provided, it will be total request
-                                 timeout. It can also be a pair (tuple) of
-                                 (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
-        :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
-        :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
-        :return: Returns the result object.
-        """  # noqa: E501
-
-        _param = self._get_experiment_run_v1_experiment_runs_id_get_serialize(
-            id=id,
-            _request_auth=_request_auth,
-            _content_type=_content_type,
-            _headers=_headers,
-            _host_index=_host_index,
-        )
-
-        _response_types_map: Dict[str, Optional[str]] = {  # noqa: F841
-            "200": "ExperimentRunDetails",
-            "422": "HTTPValidationError",
-        }
-        response_data = self.api_client.call_api(
-            *_param, _request_timeout=_request_timeout
-        )
-        response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        )
-
-    @validate_call
-    def get_experiment_run_v1_experiment_runs_id_get_without_preload_content(
-        self,
-        id: StrictStr,
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[
-                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
-            ],
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> RESTResponseType:
-        """Get Experiment Run
-
-
-        :param id: (required)
-        :type id: str
-        :param _request_timeout: timeout setting for this request. If one
-                                 number provided, it will be total request
-                                 timeout. It can also be a pair (tuple) of
-                                 (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
-        :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
-        :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
-        :return: Returns the result object.
-        """  # noqa: E501
-
-        _param = self._get_experiment_run_v1_experiment_runs_id_get_serialize(
-            id=id,
-            _request_auth=_request_auth,
-            _content_type=_content_type,
-            _headers=_headers,
-            _host_index=_host_index,
-        )
-
-        _response_types_map: Dict[str, Optional[str]] = {  # noqa: F841
-            "200": "ExperimentRunDetails",
-            "422": "HTTPValidationError",
-        }
-        response_data = self.api_client.call_api(
-            *_param, _request_timeout=_request_timeout
-        )
-        return response_data.response
-
-    def _get_experiment_run_v1_experiment_runs_id_get_serialize(
-        self,
-        id,
-        _request_auth,
-        _content_type,
-        _headers,
-        _host_index,
-    ) -> RequestSerialized:
-        _host = None
-
-        _collection_formats: Dict[str, str] = {}
-
-        _path_params: Dict[str, str] = {}
-        _query_params: List[Tuple[str, str]] = []
-        _header_params: Dict[str, Optional[str]] = _headers or {}
-        _form_params: List[Tuple[str, str]] = []
-        _files: Dict[str, Union[str, bytes]] = {}
-        _body_params: Optional[bytes] = None
-
-        # process the path parameters
-        if id is not None:
-            _path_params["id"] = id
-        # process the query parameters
-        # process the header parameters
-        # process the form parameters
-        # process the body parameter
-
-        # set the HTTP header `Accept`
-        _header_params["Accept"] = self.api_client.select_header_accept(
-            ["application/json"]
-        )
-
-        # authentication setting
-        _auth_settings: List[str] = ["OpenIdConnect"]
-
-        return self.api_client.param_serialize(
-            method="GET",
-            resource_path="/v1/experiment-runs/{id}",
-            path_params=_path_params,
-            query_params=_query_params,
-            header_params=_header_params,
-            body=_body_params,
-            post_params=_form_params,
-            files=_files,
-            auth_settings=_auth_settings,
-            collection_formats=_collection_formats,
-            _host=_host,
-            _request_auth=_request_auth,
-        )
-
-    @validate_call
-    def get_experiment_runs_count_v1_count_experiments_id_runs_get(
+    def get_experiment_runs_of_experiment_count_v1_count_experiments_id_runs_get(
         self,
         id: StrictStr,
         _request_timeout: Union[
@@ -1524,7 +1029,7 @@ class ExperimentsApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> int:
-        """Get Experiment Runs Count
+        """Get Experiment Runs Of Experiment Count
 
 
         :param id: (required)
@@ -1551,14 +1056,12 @@ class ExperimentsApi:
         :return: Returns the result object.
         """  # noqa: E501
 
-        _param = (
-            self._get_experiment_runs_count_v1_count_experiments_id_runs_get_serialize(
-                id=id,
-                _request_auth=_request_auth,
-                _content_type=_content_type,
-                _headers=_headers,
-                _host_index=_host_index,
-            )
+        _param = self._get_experiment_runs_of_experiment_count_v1_count_experiments_id_runs_get_serialize(
+            id=id,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
         )
 
         _response_types_map: Dict[str, Optional[str]] = {  # noqa: F841
@@ -1575,7 +1078,7 @@ class ExperimentsApi:
         ).data
 
     @validate_call
-    def get_experiment_runs_count_v1_count_experiments_id_runs_get_with_http_info(
+    def get_experiment_runs_of_experiment_count_v1_count_experiments_id_runs_get_with_http_info(
         self,
         id: StrictStr,
         _request_timeout: Union[
@@ -1590,7 +1093,7 @@ class ExperimentsApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> ApiResponse[int]:
-        """Get Experiment Runs Count
+        """Get Experiment Runs Of Experiment Count
 
 
         :param id: (required)
@@ -1617,14 +1120,12 @@ class ExperimentsApi:
         :return: Returns the result object.
         """  # noqa: E501
 
-        _param = (
-            self._get_experiment_runs_count_v1_count_experiments_id_runs_get_serialize(
-                id=id,
-                _request_auth=_request_auth,
-                _content_type=_content_type,
-                _headers=_headers,
-                _host_index=_host_index,
-            )
+        _param = self._get_experiment_runs_of_experiment_count_v1_count_experiments_id_runs_get_serialize(
+            id=id,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
         )
 
         _response_types_map: Dict[str, Optional[str]] = {  # noqa: F841
@@ -1641,7 +1142,7 @@ class ExperimentsApi:
         )
 
     @validate_call
-    def get_experiment_runs_count_v1_count_experiments_id_runs_get_without_preload_content(
+    def get_experiment_runs_of_experiment_count_v1_count_experiments_id_runs_get_without_preload_content(
         self,
         id: StrictStr,
         _request_timeout: Union[
@@ -1656,7 +1157,7 @@ class ExperimentsApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> RESTResponseType:
-        """Get Experiment Runs Count
+        """Get Experiment Runs Of Experiment Count
 
 
         :param id: (required)
@@ -1683,14 +1184,12 @@ class ExperimentsApi:
         :return: Returns the result object.
         """  # noqa: E501
 
-        _param = (
-            self._get_experiment_runs_count_v1_count_experiments_id_runs_get_serialize(
-                id=id,
-                _request_auth=_request_auth,
-                _content_type=_content_type,
-                _headers=_headers,
-                _host_index=_host_index,
-            )
+        _param = self._get_experiment_runs_of_experiment_count_v1_count_experiments_id_runs_get_serialize(
+            id=id,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
         )
 
         _response_types_map: Dict[str, Optional[str]] = {  # noqa: F841
@@ -1702,7 +1201,7 @@ class ExperimentsApi:
         )
         return response_data.response
 
-    def _get_experiment_runs_count_v1_count_experiments_id_runs_get_serialize(
+    def _get_experiment_runs_of_experiment_count_v1_count_experiments_id_runs_get_serialize(
         self,
         id,
         _request_auth,
@@ -1735,7 +1234,7 @@ class ExperimentsApi:
         )
 
         # authentication setting
-        _auth_settings: List[str] = ["OpenIdConnect"]
+        _auth_settings: List[str] = ["APIKeyHeader", "OpenIdConnect"]
 
         return self.api_client.param_serialize(
             method="GET",
@@ -1753,7 +1252,7 @@ class ExperimentsApi:
         )
 
     @validate_call
-    def get_experiment_runs_v1_experiments_id_runs_get(
+    def get_experiment_runs_of_experiment_v1_experiments_id_runs_get(
         self,
         id: StrictStr,
         offset: Optional[StrictInt] = None,
@@ -1770,7 +1269,7 @@ class ExperimentsApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> List[ExperimentRunResponse]:
-        """Get Experiment Runs
+        """Get Experiment Runs Of Experiment
 
 
         :param id: (required)
@@ -1801,7 +1300,7 @@ class ExperimentsApi:
         :return: Returns the result object.
         """  # noqa: E501
 
-        _param = self._get_experiment_runs_v1_experiments_id_runs_get_serialize(
+        _param = self._get_experiment_runs_of_experiment_v1_experiments_id_runs_get_serialize(
             id=id,
             offset=offset,
             limit=limit,
@@ -1825,7 +1324,7 @@ class ExperimentsApi:
         ).data
 
     @validate_call
-    def get_experiment_runs_v1_experiments_id_runs_get_with_http_info(
+    def get_experiment_runs_of_experiment_v1_experiments_id_runs_get_with_http_info(
         self,
         id: StrictStr,
         offset: Optional[StrictInt] = None,
@@ -1842,7 +1341,7 @@ class ExperimentsApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> ApiResponse[List[ExperimentRunResponse]]:
-        """Get Experiment Runs
+        """Get Experiment Runs Of Experiment
 
 
         :param id: (required)
@@ -1873,7 +1372,7 @@ class ExperimentsApi:
         :return: Returns the result object.
         """  # noqa: E501
 
-        _param = self._get_experiment_runs_v1_experiments_id_runs_get_serialize(
+        _param = self._get_experiment_runs_of_experiment_v1_experiments_id_runs_get_serialize(
             id=id,
             offset=offset,
             limit=limit,
@@ -1897,7 +1396,7 @@ class ExperimentsApi:
         )
 
     @validate_call
-    def get_experiment_runs_v1_experiments_id_runs_get_without_preload_content(
+    def get_experiment_runs_of_experiment_v1_experiments_id_runs_get_without_preload_content(
         self,
         id: StrictStr,
         offset: Optional[StrictInt] = None,
@@ -1914,7 +1413,7 @@ class ExperimentsApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> RESTResponseType:
-        """Get Experiment Runs
+        """Get Experiment Runs Of Experiment
 
 
         :param id: (required)
@@ -1945,7 +1444,7 @@ class ExperimentsApi:
         :return: Returns the result object.
         """  # noqa: E501
 
-        _param = self._get_experiment_runs_v1_experiments_id_runs_get_serialize(
+        _param = self._get_experiment_runs_of_experiment_v1_experiments_id_runs_get_serialize(
             id=id,
             offset=offset,
             limit=limit,
@@ -1964,7 +1463,7 @@ class ExperimentsApi:
         )
         return response_data.response
 
-    def _get_experiment_runs_v1_experiments_id_runs_get_serialize(
+    def _get_experiment_runs_of_experiment_v1_experiments_id_runs_get_serialize(
         self,
         id,
         offset,
@@ -2005,7 +1504,7 @@ class ExperimentsApi:
         )
 
         # authentication setting
-        _auth_settings: List[str] = ["OpenIdConnect"]
+        _auth_settings: List[str] = ["APIKeyHeader", "OpenIdConnect"]
 
         return self.api_client.param_serialize(
             method="GET",
@@ -2243,7 +1742,7 @@ class ExperimentsApi:
         )
 
         # authentication setting
-        _auth_settings: List[str] = ["OpenIdConnect"]
+        _auth_settings: List[str] = ["APIKeyHeader", "OpenIdConnect"]
 
         return self.api_client.param_serialize(
             method="GET",
@@ -2263,6 +1762,10 @@ class ExperimentsApi:
     @validate_call
     def get_experiments_count_v1_count_experiments_get(
         self,
+        query: Optional[StrictStr] = None,
+        mine: Optional[StrictBool] = None,
+        archived: Optional[StrictBool] = None,
+        public: Optional[StrictBool] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -2278,6 +1781,14 @@ class ExperimentsApi:
         """Get Experiments Count
 
 
+        :param query:
+        :type query: str
+        :param mine:
+        :type mine: bool
+        :param archived:
+        :type archived: bool
+        :param public:
+        :type public: bool
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -2301,6 +1812,10 @@ class ExperimentsApi:
         """  # noqa: E501
 
         _param = self._get_experiments_count_v1_count_experiments_get_serialize(
+            query=query,
+            mine=mine,
+            archived=archived,
+            public=public,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -2309,6 +1824,7 @@ class ExperimentsApi:
 
         _response_types_map: Dict[str, Optional[str]] = {  # noqa: F841
             "200": "int",
+            "422": "HTTPValidationError",
         }
         response_data = self.api_client.call_api(
             *_param, _request_timeout=_request_timeout
@@ -2322,6 +1838,10 @@ class ExperimentsApi:
     @validate_call
     def get_experiments_count_v1_count_experiments_get_with_http_info(
         self,
+        query: Optional[StrictStr] = None,
+        mine: Optional[StrictBool] = None,
+        archived: Optional[StrictBool] = None,
+        public: Optional[StrictBool] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -2337,6 +1857,14 @@ class ExperimentsApi:
         """Get Experiments Count
 
 
+        :param query:
+        :type query: str
+        :param mine:
+        :type mine: bool
+        :param archived:
+        :type archived: bool
+        :param public:
+        :type public: bool
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -2360,6 +1888,10 @@ class ExperimentsApi:
         """  # noqa: E501
 
         _param = self._get_experiments_count_v1_count_experiments_get_serialize(
+            query=query,
+            mine=mine,
+            archived=archived,
+            public=public,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -2368,6 +1900,7 @@ class ExperimentsApi:
 
         _response_types_map: Dict[str, Optional[str]] = {  # noqa: F841
             "200": "int",
+            "422": "HTTPValidationError",
         }
         response_data = self.api_client.call_api(
             *_param, _request_timeout=_request_timeout
@@ -2381,6 +1914,10 @@ class ExperimentsApi:
     @validate_call
     def get_experiments_count_v1_count_experiments_get_without_preload_content(
         self,
+        query: Optional[StrictStr] = None,
+        mine: Optional[StrictBool] = None,
+        archived: Optional[StrictBool] = None,
+        public: Optional[StrictBool] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -2396,6 +1933,14 @@ class ExperimentsApi:
         """Get Experiments Count
 
 
+        :param query:
+        :type query: str
+        :param mine:
+        :type mine: bool
+        :param archived:
+        :type archived: bool
+        :param public:
+        :type public: bool
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -2419,6 +1964,10 @@ class ExperimentsApi:
         """  # noqa: E501
 
         _param = self._get_experiments_count_v1_count_experiments_get_serialize(
+            query=query,
+            mine=mine,
+            archived=archived,
+            public=public,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -2427,6 +1976,7 @@ class ExperimentsApi:
 
         _response_types_map: Dict[str, Optional[str]] = {  # noqa: F841
             "200": "int",
+            "422": "HTTPValidationError",
         }
         response_data = self.api_client.call_api(
             *_param, _request_timeout=_request_timeout
@@ -2435,6 +1985,10 @@ class ExperimentsApi:
 
     def _get_experiments_count_v1_count_experiments_get_serialize(
         self,
+        query,
+        mine,
+        archived,
+        public,
         _request_auth,
         _content_type,
         _headers,
@@ -2453,6 +2007,18 @@ class ExperimentsApi:
 
         # process the path parameters
         # process the query parameters
+        if query is not None:
+            _query_params.append(("query", query))
+
+        if mine is not None:
+            _query_params.append(("mine", mine))
+
+        if archived is not None:
+            _query_params.append(("archived", archived))
+
+        if public is not None:
+            _query_params.append(("public", public))
+
         # process the header parameters
         # process the form parameters
         # process the body parameter
@@ -2463,7 +2029,7 @@ class ExperimentsApi:
         )
 
         # authentication setting
-        _auth_settings: List[str] = ["OpenIdConnect"]
+        _auth_settings: List[str] = ["APIKeyHeader", "OpenIdConnect"]
 
         return self.api_client.param_serialize(
             method="GET",
@@ -2483,6 +2049,10 @@ class ExperimentsApi:
     @validate_call
     def get_experiments_v1_experiments_get(
         self,
+        query: Optional[StrictStr] = None,
+        mine: Optional[StrictBool] = None,
+        archived: Optional[StrictBool] = None,
+        public: Optional[StrictBool] = None,
         offset: Optional[StrictInt] = None,
         limit: Optional[StrictInt] = None,
         _request_timeout: Union[
@@ -2500,6 +2070,14 @@ class ExperimentsApi:
         """Get Experiments
 
 
+        :param query:
+        :type query: str
+        :param mine:
+        :type mine: bool
+        :param archived:
+        :type archived: bool
+        :param public:
+        :type public: bool
         :param offset:
         :type offset: int
         :param limit:
@@ -2527,6 +2105,10 @@ class ExperimentsApi:
         """  # noqa: E501
 
         _param = self._get_experiments_v1_experiments_get_serialize(
+            query=query,
+            mine=mine,
+            archived=archived,
+            public=public,
             offset=offset,
             limit=limit,
             _request_auth=_request_auth,
@@ -2551,6 +2133,10 @@ class ExperimentsApi:
     @validate_call
     def get_experiments_v1_experiments_get_with_http_info(
         self,
+        query: Optional[StrictStr] = None,
+        mine: Optional[StrictBool] = None,
+        archived: Optional[StrictBool] = None,
+        public: Optional[StrictBool] = None,
         offset: Optional[StrictInt] = None,
         limit: Optional[StrictInt] = None,
         _request_timeout: Union[
@@ -2568,6 +2154,14 @@ class ExperimentsApi:
         """Get Experiments
 
 
+        :param query:
+        :type query: str
+        :param mine:
+        :type mine: bool
+        :param archived:
+        :type archived: bool
+        :param public:
+        :type public: bool
         :param offset:
         :type offset: int
         :param limit:
@@ -2595,6 +2189,10 @@ class ExperimentsApi:
         """  # noqa: E501
 
         _param = self._get_experiments_v1_experiments_get_serialize(
+            query=query,
+            mine=mine,
+            archived=archived,
+            public=public,
             offset=offset,
             limit=limit,
             _request_auth=_request_auth,
@@ -2619,6 +2217,10 @@ class ExperimentsApi:
     @validate_call
     def get_experiments_v1_experiments_get_without_preload_content(
         self,
+        query: Optional[StrictStr] = None,
+        mine: Optional[StrictBool] = None,
+        archived: Optional[StrictBool] = None,
+        public: Optional[StrictBool] = None,
         offset: Optional[StrictInt] = None,
         limit: Optional[StrictInt] = None,
         _request_timeout: Union[
@@ -2636,6 +2238,14 @@ class ExperimentsApi:
         """Get Experiments
 
 
+        :param query:
+        :type query: str
+        :param mine:
+        :type mine: bool
+        :param archived:
+        :type archived: bool
+        :param public:
+        :type public: bool
         :param offset:
         :type offset: int
         :param limit:
@@ -2663,6 +2273,10 @@ class ExperimentsApi:
         """  # noqa: E501
 
         _param = self._get_experiments_v1_experiments_get_serialize(
+            query=query,
+            mine=mine,
+            archived=archived,
+            public=public,
             offset=offset,
             limit=limit,
             _request_auth=_request_auth,
@@ -2682,6 +2296,10 @@ class ExperimentsApi:
 
     def _get_experiments_v1_experiments_get_serialize(
         self,
+        query,
+        mine,
+        archived,
+        public,
         offset,
         limit,
         _request_auth,
@@ -2702,6 +2320,18 @@ class ExperimentsApi:
 
         # process the path parameters
         # process the query parameters
+        if query is not None:
+            _query_params.append(("query", query))
+
+        if mine is not None:
+            _query_params.append(("mine", mine))
+
+        if archived is not None:
+            _query_params.append(("archived", archived))
+
+        if public is not None:
+            _query_params.append(("public", public))
+
         if offset is not None:
             _query_params.append(("offset", offset))
 
@@ -2718,7 +2348,7 @@ class ExperimentsApi:
         )
 
         # authentication setting
-        _auth_settings: List[str] = ["OpenIdConnect"]
+        _auth_settings: List[str] = ["APIKeyHeader", "OpenIdConnect"]
 
         return self.api_client.param_serialize(
             method="GET",
@@ -2736,9 +2366,10 @@ class ExperimentsApi:
         )
 
     @validate_call
-    def list_files_v1_experiment_runs_id_files_list_get(
+    def update_experiment_v1_experiments_id_put(
         self,
         id: StrictStr,
+        experiment_create: ExperimentCreate,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -2750,12 +2381,14 @@ class ExperimentsApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> List[FileDetail]:
-        """List Files
+    ) -> ExperimentResponse:
+        """Update Experiment
 
 
         :param id: (required)
         :type id: str
+        :param experiment_create: (required)
+        :type experiment_create: ExperimentCreate
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -2778,8 +2411,9 @@ class ExperimentsApi:
         :return: Returns the result object.
         """  # noqa: E501
 
-        _param = self._list_files_v1_experiment_runs_id_files_list_get_serialize(
+        _param = self._update_experiment_v1_experiments_id_put_serialize(
             id=id,
+            experiment_create=experiment_create,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -2787,7 +2421,7 @@ class ExperimentsApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {  # noqa: F841
-            "200": "List[FileDetail]",
+            "200": "ExperimentResponse",
             "422": "HTTPValidationError",
         }
         response_data = self.api_client.call_api(
@@ -2800,9 +2434,10 @@ class ExperimentsApi:
         ).data
 
     @validate_call
-    def list_files_v1_experiment_runs_id_files_list_get_with_http_info(
+    def update_experiment_v1_experiments_id_put_with_http_info(
         self,
         id: StrictStr,
+        experiment_create: ExperimentCreate,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -2814,12 +2449,14 @@ class ExperimentsApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[List[FileDetail]]:
-        """List Files
+    ) -> ApiResponse[ExperimentResponse]:
+        """Update Experiment
 
 
         :param id: (required)
         :type id: str
+        :param experiment_create: (required)
+        :type experiment_create: ExperimentCreate
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -2842,8 +2479,9 @@ class ExperimentsApi:
         :return: Returns the result object.
         """  # noqa: E501
 
-        _param = self._list_files_v1_experiment_runs_id_files_list_get_serialize(
+        _param = self._update_experiment_v1_experiments_id_put_serialize(
             id=id,
+            experiment_create=experiment_create,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -2851,7 +2489,7 @@ class ExperimentsApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {  # noqa: F841
-            "200": "List[FileDetail]",
+            "200": "ExperimentResponse",
             "422": "HTTPValidationError",
         }
         response_data = self.api_client.call_api(
@@ -2864,9 +2502,10 @@ class ExperimentsApi:
         )
 
     @validate_call
-    def list_files_v1_experiment_runs_id_files_list_get_without_preload_content(
+    def update_experiment_v1_experiments_id_put_without_preload_content(
         self,
         id: StrictStr,
+        experiment_create: ExperimentCreate,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -2879,11 +2518,13 @@ class ExperimentsApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> RESTResponseType:
-        """List Files
+        """Update Experiment
 
 
         :param id: (required)
         :type id: str
+        :param experiment_create: (required)
+        :type experiment_create: ExperimentCreate
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -2906,8 +2547,9 @@ class ExperimentsApi:
         :return: Returns the result object.
         """  # noqa: E501
 
-        _param = self._list_files_v1_experiment_runs_id_files_list_get_serialize(
+        _param = self._update_experiment_v1_experiments_id_put_serialize(
             id=id,
+            experiment_create=experiment_create,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -2915,7 +2557,7 @@ class ExperimentsApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {  # noqa: F841
-            "200": "List[FileDetail]",
+            "200": "ExperimentResponse",
             "422": "HTTPValidationError",
         }
         response_data = self.api_client.call_api(
@@ -2923,9 +2565,10 @@ class ExperimentsApi:
         )
         return response_data.response
 
-    def _list_files_v1_experiment_runs_id_files_list_get_serialize(
+    def _update_experiment_v1_experiments_id_put_serialize(
         self,
         id,
+        experiment_create,
         _request_auth,
         _content_type,
         _headers,
@@ -2949,18 +2592,30 @@ class ExperimentsApi:
         # process the header parameters
         # process the form parameters
         # process the body parameter
+        if experiment_create is not None:
+            _body_params = experiment_create
 
         # set the HTTP header `Accept`
         _header_params["Accept"] = self.api_client.select_header_accept(
             ["application/json"]
         )
 
+        # set the HTTP header `Content-Type`
+        if _content_type:
+            _header_params["Content-Type"] = _content_type
+        else:
+            _default_content_type = self.api_client.select_header_content_type(
+                ["application/json"]
+            )
+            if _default_content_type is not None:
+                _header_params["Content-Type"] = _default_content_type
+
         # authentication setting
-        _auth_settings: List[str] = ["OpenIdConnect"]
+        _auth_settings: List[str] = ["APIKeyHeader", "OpenIdConnect"]
 
         return self.api_client.param_serialize(
-            method="GET",
-            resource_path="/v1/experiment-runs/{id}/files/list",
+            method="PUT",
+            resource_path="/v1/experiments/{id}",
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,

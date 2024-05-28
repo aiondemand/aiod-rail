@@ -93,8 +93,7 @@ class RunnableDistribution(BaseModel):
     os_requirement: Optional[
         Annotated[str, Field(strict=True, max_length=256)]
     ] = Field(
-        default=None,
-        description="A human readable explanation for the required os.",
+        default=None, description="A human readable explanation for the required os."
     )
     dependency: Optional[Annotated[str, Field(strict=True, max_length=256)]] = Field(
         default=None,
