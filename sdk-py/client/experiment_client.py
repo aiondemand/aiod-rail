@@ -58,7 +58,7 @@ class Experiments:
         self,
         query: str = "",
         mine: bool = True,
-        archived: bool = True,
+        archived: bool = False,
         public: bool = True,
     ) -> int:
         """
@@ -66,8 +66,8 @@ class Experiments:
         Args:
             query (str, optional): Query used to filter experiments. Defaults to empty string, which means that by default, it's not used.
             mine (bool, optional): If own personal experiments should be counted. Defaults to True.
-            archived (bool, optional): If archived experiments should be counted as well. Defaults to True.
-            public (bool, optional): If experiment templates flagged as public should be counted as well. Defaults to True.
+            archived (bool, optional): If archived experiments should be counted. Defaults to False.
+            public (bool, optional): If experiment templates flagged as public should be counted. Defaults to True.
 
         Returns:
             int: Number of experiments.
@@ -88,7 +88,7 @@ class Experiments:
         self,
         query: str = "",
         mine: bool = True,
-        archived: bool = True,
+        archived: bool = False,
         public: bool = True,
         offset: int = 0,
         limit: int = 100,
@@ -98,8 +98,8 @@ class Experiments:
         Args:
             query (str, optional): Query used to filter experiments. Defaults to empty string, which means that by default, it's not used.
             mine (bool, optional): If own personal experiments should be included. Defaults to True.
-            archived (bool, optional): If archived experiments should be listed as well. Defaults to True.
-            public (bool, optional): If experiment templates flagged as public should be listed as well. Defaults to True.
+            archived (bool, optional): If archived experiments should be listed. Defaults to False.
+            public (bool, optional): If experiment templates flagged as public should be listed. Defaults to True.
             offset (int, optional): Starting index of experiment range from which to retrieve. Defaults to 0.
             limit (int, optional): Ending index of experiment range to which to retrieve. Defaults to 100.
 
