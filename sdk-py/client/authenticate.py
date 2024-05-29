@@ -29,10 +29,10 @@ class Authenticator:
         Return header as a dictionary in form Authorization: "token_type access_token"
         @param: None
         """
-        authorization_Url, _ = self._session.authorization_url(
+        authorization_url, _ = self._session.authorization_url(
             self._redirect_uri, access_type="offline", prompt="select_account"
         )
-        print(f"\nPlease go to URL to authorize access: \n{authorization_Url}\n")
+        print(f"\nPlease go to URL to authorize access: \n{authorization_url}\n")
         authorization_response = input(
             "\nEnter the full callback URL(will be generated in address bar): \n"
         )

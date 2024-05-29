@@ -21,43 +21,11 @@ class ExperimentsTemplates:
         Returns:
             aiod_rail_sdk.ExperimentTemplateResponse: Created experiment template.
         """
-        json_data = None
-        if isinstance(file, dict):
-            json_data = json.dumps(file)
-
-        elif (
-            isinstance(file, tuple)
-            and len(file) == 4
-            and all(isinstance(item, (str, dict)) for item in file)
-        ):
-            path_script, path_requirements, path_image, config = file
-            if isinstance(config, dict):
-                with open(path_script, "r") as s, open(
-                    path_requirements, "r"
-                ) as r, open(path_image, "r") as i:
-                    script = s.read()
-                    requirements = r.read()
-                    image = i.read()
-                    config.update(
-                        {
-                            "script": script,
-                            "pip_requirements": requirements,
-                            "base_image": image,
-                        }
-                    )
-                    json_data = json.dumps(config)
-            else:
-                raise ValueError("Fourth element must be a dictionary")
-        else:
-            raise ValueError("Invalid input format")
-
-        experiment_template_create_instance = (
-            aiod_rail_sdk.ExperimentTemplateCreate.from_json(json_data)
-        )
+        experiment_template_instance = self._create_experiment_template_instance(file)
 
         with aiod_rail_sdk.ApiClient(self._configuration) as api_client:
             api_instance = aiod_rail_sdk.ExperimentTemplatesApi(api_client)
-            experiment_template_create = experiment_template_create_instance
+            experiment_template_create = experiment_template_instance
 
             try:
                 api_response = api_instance.create_experiment_template_v1_experiment_templates_post(
@@ -66,7 +34,7 @@ class ExperimentsTemplates:
                 return api_response
 
             except Exception as e:
-                raise (f"Exception {e}")
+                raise e
 
     def approve_experiment_template(
         self, id: str, password: str = "pass", is_approved: bool = False
@@ -76,7 +44,7 @@ class ExperimentsTemplates:
         Args:
             id (str): ID of experiment template to be approved.
             password (str): Password required to be able to approve the experiment template.
-            approve_value (bool, optional): Boolean value to approve/reject the experiment template. Defaults to False.
+            is_approved (bool, optional): Boolean value to approve/reject the experiment template. Defaults to False.
 
         Returns:
             None.
@@ -89,7 +57,7 @@ class ExperimentsTemplates:
                     id=id, password=password, approved=is_approved
                 )
             except Exception as e:
-                raise (f"Exception {e}")
+                raise e
 
     def count(
         self,
@@ -124,7 +92,7 @@ class ExperimentsTemplates:
                 )
                 return api_response
             except Exception as e:
-                raise (f"Exception {e}")
+                raise e
 
     def get(
         self,
@@ -167,11 +135,11 @@ class ExperimentsTemplates:
                 )
                 return api_response
             except Exception as e:
-                raise (f"Exception {e}")
+                raise e
 
     def get_by_id(self, id: str) -> aiod_rail_sdk.ExperimentTemplateResponse:
         """
-        Gets specific experiment template by it's ID.
+        Gets specific experiment template by its ID.
         Args:
             id (str): ID of experiment template to be retrieved.
         Returns:
@@ -188,7 +156,7 @@ class ExperimentsTemplates:
                 )
                 return api_response
             except Exception as e:
-                raise (f"Exception {e}")
+                raise e
 
     def remove(self, id: str) -> None:
         """
@@ -206,7 +174,7 @@ class ExperimentsTemplates:
                     id=id
                 )
             except Exception as e:
-                raise (f"Exception {e}")
+                raise e
 
     def archive(self, id: str, archived: bool = False) -> None:
         """
@@ -225,7 +193,7 @@ class ExperimentsTemplates:
                     id=id, archived=archived
                 )
             except Exception as e:
-                raise (f"Exception {e}")
+                raise e
 
     def update(self, id: str, file: dict) -> aiod_rail_sdk.ExperimentTemplateResponse:
         """
@@ -239,7 +207,24 @@ class ExperimentsTemplates:
         Returns:
             aiod_rail_sdk.ExperimentTemplateResponse: Updated Experiment template by given ID.
         """
-        json_data = None
+        experiment_template_instance = self._create_experiment_template_instance(file)
+
+        with aiod_rail_sdk.ApiClient(self._configuration) as api_client:
+            api_instance = aiod_rail_sdk.ExperimentTemplatesApi(api_client)
+
+            try:
+                api_response = api_instance.update_experiment_template_v1_experiment_templates_id_put(
+                    id=id,
+                    experiment_template_create=experiment_template_instance,
+                )
+                return api_response
+            except Exception as e:
+                raise e
+
+    @staticmethod
+    def _create_experiment_template_instance(
+        file: Union[dict, tuple[str, str, str, dict]]
+    ):
         if isinstance(file, dict):
             json_data = json.dumps(file)
 
@@ -250,9 +235,11 @@ class ExperimentsTemplates:
         ):
             path_script, path_requirements, path_image, config = file
             if isinstance(config, dict):
-                with open(path_script, "r") as s, open(
-                    path_requirements, "r"
-                ) as r, open(path_image, "r") as i:
+                with (
+                    open(path_script, "r") as s,
+                    open(path_requirements, "r") as r,
+                    open(path_image, "r") as i,
+                ):
                     script = s.read()
                     requirements = r.read()
                     image = i.read()
@@ -269,18 +256,4 @@ class ExperimentsTemplates:
         else:
             raise ValueError("Invalid input format")
 
-        experiment_template_create_instance = (
-            aiod_rail_sdk.ExperimentTemplateCreate.from_json(json_data)
-        )
-
-        with aiod_rail_sdk.ApiClient(self._configuration) as api_client:
-            api_instance = aiod_rail_sdk.ExperimentTemplatesApi(api_client)
-
-            try:
-                api_response = api_instance.update_experiment_template_v1_experiment_templates_id_put(
-                    id=id,
-                    experiment_template_create=experiment_template_create_instance,
-                )
-                return api_response
-            except Exception as e:
-                raise (f"Exception {e}")
+        return aiod_rail_sdk.ExperimentTemplateCreate.from_json(json_data)

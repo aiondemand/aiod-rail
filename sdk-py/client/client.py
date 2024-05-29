@@ -18,7 +18,7 @@ class RailClient:
 
     """
 
-    def __init__(self, configuration: aiod_rail_sdk.Configuration, api_key) -> None:
+    def __init__(self, config: aiod_rail_sdk.Configuration, api_key: str) -> None:
         """
         Creates RailClient to access SDK.
         Args:
@@ -27,10 +27,10 @@ class RailClient:
         Returns:
             None
         """
-        self.config = configuration
+        self.config = config
         self.config.api_key["APIKeyHeader"] = api_key
         self._experiments: Experiments = None
-        self._expetiments_templates: ExperimentsTemplates = None
+        self._experiments_templates: ExperimentsTemplates = None
         self._datasets: Datasets = None
 
     @property
@@ -41,7 +41,7 @@ class RailClient:
 
     @property
     def experiments_templates(self):
-        if self._expetiments_templates is None:
+        if self._experiments_templates is None:
             self._experiments_templates = ExperimentsTemplates(self.config)
         return self._experiments_templates
 

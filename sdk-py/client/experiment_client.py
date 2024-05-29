@@ -4,8 +4,8 @@ import aiod_rail_sdk
 
 
 class Experiments:
-    def __init__(self, client_config: aiod_rail_sdk.Configuration):
-        self._configuration = client_config
+    def __init__(self, config: aiod_rail_sdk.Configuration):
+        self._config = config
 
     def create_experiment(self, file) -> aiod_rail_sdk.ExperimentResponse:
         """
@@ -16,7 +16,7 @@ class Experiments:
         Returns:
             aiod_rail_sdk.ExperimentResponse: Experiment created from given template.
         """
-        with aiod_rail_sdk.ApiClient(self._configuration) as api_client:
+        with aiod_rail_sdk.ApiClient(self._config) as api_client:
             api_instance = aiod_rail_sdk.ExperimentsApi(api_client)
             json_data = json.dumps(file)
             experiment_create_instance = aiod_rail_sdk.ExperimentCreate.from_json(
@@ -29,7 +29,7 @@ class Experiments:
                 return api_response
 
             except Exception as e:
-                raise (f"Exception {e}")
+                raise e
 
     def run_experiment(self, id: str) -> aiod_rail_sdk.ExperimentRunResponse:
         """
@@ -41,7 +41,7 @@ class Experiments:
             aiod_rail_sdk.ExperimentRunResponse: Experiment run of given experiment.
 
         """
-        with aiod_rail_sdk.ApiClient(self._configuration) as api_client:
+        with aiod_rail_sdk.ApiClient(self._config) as api_client:
             api_instance = aiod_rail_sdk.ExperimentsApi(api_client)
             try:
                 api_response = (
@@ -52,7 +52,7 @@ class Experiments:
                 return api_response
 
             except Exception as e:
-                raise (f"Exception {e}")
+                raise e
 
     def count(
         self,
@@ -72,7 +72,7 @@ class Experiments:
         Returns:
             int: Number of experiments.
         """
-        with aiod_rail_sdk.ApiClient(self._configuration) as api_client:
+        with aiod_rail_sdk.ApiClient(self._config) as api_client:
             api_instance = aiod_rail_sdk.ExperimentsApi(api_client)
             try:
                 api_response = (
@@ -82,7 +82,7 @@ class Experiments:
                 )
                 return api_response
             except Exception as e:
-                print(f"Exception {e}")
+                raise e
 
     def get(
         self,
@@ -106,7 +106,7 @@ class Experiments:
         Returns:
             list[aiod_rail_sdk.ExperimentResponse]: The list of experiments.
         """
-        with aiod_rail_sdk.ApiClient(self._configuration) as api_client:
+        with aiod_rail_sdk.ApiClient(self._config) as api_client:
             api_instance = aiod_rail_sdk.ExperimentsApi(api_client)
             try:
                 api_response = api_instance.get_experiments_v1_experiments_get(
@@ -119,24 +119,24 @@ class Experiments:
                 )
                 return api_response
             except Exception as e:
-                print(f"Exception {e}")
+                raise e
 
     def get_by_id(self, id: str) -> aiod_rail_sdk.ExperimentResponse:
         """
-        Gets specific experiment by it's ID.
+        Gets specific experiment by its ID.
         Args:
             id (str): ID of experiment to be retrieved.
 
         Returns:
             aiod_rail_sdk.ExperimentResponse: Experiment specified by given ID.
         """
-        with aiod_rail_sdk.ApiClient(self._configuration) as api_client:
+        with aiod_rail_sdk.ApiClient(self._config) as api_client:
             api_instance = aiod_rail_sdk.ExperimentsApi(api_client)
             try:
                 api_response = api_instance.get_experiment_v1_experiments_id_get(id)
                 return api_response
             except Exception as e:
-                print(f"Exception {e}")
+                raise e
 
     def archive(self, id: str, archived: bool = False) -> None:
         """
@@ -147,7 +147,7 @@ class Experiments:
         Returns:
             None.
         """
-        with aiod_rail_sdk.ApiClient(self._configuration) as api_client:
+        with aiod_rail_sdk.ApiClient(self._config) as api_client:
             api_instance = aiod_rail_sdk.ExperimentsApi(api_client)
 
             try:
@@ -155,7 +155,7 @@ class Experiments:
                     id=id, archived=archived
                 )
             except Exception as e:
-                raise (f"Exception {e}")
+                raise e
 
     def update(self, id: str, file: dict) -> aiod_rail_sdk.ExperimentResponse:
         """
@@ -171,7 +171,7 @@ class Experiments:
 
         experiment_create_instance = aiod_rail_sdk.ExperimentCreate.from_json(json_data)
 
-        with aiod_rail_sdk.ApiClient(self._configuration) as api_client:
+        with aiod_rail_sdk.ApiClient(self._config) as api_client:
             api_instance = aiod_rail_sdk.ExperimentsApi(api_client)
 
             try:
@@ -180,7 +180,7 @@ class Experiments:
                 )
                 return api_response
             except Exception as e:
-                raise (f"Exception {e}")
+                raise e
 
     def delete(self, id: str) -> None:
         """
@@ -190,15 +190,17 @@ class Experiments:
         Returns:
             None.
         """
-        with aiod_rail_sdk.ApiClient(self._configuration) as api_client:
+        with aiod_rail_sdk.ApiClient(self._config) as api_client:
             api_instance = aiod_rail_sdk.ExperimentsApi(api_client)
 
             try:
                 api_instance.delete_experiment_v1_experiments_id_delete(id=id)
             except Exception as e:
-                raise (f"Exception {e}")
+                raise e
 
-    def get_experiments_run(self, id: str, offset: int = 0, limit: int = 100) -> None:
+    def get_experiments_run(
+        self, id: str, offset: int = 0, limit: int = 100
+    ) -> list[aiod_rail_sdk.ExperimentRunResponse]:
         """
         Gets runs of specified experiment in selected range.
         Args:
@@ -208,7 +210,7 @@ class Experiments:
         Returns:
             None.
         """
-        with aiod_rail_sdk.ApiClient(self._configuration) as api_client:
+        with aiod_rail_sdk.ApiClient(self._config) as api_client:
             api_instance = aiod_rail_sdk.ExperimentsApi(api_client)
 
             try:
@@ -218,7 +220,7 @@ class Experiments:
                 )
                 return api_response
             except Exception as e:
-                print(f"Exception {e}")
+                raise e
 
     def get_experiments_run_count(self, id: str) -> int:
         """
@@ -228,7 +230,7 @@ class Experiments:
         Returns:
             int: Number of experiments runs of selected experiment.
         """
-        with aiod_rail_sdk.ApiClient(self._configuration) as api_client:
+        with aiod_rail_sdk.ApiClient(self._config) as api_client:
             api_instance = aiod_rail_sdk.ExperimentsApi(api_client)
 
             try:
@@ -237,7 +239,7 @@ class Experiments:
                 )
                 return api_response
             except Exception as e:
-                print(f"Exception {e}")
+                raise e
 
     def delete_experiment_run(self, id: str) -> None:
         """
@@ -247,13 +249,13 @@ class Experiments:
         Returns:
             None.
         """
-        with aiod_rail_sdk.ApiClient(self._configuration) as api_client:
+        with aiod_rail_sdk.ApiClient(self._config) as api_client:
             api_instance = aiod_rail_sdk.ExperimentRunsApi(api_client)
 
             try:
                 api_instance.delete_experiment_run_v1_experiment_runs_id_delete(id)
             except Exception as e:
-                print(f"Exception {e}")
+                raise e
 
     def download_experiment_run(self, id: str, filepath: str) -> None:
         """
@@ -264,7 +266,7 @@ class Experiments:
         Returns:
             None.
         """
-        with aiod_rail_sdk.ApiClient(self._configuration) as api_client:
+        with aiod_rail_sdk.ApiClient(self._config) as api_client:
             api_instance = aiod_rail_sdk.ExperimentRunsApi(api_client)
 
             try:
@@ -272,7 +274,7 @@ class Experiments:
                     id=id, filepath=filepath
                 )
             except Exception as e:
-                print(f"Exception {e}")
+                raise e
 
     def logs_experiment_run(self, id: str) -> str:
         """
@@ -282,7 +284,7 @@ class Experiments:
         Returns:
             None.
         """
-        with aiod_rail_sdk.ApiClient(self._configuration) as api_client:
+        with aiod_rail_sdk.ApiClient(self._config) as api_client:
             api_instance = aiod_rail_sdk.ExperimentRunsApi(api_client)
 
             try:
@@ -293,4 +295,4 @@ class Experiments:
                 )
                 return api_response
             except Exception as e:
-                print(f"Exception {e}")
+                raise e
