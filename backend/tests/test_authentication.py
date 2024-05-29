@@ -3,7 +3,7 @@ from unittest.mock import AsyncMock, Mock, patch
 import pytest
 from fastapi import HTTPException, status
 
-from app.authentication import get_current_user
+from app.auth import get_current_user
 
 
 @pytest.mark.asyncio
@@ -30,7 +30,7 @@ async def test_current_get_user_from_token_or_from_api_key_must_be_true():
 
 
 @pytest.mark.asyncio
-@patch("app.authentication._verify_token", new_callable=AsyncMock)
+@patch("app.auth._get_userinfo", new_callable=AsyncMock)
 async def test_get_current_user_returns_userinfo_from_token(mock_verify_token):
     mock_verify_token.return_value = {"email": "john@doe.com", "api_key": "1234"}
 
@@ -43,7 +43,7 @@ async def test_get_current_user_returns_userinfo_from_token(mock_verify_token):
 
 
 @pytest.mark.asyncio
-@patch("app.authentication._verify_token", new_callable=AsyncMock)
+@patch("app.auth._get_userinfo", new_callable=AsyncMock)
 async def test_get_current_user_raises_if_token_not_verified(
     mock_verify_token: AsyncMock,
 ):

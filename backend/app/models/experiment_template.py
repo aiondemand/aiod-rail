@@ -7,10 +7,12 @@ from pathlib import Path
 
 import pymongo
 import yaml
-from beanie import Document, Indexed
+from beanie import Document, Indexed, operators
+from beanie.odm.operators.find import BaseFindOperator
 from deepdiff import DeepDiff
 from pydantic import Field
 
+from app.auth import has_admin_role
 from app.config import (
     EXPERIMENT_TEMPLATE_DIR_PREFIX,
     REPOSITORY_NAME,
@@ -149,6 +151,32 @@ class ExperimentTemplate(Document):
             script=self.script,
             mine=mine,
         )
+
+    def is_readable_by_user(self, user: dict | None) -> bool:
+        if self.public:
+            return True
+        elif user is None:
+            return False
+        else:
+            return self.created_by == user["email"] or has_admin_role(user)
+
+    @classmethod
+    def get_query_readable_by_user(cls, user: dict | None) -> BaseFindOperator:
+        if user is None:
+            return operators.Eq(cls.public, True)
+        elif has_admin_role(user):
+            return operators.Exists(cls.id, True)
+        else:
+            return operators.Or(
+                operators.Eq(cls.public, True),
+                operators.Eq(cls.created_by, user["email"]),
+            )
+
+    def is_editable_by_user(self, user: dict | None) -> bool:
+        if user is not None and self.created_by == user["email"]:
+            return True
+        else:
+            return False
 
     async def update_state_in_db(
         self, state: TemplateState, retry_count: int | None = None

@@ -3,7 +3,7 @@ from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from app.authentication import get_current_user
+from app.auth import get_current_user
 from app.models.rail_user import RailUser
 from app.schemas.rail_user import RailUserResponse
 
@@ -62,10 +62,10 @@ async def create_or_change_user_api_key(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail="Error while creating user profile and API key",
             )
-    elif not user_obj.api_key:
+    else:
         try:
             user_obj.api_key = RailUser.generate_api_key()
-            await RailUser.replace(user_obj)
+            await user_obj.set({RailUser.api_key: RailUser.generate_api_key()})
         except Exception:
             logger.error("Error while creating API key")
             raise HTTPException(

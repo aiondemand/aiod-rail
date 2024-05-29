@@ -3,12 +3,10 @@ from datetime import datetime, timezone
 from typing import Any
 
 from beanie import PydanticObjectId, operators
-from beanie.odm.operators.find.comparison import Eq
-from beanie.odm.operators.find.evaluation import Text
 from beanie.odm.queries.find import FindMany
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from app.authentication import get_current_user
+from app.auth import get_current_user, raise_requires_auth
 from app.config import settings
 from app.helpers import Pagination, QueryOperator, get_compare_operator_fn
 from app.models.experiment import Experiment
@@ -18,7 +16,6 @@ from app.schemas.experiment_template import (
     ExperimentTemplateResponse,
 )
 from app.schemas.states import TemplateState
-from app.services.experiment_scheduler import ExperimentScheduler
 
 router = APIRouter()
 
@@ -182,37 +179,6 @@ async def archive_experiment_template(
     )
 
 
-@router.patch("/experiment-templates/{id}/approve", response_model=None)
-async def approve_experiment_template(
-    id: PydanticObjectId,
-    password: str,
-    approved: bool = False,
-    exp_scheduler: ExperimentScheduler = Depends(ExperimentScheduler.get_service),
-) -> Any:
-    if password != settings.PASSWORD_FOR_TEMPLATE_APPROVAL:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Wrong password given",
-        )
-
-    experiment_template = await ExperimentTemplate.get(id)
-    if experiment_template is None:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Such experiment template doesn't exist",
-        )
-
-    await experiment_template.set(
-        {
-            ExperimentTemplate.approved: approved,
-            ExperimentTemplate.updated_at: datetime.now(tz=timezone.utc),
-        }
-    )
-
-    if approved:
-        await exp_scheduler.add_image_to_build(experiment_template.id)
-
-
 @router.get("/count/experiment-templates/{id}/experiments", response_model=int)
 async def get_experiments_of_template_count(
     id: PydanticObjectId,
@@ -243,16 +209,11 @@ def find_specific_experiment_templates(
         if pagination is not None
         else {}
     )
-    # initial condition -> retrieve only those objects that are accessible to a user
-    accessibility_condition = operators.Or(
-        ExperimentTemplate.public == True,  # noqa: E712
-        Eq(ExperimentTemplate.created_by, user["email"] if user is not None else ""),
-    )
 
     # applying filters
     filter_conditions = []
     if len(search_query) > 0:
-        filter_conditions.append(Text(search_query))
+        filter_conditions.append(operators.Text(search_query))
     if mine is not None:
         if user is not None:
             filter_conditions.append(
@@ -260,11 +221,7 @@ def find_specific_experiment_templates(
             )
         else:
             # Authentication required to see your experiment templates
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="This endpoint requires authorization. You need to be logged in.",
-                headers={"WWW-Authenticate": "Bearer"},
-            )
+            raise_requires_auth()
 
     if finalized is not None:
         filter_conditions.append(
@@ -278,6 +235,8 @@ def find_specific_experiment_templates(
         filter_conditions.append(ExperimentTemplate.archived == archived)
     if public is not None:
         filter_conditions.append(ExperimentTemplate.public == public)
+
+    accessibility_condition = ExperimentTemplate.get_query_readable_by_user(user)
 
     if len(filter_conditions) > 0:
         filter_multi_query = (
@@ -300,15 +259,18 @@ async def get_experiment_template_if_accessible_or_raise(
         detail="You cannot access this experiment template",
     )
     template = await ExperimentTemplate.get(template_id)
+    if template is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Specified experiment template doesn't exist",
+        )
 
     if template is None:
         raise access_denied_error
     else:
-        # Public templates are readable by everyone
-        if write_access is False and template.public:
+        if write_access and template.is_editable_by_user(user):
             return template
-        # TODO: Add experiment template access management
-        elif user is not None and template.created_by == user["email"]:
+        elif not write_access and template.is_readable_by_user(user):
             return template
         else:
             raise access_denied_error

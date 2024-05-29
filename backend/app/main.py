@@ -13,7 +13,14 @@ from app.models.experiment import Experiment
 from app.models.experiment_run import ExperimentRun
 from app.models.experiment_template import ExperimentTemplate
 from app.models.rail_user import RailUser
-from app.routers import aiod, experiment_runs, experiment_templates, experiments, users
+from app.routers import (
+    admin,
+    aiod,
+    experiment_runs,
+    experiment_templates,
+    experiments,
+    users,
+)
 from app.services.aiod import aiod_client_wrapper, aiod_library_client_wrapper
 from app.services.container_platforms.base import ContainerPlatformBase
 from app.services.container_platforms.docker import DockerService
@@ -31,6 +38,7 @@ app.include_router(experiments.router, prefix="/v1", tags=["experiments"])
 app.include_router(experiment_runs.router, prefix="/v1", tags=["experiment-runs"])
 
 app.include_router(users.router, prefix="/v1", tags=["users"])
+app.include_router(admin.router, prefix="/v1", tags=["admin"])
 
 app.add_middleware(
     CORSMiddleware,
