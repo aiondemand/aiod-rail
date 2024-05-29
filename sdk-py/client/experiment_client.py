@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 
 import aiod_rail_sdk
 
@@ -257,12 +258,13 @@ class Experiments:
             except Exception as e:
                 raise e
 
-    def download_experiment_run(self, id: str, filepath: str) -> None:
+    def download_experiment_run(self, id: str, filepath: str, to_dir: str) -> None:
         """
         Downloads experiment run.
         Args:
             id (str): ID of experiment run to be downloaded.
-            filepath (str): Local path to which run will be downloaded.
+            filepath (str): File to be downloaded.
+            to_dir (Path): Local directory path to which run will be downloaded.
         Returns:
             None.
         """
@@ -270,11 +272,16 @@ class Experiments:
             api_instance = aiod_rail_sdk.ExperimentRunsApi(api_client)
 
             try:
-                api_instance.download_file_from_experiment_run_v1_experiment_runs_id_files_download_get(
+                data = api_instance.download_file_from_experiment_run_v1_experiment_runs_id_files_download_get(
                     id=id, filepath=filepath
                 )
             except Exception as e:
                 raise e
+
+        local_file_path = Path(to_dir) / Path(filepath)
+        local_file_path.parent.mkdir(parents=True, exist_ok=True)
+        with local_file_path.open("w") as f:
+            f.write(data)
 
     def logs_experiment_run(self, id: str) -> str:
         """
@@ -282,7 +289,7 @@ class Experiments:
         Args:
             id (str): ID of experiment run of which logs will be fetched.
         Returns:
-            None.
+            str: Logs of experiment run.
         """
         with aiod_rail_sdk.ApiClient(self._config) as api_client:
             api_instance = aiod_rail_sdk.ExperimentRunsApi(api_client)
