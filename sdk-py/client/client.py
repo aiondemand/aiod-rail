@@ -1,3 +1,5 @@
+import os
+
 import aiod_rail_sdk
 
 from .dataset_client import Datasets
@@ -18,7 +20,9 @@ class RailClient:
 
     """
 
-    def __init__(self, config: aiod_rail_sdk.Configuration, api_key: str) -> None:
+    def __init__(
+        self, config: aiod_rail_sdk.Configuration, api_key: str | None = None
+    ) -> None:
         """
         Creates RailClient to access SDK.
         Args:
@@ -28,7 +32,7 @@ class RailClient:
             None
         """
         self.config = config
-        self.config.api_key["APIKeyHeader"] = api_key
+        self.config.api_key["APIKeyHeader"] = api_key or os.getenv("AIOD_RAIL_API_KEY")
         self._experiments: Experiments = None
         self._experiments_templates: ExperimentsTemplates = None
         self._datasets: Datasets = None

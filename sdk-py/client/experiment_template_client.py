@@ -9,7 +9,7 @@ class ExperimentsTemplates:
         self._configuration = client_config
 
     def create_experiment_template(
-        self, file: Union[dict, tuple[str, str, str, dict]]
+        self, template: Union[dict, tuple[str, str, str, dict]]
     ) -> aiod_rail_sdk.ExperimentTemplateResponse:
         """
         Creates experiment template for experiment.
@@ -21,7 +21,9 @@ class ExperimentsTemplates:
         Returns:
             aiod_rail_sdk.ExperimentTemplateResponse: Created experiment template.
         """
-        experiment_template_instance = self._create_experiment_template_instance(file)
+        experiment_template_instance = self._create_experiment_template_instance(
+            template
+        )
 
         with aiod_rail_sdk.ApiClient(self._configuration) as api_client:
             api_instance = aiod_rail_sdk.ExperimentTemplatesApi(api_client)
@@ -37,7 +39,7 @@ class ExperimentsTemplates:
                 raise e
 
     def approve_experiment_template(
-        self, id: str, password: str = "pass", is_approved: bool = False
+        self, id: str, password: str = "pass", approved: bool = False
     ) -> None:
         """
         Approves experiment template with specified ID.
@@ -54,7 +56,7 @@ class ExperimentsTemplates:
 
             try:
                 api_instance.approve_experiment_template_v1_experiment_templates_id_approve_patch(
-                    id=id, password=password, approved=is_approved
+                    id=id, password=password, approved=approved
                 )
             except Exception as e:
                 raise e
@@ -195,7 +197,9 @@ class ExperimentsTemplates:
             except Exception as e:
                 raise e
 
-    def update(self, id: str, file: dict) -> aiod_rail_sdk.ExperimentTemplateResponse:
+    def update(
+        self, id: str, template: dict
+    ) -> aiod_rail_sdk.ExperimentTemplateResponse:
         """
         Updates specific experiment template.
         Args:
@@ -207,7 +211,9 @@ class ExperimentsTemplates:
         Returns:
             aiod_rail_sdk.ExperimentTemplateResponse: Updated Experiment template by given ID.
         """
-        experiment_template_instance = self._create_experiment_template_instance(file)
+        experiment_template_instance = self._create_experiment_template_instance(
+            template
+        )
 
         with aiod_rail_sdk.ApiClient(self._configuration) as api_client:
             api_instance = aiod_rail_sdk.ExperimentTemplatesApi(api_client)
