@@ -23,20 +23,28 @@ from app.services.workflow_engines.reana import ReanaService
 router = APIRouter()
 
 
+class ExperimentFilter:
+    def __init__(
+        self,
+        mine: bool | None = None,
+        archived: bool | None = None,
+        public: bool | None = None,
+    ):
+        self.mine = mine
+        self.archived = archived
+        self.public = public
+
+
 @router.get("/experiments", response_model=list[ExperimentResponse])
 async def get_experiments(
     query: str = "",
     user: dict = Depends(get_current_user(required=False, from_api_key=True)),
     pagination: Pagination = Depends(),
-    mine: bool | None = None,
-    archived: bool | None = None,
-    public: bool | None = None,
+    filters: ExperimentFilter = Depends(),
 ) -> Any:
     result_set = find_specific_experiments(
         query,
-        mine=mine,
-        archived=archived,
-        public=public,
+        filters=filters,
         user=user,
         pagination=pagination,
     )
@@ -49,15 +57,11 @@ async def get_experiments(
 async def get_experiments_count(
     query: str = "",
     user: dict = Depends(get_current_user(required=False, from_api_key=True)),
-    mine: bool | None = None,
-    archived: bool | None = None,
-    public: bool | None = None,
+    filters: ExperimentFilter = Depends(),
 ) -> Any:
     result_set = find_specific_experiments(
         query,
-        mine=mine,
-        archived=archived,
-        public=public,
+        filters=filters,
         user=user,
     )
     return await result_set.count()
@@ -234,9 +238,7 @@ async def archive_experiment(
 
 def find_specific_experiments(
     search_query: str,
-    mine: bool | None,
-    archived: bool | None,
-    public: bool | None,
+    filters: ExperimentFilter,
     user: dict | None,
     query_operator: QueryOperator = QueryOperator.AND,
     pagination: Pagination = None,
@@ -251,18 +253,20 @@ def find_specific_experiments(
     filter_conditions = []
     if len(search_query) > 0:
         filter_conditions.append(operators.Text(search_query))
-    if mine is not None:
+    if filters.mine is not None:
         if user is not None:
             filter_conditions.append(
-                get_compare_operator_fn(mine)(Experiment.created_by, user["email"])
+                get_compare_operator_fn(filters.mine)(
+                    Experiment.created_by, user["email"]
+                )
             )
         else:
             # Authentication required to see your experiment templates
             raise_requires_auth()
-    if archived:
-        filter_conditions.append(Experiment.archived == archived)
-    if public:
-        filter_conditions.append(Experiment.public == public)
+    if filters.archived:
+        filter_conditions.append(Experiment.archived == filters.archived)
+    if filters.public:
+        filter_conditions.append(Experiment.public == filters.public)
 
     accessibility_condition = Experiment.get_query_readable_by_user(user)
 
