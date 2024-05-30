@@ -316,7 +316,7 @@ export class BackendApiService {
     return this.http.get<number>(`${environment.BACKEND_API_URL}/count/experiment-templates${queries}`);
   }
 
-  getExperimentsOfTeplateCount(id: string, only_mine: boolean): Observable<number> {
+  getExperimentsOfTemplateCount(id: string, only_mine: boolean): Observable<number> {
     return this.http.get<number>(`${environment.BACKEND_API_URL}/count/experiment-templates/${id}/experiments?only_mine=${only_mine}`);
   }
 
@@ -409,7 +409,7 @@ export class BackendApiService {
     return this.http.get<ExperimentRun>(`${environment.BACKEND_API_URL}/experiments/${experimentId}/execute`);
   }
 
-  
+
   ////////////////////////////// PROFILE //////////////////////////////
   getUserProfile(): Observable<UserRailProfile> {
     return this.http.get<UserRailProfile>(`${environment.BACKEND_API_URL}/users/profile`);

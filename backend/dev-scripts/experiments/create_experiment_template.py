@@ -15,7 +15,6 @@ template_to_create = {
     "models_schema": {"cardinality": "1-1"},
     "envs_required": [
         {"name": "SPLIT_NAME", "description": "split name descr"},
-        {"name": "HF_HOME", "description": "hf home descr"},
     ],
     "envs_optional": [
         {"name": "WANDB_API_KEY", "description": "wandb api key descr"},

@@ -5,7 +5,7 @@
 # Define a function to print a help message
 helpFunction() {
     echo ""
-    echo "First ensure you have installedopenapi-generator-cli: https://openapi-generator.tech/docs/installation/"
+    echo "First ensure you have installed openapi-generator-cli: https://openapi-generator.tech/docs/installation/"
     echo "Usage: $0 -o TEMP_OUT_DIR -a BACKEND_API_BASE_PATH"
     echo -e "\t-o Temp directory for the generated models (will be deleted after). Default: temp-out-aiod-models"
     echo -e "\t-a Base directory of the aiod API."
@@ -40,7 +40,7 @@ fi
 # Generate the Python models from the backend API
 openapi-generator-cli generate -g typescript-angular --skip-validate-spec --additional-properties=fileNaming=kebab-case -o $TEMP_OUT_DIR -i $BACKEND_API_BASE_PATH/openapi.json
 
-# Copy the typescript models from the $TEMP_OUT_DIR/model directory to 
+# Copy the typescript models from the $TEMP_OUT_DIR/model directory to
 # $SCRIPT_DIR/../src/app/models/backend-generated directory
 # Note: the output directory is not created by default, so we need to create it first
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"

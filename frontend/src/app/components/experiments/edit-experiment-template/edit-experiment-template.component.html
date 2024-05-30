@@ -10,7 +10,7 @@
     <div *ngIf="inputExperimentTemplate">
         <h1>Edit Experiment template</h1>
     </div>
-    
+
     <div class="basic-data-section">
         <h2>Basic information</h2>
 
@@ -25,7 +25,7 @@
         </mat-form-field>
 
         <mat-form-field>
-            <mat-label>Experiment Template visiblity</mat-label>
+            <mat-label>Experiment Template visibility</mat-label>
             <mat-select formControlName="visibility">
                 <mat-option *ngFor="let str of visibilityStrings" [value]="str">
                     {{ str }}
@@ -68,22 +68,22 @@
 
         <div class="header-with-info">
             <h4>Executable (script)</h4>
-            <mat-icon matTooltip="This script.py will be executed within the Docker container with installed dependencies. 
-            The script may save outputs (models, data) and results (metrics) during its execution. 
+            <mat-icon matTooltip="This script.py will be executed within the Docker container with installed dependencies.
+            The script may save outputs (models, data) and results (metrics) during its execution.
             These will be available in the detail of Experiment Run.">info</mat-icon>
         </div>
 
         <p>
             It's your responsibility to create a Python script that will be fully functional in your specified virtual environment.
-            You're also responsible for integrating the following automatically created 
+            You're also responsible for integrating the following automatically created
             <a [routerLink]="['.']" fragment="env-href-link"><b>RESERVED ENVIRONMENT VARIABLES</b></a>
             into your code such that it will work properly and load the model and the data successfully.
         </p>
 
         <p>
-            If you're not interested in using aforementioned 
-            <a [routerLink]="['.']" fragment="env-href-link"><b>RESERVED ENVIRONMENT VARIABLES</b></a>, 
-            you may omit them, but in such a case injection of Experiment parameters will not 
+            If you're not interested in using aforementioned
+            <a [routerLink]="['.']" fragment="env-href-link"><b>RESERVED ENVIRONMENT VARIABLES</b></a>,
+            you may omit them, but in such a case injection of Experiment parameters will not
             be achieved and the template will not be easily modifiable.
         </p>
 
@@ -91,7 +91,7 @@
             If you would like to output the results of executed experiments of this template explicitly,
             you need to save these results within the environment on the following path: <b>output-temp/metrics.json</b>
 
-            After having run an experiment run, this file is read and the results are print out. 
+            After having run an experiment run, this file is read and the results are print out.
             For now, only a flat object with numerical values is supported.
         </p>
 
@@ -123,22 +123,22 @@
             influence the execution of the script. The meaning of the variables is fully
             determined by script.py and its author.
         </p>
-        
+
         <p>
-            There exists some <b>RESERVED ENVIRONMENT VARIABLES</b>, that you are not allowed to use. These predefined variables are used to 
-            inject specific models, datasets and metrics that you would want to use in your script. 
-            The following environment variables are reserved: 
+            There exists some <b>RESERVED ENVIRONMENT VARIABLES</b>, that you are not allowed to use. These predefined variables are used to
+            inject specific models, datasets and metrics that you would want to use in your script.
+            The following environment variables are reserved:
         </p>
-        
+
         <ul>
-            <li><b>MODEL_NAMES</b> -- contains a list of model names (e.g., HuggingFace unique identifiers) that represent the models you want to use in your code</li> 
+            <li><b>MODEL_NAMES</b> -- contains a list of model names (e.g., HuggingFace unique identifiers) that represent the models you want to use in your code</li>
             <li><b>DATASET_NAMES</b> -- contains a list of dataset name (e.g., HuggingFace unique identifiers) that represent the datasets you want to use in your code</li>
             <li><b>MODEL_IDS</b> -- contains a list of AIoD model IDs that represent the models you want to use in your code</li>
             <li><b>DATASET_IDS</b> -- contains a list of AIoD dataset IDs that represent the datasets you want to use in your code</li>
         </ul>
 
         <p>
-            These reserved environment variables are automatically created based on the models, datasets and metrics you choose to use when creating an Experiment. 
+            These reserved environment variables are automatically created based on the models, datasets and metrics you choose to use when creating an Experiment.
             An experiment can be created once you have an Experiment Template that specifies its computing environment.
         </p>
 
@@ -165,7 +165,7 @@
                 </button>
             </form>
 
-            <table mat-table [dataSource]="requiredVarsData" #requiredVarsTable class="mat-elevation-z8 req-env-table" 
+            <table mat-table [dataSource]="requiredVarsData" #requiredVarsTable class="mat-elevation-z8 req-env-table"
             *ngIf="requiredVarsData.length">
                 <ng-container matColumnDef="name">
                     <th mat-header-cell *matHeaderCellDef>Name</th>

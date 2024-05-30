@@ -34,7 +34,7 @@ interface FlattenedNode {
 })
 export class ExperimentRunDetailComponent {
   experiment: Experiment;
-  
+
   fileTreeStructure: FileNode[] = [];
   treeControl: FlatTreeControl<FlattenedNode> | null = null;
   treeViewDataSource: MatTreeFlatDataSource<FileNode, FlattenedNode> | null = null;
@@ -81,14 +81,14 @@ export class ExperimentRunDetailComponent {
                 node => node.level,
                 node => node.expandable,
               );
-            
+
               let treeFlattener = new MatTreeFlattener(
                 this.flattenNode,
                 node => node.level,
                 node => node.expandable,
                 node => node.children,
               );
-            
+
               this.treeViewDataSource = new MatTreeFlatDataSource(this.treeControl, treeFlattener);
               this.treeViewDataSource.data = this.fileTreeStructure;
             })
@@ -101,7 +101,7 @@ export class ExperimentRunDetailComponent {
     });
   }
 
-  downloadfile(event: Event, filepath: string) { 
+  downloadFile(event: Event, filepath: string) {
     event.stopPropagation();
     this.currentlyBeingDownloaded.add(filepath);
 
@@ -110,7 +110,7 @@ export class ExperimentRunDetailComponent {
       let blobObj = new Blob([response.body], { type: response.body.type });
       let url = window.URL.createObjectURL(blobObj);
       let link = document.createElement('a');
-      
+
       let filename = response.headers
         .get('content-disposition')
         .split('filename=')[1]
@@ -130,7 +130,7 @@ export class ExperimentRunDetailComponent {
 
       this.currentlyBeingDownloaded.delete(filepath);
     });
-      
+
   }
 
   sortFilesFunction(x: string, y: string): number {
@@ -146,7 +146,7 @@ export class ExperimentRunDetailComponent {
     if (x > y) {
       return 1;
     }
-    return 0;  
+    return 0;
   }
 
   buildTreeFileStructure(files: FileDetail[]): void {
@@ -157,7 +157,7 @@ export class ExperimentRunDetailComponent {
         let filename = parts[it]
         let filepath = parts.slice(0, it+1).join("/");
         let nameArr = nodeTraverser.map(node => node.name);
-  
+
         if (it == parts.length - 1) {
           // file
           if (nodeTraverser.findIndex(node => node.filepath == filepath) == -1) {
@@ -179,7 +179,7 @@ export class ExperimentRunDetailComponent {
             filename = `${filename}/`;
             nameArr.push(filename);
             let idxToPush = nameArr.sort(this.sortFilesFunction).indexOf(filename);
-            
+
             let newDir = {
               name: filename,
               filepath: filepath,
@@ -193,7 +193,7 @@ export class ExperimentRunDetailComponent {
           }
         }
       }
-    } 
+    }
   }
 
   flattenNode(node: FileNode, level: number) {
@@ -209,7 +209,7 @@ export class ExperimentRunDetailComponent {
 
   formatFileSize(size: number): string {
     let sizes_abbr = ["B", "KB", "MB", "GB"]
-    
+
     for (let abbr of sizes_abbr) {
       if (size < 1024) {
         size = Math.round(size * 100) / 100
