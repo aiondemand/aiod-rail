@@ -8,18 +8,18 @@ class Experiments:
     def __init__(self, config: aiod_rail_sdk.Configuration):
         self._config = config
 
-    def create_experiment(self, file) -> aiod_rail_sdk.ExperimentResponse:
+    def create_experiment(self, experiment) -> aiod_rail_sdk.ExperimentResponse:
         """
-        Creates experiment from specified experiment template.
+        Creates experiment from specified experiment file.
         Args:
-            file (dict): Experiment template described in json file.
+            experiment (dict): Experiment described in json file.
 
         Returns:
             aiod_rail_sdk.ExperimentResponse: Experiment created from given template.
         """
         with aiod_rail_sdk.ApiClient(self._config) as api_client:
             api_instance = aiod_rail_sdk.ExperimentsApi(api_client)
-            json_data = json.dumps(file)
+            json_data = json.dumps(experiment)
             experiment_create_instance = aiod_rail_sdk.ExperimentCreate.from_json(
                 json_data
             )
@@ -158,17 +158,17 @@ class Experiments:
             except Exception as e:
                 raise e
 
-    def update(self, id: str, file: dict) -> aiod_rail_sdk.ExperimentResponse:
+    def update(self, id: str, experiment: dict) -> aiod_rail_sdk.ExperimentResponse:
         """
         Updates specific experiment.
         Args:
             id (str): ID of experiment to be updated.
-            file (dict): Experiment template described in json file.
+            experiment (dict): Experiment template described in json file.
 
         Returns:
             aiod_rail_sdk.ExperimentResponse: Updated Experiment by given ID.
         """
-        json_data = json.dumps(file)
+        json_data = json.dumps(experiment)
 
         experiment_create_instance = aiod_rail_sdk.ExperimentCreate.from_json(json_data)
 
@@ -215,7 +215,6 @@ class Experiments:
             api_instance = aiod_rail_sdk.ExperimentsApi(api_client)
 
             try:
-                # Get Experiment Runs Of Experiment
                 api_response = api_instance.get_experiment_runs_of_experiment_v1_experiments_id_runs_get(
                     id=id, offset=offset, limit=limit
                 )

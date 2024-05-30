@@ -14,10 +14,10 @@ class ExperimentsTemplates:
         """
         Creates experiment template for experiment.
         Args:
-            file: (Union[dict, tuple[str, str, str, dict]]): The file can be passed either as full specified json (dictionary)
-                                                             or as a tuple of three strings and a json (dictionary) specifying
-                                                             the paths to script, requirements and docker image in this order
-                                                             and template description (name, description, task etc.).
+            template: (Union[dict, tuple[str, str, str, dict]]): The file can be passed either as full specified json (dictionary)
+                                                                 or as a tuple of three strings and a json (dictionary) specifying
+                                                                 the paths to script, requirements and docker image in this order
+                                                                 and template description (name, description, task etc.).
         Returns:
             aiod_rail_sdk.ExperimentTemplateResponse: Created experiment template.
         """
@@ -35,29 +35,6 @@ class ExperimentsTemplates:
                 )
                 return api_response
 
-            except Exception as e:
-                raise e
-
-    def approve_experiment_template(
-        self, id: str, password: str = "pass", approved: bool = False
-    ) -> None:
-        """
-        Approves experiment template with specified ID.
-        Args:
-            id (str): ID of experiment template to be approved.
-            password (str): Password required to be able to approve the experiment template.
-            is_approved (bool, optional): Boolean value to approve/reject the experiment template. Defaults to False.
-
-        Returns:
-            None.
-        """
-        with aiod_rail_sdk.ApiClient(self._configuration) as api_client:
-            api_instance = aiod_rail_sdk.ExperimentTemplatesApi(api_client)
-
-            try:
-                api_instance.approve_experiment_template_v1_experiment_templates_id_approve_patch(
-                    id=id, password=password, approved=approved
-                )
             except Exception as e:
                 raise e
 
@@ -204,10 +181,10 @@ class ExperimentsTemplates:
         Updates specific experiment template.
         Args:
             id (str): ID of experiment template to be updated.
-            file: (Union[dict, tuple[str, str, str, dict]]): The file can be passed either as full specified json (dictionary)
-                                                             or as a tuple of three strings and a json (dictionary) specifying
-                                                             the paths to script, requirements and docker image in this order
-                                                             and template description (name, description, task etc.).
+            template: (Union[dict, tuple[str, str, str, dict]]): The file can be passed either as full specified json (dictionary)
+                                                                 or as a tuple of three strings and a json (dictionary) specifying
+                                                                 the paths to script, requirements and docker image in this order
+                                                                 and template description (name, description, task etc.).
         Returns:
             aiod_rail_sdk.ExperimentTemplateResponse: Updated Experiment template by given ID.
         """
