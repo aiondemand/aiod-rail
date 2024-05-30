@@ -26,6 +26,11 @@ import { DocsComponent } from './docs/docs.component';
 import { AboutComponent as DocsAboutComponent } from './docs/about/about.component';
 import { RailSdksComponent } from './docs/rail-sdks/rail-sdks.component';
 import { RailOuterSdkComponent } from './docs/rail-outer-sdk/rail-outer-sdk.component';
+import { RailMainConceptsComponent } from './docs/rail-main-concepts/rail-main-concepts.component';
+import { RailMainConceptsExperimentTemplateComponent } from './docs/rail-main-concepts/rail-main-concepts-experiment-template.component';
+import { RailMainConceptsExperimentComponent } from './docs/rail-main-concepts/rail-main-concepts-experiment.component';
+import { RailMainConceptsExperimentRunComponent } from './docs/rail-main-concepts/rail-main-concepts-experiment-run.component';
+import { RailInnerSdkComponent } from './docs/rail-inner-sdk/rail-inner-sdk.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'docs/about', pathMatch: 'full' },
@@ -88,7 +93,12 @@ const routes: Routes = [
       { path: '', redirectTo: 'about', pathMatch: 'full' },
       { path: 'about', component: DocsAboutComponent },
       { path: 'rail-sdks', component: RailSdksComponent },
-      { path: 'outer-sdk', component: RailOuterSdkComponent }
+      { path: 'outer-sdk', component: RailOuterSdkComponent },
+      { path: 'inner-sdk', component: RailInnerSdkComponent },
+      { path: 'main-concepts', component: RailMainConceptsComponent, },
+      { path: 'main-concepts-template', component: RailMainConceptsExperimentTemplateComponent },
+      { path: 'main-concepts-experiment', component: RailMainConceptsExperimentComponent },
+      { path: 'main-concepts-run', component: RailMainConceptsExperimentRunComponent },
     ]
   }
 ];

@@ -1,0 +1,18 @@
+<div class="section-container">
+    <div #content class="content-panel">
+        <ng-content></ng-content>
+    </div>
+
+    <div #hello class="toc" *ngIf="showToc">
+        <h2>Table of contents</h2>
+        <div>
+
+        </div>
+        <ul>
+            <li *ngFor="let header of headers" (click)="header.scrollIntoView({ behavior: 'smooth' })"
+                [class]="'toc-' + header.tagName.toLowerCase()">
+                {{header.innerText}}
+            </li>
+        </ul>
+    </div>
+</div>

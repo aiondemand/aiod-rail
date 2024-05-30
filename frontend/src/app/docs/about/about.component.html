@@ -1,294 +1,194 @@
-<!-- <markdown src="app/docs/markdown/about.md"></markdown> -->
+<app-base-doc>
+    <!-- ==================================================== -->
+    <h1>What is RAIL?</h1>
+    <h2>Research and Innovation AI Lab</h2>
 
-<div class="section-container">
-    <div #content class="content-panel">
-        <!-- ==================================================== -->
-        <h1>What is RAIL?</h1>
-        <h2>Research and Innovation AI Lab</h2>
+    <p>
+        RAIL is a tool that allows AI practitioners to explore and use AI assets directly in AIoD.
+        RAIL is developed within the <a href="https://ai4europe.eu" target="_blank">AI4Europe project</a> as one of
+        the core services of the <a href="https://ai4europe.eu" target="_blank">AI on Demand platform.</a>
+    </p>
 
-        <p>
-            RAIL is a tool that allows AI practitioners to explore and use AI assets directly in AIoD.
-            RAIL is developed within the <a href="https://ai4europe.eu" target="_blank">AI4Europe project</a> as one of
-            the core services of the <a href="https://ai4europe.eu" target="_blank">AI on Demand platform.</a>
-        </p>
+    <img src="assets/docs/images/rail-overview.png" alt="RAIL overview"
+        style="width: 100%; max-width: 800px; margin: 20px 0;">
 
-        <img src="assets/docs/images/rail-overview.png" alt="RAIL overview"
-            style="width: 100%; max-width: 800px; margin: 20px 0;">
+    <p>More extensively, RAIL:</p>
+    <ul>
+        <li>Is a web application</li>
+        <li>… that enables <b>AI practitioners</b></li>
+        <li>… to <b>work with AIoD AI Assets</b> (explore, search, compare, …)</li>
+        <li>… and <b>create experiments</b> that are reproducible and reusable</li>
+        <li>… that are <b>executable directly in the AIoD platform</b> supported by its infrastructure</li>
+        <li>… and that <b>make use of AIoD AI Assets</b>.</li>
+    </ul>
 
-        <p>More extensively, RAIL:</p>
-        <ul>
-            <li>Is a web application</li>
-            <li>… that enables <b>AI practitioners</b></li>
-            <li>… to <b>work with AIoD AI Assets</b> (explore, search, compare, …)</li>
-            <li>… and <b>create experiments</b> that are reproducible and reusable</li>
-            <li>… that are <b>executable directly in the AIoD platform</b> supported by its infrastructure</li>
-            <li>… and that <b>make use of AIoD AI Assets</b>.</li>
-        </ul>
+    <p>
+        <b>Important note:</b> RAIL is currently in the beta version. It is likely that you will encounter bugs and
+        other issues. Please, report them to us using the feedback button on the left.
+    </p>
 
-        <p>
-            <b>Important note:</b> RAIL is currently in the beta version. It is likely that you will encounter bugs and
-            other issues. Please, report them to us using the feedback button on the left.
-        </p>
+    <!-- ==================================================== -->
+    <h1>Example workflow</h1>
+    <p>
+        Before digging deeper, let's have a look at a specific workflow you are able to achieve with RAIL.
+    </p>
+    <p>
+        Let's say you are a data scientist. You just developed a sentiment classification model and you would like
+        to test how well the model performs in different scenarios. Therefore, you want to test your model on
+        datasets available in AIoD, whereby you decided to use HuggingFace datasets (metadata about all datasets
+        available in HuggingFace are periodically synchronized to AIoD).
+    </p>
 
-        <!-- ==================================================== -->
-        <h1>Example workflow</h1>
-        <p>
-            Before digging deeper, let's have a look at a specific workflow you are able to achieve with RAIL.
-        </p>
-        <p>
-            Let's say you are a data scientist. You just developed a sentiment classification model and you would like
-            to test how well the model performs in different scenarios. Therefore, you want to test your model on
-            datasets available in AIoD, whereby you decided to use HuggingFace datasets (metadata about all datasets
-            available in HuggingFace are periodically synchronized to AIoD).
-        </p>
+    <p>
+        RAIL supports two main ways how to achieve this workflow:
+    </p>
+    <ul>
+        <li>Using the <a [routerLink]="['/docs', 'rail-sdks']">RAIL Python SDK</a> that allow you to interact with
+            RAIL from
+            your Python code.</li>
+        <li>Using the RAIL web application that allows you to interact with RAIL through a web interface.</li>
+    </ul>
 
-        <p>
-            RAIL supports two main ways how to achieve this workflow:
-        </p>
-        <ul>
-            <li>Using the <a [routerLink]="['/docs', 'rail-sdks']">RAIL Python SDK</a> that allow you to interact with
-                RAIL from
-                your Python code.</li>
-            <li>Using the RAIL web application that allows you to interact with RAIL through a web interface.</li>
-        </ul>
+    <p>In RAIL, you can accomplish this quite complex task by performing these steps:</p>
+    <h2>1. Log in</h2>
+    <p>
+        As running Experiments requires you to be logged in, you need to log in first. RAIL uses AI on Demand login
+        mechanism based on OAuth2 and it supports multiple identity providers.
+    </p>
+    <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start">
+        <mat-tab label="Python SDK">
+            <markdown clipboard ngPreserveWhitespaces>
+                ```python
+                import rail_sdk
 
-        <p>In RAIL, you can accomplish this quite complex task by performing these steps:</p>
-        <h2>1. Log in</h2>
-        <p>
-            As running Experiments requires you to be logged in, you need to log in first. RAIL uses AI on Demand login
-            mechanism based on OAuth2 and it supports multiple identity providers.
-        </p>
-        <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start">
-            <mat-tab label="Python SDK">
-                <markdown clipboard ngPreserveWhitespaces>
-                    ```python
-                    import rail_sdk
+                # TODO
+                rail_client = rail_sdk.Client(api_key='your_api_key')
+                ```
+            </markdown>
+        </mat-tab>
+        <mat-tab label="Web page">
+            <div style="height: 250px; background-color: green;">
+                TODO: Video showing how to log in
+            </div>
+        </mat-tab>
+    </mat-tab-group>
 
-                    # TODO
-                    rail_client = rail_sdk.Client(api_key='your_api_key')
-                    ```
-                </markdown>
-                To generate
-            </mat-tab>
-            <mat-tab label="Web page">
-                <div style="height: 250px; background-color: green;">
-                    TODO: Video showing how to log in
-                </div>
-            </mat-tab>
-        </mat-tab-group>
+    <h2>2. Find appropriate testing datasets</h2>
+    <p>
+        You can search for datasets in AIoD using the <a [routerLink]="['/datasets']">Datasets</a> page. You can
+        search for datasets by using fulltext search. The datasets are described by metadata available in the AIoD
+        platform.
+    </p>
+    <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start">
+        <mat-tab label="Python SDK">
+            <markdown clipboard ngPreserveWhitespaces>
+                ```python
+                # Search for datasets
+                datasets = rail_client.datasets.search('sentiment')
+                dataset = datasets[0]
+                ```
+            </markdown>
+        </mat-tab>
+        <mat-tab label="Web page">
+            <div style="height: 250px; background-color: green;">
+                TODO: Video showing how find a dataset
+            </div>
+        </mat-tab>
+    </mat-tab-group>
 
-        <h2>2. Find appropriate testing datasets</h2>
-        <p>
-            You can search for datasets in AIoD using the <a [routerLink]="['/datasets']">Datasets</a> page. You can
-            search for datasets by using fulltext search. The datasets are described by metadata available in the AIoD
-            platform.
-        </p>
-        <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start">
-            <mat-tab label="Python SDK">
-                <markdown clipboard ngPreserveWhitespaces>
-                    ```python
-                    # Search for datasets
-                    datasets = rail_client.datasets.search('sentiment')
-                    dataset = datasets[0]
-                    ```
-                </markdown>
-            </mat-tab>
-            <mat-tab label="Web page">
-                <div style="height: 250px; background-color: green;">
-                    TODO: Video showing how find a dataset
-                </div>
-            </mat-tab>
-        </mat-tab-group>
+    <h2>3. Create an Experiment</h2>
+    <p>
+        <a [routerLink]="['/experiments', 'create']">Create an Experiment</a> that links your dataset and a model
+        you want to evaluate the data on.
+    </p>
+    <p>
+        An Experiment must be linked to a particular Experiment Template, that represents a definition of <i>runtime
+            environment</i>, <i>software dependencies</i> and <i>code</i> - in your case, you need an Experiment
+        template that takes HuggingFace dataset and model and perform a classification task. If no such Experiment
+        template is available in the <a [routerLink]="['/experiments', 'templates', 'all']">list of all
+            templates</a>, you can <a [routerLink]="['/experiments', 'templates', 'create']"> create your own</a>
+        (and share it with others or reuse it on your own).
+    </p>
+    <p>
+        Note: After you create an Experiment template, it needs to be approved by an administrator before you can
+        use it.
+    </p>
+    <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start">
+        <mat-tab label="Python SDK">
+            <markdown clipboard ngPreserveWhitespaces>
+                ```python
+                TODO
 
-        <h2>3. Create an Experiment</h2>
-        <p>
-            <a [routerLink]="['/experiments', 'create']">Create an Experiment</a> that links your dataset and a model
-            you want to evaluate the data on.
-        </p>
-        <p>
-            An Experiment must be linked to a particular Experiment Template, that represents a definition of <i>runtime
-                environment</i>, <i>software dependencies</i> and <i>code</i> - in your case, you need an Experiment
-            template that takes HuggingFace dataset and model and perform a classification task. If no such Experiment
-            template is available in the <a [routerLink]="['/experiments', 'templates', 'all']">list of all
-                templates</a>, you can <a [routerLink]="['/experiments', 'templates', 'create']"> create your own</a>
-            (and share it with others or reuse it on your own).
-        </p>
-        <p>
-            Note: After you create an Experiment template, it needs to be approved by an administrator before you can
-            use it.
-        </p>
-        <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start">
-            <mat-tab label="Python SDK">
-                <markdown clipboard ngPreserveWhitespaces>
-                    ```python
-                    TODO
+                dataset = rail_client.datasets.get('dataset_id')
+                model = rail_client.models.get('model_id')
+                template = rail_client.templates.get('template_id')
 
-                    dataset = rail_client.datasets.get('dataset_id')
-                    model = rail_client.models.get('model_id')
-                    template = rail_client.templates.get('template_id')
+                experiment = rail_client.experiments.create(
+                name='Sentiment classification',
+                description='Sentiment classification using HuggingFace dataset and model',
+                dataset=dataset,
+                model=model,
+                template=template
+                )
+                ```
+            </markdown>
+        </mat-tab>
+        <mat-tab label="Web page">
+            <div style="height: 250px; background-color: green;">
+                TODO: Video showing how create an experiment
+            </div>
+        </mat-tab>
+    </mat-tab-group>
 
-                    experiment = rail_client.experiments.create(
-                    name='Sentiment classification',
-                    description='Sentiment classification using HuggingFace dataset and model',
-                    dataset=dataset,
-                    model=model,
-                    template=template
-                    )
-                    ```
-                </markdown>
-            </mat-tab>
-            <mat-tab label="Web page">
-                <div style="height: 250px; background-color: green;">
-                    TODO: Video showing how create an experiment
-                </div>
-            </mat-tab>
-        </mat-tab-group>
+    <h2>4. Execute the Experiment</h2>
+    <p>
+        The Experiment will be executed by creating an instance of your experiment called Experiment Run that will
+        be run in the AI on Demand platform and the results will be available in RAIL.
+    </p>
+    <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start">
+        <mat-tab label="Python SDK">
+            <markdown clipboard ngPreserveWhitespaces>
+                ```python
+                TODO
+                experiment_run = experiment.run()
 
-        <h2>4. Execute the Experiment</h2>
-        <p>
-            The Experiment will be executed by creating an instance of your experiment called Experiment Run that will
-            be run in the AI on Demand platform and the results will be available in RAIL.
-        </p>
-        <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start">
-            <mat-tab label="Python SDK">
-                <markdown clipboard ngPreserveWhitespaces>
-                    ```python
-                    TODO
-                    experiment_run = experiment.run()
+                # Show current experiment run status to check if
+                # the experiment has finished
+                print(experiment_run.status)
+                ```
+            </markdown>
+        </mat-tab>
+        <mat-tab label="Web page">
+            <div style="height: 250px; background-color: green;">
+                TODO: Video showing how create an experiment
+            </div>
+        </mat-tab>
+    </mat-tab-group>
 
-                    # Show current experiment run status to check if
-                    # the experiment has finished
-                    print(experiment_run.status)
-                    ```
-                </markdown>
-            </mat-tab>
-            <mat-tab label="Web page">
-                <div style="height: 250px; background-color: green;">
-                    TODO: Video showing how create an experiment
-                </div>
-            </mat-tab>
-        </mat-tab-group>
+    <h2>5. Check and collect Experiment Run outputs</h2>
+    <p>
+        After the experiment is finished, you can check the results in the Experiment Run page. You can find all the
+        runs of the experiment in the Experiment page.
+    </p>
+    <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start">
+        <mat-tab label="Python SDK">
+            <markdown clipboard ngPreserveWhitespaces>
+                ```python
+                # Get all experiment runs
+                experiment_runs = experiment.runs()
 
-        <h2>5. Check and collect Experiment Run outputs</h2>
-        <p>
-            After the experiment is finished, you can check the results in the Experiment Run page. You can find all the
-            runs of the experiment in the Experiment page.
-        </p>
-        <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start">
-            <mat-tab label="Python SDK">
-                <markdown clipboard ngPreserveWhitespaces>
-                    ```python
-                    # Get all experiment runs
-                    experiment_runs = experiment.runs()
+                # Get the last experiment run
+                last_experiment_run = experiment_runs[-1]
 
-                    # Get the last experiment run
-                    last_experiment_run = experiment_runs[-1]
-
-                    # Get the outputs of the last experiment run
-                    outputs = last_experiment_run.outputs
-                    ```
-                </markdown>
-            </mat-tab>
-            <mat-tab label="Web page">
-                <div style="height: 250px; background-color: green;">
-                    TODO: Video showing how to check the results of the experiment run
-                </div>
-            </mat-tab>
-        </mat-tab-group>
-
-        <!-- ==================================================== -->
-        <h1>Main concepts of RAIL</h1>
-        <p>RAIL allows AI practitioners to compose AI assets available in AIoD into executable experiments that are
-            reproducible and reusable by introducing three main concepts: Experiment Template, Experiment and Experiment
-            Run.</p>
-
-        <img src="assets/docs/images/rail-template-experiment-run.png" alt="RAIL concepts"
-            style="width: 100%; max-width: 800px; margin: 20px 0;">
-
-        <!-- ================================================== -->
-        <h2>Experiment Template</h2>
-        <p>
-            <a [routerLink]="['/experiments', 'templates', 'all']">Experiment template</a> is a combination of
-            <i>runtime environment</i>, <i>software dependencies</i> and <i>code</i>.
-        </p>
-        <ul>
-            <li><b>Runtime environment</b> is a specification of the environment in which the experiment is executed. It
-                includes the specification of the hardware and software environment.</li>
-            <li><b>Software dependencies</b> are the software packages that are required to execute the experiment.</li>
-            <li><b>Code</b> is the code that is executed in the experiment.</li>
-        </ul>
-        <p>See "<a [routerLink]="['/experiments', 'templates', 'create']">Create a template</a>" section for more
-            details.</p>
-        <p>
-            Experiment template on its own is not executable. You need to create an Experiment based on a specific
-            template to be able to execute it.
-            The Experiment defines particular parameters that are injected into the Template through Environment
-            variables to make it executable.
-            These include AI Assets, environment variables supported by the author of the template (they are defined by
-            the author), and other parameters.
-        </p>
-
-        <!-- ================================================== -->
-        <h2>Experiment</h2>
-        <p>
-            <a [routerLink]="['/experiments', 'all']">Experiment</a> is a particular executable instance of an
-            Experiment template. Experiments are composed of AI assets and are executed in the AIoD platform.
-            Experiments are reproducible and reusable.
-        </p>
-        <p>
-            When you create an experiment, you select an Experiment template that you want to use as a basis for your
-            experiment. Then, you select particular AI assets and values of environment variables that you want to use
-            in your experiment.
-        </p>
-
-        <!-- ================================================== -->
-        <h2>Experiment Run</h2>
-        <p>
-            Experiment Run is created when you execute an Experiment. When you execute an experiment, the following happens under the hood:
-        </p>
-        <ol>
-            <li>An instance of Experiment Run is created (it is available in the Experiment detail page).</li>
-            <li>A Docker image specified by the linked Experiment template with all the software dependencies installed is built.</li>
-            <li>The definition of an Experiment is transformed into a <a href="https://www.commonwl.org" target="_blank">CWL (Common Workflow Language)</a> file.</li>
-            <li>The CWL file is sent to AIoD REANA instance and executed in the AIoD platform.</li>
-            <li>A Docker container is started. AI Assets and environment variables are available globally in the container.</li>
-            <li>A file called script.py is executed.</li>
-            <li>After the Experiment Run finishes, the Docker logs, metrics and output files (if any) are available on the detail of the Run.</li>
-        </ol>
-
-        <!-- ==================================================== -->
-        <h1>Sample use cases</h1>
-        TODO
-        <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start">
-            <mat-tab label="SDK">
-                <markdown clipboard ngPreserveWhitespaces>
-                    ```python
-                    import rail
-
-                    # Create a new experiment
-                    experiment = rail.Experiment()
-                    ```
-                </markdown>
-            </mat-tab>
-            <mat-tab label="Web page">
-                <div style="height: 250px; background-color: green;">
-                    TODO: Diagram showing RAIL and AIoD
-                </div>
-            </mat-tab>
-        </mat-tab-group>
-
-    </div>
-
-    <div #hello class="toc">
-        <!-- <h2>Table of contents</h2>
-        <div>
-
-        </div>
-        <ul>
-            <li *ngFor="let header of headers" (click)="header.scrollIntoView({ behavior: 'smooth' })"
-                [class]="'toc-' + header.tagName.toLowerCase()">
-                {{header.innerText}}
-            </li>
-        </ul> -->
-    </div>
-</div>
+                # Get the outputs of the last experiment run
+                outputs = last_experiment_run.outputs
+                ```
+            </markdown>
+        </mat-tab>
+        <mat-tab label="Web page">
+            <div style="height: 250px; background-color: green;">
+                TODO: Video showing how to check the results of the experiment run
+            </div>
+        </mat-tab>
+    </mat-tab-group>
+</app-base-doc>

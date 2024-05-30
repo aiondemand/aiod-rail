@@ -74,6 +74,12 @@ import { DocsComponent } from './docs/docs.component';
 import { AboutComponent as DocsAboutComponent } from './docs/about/about.component';
 import { RailSdksComponent } from './docs/rail-sdks/rail-sdks.component';
 import { RailOuterSdkComponent } from './docs/rail-outer-sdk/rail-outer-sdk.component';
+import { RailMainConceptsComponent } from './docs/rail-main-concepts/rail-main-concepts.component';
+import { RailMainConceptsExperimentRunComponent } from './docs/rail-main-concepts/rail-main-concepts-experiment-run.component';
+import { RailMainConceptsExperimentComponent } from './docs/rail-main-concepts/rail-main-concepts-experiment.component';
+import { RailMainConceptsExperimentTemplateComponent } from './docs/rail-main-concepts/rail-main-concepts-experiment-template.component';
+import { RailInnerSdkComponent } from './docs/rail-inner-sdk/rail-inner-sdk.component';
+import { BaseDocComponent } from './docs/base-doc/base-doc.component';
 
 
 
@@ -117,7 +123,13 @@ import { RailOuterSdkComponent } from './docs/rail-outer-sdk/rail-outer-sdk.comp
     DocsComponent,
     DocsAboutComponent,
     RailSdksComponent,
-    RailOuterSdkComponent
+    RailOuterSdkComponent,
+    RailMainConceptsComponent,
+    RailMainConceptsExperimentRunComponent,
+    RailMainConceptsExperimentComponent,
+    RailMainConceptsExperimentTemplateComponent,
+    RailInnerSdkComponent,
+    BaseDocComponent,
   ],
   imports: [
     BrowserModule,

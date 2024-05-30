@@ -1,25 +1,27 @@
 <div class="section-container">
-    <div class="left-panel" *ngIf="!leftSidebarMinimized">
-        <mat-sidenav mode="side" [opened]="true">
+    <div class="left-panel">
+        <mat-sidenav mode="side" [opened]="true" class="side-menu">
             <mat-nav-list>
                 <a mat-list-item routerLink="about" routerLinkActive="active">What is RAIL?</a>
+                <a mat-list-item routerLink="main-concepts" routerLinkActive="active">Main concepts of RAIL</a>
+                <a mat-list-item routerLink="main-concepts-template" routerLinkActive="active" class="side-menu-subitem">Experiment Template</a>
+                <a mat-list-item routerLink="main-concepts-experiment" routerLinkActive="active" class="side-menu-subitem">Experiment</a>
+                <a mat-list-item routerLink="main-concepts-run" routerLinkActive="active" class="side-menu-subitem">Experiment Run</a>
 
                 <mat-divider></mat-divider>
 
                 <a mat-list-item routerLink="rail-sdks" routerLinkActive="active">RAIL SDKs</a>
-                <a mat-list-item routerLink="outer-sdk" routerLinkActive="active">Outer SDK</a>
+                <a mat-list-item routerLink="outer-sdk" routerLinkActive="active" class="side-menu-subitem">Outer SDK</a>
+                <a mat-list-item routerLink="inner-sdk" routerLinkActive="active" class="side-menu-subitem">Inner SDK</a>
+
+                <mat-divider></mat-divider>
+
+                <a mat-list-item routerLink="rail-sdks" routerLinkActive="active">RAIL and AIoD platform</a>
+                <a mat-list-item routerLink="outer-sdk" routerLinkActive="active" class="side-menu-subitem">Outer SDK</a>
+                <a mat-list-item routerLink="inner-sdk" routerLinkActive="active" class="side-menu-subitem">Inner SDK</a>
             </mat-nav-list>
         </mat-sidenav>
-        <!-- <span matTooltip="Hide sidebar" class="toggle-left-sidebar material-symbols-outlined" (click)="leftSidebarMinimized=!leftSidebarMinimized">
-            keyboard_double_arrow_left
-          </span> -->
     </div>
-
-    <!-- <div *ngIf="leftSidebarMinimized" class="left-panel-minimized">
-        <span matTooltip="Hide sidebar" class="toggle-left-sidebar material-symbols-outlined" (click)="leftSidebarMinimized=!leftSidebarMinimized">
-            double_arrow
-          </span>
-    </div> -->
 
     <div class="content-panel">
         <router-outlet></router-outlet>
