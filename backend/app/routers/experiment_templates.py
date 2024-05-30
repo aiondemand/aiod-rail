@@ -173,7 +173,7 @@ async def archive_experiment_template(
     )
     await experiment_template.set(
         {
-            ExperimentTemplate.archived: archive,
+            ExperimentTemplate.is_archived: archive,
             ExperimentTemplate.updated_at: datetime.now(tz=timezone.utc),
         }
     )
@@ -228,11 +228,11 @@ def find_specific_experiment_templates(
             )
         )
     if filters.approved is not None:
-        filter_conditions.append(ExperimentTemplate.approved == filters.approved)
+        filter_conditions.append(ExperimentTemplate.is_approved == filters.approved)
     if filters.archived is not None:
-        filter_conditions.append(ExperimentTemplate.archived == filters.archived)
+        filter_conditions.append(ExperimentTemplate.is_archived == filters.archived)
     if filters.public is not None:
-        filter_conditions.append(ExperimentTemplate.public == filters.public)
+        filter_conditions.append(ExperimentTemplate.is_public == filters.public)
 
     accessibility_condition = ExperimentTemplate.get_query_readable_by_user(user)
 

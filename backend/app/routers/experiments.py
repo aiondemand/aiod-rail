@@ -153,7 +153,9 @@ async def execute_experiment_run(
         )
 
     experiment_run = ExperimentRun(
-        experiment_id=experiment.id, created_by=user["email"], public=experiment.public
+        experiment_id=experiment.id,
+        created_by=user["email"],
+        public=experiment.is_public,
     )
     experiment_run = await experiment_run.create()
 
@@ -192,7 +194,7 @@ async def update_experiment(
         runs,
         partial(
             set_public_run,
-            value=experiment_to_save.public,
+            value=experiment_to_save.is_public,
             updated_at=experiment_to_save.updated_at,
         ),
     )
@@ -218,7 +220,7 @@ async def delete_experiment(
 @router.patch("/experiments/{id}/archive", response_model=None)
 async def archive_experiment(
     id: PydanticObjectId,
-    archived: bool = False,
+    archive: bool = False,
     user: dict = Depends(get_current_user(required=True, from_api_key=True)),
 ) -> Any:
     experiment = await get_experiment_if_accessible_or_raise(
@@ -228,11 +230,11 @@ async def archive_experiment(
 
     runs = await ExperimentRun.find(ExperimentRun.experiment_id == id).to_list()
     await run_cascade_operation(
-        runs, partial(set_archived_run, value=archived, updated_at=updated_at)
+        runs, partial(set_archived_run, value=archive, updated_at=updated_at)
     )
 
     await experiment.set(
-        {Experiment.archived: archived, Experiment.updated_at: updated_at}
+        {Experiment.is_archived: archive, Experiment.updated_at: updated_at}
     )
 
 
@@ -264,9 +266,9 @@ def find_specific_experiments(
             # Authentication required to see your experiment templates
             raise_requires_auth()
     if filters.archived:
-        filter_conditions.append(Experiment.archived == filters.archived)
+        filter_conditions.append(Experiment.is_archived == filters.archived)
     if filters.public:
-        filter_conditions.append(Experiment.public == filters.public)
+        filter_conditions.append(Experiment.is_public == filters.public)
 
     accessibility_condition = Experiment.get_query_readable_by_user(user)
 
