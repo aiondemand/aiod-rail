@@ -111,11 +111,11 @@ class ExperimentCreate(BaseModel):
                 "publication_ids": obj.get("publication_ids"),
                 "dataset_ids": obj.get("dataset_ids"),
                 "model_ids": obj.get("model_ids"),
-                "env_vars": [
-                    EnvironmentVar.from_dict(_item) for _item in obj["env_vars"]
-                ]
-                if obj.get("env_vars") is not None
-                else None,
+                "env_vars": (
+                    [EnvironmentVar.from_dict(_item) for _item in obj["env_vars"]]
+                    if obj.get("env_vars") is not None
+                    else None
+                ),
                 "public": obj.get("public"),
             }
         )

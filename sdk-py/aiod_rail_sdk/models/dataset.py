@@ -284,45 +284,57 @@ class Dataset(BaseModel):
                 "temporal_coverage": obj.get("temporal_coverage"),
                 "ai_asset_identifier": obj.get("ai_asset_identifier"),
                 "ai_resource_identifier": obj.get("ai_resource_identifier"),
-                "aiod_entry": AIoDEntryRead.from_dict(obj["aiod_entry"])
-                if obj.get("aiod_entry") is not None
-                else None,
+                "aiod_entry": (
+                    AIoDEntryRead.from_dict(obj["aiod_entry"])
+                    if obj.get("aiod_entry") is not None
+                    else None
+                ),
                 "alternate_name": obj.get("alternate_name"),
                 "application_area": obj.get("application_area"),
                 "citation": obj.get("citation"),
                 "contact": obj.get("contact"),
                 "creator": obj.get("creator"),
-                "description": Text.from_dict(obj["description"])
-                if obj.get("description") is not None
-                else None,
-                "distribution": [
-                    Distribution.from_dict(_item) for _item in obj["distribution"]
-                ]
-                if obj.get("distribution") is not None
-                else None,
+                "description": (
+                    Text.from_dict(obj["description"])
+                    if obj.get("description") is not None
+                    else None
+                ),
+                "distribution": (
+                    [Distribution.from_dict(_item) for _item in obj["distribution"]]
+                    if obj.get("distribution") is not None
+                    else None
+                ),
                 "funder": obj.get("funder"),
                 "has_part": obj.get("has_part"),
                 "industrial_sector": obj.get("industrial_sector"),
                 "is_part_of": obj.get("is_part_of"),
                 "keyword": obj.get("keyword"),
                 "license": obj.get("license"),
-                "media": [Distribution.from_dict(_item) for _item in obj["media"]]
-                if obj.get("media") is not None
-                else None,
-                "note": [Note.from_dict(_item) for _item in obj["note"]]
-                if obj.get("note") is not None
-                else None,
+                "media": (
+                    [Distribution.from_dict(_item) for _item in obj["media"]]
+                    if obj.get("media") is not None
+                    else None
+                ),
+                "note": (
+                    [Note.from_dict(_item) for _item in obj["note"]]
+                    if obj.get("note") is not None
+                    else None
+                ),
                 "relevant_link": obj.get("relevant_link"),
                 "relevant_resource": obj.get("relevant_resource"),
                 "relevant_to": obj.get("relevant_to"),
                 "research_area": obj.get("research_area"),
                 "scientific_domain": obj.get("scientific_domain"),
-                "size": DatasetSize.from_dict(obj["size"])
-                if obj.get("size") is not None
-                else None,
-                "spatial_coverage": Location.from_dict(obj["spatial_coverage"])
-                if obj.get("spatial_coverage") is not None
-                else None,
+                "size": (
+                    DatasetSize.from_dict(obj["size"])
+                    if obj.get("size") is not None
+                    else None
+                ),
+                "spatial_coverage": (
+                    Location.from_dict(obj["spatial_coverage"])
+                    if obj.get("spatial_coverage") is not None
+                    else None
+                ),
                 "identifier": obj.get("identifier"),
             }
         )

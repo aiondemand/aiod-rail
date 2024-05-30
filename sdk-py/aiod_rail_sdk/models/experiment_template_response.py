@@ -145,22 +145,32 @@ class ExperimentTemplateResponse(BaseModel):
                 "name": obj.get("name"),
                 "description": obj.get("description"),
                 "task": obj.get("task"),
-                "datasets_schema": AssetSchema.from_dict(obj["datasets_schema"])
-                if obj.get("datasets_schema") is not None
-                else None,
-                "models_schema": AssetSchema.from_dict(obj["models_schema"])
-                if obj.get("models_schema") is not None
-                else None,
-                "envs_required": [
-                    EnvironmentVarDef.from_dict(_item) for _item in obj["envs_required"]
-                ]
-                if obj.get("envs_required") is not None
-                else None,
-                "envs_optional": [
-                    EnvironmentVarDef.from_dict(_item) for _item in obj["envs_optional"]
-                ]
-                if obj.get("envs_optional") is not None
-                else None,
+                "datasets_schema": (
+                    AssetSchema.from_dict(obj["datasets_schema"])
+                    if obj.get("datasets_schema") is not None
+                    else None
+                ),
+                "models_schema": (
+                    AssetSchema.from_dict(obj["models_schema"])
+                    if obj.get("models_schema") is not None
+                    else None
+                ),
+                "envs_required": (
+                    [
+                        EnvironmentVarDef.from_dict(_item)
+                        for _item in obj["envs_required"]
+                    ]
+                    if obj.get("envs_required") is not None
+                    else None
+                ),
+                "envs_optional": (
+                    [
+                        EnvironmentVarDef.from_dict(_item)
+                        for _item in obj["envs_optional"]
+                    ]
+                    if obj.get("envs_optional") is not None
+                    else None
+                ),
                 "script": obj.get("script"),
                 "pip_requirements": obj.get("pip_requirements"),
                 "public": obj.get("public"),
