@@ -52,10 +52,10 @@ class Experiment(Document):
     def map_to_response(self, user: dict | None = None) -> ExperimentResponse:
         mine = user is not None and self.created_by == user["email"]
 
-        # TODO quickfix to hide env vars to others
+        # TODO quickfix to hide env vars from others
         kwargs = self.dict()
         kwargs["env_vars"] = [
-            EnvironmentVar(key=var.key, value=var.value if mine else "")
+            EnvironmentVar(key=var.key, value=var.value if mine else "*****")
             for var in self.env_vars
         ]
 

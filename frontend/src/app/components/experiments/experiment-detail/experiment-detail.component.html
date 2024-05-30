@@ -52,7 +52,7 @@
                 {{experimentTemplate.name}}</a>
         </span>
 
-        <div class="experiment-env-vars" *ngIf="experiment.env_vars.length > 0 && experiment.mine">
+        <div class="experiment-env-vars" *ngIf="experiment.env_vars.length > 0">
             <h4>Environment variables</h4>
 
             <table mat-table *ngIf="envTableData" [dataSource]="envTableData" class="mat-elevation-z8">
