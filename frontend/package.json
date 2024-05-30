@@ -4,6 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
+    "start-local": "ng serve --watch --configuration local",
     "build-prod": "ng build --configuration production --output-path=dist",
     "build-dev": "ng build --configuration development --output-path=dist",
     "build-local": "ng build --configuration local --output-path=dist",
@@ -25,9 +26,11 @@
     "@angular/router": "^16.0.0",
     "@ngstack/code-editor": "^5.1.0",
     "angular-oauth2-oidc": "^15.0.1",
+    "clipboard": "^2.0.11",
     "marked": "^4.3.0",
     "ngx-highlightjs": "^10.0.0",
     "ngx-markdown": "^16.0.0",
+    "prismjs": "^1.29.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.13.0"

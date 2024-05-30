@@ -70,6 +70,10 @@ import { ConfirmPopupComponent } from './components/general/popup/confirm-popup.
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { ProfileComponent } from './components/profile/profile.component';
+import { DocsComponent } from './docs/docs.component';
+import { AboutComponent as DocsAboutComponent } from './docs/about/about.component';
+import { RailSdksComponent } from './docs/rail-sdks/rail-sdks.component';
+import { RailOuterSdkComponent } from './docs/rail-outer-sdk/rail-outer-sdk.component';
 
 
 
@@ -109,7 +113,11 @@ import { ProfileComponent } from './components/profile/profile.component';
     AdminComponent,
     EditExperimentTemplateComponent,
     ConfirmPopupComponent,
-    ProfileComponent
+    ProfileComponent,
+    DocsComponent,
+    DocsAboutComponent,
+    RailSdksComponent,
+    RailOuterSdkComponent
   ],
   imports: [
     BrowserModule,
@@ -153,7 +161,7 @@ import { ProfileComponent } from './components/profile/profile.component';
         sendAccessToken: true
       }
     }),
-    NgOptimizedImage
+    NgOptimizedImage,
   ],
   providers: [
     { provide: OAuthStorage, useFactory: () => localStorage },

@@ -1,5 +1,5 @@
 <div class="root">
-  <div class="left-sidebar">
+  <div class="left-sidebar" *ngIf="!leftSidebarMinimized">
     <div class="aiod-logo" [routerLink]="['/']">
       <img [routerLink]="['/']" src="../assets/Main_logo_RGB_colors.png">
       <span class="rail-text-1">RAIL: Research and</span>
@@ -9,22 +9,34 @@
     <div class="delimiter"></div>
     <app-login-logout></app-login-logout>
     <app-feedback></app-feedback>
+
+    <span matTooltip="Hide sidebar" class="toggle-left-sidebar material-symbols-outlined" (click)="leftSidebarMinimized=!leftSidebarMinimized">
+      keyboard_double_arrow_left
+    </span>
+  </div>
+  <div class="left-sidebar-minimized" *ngIf="leftSidebarMinimized">
+
+    <div class="delimiter"></div>
+    <span matTooltip="Show sidebar" class="toggle-left-sidebar material-symbols-outlined" (click)="leftSidebarMinimized=!leftSidebarMinimized">
+      double_arrow
+    </span>
   </div>
   <div class="main-content">
     <nav mat-tab-nav-bar [tabPanel]="tabPanel" mat-stretch-tabs="false" animationDuration="0">
-      <a mat-tab-link [routerLink]="['/experiments']"  #rla="routerLinkActive" routerLinkActive="active" [active]="rla.isActive">
+      <a mat-tab-link [routerLink]="['/experiments']" routerLinkActive #rla="routerLinkActive" [active]="rla.isActive">
         Experiments
       </a>
-      <a mat-tab-link [routerLink]="['/datasets']"  #rlb="routerLinkActive" routerLinkActive="active" [active]="rlb.isActive">
+      <a mat-tab-link routerLinkActive [routerLink]="['/datasets']" #rlb="routerLinkActive" [active]="rlb.isActive">
         Datasets
       </a>
-      <a mat-tab-link [routerLink]="['/about']"  #rlc="routerLinkActive" routerLinkActive="active" [active]="rlc.isActive">
-        About
+      <a mat-tab-link routerLinkActive [routerLink]="['/docs']" #rlc="routerLinkActive" [active]="rlc.isActive">
+        Docs
       </a>
-      <a *ngIf="isLoggedIn" mat-tab-link [routerLink]="['/profile']"  #rlc="routerLinkActive" routerLinkActive="active" [active]="rlc.isActive">
+      <a *ngIf="isLoggedIn" mat-tab-link [routerLink]="['/profile']" #rld="routerLinkActive" routerLinkActive
+        [active]="rld.isActive">
         Profile
       </a>
-      <a *ngIf="isAdminUser" mat-tab-link [routerLink]="['/admin']"  #rlc="routerLinkActive" routerLinkActive="active" [active]="rlc.isActive">
+      <a *ngIf="isAdminUser" mat-tab-link [routerLink]="['/admin']"  #rle="routerLinkActive" routerLinkActive="active" [active]="rle.isActive">
         Admin
       </a>
     </nav>

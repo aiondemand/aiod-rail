@@ -1,0 +1,27 @@
+<div class="section-container">
+    <div class="left-panel" *ngIf="!leftSidebarMinimized">
+        <mat-sidenav mode="side" [opened]="true">
+            <mat-nav-list>
+                <a mat-list-item routerLink="about" routerLinkActive="active">What is RAIL?</a>
+
+                <mat-divider></mat-divider>
+
+                <a mat-list-item routerLink="rail-sdks" routerLinkActive="active">RAIL SDKs</a>
+                <a mat-list-item routerLink="outer-sdk" routerLinkActive="active">Outer SDK</a>
+            </mat-nav-list>
+        </mat-sidenav>
+        <!-- <span matTooltip="Hide sidebar" class="toggle-left-sidebar material-symbols-outlined" (click)="leftSidebarMinimized=!leftSidebarMinimized">
+            keyboard_double_arrow_left
+          </span> -->
+    </div>
+
+    <!-- <div *ngIf="leftSidebarMinimized" class="left-panel-minimized">
+        <span matTooltip="Hide sidebar" class="toggle-left-sidebar material-symbols-outlined" (click)="leftSidebarMinimized=!leftSidebarMinimized">
+            double_arrow
+          </span>
+    </div> -->
+
+    <div class="content-panel">
+        <router-outlet></router-outlet>
+    </div>
+</div>

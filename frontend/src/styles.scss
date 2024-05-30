@@ -53,7 +53,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   .left-panel {
       width: 200px;
       flex-shrink: 0;
-      padding: $margin-default;
+      padding-top: $margin-default;
 
       a {
           width: 100%;
@@ -61,10 +61,27 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
       }
   }
 
+  .left-panel-minimized {
+    width: $margin-default;
+    flex-shrink: 0;
+  }
+
+  .left-panel, .left-panel-minimized {
+    .toggle-left-sidebar {
+      position: absolute;
+      bottom: 50vh;
+      border: 1px solid black;
+      border-radius: 50%;
+      background-color: white;
+      cursor: pointer;
+    }
+  }
+
   .content-panel {
       flex: 1;
       flex-shrink: 1;
-      padding: $margin-default;
+      padding-right: $margin-default;
+      padding-left: $margin-default;
   }
 
   .active {
@@ -98,4 +115,33 @@ td.hljs-ln-numbers {
 
 td.hljs-ln-code {
   padding-left: 10px !important;
+}
+
+/* ================== */
+/* ====== DOCS ===== */
+/* ================== */
+.toc {
+  margin-left: $margin-default;
+  
+  ul {
+      padding-left: 0;
+  }
+
+  li {
+      list-style-type: none;
+      margin-left: none;
+      cursor: pointer;
+  }
+
+  .toc-h2 {
+      margin-left: $margin-default;
+  }
+
+  .toc-h3 {
+      margin-left: calc(2 * $margin-default);
+  }
+
+  .toc-h4 {
+      margin-left: calc(3 * $margin-default);
+  }
 }

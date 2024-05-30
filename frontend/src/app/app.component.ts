@@ -12,6 +12,7 @@ import { BackendApiService } from './services/backend-api.service';
 })
 export class AppComponent {
   private breakpointObserver = inject(BreakpointObserver);
+  leftSidebarMinimized = false;
 
   constructor(private authService: AuthService, private backend: BackendApiService) {}
 

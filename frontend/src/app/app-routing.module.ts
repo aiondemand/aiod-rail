@@ -22,9 +22,13 @@ import { AboutComponent } from './components/general/about/about.component';
 import { EditExperimentTemplateComponent } from './components/experiments/edit-experiment-template/edit-experiment-template.component';
 import { ProfileComponent } from './components/profile/profile.component';
 import { AdminComponent } from './components/admin/admin.component';
+import { DocsComponent } from './docs/docs.component';
+import { AboutComponent as DocsAboutComponent } from './docs/about/about.component';
+import { RailSdksComponent } from './docs/rail-sdks/rail-sdks.component';
+import { RailOuterSdkComponent } from './docs/rail-outer-sdk/rail-outer-sdk.component';
 
 const routes: Routes = [
-  { path: '', redirectTo: 'about', pathMatch: 'full' },
+  { path: '', redirectTo: 'docs/about', pathMatch: 'full' },
   { path: 'about', component: AboutComponent },
   {
     path: 'experiments',
@@ -78,7 +82,15 @@ const routes: Routes = [
       { path: 'experiments/templates/pending', component: PendingExperimentTemplateListComponent },
     ]
   },
-  // { path: 'publications', component: PublicationsComponent }
+  {
+    path: 'docs', component: DocsComponent,
+    children: [
+      { path: '', redirectTo: 'about', pathMatch: 'full' },
+      { path: 'about', component: DocsAboutComponent },
+      { path: 'rail-sdks', component: RailSdksComponent },
+      { path: 'outer-sdk', component: RailOuterSdkComponent }
+    ]
+  }
 ];
 
 @NgModule({
