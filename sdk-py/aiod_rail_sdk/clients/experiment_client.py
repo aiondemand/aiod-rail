@@ -206,7 +206,7 @@ class ExperimentClient:
             except Exception as e:
                 raise e
 
-    def get_experiments_run(
+    def get_experiment_runs(
         self, id: str, offset: int = 0, limit: int = 100
     ) -> list[ExperimentRunResponse]:
         """
@@ -229,13 +229,13 @@ class ExperimentClient:
             except Exception as e:
                 raise e
 
-    def get_experiments_run_count(self, id: str) -> int:
+    def get_experiment_runs_count(self, id: str) -> int:
         """
-        Gets count of experiments runs.
+        Gets count of experiment runs.
         Args:
             id (str): ID of experiment from which count of runs will be fetched.
         Returns:
-            int: Number of experiments runs of selected experiment.
+            int: Number of experiment runs of selected experiment.
         """
         with ApiClient(self._config) as api_client:
             api_instance = ExperimentsApi(api_client)

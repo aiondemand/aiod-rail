@@ -222,21 +222,19 @@ class ExperimentTemplateClient:
             and len(template) == 4
             and all(isinstance(item, (str, dict)) for item in template)
         ):
-            path_script, path_requirements, path_image, config = template
+            path_script, path_requirements, base_image, config = template
             if isinstance(config, dict):
                 with (
                     open(path_script, "r") as s,
                     open(path_requirements, "r") as r,
-                    open(path_image, "r") as i,
                 ):
                     script = s.read()
                     requirements = r.read()
-                    image = i.read()
                     config.update(
                         {
                             "script": script,
                             "pip_requirements": requirements,
-                            "base_image": image,
+                            "base_image": base_image,
                         }
                     )
                     json_data = json.dumps(config)
