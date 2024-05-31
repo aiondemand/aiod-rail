@@ -160,7 +160,7 @@ class ReanaService(WorkflowEngineBase):
             await self._async_reana_call(
                 "prune_workspace",
                 workflow=workflow_name,
-                include_inputs=False,
+                include_inputs=True,
                 include_outputs=False,
             )
             if await self._exists_file(experiment_run, f"{RUN_TEMP_OUTPUT_FOLDER}/"):
