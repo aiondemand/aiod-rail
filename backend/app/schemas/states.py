@@ -11,5 +11,5 @@ class TemplateState(str, Enum):
 class RunState(str, Enum):
     CREATED = "CREATED"
     IN_PROGRESS = "IN_PROGRESS"
-    CRASHED = "CRASHED"
     FINISHED = "FINISHED"
+    CRASHED = "CRASHED"

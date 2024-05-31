@@ -9,7 +9,7 @@ import { Model } from '../models/model';
 import { ExperimentTemplate, ExperimentTemplateCreate } from '../models/experiment-template';
 import { Publication } from '../models/publication';
 import { ExperimentRun, ExperimentRunDetails } from '../models/experiment-run';
-import { ExperimentQueries, ExperimentTemplateQueries, PageQueries } from '../models/queries';
+import { ExperimentFilter, ExperimentTemplateFilter, PageQueries } from '../models/queries';
 import { FileDetail } from '../models/file-detail';
 import { UserRailProfile } from '../models/user-rail-profile';
 
@@ -210,15 +210,6 @@ export class BackendApiService {
   ////////////////////////////// MISC //////////////////////////////
 
   /**
-   * Tests an API that requires authentication on backend.
-   * Fails if the user is not authenticated.
-   * @returns Observable<any>
-   */
-  authenticationTest(): Observable<any> {
-    return this.http.get<any>(`${environment.BACKEND_API_URL}/assets/authentication_test`);
-  }
-
-  /**
    * Get list of platforms from the backend.
    * @returns Observable<Platform[]>
    */
@@ -235,9 +226,9 @@ export class BackendApiService {
   getExperiments(
     query: string,
     pageQueries?: PageQueries,
-    experimentQueries?: ExperimentQueries
+    experimentFilter?: ExperimentFilter
   ): Observable<Experiment[]> {
-    let queries = `?query=${query}&${this._buildPageQueries(pageQueries)}&${this._buildExperimentQueries(experimentQueries)}`;
+    let queries = `?query=${query}&${this._buildPageQueries(pageQueries)}&${this._buildExperimentFilter(experimentFilter)}`;
     return this.http.get<Experiment[]>(`${environment.BACKEND_API_URL}/experiments${queries}`);
   }
 
@@ -254,8 +245,8 @@ export class BackendApiService {
    * Get count of experiments
    * @returns Observable<number> (count)
    */
-  getExperimentsCount(query: string, experimentQueries?: ExperimentQueries): Observable<number> {
-    let queries = `?query=${query}&${this._buildExperimentQueries(experimentQueries)}`;
+  getExperimentsCount(query: string, experimentFilter?: ExperimentFilter): Observable<number> {
+    let queries = `?query=${query}&${this._buildExperimentFilter(experimentFilter)}`;
     return this.http.get<number>(`${environment.BACKEND_API_URL}/count/experiments${queries}`);
   }
 
@@ -272,8 +263,8 @@ export class BackendApiService {
     return this.http.put<Experiment>(`${environment.BACKEND_API_URL}/experiments/${id}`, experiment);
   }
 
-  archiveExperiment(id: string, archived: boolean): Observable<void> {
-    return this.http.patch<void>(`${environment.BACKEND_API_URL}/experiments/${id}/archive?archived=${archived}`, {});
+  archiveExperiment(id: string, archive: boolean): Observable<void> {
+    return this.http.patch<void>(`${environment.BACKEND_API_URL}/experiments/${id}/archive?archive=${archive}`, {});
   }
 
   deleteExperiment(id: string): Observable<boolean> {
@@ -289,9 +280,9 @@ export class BackendApiService {
   getExperimentTemplates(
     query: string,
     pageQueries?: PageQueries,
-    templateQueries?: ExperimentTemplateQueries
+    experimentTemplateFilter?: ExperimentTemplateFilter
   ): Observable<ExperimentTemplate[]> {
-    let queries = `?query=${query}&${this._buildPageQueries(pageQueries)}&${this._buildExperimentTemplateQueries(templateQueries)}`;
+    let queries = `?query=${query}&${this._buildPageQueries(pageQueries)}&${this._buildExperimentTemplateFilter(experimentTemplateFilter)}`;
     return this.http.get<ExperimentTemplate[]>(`${environment.BACKEND_API_URL}/experiment-templates${queries}`);
   }
 
@@ -310,13 +301,13 @@ export class BackendApiService {
    */
   getExperimentTemplatesCount(
     query: string,
-    templateQueries?: ExperimentTemplateQueries
+    experimentTemplateFilter?: ExperimentTemplateFilter
   ): Observable<number> {
-    let queries = `?query=${query}&${this._buildExperimentTemplateQueries(templateQueries)}`;
+    let queries = `?query=${query}&${this._buildExperimentTemplateFilter(experimentTemplateFilter)}`;
     return this.http.get<number>(`${environment.BACKEND_API_URL}/count/experiment-templates${queries}`);
   }
 
-  getExperimentsOfTeplateCount(id: string, only_mine: boolean): Observable<number> {
+  getExperimentsOfTemplateCount(id: string, only_mine: boolean): Observable<number> {
     return this.http.get<number>(`${environment.BACKEND_API_URL}/count/experiment-templates/${id}/experiments?only_mine=${only_mine}`);
   }
 
@@ -332,8 +323,8 @@ export class BackendApiService {
     return this.http.put<ExperimentTemplate>(`${environment.BACKEND_API_URL}/experiment-templates/${id}`, experimentTemplate);
   }
 
-  archiveExperimentTemplate(id: string, archived: boolean): Observable<void> {
-    return this.http.patch<void>(`${environment.BACKEND_API_URL}/experiment-templates/${id}/archive?archived=${archived}`, {});
+  archiveExperimentTemplate(id: string, archive: boolean): Observable<void> {
+    return this.http.patch<void>(`${environment.BACKEND_API_URL}/experiment-templates/${id}/archive?archive=${archive}`, {});
   }
 
   deleteExperimentTemplate(id: string): Observable<void> {
@@ -409,7 +400,7 @@ export class BackendApiService {
     return this.http.get<ExperimentRun>(`${environment.BACKEND_API_URL}/experiments/${experimentId}/execute`);
   }
 
-  
+
   ////////////////////////////// PROFILE //////////////////////////////
   getUserProfile(): Observable<UserRailProfile> {
     return this.http.get<UserRailProfile>(`${environment.BACKEND_API_URL}/users/profile`);
@@ -437,28 +428,28 @@ export class BackendApiService {
     return `offset=${pageQueries.offset}&limit=${pageQueries.limit}`
   }
 
-  _buildExperimentQueries(experimentQueries?: ExperimentQueries): string {
-    if (experimentQueries == undefined) {
+  _buildExperimentFilter(experimentFilter?: ExperimentFilter): string {
+    if (experimentFilter == undefined) {
       return "";
     }
 
     let q: string = "";
-    let key: keyof ExperimentQueries;
-    for (key in experimentQueries) {
-      q += `${key}=${experimentQueries[key]}&`;
+    let key: keyof ExperimentFilter;
+    for (key in experimentFilter) {
+      q += `${key}=${experimentFilter[key]}&`;
     }
     return q.slice(0, q.length - 1);
   }
 
-  _buildExperimentTemplateQueries(templateQueries?: ExperimentTemplateQueries): string {
-    if (templateQueries == undefined) {
+  _buildExperimentTemplateFilter(experimentTemplateFilter?: ExperimentTemplateFilter): string {
+    if (experimentTemplateFilter == undefined) {
       return "";
     }
 
     let q: string = "";
-    let key: keyof ExperimentTemplateQueries;
-    for (key in templateQueries) {
-      q += `${key}=${templateQueries[key]}&`;
+    let key: keyof ExperimentTemplateFilter;
+    for (key in experimentTemplateFilter) {
+      q += `${key}=${experimentTemplateFilter[key]}&`;
     }
     return q.slice(0, q.length - 1);
   }

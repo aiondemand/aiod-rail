@@ -3,15 +3,15 @@
 <ng-container *ngIf="experimentRun && experiment">
     <div class="header">
         <h1>Experiment run - {{experimentRun.id}}</h1>
-        
+
         <div class="header-menu">
             <!-- TODO add stopping functionality -->
             <!-- <button mat-icon-button matTooltip="Stop run" *ngIf="experimentRun.mine && !experimentRun.archived && experimentRun.state == 'IN_PROGRESS'" (click)="stopRun()">
                 <mat-icon>stop</mat-icon>
             </button> -->
-            <button 
-                mat-icon-button matTooltip="Delete run" 
-                *ngIf="experimentRun.mine && !experimentRun.archived && (experimentRun.state == 'FINISHED' || experimentRun.state == 'CRASHED')" 
+            <button
+                mat-icon-button matTooltip="Delete run"
+                *ngIf="experimentRun.mine && !experimentRun.archived && (experimentRun.state == 'FINISHED' || experimentRun.state == 'CRASHED')"
                 (click)="deleteRun()"
             >
                 <mat-icon>delete</mat-icon>
@@ -63,7 +63,7 @@
     <div *ngIf="treeViewDataSource && treeControl">
         <mat-divider></mat-divider>
         <h2>File hierarchy</h2>
-    
+
         <mat-tree class="tree-view" [dataSource]="treeViewDataSource" [treeControl]="treeControl">
             <!-- LEAF NODES (FILES) -->
             <mat-tree-node class="tree-node" *matTreeNodeDef="let node" matTreeNodePadding>
@@ -73,12 +73,12 @@
                 <span class="download-btn">
                     <span class="file-size">{{formatFileSize(node.node.size)}}</span>
                     <button mat-icon-button class="download-btn"
-                    (click)="downloadfile($event, node.node.filepath)" 
+                    (click)="downloadFile($event, node.node.filepath)"
                     *ngIf="!currentlyBeingDownloaded.has(node.node.filepath)">
                         <mat-icon>download</mat-icon>
                     </button>
                 </span>
-                <mat-spinner *ngIf="currentlyBeingDownloaded.has(node.node.filepath)" 
+                <mat-spinner *ngIf="currentlyBeingDownloaded.has(node.node.filepath)"
                 class="download-circle" [diameter]="24"></mat-spinner>
             </mat-tree-node>
 
@@ -92,13 +92,13 @@
                 {{node.name}}
                 <span class="growing-space"></span>
                 <span class="download-btn">
-                    <button mat-icon-button class="download-btn" 
-                    (click)="downloadfile($event, node.node.filepath)" 
+                    <button mat-icon-button class="download-btn"
+                    (click)="downloadFile($event, node.node.filepath)"
                     *ngIf="!currentlyBeingDownloaded.has(node.node.filepath)">
                         <mat-icon>download</mat-icon>
                     </button>
                 </span>
-                <mat-spinner *ngIf="currentlyBeingDownloaded.has(node.node.filepath)" 
+                <mat-spinner *ngIf="currentlyBeingDownloaded.has(node.node.filepath)"
                 class="download-circle" [diameter]="24"></mat-spinner>
             </mat-tree-node>
         </mat-tree>
