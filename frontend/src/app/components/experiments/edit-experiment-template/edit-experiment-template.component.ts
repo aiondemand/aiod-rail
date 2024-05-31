@@ -22,7 +22,7 @@ export class EditExperimentTemplateComponent {
   editableVisibility: boolean = true;
   loading: boolean = true;
   action: string = "create";
-  
+
   experimentTemplateForm = this.fb.group({
     name: ['', Validators.required],
     description: ['', Validators.required],
@@ -72,16 +72,16 @@ export class EditExperimentTemplateComponent {
   ) { }
 
   reserved_environment_variables: string[] = [
-    "MODEL_NAMES", "DATASET_NAMES", "MODEL_IDS", "DATASET_IDS", 
+    "MODEL_NAMES", "DATASET_NAMES", "MODEL_IDS", "DATASET_IDS",
   ]
 
   ngOnInit(): void {
-    this.route.params.subscribe(params => {  
+    this.route.params.subscribe(params => {
       if (params["id"]) {
         var data$ = of(params["id"]).pipe(
           switchMap(templateId => combineLatest([
-            this.backend.getExperimentsOfTeplateCount(templateId, false),
-            this.backend.getExperimentsOfTeplateCount(templateId, true),
+            this.backend.getExperimentsOfTemplateCount(templateId, false),
+            this.backend.getExperimentsOfTemplateCount(templateId, true),
             this.backend.getExperimentTemplate(templateId)
           ])),
           retry(3)
@@ -119,17 +119,17 @@ export class EditExperimentTemplateComponent {
     this.experimentTemplateForm.get("pipRequirements")?.setValue(templ.pip_requirements);
     this.experimentTemplateForm.get("visibility")?.setValue(templ.public ? "Public" : "Private");
     this.scriptCode = templ.script;
-    
+
     templ.envs_required.forEach(env => this.requiredVarsData.push(env));
     this.requiredVarsTable?.renderRows();
-    
+
     templ.envs_optional.forEach(env => this.optionalVarsData.push(env));
     this.optionalVarsTable?.renderRows();
 
     if (!this.editableEnvironment) {
       this.experimentTemplateForm.get("baseImage")?.disable();
       this.experimentTemplateForm.get("pipRequirements")?.disable();
-      
+
       this.newRequiredEnvForm.get("name")?.disable();
       this.newRequiredEnvForm.get("description")?.disable();
 
@@ -139,7 +139,7 @@ export class EditExperimentTemplateComponent {
     if (!this.editableVisibility) {
       this.experimentTemplateForm.get("visibility")?.disable();
     }
-    
+
   }
 
   parseBaseImageFromDockerfile(dockerfile: string) {
@@ -185,7 +185,7 @@ export class EditExperimentTemplateComponent {
         this.backend.createExperimentTemplate(experimentTemplate)
       );
     }
-    
+
     promisedTemplate
       .then(experimentTemplate => {
         this.snackBar.show(`Experiment template ${this.action}d`);
@@ -198,7 +198,7 @@ export class EditExperimentTemplateComponent {
         else {
           this.snackBar.showError(`Couldn't ${this.action} experiment template`);
         }
-      });    
+      });
   }
 
   addVariableReq(form: FormGroup, dataTable: EnvironmentVarDef[]) {
@@ -250,7 +250,7 @@ export class EditExperimentTemplateComponent {
       contextmenu: true,
       minimap: {
         enabled: false,
-      },  
+      },
     }
   }
 }

@@ -18,7 +18,7 @@ import { SnackBarService } from 'src/app/services/snack-bar.service';
   templateUrl: './edit-experiment.component.html',
   styleUrls: ['./edit-experiment.component.scss']
 })
-export class EditExperimentComponent implements OnInit {  
+export class EditExperimentComponent implements OnInit {
   inputExperiment: Experiment | null = null;
   inputExperimentTemplate: ExperimentTemplate | null = null;
   inputPublications: Publication[] = [];
@@ -28,7 +28,7 @@ export class EditExperimentComponent implements OnInit {
   editableAssets: boolean = true;
   loading: boolean = true;
   action: string = "create";
-  
+
   experimentForm = this.fb.group({
     name: ['', Validators.required],
     description: ['', Validators.required],
@@ -46,7 +46,7 @@ export class EditExperimentComponent implements OnInit {
     "Private"
   ]
 
-  selectedExprimentTemplate: ExperimentTemplate | null = null;
+  selectedExperimentTemplate: ExperimentTemplate | null = null;
 
   error: string = '';
 
@@ -96,17 +96,17 @@ export class EditExperimentComponent implements OnInit {
             this.loading = false;
           })
           .catch(err => console.error(err));
-      } 
+      }
       else {
         this.subscribeToExperimentTemplateChange()
         this.loading = false;
-      }     
+      }
     });
 
     this.experimentTemplates$ = this.experimentTemplate?.valueChanges.pipe(
       debounceTime(300),
       startWith(""),
-      switchMap(value => this.experimentTemplateAutocompleteFilter(value)), 
+      switchMap(value => this.experimentTemplateAutocompleteFilter(value)),
       catchError(err => {
         this.error = err.message;
         this.snackBar.showError("Couldn't load experiment templates");
@@ -166,14 +166,14 @@ export class EditExperimentComponent implements OnInit {
           return of([]);
         })
       );
-  }  
+  }
 
   subscribeToExperimentTemplateChange(): void {
     this.subscription = this.experimentTemplate?.valueChanges.subscribe(value => {
       if (!value || typeof value == "string") {
         return;
       }
-      
+
       Object.keys(this.envsRequired.controls).forEach(k => this.envsRequired.removeControl(k));
       Object.keys(this.envsOptional.controls).forEach(k => this.envsOptional.removeControl(k));
 
@@ -230,13 +230,13 @@ export class EditExperimentComponent implements OnInit {
     if (!exp || !this.inputExperimentTemplate) {
       return;
     }
-  
+
     this.name?.setValue(exp.name);
     this.description?.setValue(exp.description);
     this.visibility?.setValue(exp.public ? "Public" : "Private");
     this.experimentTemplate?.setValue(this.inputExperimentTemplate);
-    this.selectedExprimentTemplate = this.inputExperimentTemplate;
-  
+    this.selectedExperimentTemplate = this.inputExperimentTemplate;
+
     this.inputPublications.forEach(publ => this.publications.push(new FormControl(publ)));
     this.model?.setValue(this.inputModel);
     this.dataset?.setValue(this.inputDataset);
@@ -255,21 +255,21 @@ export class EditExperimentComponent implements OnInit {
       this.model?.disable()
       this.dataset?.disable();
       this.experimentTemplate?.disable();
-      
+
       this.experimentForm.get("metrics")?.disable();
       this.experimentForm.get("envsOptional")?.disable();
-      this.experimentForm.get("envsRequired")?.disable(); 
+      this.experimentForm.get("envsRequired")?.disable();
     }
   }
 
-  experimentTemplateAutocompleteFilter(query: string | ExperimentTemplate | null): Observable<ExperimentTemplate[]> {    
+  experimentTemplateAutocompleteFilter(query: string | ExperimentTemplate | null): Observable<ExperimentTemplate[]> {
     if (typeof query != "string") {
-      this.selectedExprimentTemplate = query;
+      this.selectedExperimentTemplate = query;
       return this.experimentTemplates$ ? this.experimentTemplates$ : of([]);
     }
 
     if (query) {
-      this.selectedExprimentTemplate = null;
+      this.selectedExperimentTemplate = null;
     }
     return this.backend.getExperimentTemplates(query, {}, {
       finalized: true,
@@ -319,7 +319,7 @@ export class EditExperimentComponent implements OnInit {
     return dataset ? dataset.name : "";
   }
 
-  onSubmit() {  
+  onSubmit() {
     let publicationIds = (this.publications.value as Array<Publication>).map(publication => publication.identifier.toString());
 
     let all_envs: Record<string, string> = {
@@ -341,7 +341,7 @@ export class EditExperimentComponent implements OnInit {
       name: String(this.name?.value?.trim()),
       description: String(this.description?.value?.trim()),
       publication_ids: publicationIds,
-      experiment_template_id: String(this.selectedExprimentTemplate?.id),
+      experiment_template_id: String(this.selectedExperimentTemplate?.id),
       dataset_ids: [String((this.dataset?.value as Dataset)?.identifier)],
       model_ids: [String((this.model?.value as Model)?.identifier)],
       env_vars: envsToSend,
@@ -368,7 +368,7 @@ export class EditExperimentComponent implements OnInit {
       .catch(err => {
         this.error = err.message;
         this.snackBar.showError(`Couldn't ${this.action} experiment`);
-      });  
+      });
   }
 
   onSelectPublication(event: MatSelectChange) {

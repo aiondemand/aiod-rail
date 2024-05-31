@@ -18,18 +18,16 @@ from app.schemas.experiment import ExperimentCreate, ExperimentResponse
 class Experiment(Document):
     name: Indexed(str, index_type=pymongo.TEXT)  # type: ignore
     description: str
-    updated_at: datetime = Field(default_factory=partial(datetime.now, tz=timezone.utc))
-    created_at: datetime = Field(default_factory=partial(datetime.now, tz=timezone.utc))
     created_by: str
-    public: bool = False
-    archived: bool = False
+    created_at: datetime = Field(default_factory=partial(datetime.now, tz=timezone.utc))
+    updated_at: datetime = Field(default_factory=partial(datetime.now, tz=timezone.utc))
+    is_public: bool = False
+    is_archived: bool = False
 
     experiment_template_id: PydanticObjectId
-
-    publication_ids: list[int]
     dataset_ids: list[int]
     model_ids: list[int]
-
+    publication_ids: list[int]
     env_vars: list[EnvironmentVar]
 
     @property
@@ -44,7 +42,7 @@ class Experiment(Document):
 
     @property
     def allows_execution(self) -> bool:
-        return self.archived is False
+        return self.is_archived is False
 
     class Settings:
         name = "experiments"
@@ -62,7 +60,7 @@ class Experiment(Document):
         return ExperimentResponse(**kwargs, mine=mine)
 
     def is_readable_by_user(self, user: dict | None) -> bool:
-        if self.public:
+        if self.is_public:
             return True
         elif user is None:
             return False
@@ -72,12 +70,12 @@ class Experiment(Document):
     @classmethod
     def get_query_readable_by_user(cls, user: dict | None) -> BaseFindOperator:
         if user is None:
-            return operators.Eq(cls.public, True)
+            return operators.Eq(cls.is_public, True)
         elif has_admin_role(user):
             return operators.Exists(cls.id, True)
         else:
             return operators.Or(
-                operators.Eq(cls.public, True),
+                operators.Eq(cls.is_public, True),
                 operators.Eq(cls.created_by, user["email"]),
             )
 
@@ -140,7 +138,7 @@ class Experiment(Document):
             # Update name, descr & visibility
             original_experiment.name = new_experiment.name
             original_experiment.description = new_experiment.description
-            original_experiment.public = new_experiment.public
+            original_experiment.is_public = new_experiment.is_public
 
             original_experiment.updated_at = new_experiment.updated_at
             experiment_to_return = original_experiment

@@ -73,7 +73,7 @@ async def delete_experiment_run(
     # TODO for now we can only delete experiment runs that have already been finished
     if (
         experiment_run.state not in [RunState.FINISHED, RunState.CRASHED]
-        or experiment_run.archived
+        or experiment_run.is_archived
     ):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -158,13 +158,17 @@ async def get_experiment_run_if_accessible_or_raise(
 
 
 async def set_public_run(run: ExperimentRun, value: bool, updated_at: datetime) -> None:
-    await run.set({ExperimentRun.public: value, ExperimentRun.updated_at: updated_at})
+    await run.set(
+        {ExperimentRun.is_public: value, ExperimentRun.updated_at: updated_at}
+    )
 
 
 async def set_archived_run(
     run: ExperimentRun, value: bool, updated_at: datetime
 ) -> None:
-    await run.set({ExperimentRun.archived: value, ExperimentRun.updated_at: updated_at})
+    await run.set(
+        {ExperimentRun.is_archived: value, ExperimentRun.updated_at: updated_at}
+    )
 
 
 async def delete_run(run: ExperimentRun, workflow_engine: WorkflowEngineBase) -> None:

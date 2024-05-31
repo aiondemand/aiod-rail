@@ -21,14 +21,14 @@ from app.schemas.states import RunState
 
 
 class ExperimentRun(Document):
+    experiment_id: Indexed(PydanticObjectId)  # type: ignore
+    created_by: str
     created_at: datetime = Field(default_factory=partial(datetime.now, tz=timezone.utc))
     updated_at: datetime = Field(default_factory=partial(datetime.now, tz=timezone.utc))
     retry_count: int = 0
     state: RunState = RunState.CREATED
-    created_by: str
-    public: bool
-    archived: bool = False
-    experiment_id: Indexed(PydanticObjectId)  # type: ignore
+    is_public: bool
+    is_archived: bool = False
 
     @property
     def logs(self) -> str:
@@ -79,7 +79,7 @@ class ExperimentRun(Document):
         return ExperimentRunDetails(**response.dict(), logs=self.logs)
 
     def is_readable_by_user(self, user: dict | None) -> bool:
-        if self.public:
+        if self.is_public:
             return True
         elif user is None:
             return False
@@ -89,12 +89,12 @@ class ExperimentRun(Document):
     @classmethod
     def get_query_readable_by_user(cls, user: dict | None) -> BaseFindOperator:
         if user is None:
-            return operators.Eq(cls.public, True)
+            return operators.Eq(cls.is_public, True)
         elif has_admin_role(user):
             return operators.Exists(cls.id, True)
         else:
             return operators.Or(
-                operators.Eq(cls.public, True),
+                operators.Eq(cls.is_public, True),
                 operators.Eq(cls.created_by, user["email"]),
             )
 
@@ -106,10 +106,10 @@ class ExperimentRun(Document):
 
     def retry_failed_run(self):
         return ExperimentRun(
-            created_by=self.created_by,
-            public=self.public,
-            archived=self.archived,
             experiment_id=self.experiment_id,
+            created_by=self.created_by,
+            is_public=self.is_public,
+            is_archived=self.is_archived,
             retry_count=self.retry_count + 1,
         )
 
