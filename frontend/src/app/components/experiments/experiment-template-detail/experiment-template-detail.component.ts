@@ -39,7 +39,7 @@ export class ExperimentTemplateDetailComponent {
   }
 
   editBtnClicked() {
-    firstValueFrom(this.backend.getExperimentsOfTeplateCount(this.templateId, false))
+    firstValueFrom(this.backend.getExperimentsOfTemplateCount(this.templateId, false))
       .then(count => {
         let existExperiments = count > 0;
         let routeParts = ['update'];
@@ -76,7 +76,7 @@ export class ExperimentTemplateDetailComponent {
   }
 
   deleteBtnClicked() {
-    firstValueFrom(this.backend.getExperimentsOfTeplateCount(this.templateId, false))
+    firstValueFrom(this.backend.getExperimentsOfTemplateCount(this.templateId, false))
       .then(count => {
         let existExperiments = count > 0;
         let routeParts = ["/experiments", "templates", "my"];

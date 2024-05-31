@@ -3,7 +3,7 @@ export interface PageQueries {
   limit?: number;
 }
 
-export interface ExperimentTemplateQueries {
+export interface ExperimentTemplateFilter {
   mine?: boolean;
   finalized?: boolean;
   approved?: boolean;
@@ -11,7 +11,7 @@ export interface ExperimentTemplateQueries {
   public?: boolean,
 }
 
-export interface ExperimentQueries {
+export interface ExperimentFilter {
   mine?: boolean;
   archived?: boolean;
   public?: boolean;

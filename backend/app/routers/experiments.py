@@ -5,6 +5,7 @@ from typing import Any, Awaitable, Callable
 from beanie import PydanticObjectId, operators
 from beanie.odm.queries.find import FindMany
 from fastapi import APIRouter, Depends, HTTPException, status
+from pydantic import BaseModel
 
 from app.auth import get_current_user, raise_requires_auth
 from app.helpers import Pagination, QueryOperator, get_compare_operator_fn
@@ -23,20 +24,22 @@ from app.services.workflow_engines.reana import ReanaService
 router = APIRouter()
 
 
+class ExperimentFilter(BaseModel):
+    mine: bool | None = None
+    archived: bool | None = None
+    public: bool | None = None
+
+
 @router.get("/experiments", response_model=list[ExperimentResponse])
 async def get_experiments(
     query: str = "",
     user: dict = Depends(get_current_user(required=False, from_api_key=True)),
     pagination: Pagination = Depends(),
-    mine: bool | None = None,
-    archived: bool | None = None,
-    public: bool | None = None,
+    filters: ExperimentFilter = Depends(),
 ) -> Any:
     result_set = find_specific_experiments(
         query,
-        mine=mine,
-        archived=archived,
-        public=public,
+        filters=filters,
         user=user,
         pagination=pagination,
     )
@@ -49,15 +52,11 @@ async def get_experiments(
 async def get_experiments_count(
     query: str = "",
     user: dict = Depends(get_current_user(required=False, from_api_key=True)),
-    mine: bool | None = None,
-    archived: bool | None = None,
-    public: bool | None = None,
+    filters: ExperimentFilter = Depends(),
 ) -> Any:
     result_set = find_specific_experiments(
         query,
-        mine=mine,
-        archived=archived,
-        public=public,
+        filters=filters,
         user=user,
     )
     return await result_set.count()
@@ -149,7 +148,9 @@ async def execute_experiment_run(
         )
 
     experiment_run = ExperimentRun(
-        experiment_id=experiment.id, created_by=user["email"], public=experiment.public
+        experiment_id=experiment.id,
+        created_by=user["email"],
+        is_public=experiment.is_public,
     )
     experiment_run = await experiment_run.create()
 
@@ -188,7 +189,7 @@ async def update_experiment(
         runs,
         partial(
             set_public_run,
-            value=experiment_to_save.public,
+            value=experiment_to_save.is_public,
             updated_at=experiment_to_save.updated_at,
         ),
     )
@@ -214,7 +215,7 @@ async def delete_experiment(
 @router.patch("/experiments/{id}/archive", response_model=None)
 async def archive_experiment(
     id: PydanticObjectId,
-    archived: bool = False,
+    archive: bool = False,
     user: dict = Depends(get_current_user(required=True, from_api_key=True)),
 ) -> Any:
     experiment = await get_experiment_if_accessible_or_raise(
@@ -224,19 +225,17 @@ async def archive_experiment(
 
     runs = await ExperimentRun.find(ExperimentRun.experiment_id == id).to_list()
     await run_cascade_operation(
-        runs, partial(set_archived_run, value=archived, updated_at=updated_at)
+        runs, partial(set_archived_run, value=archive, updated_at=updated_at)
     )
 
     await experiment.set(
-        {Experiment.archived: archived, Experiment.updated_at: updated_at}
+        {Experiment.is_archived: archive, Experiment.updated_at: updated_at}
     )
 
 
 def find_specific_experiments(
     search_query: str,
-    mine: bool | None,
-    archived: bool | None,
-    public: bool | None,
+    filters: ExperimentFilter,
     user: dict | None,
     query_operator: QueryOperator = QueryOperator.AND,
     pagination: Pagination = None,
@@ -251,18 +250,20 @@ def find_specific_experiments(
     filter_conditions = []
     if len(search_query) > 0:
         filter_conditions.append(operators.Text(search_query))
-    if mine is not None:
+    if filters.mine is not None:
         if user is not None:
             filter_conditions.append(
-                get_compare_operator_fn(mine)(Experiment.created_by, user["email"])
+                get_compare_operator_fn(filters.mine)(
+                    Experiment.created_by, user["email"]
+                )
             )
         else:
             # Authentication required to see your experiment templates
             raise_requires_auth()
-    if archived:
-        filter_conditions.append(Experiment.archived == archived)
-    if public:
-        filter_conditions.append(Experiment.public == public)
+    if filters.archived:
+        filter_conditions.append(Experiment.is_archived == filters.archived)
+    if filters.public:
+        filter_conditions.append(Experiment.is_public == filters.public)
 
     accessibility_condition = Experiment.get_query_readable_by_user(user)
 

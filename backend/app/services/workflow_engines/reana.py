@@ -106,16 +106,16 @@ class ReanaService(WorkflowEngineBase):
         return len(re.findall(pattern, stderr)) > 0
 
     async def stop_workflow(self, experiment_run: ExperimentRun) -> bool:
-        return await self._stop_and_delete_worfklow(
+        return await self._stop_and_delete_workflow(
             experiment_run, delete_workflow=False
         )
 
     async def delete_workflow(self, experiment_run: ExperimentRun) -> bool:
-        return await self._stop_and_delete_worfklow(
+        return await self._stop_and_delete_workflow(
             experiment_run, delete_workflow=True
         )
 
-    async def _stop_and_delete_worfklow(
+    async def _stop_and_delete_workflow(
         self, experiment_run: ExperimentRun, delete_workflow: bool = False
     ) -> bool:
         try:
@@ -160,7 +160,7 @@ class ReanaService(WorkflowEngineBase):
             await self._async_reana_call(
                 "prune_workspace",
                 workflow=workflow_name,
-                include_inputs=False,
+                include_inputs=True,
                 include_outputs=False,
             )
             if await self._exists_file(experiment_run, f"{RUN_TEMP_OUTPUT_FOLDER}/"):
@@ -192,7 +192,7 @@ class ReanaService(WorkflowEngineBase):
             raise e
         except Exception as e:
             self.logger.error(
-                "There was an error when retreving logs from an experiment run",
+                "There was an error when retrieving logs from an experiment run",
                 exc_info=e,
             )
 

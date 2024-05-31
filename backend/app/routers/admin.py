@@ -30,7 +30,7 @@ async def approve_experiment_template(
 
     await experiment_template.set(
         {
-            ExperimentTemplate.approved: approve,
+            ExperimentTemplate.is_approved: approve,
             ExperimentTemplate.updated_at: datetime.now(tz=timezone.utc),
         }
     )

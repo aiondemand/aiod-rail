@@ -5,6 +5,7 @@ from typing import Any
 from beanie import PydanticObjectId, operators
 from beanie.odm.queries.find import FindMany
 from fastapi import APIRouter, Depends, HTTPException, status
+from pydantic import BaseModel
 
 from app.auth import get_current_user, raise_requires_auth
 from app.config import settings
@@ -20,24 +21,24 @@ from app.schemas.states import TemplateState
 router = APIRouter()
 
 
+class ExperimentTemplateFilter(BaseModel):
+    mine: bool | None = None
+    archived: bool | None = None
+    public: bool | None = None
+    finalized: bool | None = None
+    approved: bool | None = None
+
+
 @router.get("/experiment-templates", response_model=list[ExperimentTemplateResponse])
 async def get_experiment_templates(
     user: dict = Depends(get_current_user(required=False, from_api_key=True)),
     query: str = "",
     pagination: Pagination = Depends(),
-    mine: bool | None = None,
-    finalized: bool | None = None,
-    approved: bool | None = None,
-    archived: bool | None = None,
-    public: bool | None = None,
+    filters: ExperimentTemplateFilter = Depends(),
 ) -> Any:
     result_set = find_specific_experiment_templates(
         query,
-        mine=mine,
-        finalized=finalized,
-        approved=approved,
-        archived=archived,
-        public=public,
+        filters=filters,
         user=user,
         pagination=pagination,
     )
@@ -62,19 +63,11 @@ async def get_experiment_template(
 async def get_experiment_templates_count(
     user: dict = Depends(get_current_user(required=False, from_api_key=True)),
     query: str = "",
-    mine: bool | None = None,
-    finalized: bool | None = None,
-    approved: bool | None = None,
-    archived: bool | None = None,
-    public: bool | None = None,
+    filters: ExperimentTemplateFilter = Depends(),
 ) -> Any:
     result_set = find_specific_experiment_templates(
         query,
-        mine=mine,
-        finalized=finalized,
-        approved=approved,
-        archived=archived,
-        public=public,
+        filters=filters,
         user=user,
     )
     return await result_set.count()
@@ -165,15 +158,15 @@ async def remove_experiment_template(
 @router.patch("/experiment-templates/{id}/archive", response_model=None)
 async def archive_experiment_template(
     id: PydanticObjectId,
-    archived: bool = False,
     user: dict = Depends(get_current_user(required=True, from_api_key=True)),
+    archive: bool = False,
 ) -> Any:
     experiment_template = await get_experiment_template_if_accessible_or_raise(
         id, user, write_access=True
     )
     await experiment_template.set(
         {
-            ExperimentTemplate.archived: archived,
+            ExperimentTemplate.is_archived: archive,
             ExperimentTemplate.updated_at: datetime.now(tz=timezone.utc),
         }
     )
@@ -195,11 +188,7 @@ async def get_experiments_of_template_count(
 
 def find_specific_experiment_templates(
     search_query: str,
-    mine: bool | None,
-    finalized: bool | None,
-    approved: bool | None,
-    archived: bool | None,
-    public: bool | None,
+    filters: ExperimentTemplateFilter,
     user: dict | None,
     query_operator: QueryOperator = QueryOperator.AND,
     pagination: Pagination = None,
@@ -214,27 +203,29 @@ def find_specific_experiment_templates(
     filter_conditions = []
     if len(search_query) > 0:
         filter_conditions.append(operators.Text(search_query))
-    if mine is not None:
+    if filters.mine is not None:
         if user is not None:
             filter_conditions.append(
-                get_compare_operator_fn(mine)(Experiment.created_by, user["email"])
+                get_compare_operator_fn(filters.mine)(
+                    Experiment.created_by, user["email"]
+                )
             )
         else:
             # Authentication required to see your experiment templates
             raise_requires_auth()
 
-    if finalized is not None:
+    if filters.finalized is not None:
         filter_conditions.append(
-            get_compare_operator_fn(finalized)(
+            get_compare_operator_fn(filters.finalized)(
                 ExperimentTemplate.state, TemplateState.FINISHED
             )
         )
-    if approved is not None:
-        filter_conditions.append(ExperimentTemplate.approved == approved)
-    if archived is not None:
-        filter_conditions.append(ExperimentTemplate.archived == archived)
-    if public is not None:
-        filter_conditions.append(ExperimentTemplate.public == public)
+    if filters.approved is not None:
+        filter_conditions.append(ExperimentTemplate.is_approved == filters.approved)
+    if filters.archived is not None:
+        filter_conditions.append(ExperimentTemplate.is_archived == filters.archived)
+    if filters.public is not None:
+        filter_conditions.append(ExperimentTemplate.is_public == filters.public)
 
     accessibility_condition = ExperimentTemplate.get_query_readable_by_user(user)
 

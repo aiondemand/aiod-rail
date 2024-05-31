@@ -30,7 +30,7 @@
     </mat-form-field>
 
     <mat-form-field>
-        <mat-label>Experiment visiblity</mat-label>
+        <mat-label>Experiment visibility</mat-label>
         <mat-select formControlName="visibility">
             <mat-option *ngFor="let str of visibilityStrings" [value]="str">
                 {{ str }}
@@ -43,7 +43,7 @@
     <h2>Link related AI assets</h2>
     <div class="related-publications">
         <h3>Publications</h3>
-        <mat-form-field> 
+        <mat-form-field>
             <mat-label>Related publications</mat-label>
             <mat-select (selectionChange)="onSelectPublication($event)" [disabled]="!editableAssets">
                 <mat-option *ngFor="let publication of (publications$ | async)" [value]="publication">
@@ -64,19 +64,19 @@
     <div class="experiment-templates">
         <h2>Experiment Template specific information</h2>
         <i>Only approved experiment templates are visible</i>
-        
+
         <mat-form-field>
             <input matInput placeholder="Experiment template" [matAutocomplete]="autoExperimentTemplate" formControlName="experimentTemplate">
             <mat-autocomplete #autoExperimentTemplate="matAutocomplete" [displayWith]="displayChosenExperimentTemplate">
-                <mat-option *ngFor="let template of experimentTemplates$ | async" [value]="template" 
-                (selectionChange)="selectedExprimentTemplate = template">
+                <mat-option *ngFor="let template of experimentTemplates$ | async" [value]="template"
+                (selectionChange)="selectedExperimentTemplate = template">
                     {{ template.name }}
                 </mat-option>
             </mat-autocomplete>
         </mat-form-field>
     </div>
 
-    <div class="experiment-type-specific-inputs" *ngIf="selectedExprimentTemplate as experimentTemplateValue">
+    <div class="experiment-type-specific-inputs" *ngIf="selectedExperimentTemplate as experimentTemplateValue">
         <div class="models">
             <h3>Select a model</h3>
             <mat-form-field>
@@ -116,7 +116,7 @@
 
         <div class="create-experiment-run-form">
             <h3>Specify environment variables</h3>
-            
+
             <div *ngIf="experimentTemplateValue.envs_required.length == 0 && experimentTemplateValue.envs_optional.length == 0">
                 No environment variables were set in this Experiment Template.
             </div>
@@ -128,7 +128,7 @@
                     <input [type]="'text'" matInput placeholder="{{env.name}}" [formControlName]="env.name" />
                 </mat-form-field>
             </div>
-    
+
             <div formGroupName="envsOptional" *ngIf="experimentTemplateValue.envs_optional.length > 0">
                 <b>Optional environment variables</b>
                 <mat-form-field *ngFor="let env of experimentTemplateValue.envs_optional">

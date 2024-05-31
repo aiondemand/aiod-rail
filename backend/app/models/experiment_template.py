@@ -39,14 +39,14 @@ class ExperimentTemplate(Document):
     models_schema: AssetSchema
     envs_required: list[EnvironmentVarDef]
     envs_optional: list[EnvironmentVarDef]
+    created_by: str
     created_at: datetime = Field(default_factory=partial(datetime.now, tz=timezone.utc))
     updated_at: datetime = Field(default_factory=partial(datetime.now, tz=timezone.utc))
-    state: TemplateState = TemplateState.CREATED
     retry_count: int = 0
-    approved: bool = False
-    created_by: str
-    archived: bool = False
-    public: bool = True
+    state: TemplateState = TemplateState.CREATED
+    is_public: bool = True
+    is_archived: bool = False
+    is_approved: bool = False
 
     @property
     def environment_attribute_names(self) -> list[str]:
@@ -104,7 +104,7 @@ class ExperimentTemplate(Document):
 
     @property
     def allows_experiment_creation(self) -> bool:
-        return self.state == TemplateState.FINISHED and self.archived is False
+        return self.state == TemplateState.FINISHED and self.is_archived is False
 
     class Settings:
         name = "experimentTemplates"
@@ -153,7 +153,7 @@ class ExperimentTemplate(Document):
         )
 
     def is_readable_by_user(self, user: dict | None) -> bool:
-        if self.public:
+        if self.is_public:
             return True
         elif user is None:
             return False
@@ -163,12 +163,12 @@ class ExperimentTemplate(Document):
     @classmethod
     def get_query_readable_by_user(cls, user: dict | None) -> BaseFindOperator:
         if user is None:
-            return operators.Eq(cls.public, True)
+            return operators.Eq(cls.is_public, True)
         elif has_admin_role(user):
             return operators.Exists(cls.id, True)
         else:
             return operators.Or(
-                operators.Eq(cls.public, True),
+                operators.Eq(cls.is_public, True),
                 operators.Eq(cls.created_by, user["email"]),
             )
 
@@ -254,14 +254,14 @@ class ExperimentTemplate(Document):
         same_environment = original_template.is_same_environment(
             experiment_template_req
         )
-        same_visibility = original_template.public == experiment_template_req.public
+        same_visibility = original_template.is_public == experiment_template_req.public
 
         template_to_return = None
         if same_environment and (same_visibility or editable_visibility):
             # We modify only name & descr (+ maybe visibility)
             original_template.name = new_template.name
             original_template.description = new_template.description
-            original_template.public = new_template.public
+            original_template.is_public = new_template.is_public
 
             original_template.updated_at = new_template.updated_at
             template_to_return = original_template
