@@ -5,6 +5,7 @@ from typing import Any
 from beanie import PydanticObjectId, operators
 from beanie.odm.queries.find import FindMany
 from fastapi import APIRouter, Depends, HTTPException, status
+from pydantic import BaseModel
 
 from app.auth import get_current_user, raise_requires_auth
 from app.config import settings
@@ -20,20 +21,12 @@ from app.schemas.states import TemplateState
 router = APIRouter()
 
 
-class ExperimentTemplateFilter:
-    def __init__(
-        self,
-        mine: bool | None = None,
-        archived: bool | None = None,
-        public: bool | None = None,
-        finalized: bool | None = None,
-        approved: bool | None = None,
-    ):
-        self.mine = mine
-        self.archived = archived
-        self.public = public
-        self.finalized = finalized
-        self.approved = approved
+class ExperimentTemplateFilter(BaseModel):
+    mine: bool | None = None
+    archived: bool | None = None
+    public: bool | None = None
+    finalized: bool | None = None
+    approved: bool | None = None
 
 
 @router.get("/experiment-templates", response_model=list[ExperimentTemplateResponse])

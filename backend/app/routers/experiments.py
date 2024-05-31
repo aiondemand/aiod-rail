@@ -5,6 +5,7 @@ from typing import Any, Awaitable, Callable
 from beanie import PydanticObjectId, operators
 from beanie.odm.queries.find import FindMany
 from fastapi import APIRouter, Depends, HTTPException, status
+from pydantic import BaseModel
 
 from app.auth import get_current_user, raise_requires_auth
 from app.helpers import Pagination, QueryOperator, get_compare_operator_fn
@@ -23,16 +24,10 @@ from app.services.workflow_engines.reana import ReanaService
 router = APIRouter()
 
 
-class ExperimentFilter:
-    def __init__(
-        self,
-        mine: bool | None = None,
-        archived: bool | None = None,
-        public: bool | None = None,
-    ):
-        self.mine = mine
-        self.archived = archived
-        self.public = public
+class ExperimentFilter(BaseModel):
+    mine: bool | None = None
+    archived: bool | None = None
+    public: bool | None = None
 
 
 @router.get("/experiments", response_model=list[ExperimentResponse])
@@ -155,7 +150,7 @@ async def execute_experiment_run(
     experiment_run = ExperimentRun(
         experiment_id=experiment.id,
         created_by=user["email"],
-        public=experiment.is_public,
+        is_public=experiment.is_public,
     )
     experiment_run = await experiment_run.create()
 

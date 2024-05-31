@@ -106,10 +106,10 @@ class ExperimentRun(Document):
 
     def retry_failed_run(self):
         return ExperimentRun(
-            created_by=self.created_by,
-            public=self.is_public,
-            archived=self.is_archived,
             experiment_id=self.experiment_id,
+            created_by=self.created_by,
+            is_public=self.is_public,
+            is_archived=self.is_archived,
             retry_count=self.retry_count + 1,
         )
 
