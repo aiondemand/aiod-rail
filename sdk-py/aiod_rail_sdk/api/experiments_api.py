@@ -39,7 +39,7 @@ class ExperimentsApi:
     def archive_experiment_v1_experiments_id_archive_patch(
         self,
         id: StrictStr,
-        archived: Optional[StrictBool] = None,
+        archive: Optional[StrictBool] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -57,8 +57,8 @@ class ExperimentsApi:
 
         :param id: (required)
         :type id: str
-        :param archived:
-        :type archived: bool
+        :param archive:
+        :type archive: bool
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -83,7 +83,7 @@ class ExperimentsApi:
 
         _param = self._archive_experiment_v1_experiments_id_archive_patch_serialize(
             id=id,
-            archived=archived,
+            archive=archive,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -107,7 +107,7 @@ class ExperimentsApi:
     def archive_experiment_v1_experiments_id_archive_patch_with_http_info(
         self,
         id: StrictStr,
-        archived: Optional[StrictBool] = None,
+        archive: Optional[StrictBool] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -125,8 +125,8 @@ class ExperimentsApi:
 
         :param id: (required)
         :type id: str
-        :param archived:
-        :type archived: bool
+        :param archive:
+        :type archive: bool
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -151,7 +151,7 @@ class ExperimentsApi:
 
         _param = self._archive_experiment_v1_experiments_id_archive_patch_serialize(
             id=id,
-            archived=archived,
+            archive=archive,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -175,7 +175,7 @@ class ExperimentsApi:
     def archive_experiment_v1_experiments_id_archive_patch_without_preload_content(
         self,
         id: StrictStr,
-        archived: Optional[StrictBool] = None,
+        archive: Optional[StrictBool] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -193,8 +193,8 @@ class ExperimentsApi:
 
         :param id: (required)
         :type id: str
-        :param archived:
-        :type archived: bool
+        :param archive:
+        :type archive: bool
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -219,7 +219,7 @@ class ExperimentsApi:
 
         _param = self._archive_experiment_v1_experiments_id_archive_patch_serialize(
             id=id,
-            archived=archived,
+            archive=archive,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -238,7 +238,7 @@ class ExperimentsApi:
     def _archive_experiment_v1_experiments_id_archive_patch_serialize(
         self,
         id,
-        archived,
+        archive,
         _request_auth,
         _content_type,
         _headers,
@@ -259,8 +259,8 @@ class ExperimentsApi:
         if id is not None:
             _path_params["id"] = id
         # process the query parameters
-        if archived is not None:
-            _query_params.append(("archived", archived))
+        if archive is not None:
+            _query_params.append(("archive", archive))
 
         # process the header parameters
         # process the form parameters
@@ -2050,11 +2050,11 @@ class ExperimentsApi:
     def get_experiments_v1_experiments_get(
         self,
         query: Optional[StrictStr] = None,
+        offset: Optional[StrictInt] = None,
+        limit: Optional[StrictInt] = None,
         mine: Optional[StrictBool] = None,
         archived: Optional[StrictBool] = None,
         public: Optional[StrictBool] = None,
-        offset: Optional[StrictInt] = None,
-        limit: Optional[StrictInt] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -2072,16 +2072,16 @@ class ExperimentsApi:
 
         :param query:
         :type query: str
+        :param offset:
+        :type offset: int
+        :param limit:
+        :type limit: int
         :param mine:
         :type mine: bool
         :param archived:
         :type archived: bool
         :param public:
         :type public: bool
-        :param offset:
-        :type offset: int
-        :param limit:
-        :type limit: int
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -2106,11 +2106,11 @@ class ExperimentsApi:
 
         _param = self._get_experiments_v1_experiments_get_serialize(
             query=query,
+            offset=offset,
+            limit=limit,
             mine=mine,
             archived=archived,
             public=public,
-            offset=offset,
-            limit=limit,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -2134,11 +2134,11 @@ class ExperimentsApi:
     def get_experiments_v1_experiments_get_with_http_info(
         self,
         query: Optional[StrictStr] = None,
+        offset: Optional[StrictInt] = None,
+        limit: Optional[StrictInt] = None,
         mine: Optional[StrictBool] = None,
         archived: Optional[StrictBool] = None,
         public: Optional[StrictBool] = None,
-        offset: Optional[StrictInt] = None,
-        limit: Optional[StrictInt] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -2156,16 +2156,16 @@ class ExperimentsApi:
 
         :param query:
         :type query: str
+        :param offset:
+        :type offset: int
+        :param limit:
+        :type limit: int
         :param mine:
         :type mine: bool
         :param archived:
         :type archived: bool
         :param public:
         :type public: bool
-        :param offset:
-        :type offset: int
-        :param limit:
-        :type limit: int
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -2190,11 +2190,11 @@ class ExperimentsApi:
 
         _param = self._get_experiments_v1_experiments_get_serialize(
             query=query,
+            offset=offset,
+            limit=limit,
             mine=mine,
             archived=archived,
             public=public,
-            offset=offset,
-            limit=limit,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -2218,11 +2218,11 @@ class ExperimentsApi:
     def get_experiments_v1_experiments_get_without_preload_content(
         self,
         query: Optional[StrictStr] = None,
+        offset: Optional[StrictInt] = None,
+        limit: Optional[StrictInt] = None,
         mine: Optional[StrictBool] = None,
         archived: Optional[StrictBool] = None,
         public: Optional[StrictBool] = None,
-        offset: Optional[StrictInt] = None,
-        limit: Optional[StrictInt] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -2240,16 +2240,16 @@ class ExperimentsApi:
 
         :param query:
         :type query: str
+        :param offset:
+        :type offset: int
+        :param limit:
+        :type limit: int
         :param mine:
         :type mine: bool
         :param archived:
         :type archived: bool
         :param public:
         :type public: bool
-        :param offset:
-        :type offset: int
-        :param limit:
-        :type limit: int
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -2274,11 +2274,11 @@ class ExperimentsApi:
 
         _param = self._get_experiments_v1_experiments_get_serialize(
             query=query,
+            offset=offset,
+            limit=limit,
             mine=mine,
             archived=archived,
             public=public,
-            offset=offset,
-            limit=limit,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -2297,11 +2297,11 @@ class ExperimentsApi:
     def _get_experiments_v1_experiments_get_serialize(
         self,
         query,
+        offset,
+        limit,
         mine,
         archived,
         public,
-        offset,
-        limit,
         _request_auth,
         _content_type,
         _headers,
@@ -2323,6 +2323,12 @@ class ExperimentsApi:
         if query is not None:
             _query_params.append(("query", query))
 
+        if offset is not None:
+            _query_params.append(("offset", offset))
+
+        if limit is not None:
+            _query_params.append(("limit", limit))
+
         if mine is not None:
             _query_params.append(("mine", mine))
 
@@ -2331,12 +2337,6 @@ class ExperimentsApi:
 
         if public is not None:
             _query_params.append(("public", public))
-
-        if offset is not None:
-            _query_params.append(("offset", offset))
-
-        if limit is not None:
-            _query_params.append(("limit", limit))
 
         # process the header parameters
         # process the form parameters

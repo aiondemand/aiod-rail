@@ -38,27 +38,27 @@ class ExperimentRunDetails(BaseModel):
     """  # noqa: E501
 
     id: StrictStr
+    experiment_id: StrictStr
     created_at: datetime
     updated_at: datetime
     retry_count: StrictInt
     state: RunState
     metrics: Dict[str, Union[StrictFloat, StrictInt]]
-    archived: StrictBool
     public: StrictBool
+    archived: StrictBool
     mine: StrictBool
-    experiment_id: StrictStr
     logs: StrictStr
     __properties: ClassVar[List[str]] = [
         "id",
+        "experiment_id",
         "created_at",
         "updated_at",
         "retry_count",
         "state",
         "metrics",
-        "archived",
         "public",
+        "archived",
         "mine",
-        "experiment_id",
         "logs",
     ]
 
@@ -113,15 +113,15 @@ class ExperimentRunDetails(BaseModel):
         _obj = cls.model_validate(
             {
                 "id": obj.get("id"),
+                "experiment_id": obj.get("experiment_id"),
                 "created_at": obj.get("created_at"),
                 "updated_at": obj.get("updated_at"),
                 "retry_count": obj.get("retry_count"),
                 "state": obj.get("state"),
                 "metrics": obj.get("metrics"),
-                "archived": obj.get("archived"),
                 "public": obj.get("public"),
+                "archived": obj.get("archived"),
                 "mine": obj.get("mine"),
-                "experiment_id": obj.get("experiment_id"),
                 "logs": obj.get("logs"),
             }
         )

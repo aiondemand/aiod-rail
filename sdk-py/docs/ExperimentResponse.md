@@ -7,12 +7,12 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **name** | **str** |  | 
 **description** | **str** |  | 
+**public** | **bool** |  | 
 **experiment_template_id** | **str** |  | 
-**publication_ids** | **List[str]** |  | [optional] [default to []]
 **dataset_ids** | **List[str]** |  | 
 **model_ids** | **List[str]** |  | 
+**publication_ids** | **List[str]** |  | [optional] [default to []]
 **env_vars** | [**List[EnvironmentVar]**](EnvironmentVar.md) |  | 
-**public** | **bool** |  | 
 **id** | **str** |  | 
 **created_at** | **datetime** |  | 
 **updated_at** | **datetime** |  | 

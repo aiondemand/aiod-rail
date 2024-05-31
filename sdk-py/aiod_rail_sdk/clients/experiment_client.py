@@ -146,12 +146,12 @@ class ExperimentClient:
             except Exception as e:
                 raise e
 
-    def archive(self, id: str, archived: bool = False) -> None:
+    def archive(self, id: str, archive: bool = False) -> None:
         """
         Archives specific experiment specified by ID.
         Args:
             id (str): ID of experiment to be archived.
-            archived (bool): If experiment should be archived or un-archived. Defaults to False.
+            archive (bool): If experiment should be archived or un-archived. Defaults to False.
         Returns:
             None.
         """
@@ -160,7 +160,7 @@ class ExperimentClient:
 
             try:
                 api_instance.archive_experiment_v1_experiments_id_archive_patch(
-                    id=id, archived=archived
+                    id=id, archive=archive
                 )
             except Exception as e:
                 raise e

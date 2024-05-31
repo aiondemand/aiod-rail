@@ -161,12 +161,12 @@ class ExperimentTemplateClient:
             except Exception as e:
                 raise e
 
-    def archive(self, id: str, archived: bool = False) -> None:
+    def archive(self, id: str, archive: bool = False) -> None:
         """
         Archives specific experiment template specified by ID.
         Args:
             id (str): ID of experiment template to be archived.
-            archived (bool): If experiment template should be archived or un-archived. Defaults to False.
+            archive (bool): If experiment template should be archived or un-archived. Defaults to False.
         Returns:
             None.
         """
@@ -175,7 +175,7 @@ class ExperimentTemplateClient:
 
             try:
                 api_instance.archive_experiment_template_v1_experiment_templates_id_archive_patch(
-                    id=id, archived=archived
+                    id=id, archive=archive
                 )
             except Exception as e:
                 raise e

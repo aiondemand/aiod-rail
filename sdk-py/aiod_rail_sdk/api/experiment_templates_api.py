@@ -35,280 +35,10 @@ class ExperimentTemplatesApi:
         self.api_client = api_client
 
     @validate_call
-    def approve_experiment_template_v1_experiment_templates_id_approve_patch(
-        self,
-        id: StrictStr,
-        password: StrictStr,
-        approved: Optional[StrictBool] = None,
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[
-                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
-            ],
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> object:
-        """Approve Experiment Template
-
-
-        :param id: (required)
-        :type id: str
-        :param password: (required)
-        :type password: str
-        :param approved:
-        :type approved: bool
-        :param _request_timeout: timeout setting for this request. If one
-                                 number provided, it will be total request
-                                 timeout. It can also be a pair (tuple) of
-                                 (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
-        :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
-        :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
-        :return: Returns the result object.
-        """  # noqa: E501
-
-        _param = self._approve_experiment_template_v1_experiment_templates_id_approve_patch_serialize(
-            id=id,
-            password=password,
-            approved=approved,
-            _request_auth=_request_auth,
-            _content_type=_content_type,
-            _headers=_headers,
-            _host_index=_host_index,
-        )
-
-        _response_types_map: Dict[str, Optional[str]] = {  # noqa: F841
-            "200": "object",
-            "422": "HTTPValidationError",
-        }
-        response_data = self.api_client.call_api(
-            *_param, _request_timeout=_request_timeout
-        )
-        response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        ).data
-
-    @validate_call
-    def approve_experiment_template_v1_experiment_templates_id_approve_patch_with_http_info(
-        self,
-        id: StrictStr,
-        password: StrictStr,
-        approved: Optional[StrictBool] = None,
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[
-                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
-            ],
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[object]:
-        """Approve Experiment Template
-
-
-        :param id: (required)
-        :type id: str
-        :param password: (required)
-        :type password: str
-        :param approved:
-        :type approved: bool
-        :param _request_timeout: timeout setting for this request. If one
-                                 number provided, it will be total request
-                                 timeout. It can also be a pair (tuple) of
-                                 (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
-        :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
-        :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
-        :return: Returns the result object.
-        """  # noqa: E501
-
-        _param = self._approve_experiment_template_v1_experiment_templates_id_approve_patch_serialize(
-            id=id,
-            password=password,
-            approved=approved,
-            _request_auth=_request_auth,
-            _content_type=_content_type,
-            _headers=_headers,
-            _host_index=_host_index,
-        )
-
-        _response_types_map: Dict[str, Optional[str]] = {  # noqa: F841
-            "200": "object",
-            "422": "HTTPValidationError",
-        }
-        response_data = self.api_client.call_api(
-            *_param, _request_timeout=_request_timeout
-        )
-        response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        )
-
-    @validate_call
-    def approve_experiment_template_v1_experiment_templates_id_approve_patch_without_preload_content(
-        self,
-        id: StrictStr,
-        password: StrictStr,
-        approved: Optional[StrictBool] = None,
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[
-                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
-            ],
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> RESTResponseType:
-        """Approve Experiment Template
-
-
-        :param id: (required)
-        :type id: str
-        :param password: (required)
-        :type password: str
-        :param approved:
-        :type approved: bool
-        :param _request_timeout: timeout setting for this request. If one
-                                 number provided, it will be total request
-                                 timeout. It can also be a pair (tuple) of
-                                 (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
-        :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
-        :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
-        :return: Returns the result object.
-        """  # noqa: E501
-
-        _param = self._approve_experiment_template_v1_experiment_templates_id_approve_patch_serialize(
-            id=id,
-            password=password,
-            approved=approved,
-            _request_auth=_request_auth,
-            _content_type=_content_type,
-            _headers=_headers,
-            _host_index=_host_index,
-        )
-
-        _response_types_map: Dict[str, Optional[str]] = {  # noqa: F841
-            "200": "object",
-            "422": "HTTPValidationError",
-        }
-        response_data = self.api_client.call_api(
-            *_param, _request_timeout=_request_timeout
-        )
-        return response_data.response
-
-    def _approve_experiment_template_v1_experiment_templates_id_approve_patch_serialize(
-        self,
-        id,
-        password,
-        approved,
-        _request_auth,
-        _content_type,
-        _headers,
-        _host_index,
-    ) -> RequestSerialized:
-        _host = None
-
-        _collection_formats: Dict[str, str] = {}
-
-        _path_params: Dict[str, str] = {}
-        _query_params: List[Tuple[str, str]] = []
-        _header_params: Dict[str, Optional[str]] = _headers or {}
-        _form_params: List[Tuple[str, str]] = []
-        _files: Dict[str, Union[str, bytes]] = {}
-        _body_params: Optional[bytes] = None
-
-        # process the path parameters
-        if id is not None:
-            _path_params["id"] = id
-        # process the query parameters
-        if password is not None:
-            _query_params.append(("password", password))
-
-        if approved is not None:
-            _query_params.append(("approved", approved))
-
-        # process the header parameters
-        # process the form parameters
-        # process the body parameter
-
-        # set the HTTP header `Accept`
-        _header_params["Accept"] = self.api_client.select_header_accept(
-            ["application/json"]
-        )
-
-        # authentication setting
-        _auth_settings: List[str] = []
-
-        return self.api_client.param_serialize(
-            method="PATCH",
-            resource_path="/v1/experiment-templates/{id}/approve",
-            path_params=_path_params,
-            query_params=_query_params,
-            header_params=_header_params,
-            body=_body_params,
-            post_params=_form_params,
-            files=_files,
-            auth_settings=_auth_settings,
-            collection_formats=_collection_formats,
-            _host=_host,
-            _request_auth=_request_auth,
-        )
-
-    @validate_call
     def archive_experiment_template_v1_experiment_templates_id_archive_patch(
         self,
         id: StrictStr,
-        archived: Optional[StrictBool] = None,
+        archive: Optional[StrictBool] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -326,8 +56,8 @@ class ExperimentTemplatesApi:
 
         :param id: (required)
         :type id: str
-        :param archived:
-        :type archived: bool
+        :param archive:
+        :type archive: bool
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -352,7 +82,7 @@ class ExperimentTemplatesApi:
 
         _param = self._archive_experiment_template_v1_experiment_templates_id_archive_patch_serialize(
             id=id,
-            archived=archived,
+            archive=archive,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -376,7 +106,7 @@ class ExperimentTemplatesApi:
     def archive_experiment_template_v1_experiment_templates_id_archive_patch_with_http_info(
         self,
         id: StrictStr,
-        archived: Optional[StrictBool] = None,
+        archive: Optional[StrictBool] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -394,8 +124,8 @@ class ExperimentTemplatesApi:
 
         :param id: (required)
         :type id: str
-        :param archived:
-        :type archived: bool
+        :param archive:
+        :type archive: bool
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -420,7 +150,7 @@ class ExperimentTemplatesApi:
 
         _param = self._archive_experiment_template_v1_experiment_templates_id_archive_patch_serialize(
             id=id,
-            archived=archived,
+            archive=archive,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -444,7 +174,7 @@ class ExperimentTemplatesApi:
     def archive_experiment_template_v1_experiment_templates_id_archive_patch_without_preload_content(
         self,
         id: StrictStr,
-        archived: Optional[StrictBool] = None,
+        archive: Optional[StrictBool] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -462,8 +192,8 @@ class ExperimentTemplatesApi:
 
         :param id: (required)
         :type id: str
-        :param archived:
-        :type archived: bool
+        :param archive:
+        :type archive: bool
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -488,7 +218,7 @@ class ExperimentTemplatesApi:
 
         _param = self._archive_experiment_template_v1_experiment_templates_id_archive_patch_serialize(
             id=id,
-            archived=archived,
+            archive=archive,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -507,7 +237,7 @@ class ExperimentTemplatesApi:
     def _archive_experiment_template_v1_experiment_templates_id_archive_patch_serialize(
         self,
         id,
-        archived,
+        archive,
         _request_auth,
         _content_type,
         _headers,
@@ -528,8 +258,8 @@ class ExperimentTemplatesApi:
         if id is not None:
             _path_params["id"] = id
         # process the query parameters
-        if archived is not None:
-            _query_params.append(("archived", archived))
+        if archive is not None:
+            _query_params.append(("archive", archive))
 
         # process the header parameters
         # process the form parameters
@@ -1055,10 +785,10 @@ class ExperimentTemplatesApi:
         self,
         query: Optional[StrictStr] = None,
         mine: Optional[StrictBool] = None,
-        finalized: Optional[StrictBool] = None,
-        approved: Optional[StrictBool] = None,
         archived: Optional[StrictBool] = None,
         public: Optional[StrictBool] = None,
+        finalized: Optional[StrictBool] = None,
+        approved: Optional[StrictBool] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1078,14 +808,14 @@ class ExperimentTemplatesApi:
         :type query: str
         :param mine:
         :type mine: bool
-        :param finalized:
-        :type finalized: bool
-        :param approved:
-        :type approved: bool
         :param archived:
         :type archived: bool
         :param public:
         :type public: bool
+        :param finalized:
+        :type finalized: bool
+        :param approved:
+        :type approved: bool
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -1111,10 +841,10 @@ class ExperimentTemplatesApi:
         _param = self._get_experiment_templates_count_v1_count_experiment_templates_get_serialize(
             query=query,
             mine=mine,
-            finalized=finalized,
-            approved=approved,
             archived=archived,
             public=public,
+            finalized=finalized,
+            approved=approved,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -1139,10 +869,10 @@ class ExperimentTemplatesApi:
         self,
         query: Optional[StrictStr] = None,
         mine: Optional[StrictBool] = None,
-        finalized: Optional[StrictBool] = None,
-        approved: Optional[StrictBool] = None,
         archived: Optional[StrictBool] = None,
         public: Optional[StrictBool] = None,
+        finalized: Optional[StrictBool] = None,
+        approved: Optional[StrictBool] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1162,14 +892,14 @@ class ExperimentTemplatesApi:
         :type query: str
         :param mine:
         :type mine: bool
-        :param finalized:
-        :type finalized: bool
-        :param approved:
-        :type approved: bool
         :param archived:
         :type archived: bool
         :param public:
         :type public: bool
+        :param finalized:
+        :type finalized: bool
+        :param approved:
+        :type approved: bool
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -1195,10 +925,10 @@ class ExperimentTemplatesApi:
         _param = self._get_experiment_templates_count_v1_count_experiment_templates_get_serialize(
             query=query,
             mine=mine,
-            finalized=finalized,
-            approved=approved,
             archived=archived,
             public=public,
+            finalized=finalized,
+            approved=approved,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -1223,10 +953,10 @@ class ExperimentTemplatesApi:
         self,
         query: Optional[StrictStr] = None,
         mine: Optional[StrictBool] = None,
-        finalized: Optional[StrictBool] = None,
-        approved: Optional[StrictBool] = None,
         archived: Optional[StrictBool] = None,
         public: Optional[StrictBool] = None,
+        finalized: Optional[StrictBool] = None,
+        approved: Optional[StrictBool] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1246,14 +976,14 @@ class ExperimentTemplatesApi:
         :type query: str
         :param mine:
         :type mine: bool
-        :param finalized:
-        :type finalized: bool
-        :param approved:
-        :type approved: bool
         :param archived:
         :type archived: bool
         :param public:
         :type public: bool
+        :param finalized:
+        :type finalized: bool
+        :param approved:
+        :type approved: bool
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -1279,10 +1009,10 @@ class ExperimentTemplatesApi:
         _param = self._get_experiment_templates_count_v1_count_experiment_templates_get_serialize(
             query=query,
             mine=mine,
-            finalized=finalized,
-            approved=approved,
             archived=archived,
             public=public,
+            finalized=finalized,
+            approved=approved,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -1302,10 +1032,10 @@ class ExperimentTemplatesApi:
         self,
         query,
         mine,
-        finalized,
-        approved,
         archived,
         public,
+        finalized,
+        approved,
         _request_auth,
         _content_type,
         _headers,
@@ -1330,17 +1060,17 @@ class ExperimentTemplatesApi:
         if mine is not None:
             _query_params.append(("mine", mine))
 
-        if finalized is not None:
-            _query_params.append(("finalized", finalized))
-
-        if approved is not None:
-            _query_params.append(("approved", approved))
-
         if archived is not None:
             _query_params.append(("archived", archived))
 
         if public is not None:
             _query_params.append(("public", public))
+
+        if finalized is not None:
+            _query_params.append(("finalized", finalized))
+
+        if approved is not None:
+            _query_params.append(("approved", approved))
 
         # process the header parameters
         # process the form parameters
@@ -1373,13 +1103,13 @@ class ExperimentTemplatesApi:
     def get_experiment_templates_v1_experiment_templates_get(
         self,
         query: Optional[StrictStr] = None,
-        mine: Optional[StrictBool] = None,
-        finalized: Optional[StrictBool] = None,
-        approved: Optional[StrictBool] = None,
-        archived: Optional[StrictBool] = None,
-        public: Optional[StrictBool] = None,
         offset: Optional[StrictInt] = None,
         limit: Optional[StrictInt] = None,
+        mine: Optional[StrictBool] = None,
+        archived: Optional[StrictBool] = None,
+        public: Optional[StrictBool] = None,
+        finalized: Optional[StrictBool] = None,
+        approved: Optional[StrictBool] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1397,20 +1127,20 @@ class ExperimentTemplatesApi:
 
         :param query:
         :type query: str
-        :param mine:
-        :type mine: bool
-        :param finalized:
-        :type finalized: bool
-        :param approved:
-        :type approved: bool
-        :param archived:
-        :type archived: bool
-        :param public:
-        :type public: bool
         :param offset:
         :type offset: int
         :param limit:
         :type limit: int
+        :param mine:
+        :type mine: bool
+        :param archived:
+        :type archived: bool
+        :param public:
+        :type public: bool
+        :param finalized:
+        :type finalized: bool
+        :param approved:
+        :type approved: bool
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -1435,13 +1165,13 @@ class ExperimentTemplatesApi:
 
         _param = self._get_experiment_templates_v1_experiment_templates_get_serialize(
             query=query,
-            mine=mine,
-            finalized=finalized,
-            approved=approved,
-            archived=archived,
-            public=public,
             offset=offset,
             limit=limit,
+            mine=mine,
+            archived=archived,
+            public=public,
+            finalized=finalized,
+            approved=approved,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -1465,13 +1195,13 @@ class ExperimentTemplatesApi:
     def get_experiment_templates_v1_experiment_templates_get_with_http_info(
         self,
         query: Optional[StrictStr] = None,
-        mine: Optional[StrictBool] = None,
-        finalized: Optional[StrictBool] = None,
-        approved: Optional[StrictBool] = None,
-        archived: Optional[StrictBool] = None,
-        public: Optional[StrictBool] = None,
         offset: Optional[StrictInt] = None,
         limit: Optional[StrictInt] = None,
+        mine: Optional[StrictBool] = None,
+        archived: Optional[StrictBool] = None,
+        public: Optional[StrictBool] = None,
+        finalized: Optional[StrictBool] = None,
+        approved: Optional[StrictBool] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1489,20 +1219,20 @@ class ExperimentTemplatesApi:
 
         :param query:
         :type query: str
-        :param mine:
-        :type mine: bool
-        :param finalized:
-        :type finalized: bool
-        :param approved:
-        :type approved: bool
-        :param archived:
-        :type archived: bool
-        :param public:
-        :type public: bool
         :param offset:
         :type offset: int
         :param limit:
         :type limit: int
+        :param mine:
+        :type mine: bool
+        :param archived:
+        :type archived: bool
+        :param public:
+        :type public: bool
+        :param finalized:
+        :type finalized: bool
+        :param approved:
+        :type approved: bool
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -1527,13 +1257,13 @@ class ExperimentTemplatesApi:
 
         _param = self._get_experiment_templates_v1_experiment_templates_get_serialize(
             query=query,
-            mine=mine,
-            finalized=finalized,
-            approved=approved,
-            archived=archived,
-            public=public,
             offset=offset,
             limit=limit,
+            mine=mine,
+            archived=archived,
+            public=public,
+            finalized=finalized,
+            approved=approved,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -1557,13 +1287,13 @@ class ExperimentTemplatesApi:
     def get_experiment_templates_v1_experiment_templates_get_without_preload_content(
         self,
         query: Optional[StrictStr] = None,
-        mine: Optional[StrictBool] = None,
-        finalized: Optional[StrictBool] = None,
-        approved: Optional[StrictBool] = None,
-        archived: Optional[StrictBool] = None,
-        public: Optional[StrictBool] = None,
         offset: Optional[StrictInt] = None,
         limit: Optional[StrictInt] = None,
+        mine: Optional[StrictBool] = None,
+        archived: Optional[StrictBool] = None,
+        public: Optional[StrictBool] = None,
+        finalized: Optional[StrictBool] = None,
+        approved: Optional[StrictBool] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1581,20 +1311,20 @@ class ExperimentTemplatesApi:
 
         :param query:
         :type query: str
-        :param mine:
-        :type mine: bool
-        :param finalized:
-        :type finalized: bool
-        :param approved:
-        :type approved: bool
-        :param archived:
-        :type archived: bool
-        :param public:
-        :type public: bool
         :param offset:
         :type offset: int
         :param limit:
         :type limit: int
+        :param mine:
+        :type mine: bool
+        :param archived:
+        :type archived: bool
+        :param public:
+        :type public: bool
+        :param finalized:
+        :type finalized: bool
+        :param approved:
+        :type approved: bool
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -1619,13 +1349,13 @@ class ExperimentTemplatesApi:
 
         _param = self._get_experiment_templates_v1_experiment_templates_get_serialize(
             query=query,
-            mine=mine,
-            finalized=finalized,
-            approved=approved,
-            archived=archived,
-            public=public,
             offset=offset,
             limit=limit,
+            mine=mine,
+            archived=archived,
+            public=public,
+            finalized=finalized,
+            approved=approved,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -1644,13 +1374,13 @@ class ExperimentTemplatesApi:
     def _get_experiment_templates_v1_experiment_templates_get_serialize(
         self,
         query,
-        mine,
-        finalized,
-        approved,
-        archived,
-        public,
         offset,
         limit,
+        mine,
+        archived,
+        public,
+        finalized,
+        approved,
         _request_auth,
         _content_type,
         _headers,
@@ -1672,14 +1402,14 @@ class ExperimentTemplatesApi:
         if query is not None:
             _query_params.append(("query", query))
 
+        if offset is not None:
+            _query_params.append(("offset", offset))
+
+        if limit is not None:
+            _query_params.append(("limit", limit))
+
         if mine is not None:
             _query_params.append(("mine", mine))
-
-        if finalized is not None:
-            _query_params.append(("finalized", finalized))
-
-        if approved is not None:
-            _query_params.append(("approved", approved))
 
         if archived is not None:
             _query_params.append(("archived", archived))
@@ -1687,11 +1417,11 @@ class ExperimentTemplatesApi:
         if public is not None:
             _query_params.append(("public", public))
 
-        if offset is not None:
-            _query_params.append(("offset", offset))
+        if finalized is not None:
+            _query_params.append(("finalized", finalized))
 
-        if limit is not None:
-            _query_params.append(("limit", limit))
+        if approved is not None:
+            _query_params.append(("approved", approved))
 
         # process the header parameters
         # process the form parameters

@@ -20,8 +20,8 @@ Name | Type | Description | Notes
 **updated_at** | **datetime** |  | 
 **state** | [**TemplateState**](TemplateState.md) |  | 
 **dockerfile** | **str** |  | 
-**approved** | **bool** |  | 
 **archived** | **bool** |  | 
+**approved** | **bool** |  | 
 **mine** | **bool** |  | 
 
 ## Example

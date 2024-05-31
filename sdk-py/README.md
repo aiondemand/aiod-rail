@@ -50,6 +50,7 @@ Execute `pytest` to run the tests.
 Please follow the [installation procedure](#installation--usage) and then run the following:
 
 ```python
+import os
 
 import aiod_rail_sdk
 from aiod_rail_sdk.rest import ApiException
@@ -68,10 +69,6 @@ configuration = aiod_rail_sdk.Configuration(
 
 # Configure API key authorization: APIKeyHeader
 configuration.api_key['APIKeyHeader'] = os.environ["API_KEY"]
-
-# Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
-# configuration.api_key_prefix['APIKeyHeader'] = 'Bearer'
-
 
 # Enter a context with an instance of the API client
 with aiod_rail_sdk.ApiClient(configuration) as api_client:
@@ -95,6 +92,7 @@ All URIs are relative to *http://localhost/api*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
+*AdminApi* | [**approve_experiment_template_v1_experiment_templates_id_approve_patch**](docs/AdminApi.md#approve_experiment_template_v1_experiment_templates_id_approve_patch) | **PATCH** /v1/experiment-templates/{id}/approve | Approve Experiment Template
 *AssetsApi* | [**create_dataset_v1_assets_datasets_post**](docs/AssetsApi.md#create_dataset_v1_assets_datasets_post) | **POST** /v1/assets/datasets | Create Dataset
 *AssetsApi* | [**dataset_upload_file_to_huggingface_v1_assets_datasets_id_upload_file_to_huggingface_post**](docs/AssetsApi.md#dataset_upload_file_to_huggingface_v1_assets_datasets_id_upload_file_to_huggingface_post) | **POST** /v1/assets/datasets/{id}/upload-file-to-huggingface | Dataset Upload File To Huggingface
 *AssetsApi* | [**delete_dataset_v1_assets_datasets_id_delete**](docs/AssetsApi.md#delete_dataset_v1_assets_datasets_id_delete) | **DELETE** /v1/assets/datasets/{id} | Delete Dataset
@@ -123,7 +121,6 @@ Class | Method | HTTP request | Description
 *ExperimentRunsApi* | [**get_experiment_run_logs_v1_experiment_runs_id_logs_get**](docs/ExperimentRunsApi.md#get_experiment_run_logs_v1_experiment_runs_id_logs_get) | **GET** /v1/experiment-runs/{id}/logs | Get Experiment Run Logs
 *ExperimentRunsApi* | [**get_experiment_run_v1_experiment_runs_id_get**](docs/ExperimentRunsApi.md#get_experiment_run_v1_experiment_runs_id_get) | **GET** /v1/experiment-runs/{id} | Get Experiment Run
 *ExperimentRunsApi* | [**list_files_of_experiment_run_v1_experiment_runs_id_files_list_get**](docs/ExperimentRunsApi.md#list_files_of_experiment_run_v1_experiment_runs_id_files_list_get) | **GET** /v1/experiment-runs/{id}/files/list | List Files Of Experiment Run
-*ExperimentTemplatesApi* | [**approve_experiment_template_v1_experiment_templates_id_approve_patch**](docs/ExperimentTemplatesApi.md#approve_experiment_template_v1_experiment_templates_id_approve_patch) | **PATCH** /v1/experiment-templates/{id}/approve | Approve Experiment Template
 *ExperimentTemplatesApi* | [**archive_experiment_template_v1_experiment_templates_id_archive_patch**](docs/ExperimentTemplatesApi.md#archive_experiment_template_v1_experiment_templates_id_archive_patch) | **PATCH** /v1/experiment-templates/{id}/archive | Archive Experiment Template
 *ExperimentTemplatesApi* | [**create_experiment_template_v1_experiment_templates_post**](docs/ExperimentTemplatesApi.md#create_experiment_template_v1_experiment_templates_post) | **POST** /v1/experiment-templates | Create Experiment Template
 *ExperimentTemplatesApi* | [**get_experiment_template_v1_experiment_templates_id_get**](docs/ExperimentTemplatesApi.md#get_experiment_template_v1_experiment_templates_id_get) | **GET** /v1/experiment-templates/{id} | Get Experiment Template

@@ -48,8 +48,8 @@ class ExperimentTemplateResponse(BaseModel):
     updated_at: datetime
     state: TemplateState
     dockerfile: StrictStr
-    approved: StrictBool
     archived: StrictBool
+    approved: StrictBool
     mine: StrictBool
     __properties: ClassVar[List[str]] = [
         "name",
@@ -67,8 +67,8 @@ class ExperimentTemplateResponse(BaseModel):
         "updated_at",
         "state",
         "dockerfile",
-        "approved",
         "archived",
+        "approved",
         "mine",
     ]
 
@@ -179,8 +179,8 @@ class ExperimentTemplateResponse(BaseModel):
                 "updated_at": obj.get("updated_at"),
                 "state": obj.get("state"),
                 "dockerfile": obj.get("dockerfile"),
-                "approved": obj.get("approved"),
                 "archived": obj.get("archived"),
+                "approved": obj.get("approved"),
                 "mine": obj.get("mine"),
             }
         )

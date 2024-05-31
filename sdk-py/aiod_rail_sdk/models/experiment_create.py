@@ -31,21 +31,21 @@ class ExperimentCreate(BaseModel):
 
     name: StrictStr
     description: StrictStr
+    public: StrictBool
     experiment_template_id: StrictStr
-    publication_ids: Optional[List[StrictStr]] = None
     dataset_ids: List[StrictStr]
     model_ids: List[StrictStr]
+    publication_ids: Optional[List[StrictStr]] = None
     env_vars: List[EnvironmentVar]
-    public: StrictBool
     __properties: ClassVar[List[str]] = [
         "name",
         "description",
+        "public",
         "experiment_template_id",
-        "publication_ids",
         "dataset_ids",
         "model_ids",
+        "publication_ids",
         "env_vars",
-        "public",
     ]
 
     model_config = ConfigDict(
@@ -107,16 +107,16 @@ class ExperimentCreate(BaseModel):
             {
                 "name": obj.get("name"),
                 "description": obj.get("description"),
+                "public": obj.get("public"),
                 "experiment_template_id": obj.get("experiment_template_id"),
-                "publication_ids": obj.get("publication_ids"),
                 "dataset_ids": obj.get("dataset_ids"),
                 "model_ids": obj.get("model_ids"),
+                "publication_ids": obj.get("publication_ids"),
                 "env_vars": (
                     [EnvironmentVar.from_dict(_item) for _item in obj["env_vars"]]
                     if obj.get("env_vars") is not None
                     else None
                 ),
-                "public": obj.get("public"),
             }
         )
         return _obj

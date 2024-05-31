@@ -30,8 +30,8 @@ class RunState(str, Enum):
     """
     CREATED = "CREATED"
     IN_PROGRESS = "IN_PROGRESS"
-    CRASHED = "CRASHED"
     FINISHED = "FINISHED"
+    CRASHED = "CRASHED"
 
     @classmethod
     def from_json(cls, json_str: str) -> Self:

@@ -4,7 +4,6 @@ All URIs are relative to *http://localhost/api*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**approve_experiment_template_v1_experiment_templates_id_approve_patch**](ExperimentTemplatesApi.md#approve_experiment_template_v1_experiment_templates_id_approve_patch) | **PATCH** /v1/experiment-templates/{id}/approve | Approve Experiment Template
 [**archive_experiment_template_v1_experiment_templates_id_archive_patch**](ExperimentTemplatesApi.md#archive_experiment_template_v1_experiment_templates_id_archive_patch) | **PATCH** /v1/experiment-templates/{id}/archive | Archive Experiment Template
 [**create_experiment_template_v1_experiment_templates_post**](ExperimentTemplatesApi.md#create_experiment_template_v1_experiment_templates_post) | **POST** /v1/experiment-templates | Create Experiment Template
 [**get_experiment_template_v1_experiment_templates_id_get**](ExperimentTemplatesApi.md#get_experiment_template_v1_experiment_templates_id_get) | **GET** /v1/experiment-templates/{id} | Get Experiment Template
@@ -15,78 +14,8 @@ Method | HTTP request | Description
 [**update_experiment_template_v1_experiment_templates_id_put**](ExperimentTemplatesApi.md#update_experiment_template_v1_experiment_templates_id_put) | **PUT** /v1/experiment-templates/{id} | Update Experiment Template
 
 
-# **approve_experiment_template_v1_experiment_templates_id_approve_patch**
-> object approve_experiment_template_v1_experiment_templates_id_approve_patch(id, password, approved=approved)
-
-Approve Experiment Template
-
-### Example
-
-
-```python
-import aiod_rail_sdk
-from aiod_rail_sdk.rest import ApiException
-from pprint import pprint
-
-# Defining the host is optional and defaults to http://localhost/api
-# See configuration.py for a list of all supported configuration parameters.
-configuration = aiod_rail_sdk.Configuration(
-    host = "http://localhost/api"
-)
-
-
-# Enter a context with an instance of the API client
-with aiod_rail_sdk.ApiClient(configuration) as api_client:
-    # Create an instance of the API class
-    api_instance = aiod_rail_sdk.ExperimentTemplatesApi(api_client)
-    id = 'id_example' # str | 
-    password = 'password_example' # str | 
-    approved = False # bool |  (optional) (default to False)
-
-    try:
-        # Approve Experiment Template
-        api_response = api_instance.approve_experiment_template_v1_experiment_templates_id_approve_patch(id, password, approved=approved)
-        print("The response of ExperimentTemplatesApi->approve_experiment_template_v1_experiment_templates_id_approve_patch:\n")
-        pprint(api_response)
-    except Exception as e:
-        print("Exception when calling ExperimentTemplatesApi->approve_experiment_template_v1_experiment_templates_id_approve_patch: %s\n" % e)
-```
-
-
-
-### Parameters
-
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **id** | **str**|  | 
- **password** | **str**|  | 
- **approved** | **bool**|  | [optional] [default to False]
-
-### Return type
-
-**object**
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
- - **Content-Type**: Not defined
- - **Accept**: application/json
-
-### HTTP response details
-
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-**200** | Successful Response |  -  |
-**422** | Validation Error |  -  |
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
 # **archive_experiment_template_v1_experiment_templates_id_archive_patch**
-> object archive_experiment_template_v1_experiment_templates_id_archive_patch(id, archived=archived)
+> object archive_experiment_template_v1_experiment_templates_id_archive_patch(id, archive=archive)
 
 Archive Experiment Template
 
@@ -121,11 +50,11 @@ with aiod_rail_sdk.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = aiod_rail_sdk.ExperimentTemplatesApi(api_client)
     id = 'id_example' # str | 
-    archived = False # bool |  (optional) (default to False)
+    archive = False # bool |  (optional) (default to False)
 
     try:
         # Archive Experiment Template
-        api_response = api_instance.archive_experiment_template_v1_experiment_templates_id_archive_patch(id, archived=archived)
+        api_response = api_instance.archive_experiment_template_v1_experiment_templates_id_archive_patch(id, archive=archive)
         print("The response of ExperimentTemplatesApi->archive_experiment_template_v1_experiment_templates_id_archive_patch:\n")
         pprint(api_response)
     except Exception as e:
@@ -140,7 +69,7 @@ with aiod_rail_sdk.ApiClient(configuration) as api_client:
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **id** | **str**|  | 
- **archived** | **bool**|  | [optional] [default to False]
+ **archive** | **bool**|  | [optional] [default to False]
 
 ### Return type
 
@@ -322,7 +251,7 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **get_experiment_templates_count_v1_count_experiment_templates_get**
-> int get_experiment_templates_count_v1_count_experiment_templates_get(query=query, mine=mine, finalized=finalized, approved=approved, archived=archived, public=public)
+> int get_experiment_templates_count_v1_count_experiment_templates_get(query=query, mine=mine, archived=archived, public=public, finalized=finalized, approved=approved)
 
 Get Experiment Templates Count
 
@@ -358,14 +287,14 @@ with aiod_rail_sdk.ApiClient(configuration) as api_client:
     api_instance = aiod_rail_sdk.ExperimentTemplatesApi(api_client)
     query = '' # str |  (optional) (default to '')
     mine = True # bool |  (optional)
-    finalized = True # bool |  (optional)
-    approved = True # bool |  (optional)
     archived = True # bool |  (optional)
     public = True # bool |  (optional)
+    finalized = True # bool |  (optional)
+    approved = True # bool |  (optional)
 
     try:
         # Get Experiment Templates Count
-        api_response = api_instance.get_experiment_templates_count_v1_count_experiment_templates_get(query=query, mine=mine, finalized=finalized, approved=approved, archived=archived, public=public)
+        api_response = api_instance.get_experiment_templates_count_v1_count_experiment_templates_get(query=query, mine=mine, archived=archived, public=public, finalized=finalized, approved=approved)
         print("The response of ExperimentTemplatesApi->get_experiment_templates_count_v1_count_experiment_templates_get:\n")
         pprint(api_response)
     except Exception as e:
@@ -381,10 +310,10 @@ Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **query** | **str**|  | [optional] [default to &#39;&#39;]
  **mine** | **bool**|  | [optional] 
- **finalized** | **bool**|  | [optional] 
- **approved** | **bool**|  | [optional] 
  **archived** | **bool**|  | [optional] 
  **public** | **bool**|  | [optional] 
+ **finalized** | **bool**|  | [optional] 
+ **approved** | **bool**|  | [optional] 
 
 ### Return type
 
@@ -409,7 +338,7 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **get_experiment_templates_v1_experiment_templates_get**
-> List[ExperimentTemplateResponse] get_experiment_templates_v1_experiment_templates_get(query=query, mine=mine, finalized=finalized, approved=approved, archived=archived, public=public, offset=offset, limit=limit)
+> List[ExperimentTemplateResponse] get_experiment_templates_v1_experiment_templates_get(query=query, offset=offset, limit=limit, mine=mine, archived=archived, public=public, finalized=finalized, approved=approved)
 
 Get Experiment Templates
 
@@ -445,17 +374,17 @@ with aiod_rail_sdk.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = aiod_rail_sdk.ExperimentTemplatesApi(api_client)
     query = '' # str |  (optional) (default to '')
-    mine = True # bool |  (optional)
-    finalized = True # bool |  (optional)
-    approved = True # bool |  (optional)
-    archived = True # bool |  (optional)
-    public = True # bool |  (optional)
     offset = 0 # int |  (optional) (default to 0)
     limit = 100 # int |  (optional) (default to 100)
+    mine = True # bool |  (optional)
+    archived = True # bool |  (optional)
+    public = True # bool |  (optional)
+    finalized = True # bool |  (optional)
+    approved = True # bool |  (optional)
 
     try:
         # Get Experiment Templates
-        api_response = api_instance.get_experiment_templates_v1_experiment_templates_get(query=query, mine=mine, finalized=finalized, approved=approved, archived=archived, public=public, offset=offset, limit=limit)
+        api_response = api_instance.get_experiment_templates_v1_experiment_templates_get(query=query, offset=offset, limit=limit, mine=mine, archived=archived, public=public, finalized=finalized, approved=approved)
         print("The response of ExperimentTemplatesApi->get_experiment_templates_v1_experiment_templates_get:\n")
         pprint(api_response)
     except Exception as e:
@@ -470,13 +399,13 @@ with aiod_rail_sdk.ApiClient(configuration) as api_client:
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **query** | **str**|  | [optional] [default to &#39;&#39;]
- **mine** | **bool**|  | [optional] 
- **finalized** | **bool**|  | [optional] 
- **approved** | **bool**|  | [optional] 
- **archived** | **bool**|  | [optional] 
- **public** | **bool**|  | [optional] 
  **offset** | **int**|  | [optional] [default to 0]
  **limit** | **int**|  | [optional] [default to 100]
+ **mine** | **bool**|  | [optional] 
+ **archived** | **bool**|  | [optional] 
+ **public** | **bool**|  | [optional] 
+ **finalized** | **bool**|  | [optional] 
+ **approved** | **bool**|  | [optional] 
 
 ### Return type
 

@@ -6,15 +6,15 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **id** | **str** |  | 
+**experiment_id** | **str** |  | 
 **created_at** | **datetime** |  | 
 **updated_at** | **datetime** |  | 
 **retry_count** | **int** |  | 
 **state** | [**RunState**](RunState.md) |  | 
 **metrics** | **Dict[str, float]** |  | 
-**archived** | **bool** |  | 
 **public** | **bool** |  | 
+**archived** | **bool** |  | 
 **mine** | **bool** |  | 
-**experiment_id** | **str** |  | 
 **logs** | **str** |  | 
 
 ## Example

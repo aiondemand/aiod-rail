@@ -17,7 +17,7 @@ Method | HTTP request | Description
 
 
 # **archive_experiment_v1_experiments_id_archive_patch**
-> object archive_experiment_v1_experiments_id_archive_patch(id, archived=archived)
+> object archive_experiment_v1_experiments_id_archive_patch(id, archive=archive)
 
 Archive Experiment
 
@@ -52,11 +52,11 @@ with aiod_rail_sdk.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = aiod_rail_sdk.ExperimentsApi(api_client)
     id = 'id_example' # str | 
-    archived = False # bool |  (optional) (default to False)
+    archive = False # bool |  (optional) (default to False)
 
     try:
         # Archive Experiment
-        api_response = api_instance.archive_experiment_v1_experiments_id_archive_patch(id, archived=archived)
+        api_response = api_instance.archive_experiment_v1_experiments_id_archive_patch(id, archive=archive)
         print("The response of ExperimentsApi->archive_experiment_v1_experiments_id_archive_patch:\n")
         pprint(api_response)
     except Exception as e:
@@ -71,7 +71,7 @@ with aiod_rail_sdk.ApiClient(configuration) as api_client:
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **id** | **str**|  | 
- **archived** | **bool**|  | [optional] [default to False]
+ **archive** | **bool**|  | [optional] [default to False]
 
 ### Return type
 
@@ -650,7 +650,7 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **get_experiments_v1_experiments_get**
-> List[ExperimentResponse] get_experiments_v1_experiments_get(query=query, mine=mine, archived=archived, public=public, offset=offset, limit=limit)
+> List[ExperimentResponse] get_experiments_v1_experiments_get(query=query, offset=offset, limit=limit, mine=mine, archived=archived, public=public)
 
 Get Experiments
 
@@ -686,15 +686,15 @@ with aiod_rail_sdk.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = aiod_rail_sdk.ExperimentsApi(api_client)
     query = '' # str |  (optional) (default to '')
+    offset = 0 # int |  (optional) (default to 0)
+    limit = 100 # int |  (optional) (default to 100)
     mine = True # bool |  (optional)
     archived = True # bool |  (optional)
     public = True # bool |  (optional)
-    offset = 0 # int |  (optional) (default to 0)
-    limit = 100 # int |  (optional) (default to 100)
 
     try:
         # Get Experiments
-        api_response = api_instance.get_experiments_v1_experiments_get(query=query, mine=mine, archived=archived, public=public, offset=offset, limit=limit)
+        api_response = api_instance.get_experiments_v1_experiments_get(query=query, offset=offset, limit=limit, mine=mine, archived=archived, public=public)
         print("The response of ExperimentsApi->get_experiments_v1_experiments_get:\n")
         pprint(api_response)
     except Exception as e:
@@ -709,11 +709,11 @@ with aiod_rail_sdk.ApiClient(configuration) as api_client:
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **query** | **str**|  | [optional] [default to &#39;&#39;]
+ **offset** | **int**|  | [optional] [default to 0]
+ **limit** | **int**|  | [optional] [default to 100]
  **mine** | **bool**|  | [optional] 
  **archived** | **bool**|  | [optional] 
  **public** | **bool**|  | [optional] 
- **offset** | **int**|  | [optional] [default to 0]
- **limit** | **int**|  | [optional] [default to 100]
 
 ### Return type
 
