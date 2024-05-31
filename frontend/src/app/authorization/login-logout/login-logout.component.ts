@@ -10,6 +10,10 @@ export class LoginLogoutComponent {
 
   constructor(private authService: AuthService) {}
 
+  ngOnInit() {
+    this.authService.ngOnInit();
+  }
+
   login(): void {
     this.authService.login();
   }
