@@ -1,4 +1,5 @@
 import json
+from typing import Optional
 
 from aiod_rail_sdk import (
     ApiClient,
@@ -46,19 +47,19 @@ class ExperimentTemplateClient:
     def count(
         self,
         query: str = "",
-        mine: bool = True,
-        finalized: bool = True,
-        approved: bool = True,
-        public: bool = True,
+        mine: Optional[bool] = None,
+        finalized: Optional[bool] = None,
+        approved: Optional[bool] = None,
+        public: Optional[bool] = None,
     ) -> int:
         """
         Gets experiment templates count.
         Args:
             query (str, optional): Query used to filter experiment templates. Defaults to empty string, which means that by default count is not filtered.
-            mine (bool, optional): If own personal experiment templates should be counted. Defaults to True.
-            finalized (bool, optional): If experiment templates that are successfully build and ready to use should be counted as well. Defaults to True.
-            approved (bool, optional): If already approved experiments should be counted as well. Defaults to True.
-            public (bool, optional): If experiment templates flagged as public should be counted as well. Defaults to True.
+            mine (bool, optional): If own personal experiment templates should be counted or the opposite. Defaults to None.
+            finalized (bool, optional): If experiment templates that are successfully build and ready to use should be counted or the opposite. Defaults to None.
+            approved (bool, optional): If already approved experiments should be counted or the opposite. Defaults to None.
+            public (bool, optional): If experiment templates flagged as public should be counted or the opposite. Defaults to None.
 
         Returns:
             int: Number of experiment templates.
@@ -81,10 +82,10 @@ class ExperimentTemplateClient:
     def get(
         self,
         query: str = "",
-        mine: bool = True,
-        finalized: bool = True,
-        approved: bool = True,
-        public: bool = True,
+        mine: Optional[bool] = None,
+        finalized: Optional[bool] = None,
+        approved: Optional[bool] = None,
+        public: Optional[bool] = None,
         offset: int = 0,
         limit: int = 100,
     ) -> list[ExperimentTemplateResponse]:
@@ -92,10 +93,10 @@ class ExperimentTemplateClient:
         Gets experiment templates in specified range.
         Args:
             query (str, optional): Query used to filter experiment templates. Defaults to empty string, which means that by default, it's not used.
-            mine (bool, optional): If own personal experiment templates should be included. Defaults to True.
-            finalized (bool, optional): If experiment templates that are successfully build and ready to use should be listed as well. Defaults to True.
-            approved (bool, optional): If already approved experiments should be listed as well. Defaults to True.
-            public (bool, optional): If experiment templates flagged as public should be listed as well. Defaults to True.
+            mine (bool, optional): If own personal experiment templates should be included or the opposite. Defaults to None.
+            finalized (bool, optional): If experiment templates that are successfully build and ready to use should be listed or the opposite. Defaults to None.
+            approved (bool, optional): If already approved experiments should be listed or the opposite. Defaults to None.
+            public (bool, optional): If experiment templates flagged as public should be listed or the opposite. Defaults to None.
             offset (int, optional): Starting index of experiment template range from which to retrieve Defaults to 0.
             limit (int, optional): Ending index of experiment template range to which to retrieve. Defaults to 100.
 
@@ -210,16 +211,18 @@ class ExperimentTemplateClient:
                 raise e
 
     @staticmethod
-    def _create_experiment_template_instance(file: dict | tuple[str, str, str, dict]):
-        if isinstance(file, dict):
-            json_data = json.dumps(file)
+    def _create_experiment_template_instance(
+        template: dict | tuple[str, str, str, dict]
+    ):
+        if isinstance(template, dict):
+            json_data = json.dumps(template)
 
         elif (
-            isinstance(file, tuple)
-            and len(file) == 4
-            and all(isinstance(item, (str, dict)) for item in file)
+            isinstance(template, tuple)
+            and len(template) == 4
+            and all(isinstance(item, (str, dict)) for item in template)
         ):
-            path_script, path_requirements, path_image, config = file
+            path_script, path_requirements, path_image, config = template
             if isinstance(config, dict):
                 with (
                     open(path_script, "r") as s,

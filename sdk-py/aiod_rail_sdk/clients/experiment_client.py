@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+from typing import Optional
 
 from aiod_rail_sdk import (
     ApiClient,
@@ -64,17 +65,17 @@ class ExperimentClient:
     def count(
         self,
         query: str = "",
-        mine: bool = True,
-        archived: bool = False,
-        public: bool = True,
+        mine: Optional[bool] = None,
+        archived: Optional[bool] = None,
+        public: Optional[bool] = None,
     ) -> int:
         """
         Gets experiment count.
         Args:
             query (str, optional): Query used to filter experiments. Defaults to empty string, which means that by default, it's not used.
-            mine (bool, optional): If own personal experiments should be counted. Defaults to True.
-            archived (bool, optional): If archived experiments should be counted. Defaults to False.
-            public (bool, optional): If experiment templates flagged as public should be counted. Defaults to True.
+            mine (bool, optional): If own personal experiments should be counted or the opposite. Defaults to None.
+            archived (bool, optional): If archived experiments should be counted or the opposite. Defaults to None.
+            public (bool, optional): If experiment templates flagged as public should be counted or the opposite. Defaults to None.
 
         Returns:
             int: Number of experiments.
@@ -94,9 +95,9 @@ class ExperimentClient:
     def get(
         self,
         query: str = "",
-        mine: bool = True,
-        archived: bool = False,
-        public: bool = True,
+        mine: Optional[bool] = None,
+        archived: Optional[bool] = None,
+        public: Optional[bool] = None,
         offset: int = 0,
         limit: int = 100,
     ) -> list[ExperimentResponse]:
@@ -104,9 +105,9 @@ class ExperimentClient:
         Gets experiments in specified range.
         Args:
             query (str, optional): Query used to filter experiments. Defaults to empty string, which means that by default, it's not used.
-            mine (bool, optional): If own personal experiments should be included. Defaults to True.
-            archived (bool, optional): If archived experiments should be listed. Defaults to False.
-            public (bool, optional): If experiment templates flagged as public should be listed. Defaults to True.
+            mine (bool, optional): If own personal experiments should be included or the opposite. Defaults to None.
+            archived (bool, optional): If archived experiments should be listed or the opposite. Defaults to None.
+            public (bool, optional): If experiment templates flagged as public should be listed or the opposite. Defaults to None.
             offset (int, optional): Starting index of experiment range from which to retrieve. Defaults to 0.
             limit (int, optional): Ending index of experiment range to which to retrieve. Defaults to 100.
 
