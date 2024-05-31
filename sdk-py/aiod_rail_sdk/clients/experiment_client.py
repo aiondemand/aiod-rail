@@ -1,28 +1,34 @@
 import json
 from pathlib import Path
 
-import aiod_rail_sdk
+from aiod_rail_sdk import (
+    ApiClient,
+    Configuration,
+    ExperimentCreate,
+    ExperimentResponse,
+    ExperimentRunResponse,
+    ExperimentRunsApi,
+    ExperimentsApi,
+)
 
 
-class Experiments:
-    def __init__(self, config: aiod_rail_sdk.Configuration):
+class ExperimentClient:
+    def __init__(self, config: Configuration):
         self._config = config
 
-    def create_experiment(self, experiment) -> aiod_rail_sdk.ExperimentResponse:
+    def create_experiment(self, experiment) -> ExperimentResponse:
         """
         Creates experiment from specified experiment file.
         Args:
             experiment (dict): Experiment described in json file.
 
         Returns:
-            aiod_rail_sdk.ExperimentResponse: Experiment created from given template.
+            ExperimentResponse: Experiment created from given template.
         """
-        with aiod_rail_sdk.ApiClient(self._config) as api_client:
-            api_instance = aiod_rail_sdk.ExperimentsApi(api_client)
+        with ApiClient(self._config) as api_client:
+            api_instance = ExperimentsApi(api_client)
             json_data = json.dumps(experiment)
-            experiment_create_instance = aiod_rail_sdk.ExperimentCreate.from_json(
-                json_data
-            )
+            experiment_create_instance = ExperimentCreate.from_json(json_data)
             try:
                 api_response = api_instance.create_experiment_v1_experiments_post(
                     experiment_create_instance
@@ -32,18 +38,18 @@ class Experiments:
             except Exception as e:
                 raise e
 
-    def run_experiment(self, id: str) -> aiod_rail_sdk.ExperimentRunResponse:
+    def run_experiment(self, id: str) -> ExperimentRunResponse:
         """
         Runs specified experiment.
         Args:
             id (str): ID of experiment to be run.
 
         Returns:
-            aiod_rail_sdk.ExperimentRunResponse: Experiment run of given experiment.
+            ExperimentRunResponse: Experiment run of given experiment.
 
         """
-        with aiod_rail_sdk.ApiClient(self._config) as api_client:
-            api_instance = aiod_rail_sdk.ExperimentsApi(api_client)
+        with ApiClient(self._config) as api_client:
+            api_instance = ExperimentsApi(api_client)
             try:
                 api_response = (
                     api_instance.execute_experiment_run_v1_experiments_id_execute_get(
@@ -73,8 +79,8 @@ class Experiments:
         Returns:
             int: Number of experiments.
         """
-        with aiod_rail_sdk.ApiClient(self._config) as api_client:
-            api_instance = aiod_rail_sdk.ExperimentsApi(api_client)
+        with ApiClient(self._config) as api_client:
+            api_instance = ExperimentsApi(api_client)
             try:
                 api_response = (
                     api_instance.get_experiments_count_v1_count_experiments_get(
@@ -93,7 +99,7 @@ class Experiments:
         public: bool = True,
         offset: int = 0,
         limit: int = 100,
-    ) -> list[aiod_rail_sdk.ExperimentResponse]:
+    ) -> list[ExperimentResponse]:
         """
         Gets experiments in specified range.
         Args:
@@ -105,10 +111,10 @@ class Experiments:
             limit (int, optional): Ending index of experiment range to which to retrieve. Defaults to 100.
 
         Returns:
-            list[aiod_rail_sdk.ExperimentResponse]: The list of experiments.
+            list[ExperimentResponse]: The list of experiments.
         """
-        with aiod_rail_sdk.ApiClient(self._config) as api_client:
-            api_instance = aiod_rail_sdk.ExperimentsApi(api_client)
+        with ApiClient(self._config) as api_client:
+            api_instance = ExperimentsApi(api_client)
             try:
                 api_response = api_instance.get_experiments_v1_experiments_get(
                     query=query,
@@ -122,17 +128,17 @@ class Experiments:
             except Exception as e:
                 raise e
 
-    def get_by_id(self, id: str) -> aiod_rail_sdk.ExperimentResponse:
+    def get_by_id(self, id: str) -> ExperimentResponse:
         """
         Gets specific experiment by its ID.
         Args:
             id (str): ID of experiment to be retrieved.
 
         Returns:
-            aiod_rail_sdk.ExperimentResponse: Experiment specified by given ID.
+            ExperimentResponse: Experiment specified by given ID.
         """
-        with aiod_rail_sdk.ApiClient(self._config) as api_client:
-            api_instance = aiod_rail_sdk.ExperimentsApi(api_client)
+        with ApiClient(self._config) as api_client:
+            api_instance = ExperimentsApi(api_client)
             try:
                 api_response = api_instance.get_experiment_v1_experiments_id_get(id)
                 return api_response
@@ -148,8 +154,8 @@ class Experiments:
         Returns:
             None.
         """
-        with aiod_rail_sdk.ApiClient(self._config) as api_client:
-            api_instance = aiod_rail_sdk.ExperimentsApi(api_client)
+        with ApiClient(self._config) as api_client:
+            api_instance = ExperimentsApi(api_client)
 
             try:
                 api_instance.archive_experiment_v1_experiments_id_archive_patch(
@@ -158,7 +164,7 @@ class Experiments:
             except Exception as e:
                 raise e
 
-    def update(self, id: str, experiment: dict) -> aiod_rail_sdk.ExperimentResponse:
+    def update(self, id: str, experiment: dict) -> ExperimentResponse:
         """
         Updates specific experiment.
         Args:
@@ -166,14 +172,14 @@ class Experiments:
             experiment (dict): Experiment template described in json file.
 
         Returns:
-            aiod_rail_sdk.ExperimentResponse: Updated Experiment by given ID.
+            ExperimentResponse: Updated Experiment by given ID.
         """
         json_data = json.dumps(experiment)
 
-        experiment_create_instance = aiod_rail_sdk.ExperimentCreate.from_json(json_data)
+        experiment_create_instance = ExperimentCreate.from_json(json_data)
 
-        with aiod_rail_sdk.ApiClient(self._config) as api_client:
-            api_instance = aiod_rail_sdk.ExperimentsApi(api_client)
+        with ApiClient(self._config) as api_client:
+            api_instance = ExperimentsApi(api_client)
 
             try:
                 api_response = api_instance.update_experiment_v1_experiments_id_put(
@@ -191,8 +197,8 @@ class Experiments:
         Returns:
             None.
         """
-        with aiod_rail_sdk.ApiClient(self._config) as api_client:
-            api_instance = aiod_rail_sdk.ExperimentsApi(api_client)
+        with ApiClient(self._config) as api_client:
+            api_instance = ExperimentsApi(api_client)
 
             try:
                 api_instance.delete_experiment_v1_experiments_id_delete(id=id)
@@ -201,7 +207,7 @@ class Experiments:
 
     def get_experiments_run(
         self, id: str, offset: int = 0, limit: int = 100
-    ) -> list[aiod_rail_sdk.ExperimentRunResponse]:
+    ) -> list[ExperimentRunResponse]:
         """
         Gets runs of specified experiment in selected range.
         Args:
@@ -211,8 +217,8 @@ class Experiments:
         Returns:
             None.
         """
-        with aiod_rail_sdk.ApiClient(self._config) as api_client:
-            api_instance = aiod_rail_sdk.ExperimentsApi(api_client)
+        with ApiClient(self._config) as api_client:
+            api_instance = ExperimentsApi(api_client)
 
             try:
                 api_response = api_instance.get_experiment_runs_of_experiment_v1_experiments_id_runs_get(
@@ -230,8 +236,8 @@ class Experiments:
         Returns:
             int: Number of experiments runs of selected experiment.
         """
-        with aiod_rail_sdk.ApiClient(self._config) as api_client:
-            api_instance = aiod_rail_sdk.ExperimentsApi(api_client)
+        with ApiClient(self._config) as api_client:
+            api_instance = ExperimentsApi(api_client)
 
             try:
                 api_response = api_instance.get_experiment_runs_of_experiment_count_v1_count_experiments_id_runs_get(
@@ -249,8 +255,8 @@ class Experiments:
         Returns:
             None.
         """
-        with aiod_rail_sdk.ApiClient(self._config) as api_client:
-            api_instance = aiod_rail_sdk.ExperimentRunsApi(api_client)
+        with ApiClient(self._config) as api_client:
+            api_instance = ExperimentRunsApi(api_client)
 
             try:
                 api_instance.delete_experiment_run_v1_experiment_runs_id_delete(id)
@@ -267,8 +273,8 @@ class Experiments:
         Returns:
             None.
         """
-        with aiod_rail_sdk.ApiClient(self._config) as api_client:
-            api_instance = aiod_rail_sdk.ExperimentRunsApi(api_client)
+        with ApiClient(self._config) as api_client:
+            api_instance = ExperimentRunsApi(api_client)
 
             try:
                 data = api_instance.download_file_from_experiment_run_v1_experiment_runs_id_files_download_get(
@@ -290,8 +296,8 @@ class Experiments:
         Returns:
             str: Logs of experiment run.
         """
-        with aiod_rail_sdk.ApiClient(self._config) as api_client:
-            api_instance = aiod_rail_sdk.ExperimentRunsApi(api_client)
+        with ApiClient(self._config) as api_client:
+            api_instance = ExperimentRunsApi(api_client)
 
             try:
                 api_response = (

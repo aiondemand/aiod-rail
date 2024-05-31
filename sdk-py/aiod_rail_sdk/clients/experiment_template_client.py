@@ -1,32 +1,37 @@
 import json
-from typing import Union
 
-import aiod_rail_sdk
+from aiod_rail_sdk import (
+    ApiClient,
+    Configuration,
+    ExperimentTemplateCreate,
+    ExperimentTemplateResponse,
+    ExperimentTemplatesApi,
+)
 
 
-class ExperimentsTemplates:
-    def __init__(self, client_config: aiod_rail_sdk.Configuration):
+class ExperimentTemplateClient:
+    def __init__(self, client_config: Configuration):
         self._configuration = client_config
 
     def create_experiment_template(
-        self, template: Union[dict, tuple[str, str, str, dict]]
-    ) -> aiod_rail_sdk.ExperimentTemplateResponse:
+        self, template: dict | tuple[str, str, str, dict]
+    ) -> ExperimentTemplateResponse:
         """
         Creates experiment template for experiment.
         Args:
-            template: (Union[dict, tuple[str, str, str, dict]]): The file can be passed either as full specified json (dictionary)
-                                                                 or as a tuple of three strings and a json (dictionary) specifying
-                                                                 the paths to script, requirements and docker image in this order
-                                                                 and template description (name, description, task etc.).
+            template: (dict | tuple[str, str, str, dict]):  The file can be passed either as full specified json (dictionary)
+                                                            or as a tuple of three strings and a json (dictionary) specifying
+                                                            the paths to script, requirements and docker image in this order
+                                                            and template description (name, description, task etc.).
         Returns:
-            aiod_rail_sdk.ExperimentTemplateResponse: Created experiment template.
+            ExperimentTemplateResponse: Created experiment template.
         """
         experiment_template_instance = self._create_experiment_template_instance(
             template
         )
 
-        with aiod_rail_sdk.ApiClient(self._configuration) as api_client:
-            api_instance = aiod_rail_sdk.ExperimentTemplatesApi(api_client)
+        with ApiClient(self._configuration) as api_client:
+            api_instance = ExperimentTemplatesApi(api_client)
             experiment_template_create = experiment_template_instance
 
             try:
@@ -51,15 +56,15 @@ class ExperimentsTemplates:
         Args:
             query (str, optional): Query used to filter experiment templates. Defaults to empty string, which means that by default count is not filtered.
             mine (bool, optional): If own personal experiment templates should be counted. Defaults to True.
-            finalized (bool, optional): If experiment templates that are succesfully build and ready to use should be counted as well. Defaults to True.
+            finalized (bool, optional): If experiment templates that are successfully build and ready to use should be counted as well. Defaults to True.
             approved (bool, optional): If already approved experiments should be counted as well. Defaults to True.
             public (bool, optional): If experiment templates flagged as public should be counted as well. Defaults to True.
 
         Returns:
             int: Number of experiment templates.
         """
-        with aiod_rail_sdk.ApiClient(self._configuration) as api_client:
-            api_instance = aiod_rail_sdk.ExperimentTemplatesApi(api_client)
+        with ApiClient(self._configuration) as api_client:
+            api_instance = ExperimentTemplatesApi(api_client)
 
             try:
                 api_response = api_instance.get_experiment_templates_count_v1_count_experiment_templates_get(
@@ -82,23 +87,23 @@ class ExperimentsTemplates:
         public: bool = True,
         offset: int = 0,
         limit: int = 100,
-    ) -> list[aiod_rail_sdk.ExperimentTemplateResponse]:
+    ) -> list[ExperimentTemplateResponse]:
         """
         Gets experiment templates in specified range.
         Args:
             query (str, optional): Query used to filter experiment templates. Defaults to empty string, which means that by default, it's not used.
             mine (bool, optional): If own personal experiment templates should be included. Defaults to True.
-            finalized (bool, optional): If experiment templates that are succesfully build and ready to use should be listed as well. Defaults to True.
+            finalized (bool, optional): If experiment templates that are successfully build and ready to use should be listed as well. Defaults to True.
             approved (bool, optional): If already approved experiments should be listed as well. Defaults to True.
             public (bool, optional): If experiment templates flagged as public should be listed as well. Defaults to True.
             offset (int, optional): Starting index of experiment template range from which to retrieve Defaults to 0.
             limit (int, optional): Ending index of experiment template range to which to retrieve. Defaults to 100.
 
         Returns:
-            list[aiod_rail_sdk.ExperimentTemplateResponse]: List of all experiments in given range
+            list[ExperimentTemplateResponse]: List of all experiments in given range
         """
-        with aiod_rail_sdk.ApiClient(self._configuration) as api_client:
-            api_instance = aiod_rail_sdk.ExperimentTemplatesApi(api_client)
+        with ApiClient(self._configuration) as api_client:
+            api_instance = ExperimentTemplatesApi(api_client)
 
             try:
                 api_response = (
@@ -116,16 +121,16 @@ class ExperimentsTemplates:
             except Exception as e:
                 raise e
 
-    def get_by_id(self, id: str) -> aiod_rail_sdk.ExperimentTemplateResponse:
+    def get_by_id(self, id: str) -> ExperimentTemplateResponse:
         """
         Gets specific experiment template by its ID.
         Args:
             id (str): ID of experiment template to be retrieved.
         Returns:
-            aiod_rail_sdk.ExperimentTemplateResponse: Experiment template given by ID.
+            ExperimentTemplateResponse: Experiment template given by ID.
         """
-        with aiod_rail_sdk.ApiClient(self._configuration) as api_client:
-            api_instance = aiod_rail_sdk.ExperimentTemplatesApi(api_client)
+        with ApiClient(self._configuration) as api_client:
+            api_instance = ExperimentTemplatesApi(api_client)
 
             try:
                 api_response = (
@@ -145,8 +150,8 @@ class ExperimentsTemplates:
         Returns:
             None.
         """
-        with aiod_rail_sdk.ApiClient(self._configuration) as api_client:
-            api_instance = aiod_rail_sdk.ExperimentTemplatesApi(api_client)
+        with ApiClient(self._configuration) as api_client:
+            api_instance = ExperimentTemplatesApi(api_client)
 
             try:
                 api_instance.remove_experiment_template_v1_experiment_templates_id_delete(
@@ -164,8 +169,8 @@ class ExperimentsTemplates:
         Returns:
             None.
         """
-        with aiod_rail_sdk.ApiClient(self._configuration) as api_client:
-            api_instance = aiod_rail_sdk.ExperimentTemplatesApi(api_client)
+        with ApiClient(self._configuration) as api_client:
+            api_instance = ExperimentTemplatesApi(api_client)
 
             try:
                 api_instance.archive_experiment_template_v1_experiment_templates_id_archive_patch(
@@ -175,25 +180,25 @@ class ExperimentsTemplates:
                 raise e
 
     def update(
-        self, id: str, template: dict
-    ) -> aiod_rail_sdk.ExperimentTemplateResponse:
+        self, id: str, template: dict | tuple[str, str, str, dict]
+    ) -> ExperimentTemplateResponse:
         """
         Updates specific experiment template.
         Args:
             id (str): ID of experiment template to be updated.
-            template: (Union[dict, tuple[str, str, str, dict]]): The file can be passed either as full specified json (dictionary)
-                                                                 or as a tuple of three strings and a json (dictionary) specifying
-                                                                 the paths to script, requirements and docker image in this order
-                                                                 and template description (name, description, task etc.).
+            template: (dict | tuple[str, str, str, dict]):  The file can be passed either as full specified json (dictionary)
+                                                            or as a tuple of three strings and a json (dictionary) specifying
+                                                            the paths to script, requirements and docker image in this order
+                                                            and template description (name, description, task etc.).
         Returns:
-            aiod_rail_sdk.ExperimentTemplateResponse: Updated Experiment template by given ID.
+            ExperimentTemplateResponse: Updated Experiment template by given ID.
         """
         experiment_template_instance = self._create_experiment_template_instance(
             template
         )
 
-        with aiod_rail_sdk.ApiClient(self._configuration) as api_client:
-            api_instance = aiod_rail_sdk.ExperimentTemplatesApi(api_client)
+        with ApiClient(self._configuration) as api_client:
+            api_instance = ExperimentTemplatesApi(api_client)
 
             try:
                 api_response = api_instance.update_experiment_template_v1_experiment_templates_id_put(
@@ -205,9 +210,7 @@ class ExperimentsTemplates:
                 raise e
 
     @staticmethod
-    def _create_experiment_template_instance(
-        file: Union[dict, tuple[str, str, str, dict]]
-    ):
+    def _create_experiment_template_instance(file: dict | tuple[str, str, str, dict]):
         if isinstance(file, dict):
             json_data = json.dumps(file)
 
@@ -239,4 +242,4 @@ class ExperimentsTemplates:
         else:
             raise ValueError("Invalid input format")
 
-        return aiod_rail_sdk.ExperimentTemplateCreate.from_json(json_data)
+        return ExperimentTemplateCreate.from_json(json_data)

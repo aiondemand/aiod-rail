@@ -1,8 +1,8 @@
-import aiod_rail_sdk
+from aiod_rail_sdk import ApiClient, AssetsApi, Configuration, Dataset
 
 
-class Datasets:
-    def __init__(self, config: aiod_rail_sdk.Configuration):
+class DatasetClient:
+    def __init__(self, config: Configuration):
         self._config = config
 
     def count(self) -> int:
@@ -15,8 +15,8 @@ class Datasets:
         Returns:
             int: Number of datasets.
         """
-        with aiod_rail_sdk.ApiClient(self._config) as api_client:
-            api_instance = aiod_rail_sdk.AssetsApi(api_client)
+        with ApiClient(self._config) as api_client:
+            api_instance = AssetsApi(api_client)
             try:
                 api_response = (
                     api_instance.get_datasets_count_v1_assets_counts_datasets_get()
@@ -25,7 +25,7 @@ class Datasets:
             except Exception as e:
                 raise e
 
-    def get(self, offset: int = 0, limit: int = 100) -> list[aiod_rail_sdk.Dataset]:
+    def get(self, offset: int = 0, limit: int = 100) -> list[Dataset]:
         """
         Retrieves datasets in specified range.
 
@@ -34,10 +34,10 @@ class Datasets:
             limit (int, optional): Ending index of dataset range to which to retrieve. Defaults to 100.
 
         Returns:
-           list[aiod_rail_sdk.Dataset]: The list of datasets.
+           list[Dataset]: The list of datasets.
         """
-        with aiod_rail_sdk.ApiClient(self._config) as api_client:
-            api_instance = aiod_rail_sdk.AssetsApi(api_client)
+        with ApiClient(self._config) as api_client:
+            api_instance = AssetsApi(api_client)
             try:
                 api_response = api_instance.get_datasets_v1_assets_datasets_get(
                     offset=offset, limit=limit
@@ -46,7 +46,7 @@ class Datasets:
             except Exception as e:
                 raise e
 
-    def get_by_id(self, id: int) -> aiod_rail_sdk.Dataset:
+    def get_by_id(self, id: int) -> Dataset:
         """
         Retrieves dataset specified by its ID.
 
@@ -54,10 +54,10 @@ class Datasets:
             id (int): Index of dataset in database.
 
         Returns:
-             aiod_rail_sdk.Dataset: The dataset corresponding to the given ID.
+             Dataset: The dataset corresponding to the given ID.
         """
-        with aiod_rail_sdk.ApiClient(self._config) as api_client:
-            api_instance = aiod_rail_sdk.AssetsApi(api_client)
+        with ApiClient(self._config) as api_client:
+            api_instance = AssetsApi(api_client)
             try:
                 api_response = api_instance.get_dataset_v1_assets_datasets_id_get(id)
                 return api_response
