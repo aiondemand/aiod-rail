@@ -14,7 +14,7 @@ export class AppComponent {
   private breakpointObserver = inject(BreakpointObserver);
   leftSidebarMinimized = false;
 
-  constructor(private authService: AuthService, private backend: BackendApiService) {}
+  constructor(private authService: AuthService) {}
 
   isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset)
     .pipe(

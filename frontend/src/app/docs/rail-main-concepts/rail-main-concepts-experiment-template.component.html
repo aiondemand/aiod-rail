@@ -1,1 +1,27 @@
-<p>rail-main-concepts-experiment-template works!</p>
+<app-base-doc>
+    <h1>Experiment Template</h1>
+
+    <h2>What is Experiment template</h2>
+    <p>
+        Experiment template is a combination of runtime environment, software dependencies and code.
+    </p>
+    <ul>
+        <li><b>Runtime environment</b> is a specification of the environment in which the experiment is executed. In
+            RAIL, it is a specific Docker image.</li>
+        <li><b>Software dependencies</b> are the software packages that are required to execute the experiment.
+            Currently, <code>requirements.txt</code> file with Python dependencies is supported.</li>
+        <li><b>Code</b> is the code that is executed in the experiment.</li>
+    </ul>
+
+    <h2>How can I use Experiment template</h2>
+    <p>
+        Experiment template on its own is not executable. You need to create an <a
+            [routerLink]="['/docs', 'main-concepts-experiment']">Experiment</a> based on a specific template to be able
+        to execute it. The Experiment defines particular parameters that are injected into the Template through
+        Environment variables to make it executable. These include AI model, dataset (their name and AIoD ID) and
+        environment variables supported by the template (they are defined by the author).
+    </p>
+
+    <h1></h1>
+
+</app-base-doc>

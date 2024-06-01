@@ -1,22 +1,30 @@
-import { AfterViewInit, Component, ElementRef, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
+import { AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 
 @Component({
   selector: 'app-base-doc',
   templateUrl: './base-doc.component.html',
   styleUrls: ['./base-doc.component.scss']
 })
-export class BaseDocComponent implements AfterViewInit {
-  @Input() showToc: boolean = true;
-
-  @ViewChild('content', { static: false }) contentDiv: ElementRef;
+export class BaseDocComponent implements AfterContentChecked {
+  @ViewChild('content', { static: true }) contentDiv: ElementRef;
 
   headers: HTMLHeadingElement[] = [];
 
-  ngAfterViewInit(): void {
+  ngAfterContentChecked(): void {
+    if (!this.contentDiv) {
+      return;
+    }
+
     let div = this.contentDiv.nativeElement as HTMLDivElement;
 
     // select all h1 and h2 elements inside div element
-    let headers = div.querySelectorAll('h1, h2');
+    let headers = Array.from(div.querySelectorAll('h1, h2')) as HTMLHeadingElement[];
+
+    // if headers are the same, return, don't reinitialize
+    if (this.headers.length === headers.length && this.headers.every((v, i) => v === headers[i])) {
+      return;
+    }
+
     this.headers = Array.from(headers) as HTMLHeadingElement[];
     this.headers.forEach(header => {
       header.addEventListener('click', () => {
