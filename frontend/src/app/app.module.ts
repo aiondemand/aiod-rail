@@ -80,6 +80,7 @@ import { RailMainConceptsExperimentComponent } from './docs/rail-main-concepts/r
 import { RailMainConceptsExperimentTemplateComponent } from './docs/rail-main-concepts/rail-main-concepts-experiment-template.component';
 import { RailInnerSdkComponent } from './docs/rail-inner-sdk/rail-inner-sdk.component';
 import { BaseDocComponent } from './docs/base-doc/base-doc.component';
+import { ImageWithCoordMapComponent } from './components/general/image-with-coord-map/image-with-coord-map.component';
 
 
 
@@ -130,6 +131,7 @@ import { BaseDocComponent } from './docs/base-doc/base-doc.component';
     RailMainConceptsExperimentTemplateComponent,
     RailInnerSdkComponent,
     BaseDocComponent,
+    ImageWithCoordMapComponent,
   ],
   imports: [
     BrowserModule,
