@@ -159,3 +159,9 @@ td.hljs-ln-code {
     margin-left: calc(3 * $margin-default);
   }
 }
+
+markdown.fixed-height-scrollable {
+  height: 300px;
+  overflow-y: auto;
+  display: block;
+}
