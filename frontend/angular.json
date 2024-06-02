@@ -48,7 +48,8 @@
               "node_modules/prismjs/plugins/line-highlight/prism-line-highlight.js",
               "node_modules/prismjs/plugins/command-line/prism-command-line.js",
               "node_modules/clipboard/dist/clipboard.min.js",
-              "node_modules/prismjs/components/prism-python.min.js"
+              "node_modules/prismjs/components/prism-python.min.js",
+              "node_modules/prismjs/components/prism-json.min.js"
             ]
           },
           "configurations": {
