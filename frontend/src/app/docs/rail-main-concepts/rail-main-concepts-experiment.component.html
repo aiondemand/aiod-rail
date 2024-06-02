@@ -1,1 +1,84 @@
-<p>rail-main-concepts-experiment works!</p>
+<app-base-doc>
+    <h1>Experiment</h1>
+    <p>
+        Experiment is an executable instance of an Experiment template. Experiments are composed of AI assets and are
+        executed in the AIoD platform. Experiments are reproducible and reusable.
+    </p>
+    <p>
+        When you create an experiment, you select an Experiment Template that you want to use as a basis for your
+        experiment. Then, you select a particular model(s), dataset(s) and values of environment variables that you want
+        to
+        use in your experiment.
+    </p>
+
+    <!-- ================================================================================================== -->
+    <h1>Create Experiment</h1>
+    <p>
+        You can create an Experiment either through <a [routerLink]="['/docs', 'rail-sdks']">RAIL Python SDK</a> or
+        through <a [routerLink]="['/experiments', 'templates', 'create']">web UI</a>.
+    </p>
+    <img src="assets/docs/images/rail-concepts-experiment.png" style="width: 100%;">
+
+    <p>
+        An example of an Experiment is shown below:
+    </p>
+    <markdown src="assets/docs/markdown/codes/dataset-db-record.md" class="fixed-height-scrollable"></markdown>
+
+    <p>
+        When you create an Experiment, what happens is that a record defining the Experiment is saved to RAIL’s
+        database.
+        Immediately after that you are able to execute the Experiment.
+    </p>
+
+    <mat-tab-group>
+        <mat-tab label="Python SDK">
+            <markdown clipboard ngPreserveWhitespaces>
+                ```python
+                # Create an Experiment
+                TODO
+                )
+                ```
+            </markdown>
+        </mat-tab>
+        <mat-tab label="Web page">
+            <div style="height: 250px; background-color: green;">xxx</div>
+        </mat-tab>
+    </mat-tab-group>
+
+    <h2>Properties of Experiment</h2>
+    <markdown src="assets/docs/markdown/experiment-properties.md" class="fixed-height-scrollable"></markdown>
+
+    <!-- ================================================================================================== -->
+    <h1>Execute Experiment</h1>
+    <p>
+        When you execute an Experiment, following happens:
+    </p>
+    <ol>
+        <li>
+            An instance of Experiment Run is created. This instance represents the current state of the running (and
+            also finished) Experiment, its logs, metrics and outputs (if any). It is available in the Experiment detail
+            page.
+        </li>
+        <li>
+            The Experiment Run is transformed to a Common Workflow Language (CWL) file. This file represents the
+            Experiment in the form of a workflow that is executable by AIoD platform infrastructure.
+        </li>
+        <li>
+            The CWL file is sent to the AIoD platform’s workflow engine, currently implemented as an instance of
+            <a target="_blank" href="https://reanahub.io/">REANA</a> and REANA executes the Experiment Run.
+        </li>
+        <li>In REANA, a Docker container is started. AI Assets and environment variables are available globally in the
+            container.
+        </li>
+        <li>
+            A file called script.py, which contains the script defined in the Experiment Template, is executed.
+        </li>
+        <li>
+            After the Experiment Run finishes, the Docker logs, metrics and output files (if any) are available on the
+            details of the Experiment Run.
+        </li>
+    </ol>
+    <p>
+        See <a [routerLink]="['/docs', 'main-concepts-run']">Experiment Run</a> section for more details.
+    </p>
+</app-base-doc>
