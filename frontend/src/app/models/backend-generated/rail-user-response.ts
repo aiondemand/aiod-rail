@@ -11,11 +11,8 @@
  */
 
 
-export interface Platform {
-  /**
-   * The name of the platform, such as huggingface, openml or zenodo. Preferably using snake_case.
-   */
-  name: string;
-  identifier: number;
+export interface RailUserResponse {
+  email: string;
+  api_key: string;
 }
 

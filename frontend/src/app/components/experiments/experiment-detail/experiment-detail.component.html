@@ -3,12 +3,12 @@
         <div class="header-name">
             <h1>
                 {{experiment.name}}
-            </h1> 
-            <mat-icon *ngIf="experiment.public" matTooltip="Public template">public</mat-icon>
-            <mat-icon *ngIf="!experiment.public" matTooltip="Private template">public_off</mat-icon>
+            </h1>
+            <mat-icon *ngIf="experiment.is_public" matTooltip="Public template">public</mat-icon>
+            <mat-icon *ngIf="!experiment.is_public" matTooltip="Private template">public_off</mat-icon>
         </div>
 
-        <div class="header-buttons" *ngIf="experiment.mine && !experiment.archived">
+        <div class="header-buttons" *ngIf="experiment.is_mine && !experiment.is_archived">
             <button mat-icon-button matTooltip="Edit" (click)="editBtnClicked()">
                 <mat-icon>edit</mat-icon>
             </button>
@@ -17,9 +17,9 @@
             </button>
         </div>
 
-        <div class="deleted-state" *ngIf="experiment.archived">
+        <div class="deleted-state" *ngIf="experiment.is_archived">
             <span class="crashed"><mat-icon matTooltip="This experiment can no longer be executed">delete</mat-icon>Archived</span>
-            <button mat-stroked-button class="undo-button" *ngIf="experiment.mine" (click)="undoBtnClicked()">
+            <button mat-stroked-button class="undo-button" *ngIf="experiment.is_mine" (click)="undoBtnClicked()">
                 <mat-icon>settings_backup_restore</mat-icon>
                 Unarchive
             </button>
@@ -94,7 +94,7 @@
     <h1>Runs</h1>
     <!-- Create new experiment run form -->
     <div class="experiment-run-create-btn-wrapper">
-    <button mat-raised-button color="primary" (click)="onCreateRun()" [disabled]="!experiment.mine || experiment.archived">
+    <button mat-raised-button color="primary" (click)="onCreateRun()" [disabled]="!experiment.is_mine || experiment.is_archived">
         <mat-icon>add_circle</mat-icon>
         Create new experiment run
     </button>

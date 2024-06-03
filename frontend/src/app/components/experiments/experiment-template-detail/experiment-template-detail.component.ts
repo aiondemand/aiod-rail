@@ -121,8 +121,8 @@ export class ExperimentTemplateDetailComponent {
   undoBtnClicked(): void {
     firstValueFrom(this.backend.archiveExperimentTemplate(this.templateId, false))
     .then(_ => {
-      this.experimentTemplate.mine = true;
-      this.experimentTemplate.archived = false;
+      this.experimentTemplate.is_mine = true;
+      this.experimentTemplate.is_archived = false;
     })
     .catch(err => console.error(err));
   }
@@ -134,7 +134,7 @@ export class ExperimentTemplateDetailComponent {
   approveBtnClicked(): void {
     firstValueFrom(this.backend.approveExperimentTemplate(this.templateId, true))
     .then(_ => {
-      this.experimentTemplate.approved = true;
+      this.experimentTemplate.is_approved = true;
     })
     .catch(err => console.error(err));
   }

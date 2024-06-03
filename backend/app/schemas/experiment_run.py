@@ -14,9 +14,9 @@ class ExperimentRunBase(BaseModel):
     retry_count: int
     state: RunState
     metrics: dict[str, float]
-    public: bool
-    archived: bool
-    mine: bool
+    is_public: bool
+    is_archived: bool
+    is_mine: bool
 
 
 class ExperimentRunResponse(ExperimentRunBase):

@@ -43,7 +43,7 @@ async def get_experiment_run(
 #     experiment_run = await get_experiment_run_if_accessible_or_raise(
 #         id, user, write_access=True
 #     )
-#     if experiment_run.archived:
+#     if experiment_run.is_archived:
 #         raise HTTPException(
 #             status_code=status.HTTP_400_BAD_REQUEST,
 #             detail="You cannot stop this experiment run.",
