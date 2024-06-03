@@ -14,15 +14,15 @@ Name | Type | Description | Notes
 **envs_optional** | [**List[EnvironmentVarDef]**](EnvironmentVarDef.md) |  | 
 **script** | **str** |  | 
 **pip_requirements** | **str** |  | 
-**public** | **bool** |  | 
+**is_public** | **bool** |  | 
 **id** | **str** |  | 
 **created_at** | **datetime** |  | 
 **updated_at** | **datetime** |  | 
 **state** | [**TemplateState**](TemplateState.md) |  | 
 **dockerfile** | **str** |  | 
-**archived** | **bool** |  | 
-**approved** | **bool** |  | 
-**mine** | **bool** |  | 
+**is_archived** | **bool** |  | 
+**is_approved** | **bool** |  | 
+**is_mine** | **bool** |  | 
 
 ## Example
 

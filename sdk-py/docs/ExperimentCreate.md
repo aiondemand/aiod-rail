@@ -7,7 +7,7 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **name** | **str** |  | 
 **description** | **str** |  | 
-**public** | **bool** |  | 
+**is_public** | **bool** |  | 
 **experiment_template_id** | **str** |  | 
 **dataset_ids** | **List[str]** |  | 
 **model_ids** | **List[str]** |  | 

@@ -14,7 +14,7 @@ Name | Type | Description | Notes
 **envs_optional** | [**List[EnvironmentVarDef]**](EnvironmentVarDef.md) |  | 
 **script** | **str** |  | 
 **pip_requirements** | **str** |  | 
-**public** | **bool** |  | 
+**is_public** | **bool** |  | 
 **base_image** | **str** |  | 
 
 ## Example

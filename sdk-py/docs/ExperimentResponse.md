@@ -7,7 +7,7 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **name** | **str** |  | 
 **description** | **str** |  | 
-**public** | **bool** |  | 
+**is_public** | **bool** |  | 
 **experiment_template_id** | **str** |  | 
 **dataset_ids** | **List[str]** |  | 
 **model_ids** | **List[str]** |  | 
@@ -16,8 +16,8 @@ Name | Type | Description | Notes
 **id** | **str** |  | 
 **created_at** | **datetime** |  | 
 **updated_at** | **datetime** |  | 
-**archived** | **bool** |  | 
-**mine** | **bool** |  | 
+**is_archived** | **bool** |  | 
+**is_mine** | **bool** |  | 
 
 ## Example
 

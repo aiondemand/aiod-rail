@@ -12,9 +12,9 @@ Name | Type | Description | Notes
 **retry_count** | **int** |  | 
 **state** | [**RunState**](RunState.md) |  | 
 **metrics** | **Dict[str, float]** |  | 
-**public** | **bool** |  | 
-**archived** | **bool** |  | 
-**mine** | **bool** |  | 
+**is_public** | **bool** |  | 
+**is_archived** | **bool** |  | 
+**is_mine** | **bool** |  | 
 **logs** | **str** |  | 
 
 ## Example
