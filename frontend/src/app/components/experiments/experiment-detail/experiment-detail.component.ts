@@ -30,7 +30,7 @@ export class ExperimentDetailComponent {
   experimentTemplate: ExperimentTemplate;
 
   constructor(
-    private backend: BackendApiService, 
+    private backend: BackendApiService,
     private snackBar: SnackBarService,
     private router: Router,
     private dialog: MatDialog,
@@ -127,13 +127,13 @@ export class ExperimentDetailComponent {
       .then(count => {
         let existRuns = count > 0;
         let routeParts = ['update'];
-        let routeExtras = { 
+        let routeExtras = {
           relativeTo: this.route,
         };
 
         if (existRuns) {
           let str = (
-            "This Experiment is already associated with some experiment runs. " + 
+            "This Experiment is already associated with some experiment runs. " +
             "Modifying parameters that could change the experiment's behavior is restricted."
           )
           let popupInput: ConfirmPopupInput = {
@@ -168,12 +168,12 @@ export class ExperimentDetailComponent {
         let str = (
           existRuns
           ?
-          "This Experiment is already associated with some experiment runs. " + 
-          "You can either DELETE this experiment with all its Experiment Runs " + 
-          "or ARCHIVE this experiment making execution of new runs not possible " + 
+          "This Experiment is already associated with some experiment runs. " +
+          "You can either DELETE this experiment with all its Experiment Runs " +
+          "or ARCHIVE this experiment making execution of new runs not possible " +
           "whilst keeping the previously executed runs intact.\n\n" +
           "What operation do you wish to perform?"
-          : 
+          :
           "Do you wish to DELETE this experiment?"
         );
         let acceptStr = existRuns ? "Delete experiment and all its runs" : "Yes";
@@ -212,8 +212,8 @@ export class ExperimentDetailComponent {
   undoBtnClicked(): void {
    firstValueFrom(this.backend.archiveExperiment(this.experiment.id, false))
     .then(_ => {
-      this.experiment.mine = true;
-      this.experiment.archived = false;
+      this.experiment.is_mine = true;
+      this.experiment.is_archived = false;
     })
     .catch(err => console.error(err));
   }

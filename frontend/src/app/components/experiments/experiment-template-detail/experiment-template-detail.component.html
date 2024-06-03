@@ -4,18 +4,18 @@
             <h1>
                 {{experimentTemplate.name}}
             </h1>
-            <mat-icon *ngIf="experimentTemplate.public" matTooltip="Public template">public</mat-icon>
-            <mat-icon *ngIf="!experimentTemplate.public" matTooltip="Private template">public_off</mat-icon>
+            <mat-icon *ngIf="experimentTemplate.is_public" matTooltip="Public template">public</mat-icon>
+            <mat-icon *ngIf="!experimentTemplate.is_public" matTooltip="Private template">public_off</mat-icon>
         </div>
 
         <div class="header-buttons">
-            <div *ngIf="!experimentTemplate.approved && isAdminUser">
+            <div *ngIf="!experimentTemplate.is_approved && isAdminUser">
                 <button mat-icon-button matTooltip="Approve" (click)="approveBtnClicked()">
                     <mat-icon>approval</mat-icon>
                 </button>
             </div>
 
-            <div *ngIf="experimentTemplate.mine && !experimentTemplate.archived">
+            <div *ngIf="experimentTemplate.is_mine && !experimentTemplate.is_archived">
                 <button mat-icon-button matTooltip="Edit" (click)="editBtnClicked()">
                     <mat-icon>edit</mat-icon>
                 </button>
@@ -25,20 +25,20 @@
             </div>
         </div>
 
-        <div class="deleted-state" *ngIf="experimentTemplate.archived">
+        <div class="deleted-state" *ngIf="experimentTemplate.is_archived">
             <span class="crashed"><mat-icon matTooltip="New experiments cannot use this template">delete</mat-icon>Archived</span>
-            <button mat-stroked-button class="undo-button" *ngIf="experimentTemplate.mine" (click)="undoBtnClicked()">
+            <button mat-stroked-button class="undo-button" *ngIf="experimentTemplate.is_mine" (click)="undoBtnClicked()">
                 <mat-icon>settings_backup_restore</mat-icon>
                 Unarchive
             </button>
         </div>
     </div>
 
-    <div class="state" *ngIf="!experimentTemplate.archived && experimentTemplate.state != 'FINISHED'">
-        <ng-container *ngIf="!experimentTemplate.approved">
+    <div class="state" *ngIf="!experimentTemplate.is_archived && experimentTemplate.state != 'FINISHED'">
+        <ng-container *ngIf="!experimentTemplate.is_approved">
             <span class="crashed"><mat-icon matTooltip="Experiment templates are manually reviewed before being approved for use">search</mat-icon>Waiting for approval</span>
         </ng-container>
-        <ng-container *ngIf="experimentTemplate.approved">
+        <ng-container *ngIf="experimentTemplate.is_approved">
             <span *ngIf="experimentTemplate.state == 'CREATED'"><mat-icon>schedule</mat-icon>Scheduled</span>
             <span class="in-progress" *ngIf="experimentTemplate.state == 'IN_PROGRESS'"><mat-icon>rotate_right</mat-icon>Building image</span>
             <span class="crashed" *ngIf="experimentTemplate.state == 'CRASHED'"><mat-icon>error</mat-icon>Crashed</span>

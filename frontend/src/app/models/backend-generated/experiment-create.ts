@@ -15,11 +15,11 @@ import { EnvironmentVar } from './environment-var';
 export interface ExperimentCreate {
     name: string;
     description: string;
-    publication_ids?: Array<string>;
     experiment_template_id: string;
     dataset_ids: Array<string>;
     model_ids: Array<string>;
+    publication_ids?: Array<string>;
     env_vars: Array<EnvironmentVar>;
-    public: boolean;
+    is_public: boolean;
 }
 

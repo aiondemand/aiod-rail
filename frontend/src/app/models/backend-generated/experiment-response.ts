@@ -15,16 +15,16 @@ import { EnvironmentVar } from './environment-var';
 export interface ExperimentResponse {
     name: string;
     description: string;
-    publication_ids?: Array<string>;
     experiment_template_id: string;
     dataset_ids: Array<string>;
     model_ids: Array<string>;
+    publication_ids?: Array<string>;
     env_vars: Array<EnvironmentVar>;
     id: string;
     created_at: string;
     updated_at: string;
-    public: boolean;
-    archived: boolean;
-    mine: boolean;
+    is_public: boolean;
+    is_archived: boolean;
+    is_mine: boolean;
 }
 

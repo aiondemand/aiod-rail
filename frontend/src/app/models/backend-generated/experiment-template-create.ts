@@ -25,7 +25,7 @@ export interface ExperimentTemplateCreate {
     script: string;
     pip_requirements: string;
     base_image: string;
-    public: boolean;
+    is_public: boolean;
 }
 export namespace ExperimentTemplateCreate {
 }

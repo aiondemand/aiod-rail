@@ -143,13 +143,13 @@ class ExperimentTemplate(Document):
             yaml.safe_dump(reana_cfg, fp)
 
     def map_to_response(self, user: dict | None = None) -> ExperimentTemplateResponse:
-        mine = user is not None and self.created_by == user["email"]
+        is_mine = user is not None and self.created_by == user["email"]
         return ExperimentTemplateResponse(
             **self.dict(),
             dockerfile=self.dockerfile,
             pip_requirements=self.pip_requirements,
             script=self.script,
-            mine=mine,
+            is_mine=is_mine,
         )
 
     def is_readable_by_user(self, user: dict | None) -> bool:
@@ -254,7 +254,9 @@ class ExperimentTemplate(Document):
         same_environment = original_template.is_same_environment(
             experiment_template_req
         )
-        same_visibility = original_template.is_public == experiment_template_req.public
+        same_visibility = (
+            original_template.is_public == experiment_template_req.is_public
+        )
 
         template_to_return = None
         if same_environment and (same_visibility or editable_visibility):

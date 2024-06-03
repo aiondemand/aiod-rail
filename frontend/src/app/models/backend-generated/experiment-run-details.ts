@@ -14,16 +14,16 @@ import { RunState } from './run-state';
 
 export interface ExperimentRunDetails {
     id: string;
+    experiment_id: string;
     created_at: string;
     updated_at: string;
     retry_count: number;
     state: RunState;
     metrics: { [key: string]: number; };
     logs: string;
-    mine: boolean;
-    archived: boolean;
-    public: boolean;
-    experiment_id: string;
+    is_public: boolean;
+    is_archived: boolean;
+    is_mine: boolean;
 }
 export namespace ExperimentRunDetails {
 }

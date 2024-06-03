@@ -48,16 +48,16 @@ class Experiment(Document):
         name = "experiments"
 
     def map_to_response(self, user: dict | None = None) -> ExperimentResponse:
-        mine = user is not None and self.created_by == user["email"]
+        is_mine = user is not None and self.created_by == user["email"]
 
         # TODO quickfix to hide env vars from others
         kwargs = self.dict()
         kwargs["env_vars"] = [
-            EnvironmentVar(key=var.key, value=var.value if mine else "*****")
+            EnvironmentVar(key=var.key, value=var.value if is_mine else "*****")
             for var in self.env_vars
         ]
 
-        return ExperimentResponse(**kwargs, mine=mine)
+        return ExperimentResponse(**kwargs, is_mine=is_mine)
 
     def is_readable_by_user(self, user: dict | None) -> bool:
         if self.is_public:
