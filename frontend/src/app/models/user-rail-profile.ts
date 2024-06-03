@@ -1,4 +1,3 @@
-export interface UserRailProfile {
-    email: string;
-    api_key: string;
-}
+import { RailUserResponse as BackendRailUserResponse} from './backend-generated/rail-user-response';
+
+export interface UserRailProfile extends BackendRailUserResponse { }

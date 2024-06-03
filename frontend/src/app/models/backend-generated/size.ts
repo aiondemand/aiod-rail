@@ -15,13 +15,13 @@
  * The size of this dataset, for example the number of rows. The file size should not be included here, but in distribution.content_size_kb.
  */
 export interface Size {
-    /**
-     * Text indicating the unit of measurement.
-     */
-    unit?: string;
-    /**
-     * The size.
-     */
-    value?: number;
+  /**
+   * Text indicating the unit of measurement.
+   */
+  unit?: string;
+  /**
+   * The size.
+   */
+  value?: number;
 }
 

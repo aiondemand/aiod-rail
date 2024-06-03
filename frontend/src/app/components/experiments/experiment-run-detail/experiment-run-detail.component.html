@@ -6,12 +6,12 @@
 
         <div class="header-menu">
             <!-- TODO add stopping functionality -->
-            <!-- <button mat-icon-button matTooltip="Stop run" *ngIf="experimentRun.mine && !experimentRun.archived && experimentRun.state == 'IN_PROGRESS'" (click)="stopRun()">
+            <!-- <button mat-icon-button matTooltip="Stop run" *ngIf="experimentRun.is_mine && !experimentRun.is_archived && experimentRun.state == 'IN_PROGRESS'" (click)="stopRun()">
                 <mat-icon>stop</mat-icon>
             </button> -->
             <button
                 mat-icon-button matTooltip="Delete run"
-                *ngIf="experimentRun.mine && !experimentRun.archived && (experimentRun.state == 'FINISHED' || experimentRun.state == 'CRASHED')"
+                *ngIf="experimentRun.is_mine && !experimentRun.is_archived && (experimentRun.state == 'FINISHED' || experimentRun.state == 'CRASHED')"
                 (click)="deleteRun()"
             >
                 <mat-icon>delete</mat-icon>

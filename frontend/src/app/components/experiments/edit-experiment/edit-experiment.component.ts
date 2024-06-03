@@ -233,7 +233,7 @@ export class EditExperimentComponent implements OnInit {
 
     this.name?.setValue(exp.name);
     this.description?.setValue(exp.description);
-    this.visibility?.setValue(exp.public ? "Public" : "Private");
+    this.visibility?.setValue(exp.is_public ? "Public" : "Private");
     this.experimentTemplate?.setValue(this.inputExperimentTemplate);
     this.selectedExperimentTemplate = this.inputExperimentTemplate;
 
@@ -345,7 +345,7 @@ export class EditExperimentComponent implements OnInit {
       dataset_ids: [String((this.dataset?.value as Dataset)?.identifier)],
       model_ids: [String((this.model?.value as Model)?.identifier)],
       env_vars: envsToSend,
-      public: String(this.visibility?.value) == "Public" ? true : false
+      is_public: String(this.visibility?.value) == "Public" ? true : false
     };
 
     let promisedExperiment: Promise<Experiment>;
