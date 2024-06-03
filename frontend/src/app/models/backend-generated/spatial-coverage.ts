@@ -17,7 +17,7 @@ import { Address } from './address';
  * A location that describes the spatial aspect of this dataset. For example, a point where all the measurements were collected.
  */
 export interface SpatialCoverage {
-    address?: Address;
-    geo?: Geo;
+  address?: Address;
+  geo?: Geo;
 }
 
