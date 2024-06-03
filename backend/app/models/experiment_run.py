@@ -71,12 +71,15 @@ class ExperimentRun(Document):
     def map_to_response(
         self, user: dict | None = None, return_detailed_response: bool = False
     ) -> ExperimentRunResponse | ExperimentRunDetails:
-        mine = user is not None and self.created_by == user["email"]
-        response = ExperimentRunResponse(**self.dict(), metrics=self.metrics, mine=mine)
+        is_mine = user is not None and self.created_by == user["email"]
+        response = ExperimentRunResponse(
+            **self.dict(), metrics=self.metrics, is_mine=is_mine
+        )
 
-        if return_detailed_response is False:
+        if return_detailed_response:
+            return ExperimentRunDetails(**response.dict(), logs=self.logs)
+        else:
             return response
-        return ExperimentRunDetails(**response.dict(), logs=self.logs)
 
     def is_readable_by_user(self, user: dict | None) -> bool:
         if self.is_public:

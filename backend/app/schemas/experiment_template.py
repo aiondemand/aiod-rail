@@ -51,7 +51,7 @@ class ExperimentTemplateBase(BaseModel):
     envs_optional: list[EnvironmentVarDef]
     script: str
     pip_requirements: str
-    public: bool
+    is_public: bool
 
 
 class ExperimentTemplateCreate(ExperimentTemplateBase):
@@ -64,9 +64,9 @@ class ExperimentTemplateResponse(ExperimentTemplateBase):
     updated_at: datetime
     state: TemplateState
     dockerfile: str
-    archived: bool
-    approved: bool
-    mine: bool
+    is_archived: bool
+    is_approved: bool
+    is_mine: bool
 
 
 class ExperimentTemplateId(BaseModel):
