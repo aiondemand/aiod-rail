@@ -5,8 +5,7 @@
         reproducible and reusable by introducing three main concepts: Experiment Template, Experiment and Experiment
         Run.</p>
 
-    <img src="assets/docs/images/rail-template-experiment-run.png" alt="RAIL concepts"
-        style="width: 100%; max-width: 800px; margin: 20px 0;">
+    <img src="assets/docs/images/rail-template-experiment-run.png" alt="RAIL concepts" class="doc-illustration-figure">
 
     <!-- ================================================== -->
     <h2>Experiment Template</h2>
@@ -15,15 +14,19 @@
         <i>runtime environment</i>, <i>software dependencies</i> and <i>code</i>.
     </p>
     <ul>
-        <li><b>Runtime environment</b> is a specification of the environment in which the experiment is executed. In RAIL, it is a specific Docker image.</li>
-        <li><b>Software dependencies</b> are the software packages that are required to execute the experiment. Currently, <code>requirements.txt</code> file with Python dependencies is supported.</li>
+        <li><b>Runtime environment</b> is a specification of the environment in which the experiment is executed. In
+            RAIL, it is a specific Docker image.</li>
+        <li><b>Software dependencies</b> are the software packages that are required to execute the experiment.
+            Currently, <code>requirements.txt</code> file with Python dependencies is supported.</li>
         <li><b>Code</b> is the code that is executed in the experiment.</li>
     </ul>
     <p>See "<a [routerLink]="['/docs', 'main-concepts-template']">Experiment Template</a>" section for more
         details.</p>
     <p>
         Experiment template on its own is not executable. You need to create an Experiment based on a specific
-        template to be able to execute it. The Experiment defines particular parameters that are injected into the Template through Environment variables to make it executable. These include AI model, dataset (their name and AIoD ID) and environment variables supported by the template (they are defined by the author).
+        template to be able to execute it. The Experiment defines particular parameters that are injected into the
+        Template through Environment variables to make it executable. These include AI model, dataset (their name and
+        AIoD ID) and environment variables supported by the template (they are defined by the author).
     </p>
 
     <!-- ================================================== -->
@@ -42,7 +45,8 @@
     <!-- ================================================== -->
     <h2>Experiment Run</h2>
     <p>
-        <a [routerLink]="['/docs', 'main-concepts-run']">Experiment Run</a> is created when you execute an Experiment. When you execute an experiment, the following happens
+        <a [routerLink]="['/docs', 'main-concepts-run']">Experiment Run</a> is created when you execute an Experiment.
+        When you execute an experiment, the following happens
         under the hood:
     </p>
     <ol>
