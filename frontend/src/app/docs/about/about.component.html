@@ -6,7 +6,7 @@
     <p>
         RAIL is a tool that allows AI practitioners to explore and use AI assets directly in the AI on Demand platform (AIoD).
         RAIL is developed within the <a href="https://ai4europe.eu" target="_blank">AI4Europe project</a> as one of
-        the core services of the <a href="https://ai4europe.eu" target="_blank">AI on Demand platform.</a>
+        the core services of the <a href="https://aiod.eu" target="_blank">AI on Demand platform</a>.
     </p>
 
     <app-image-with-coord-map>
@@ -51,9 +51,10 @@
         RAIL supports two main ways how to achieve this workflow:
     </p>
     <ul>
-        <li>Using the <a [routerLink]="['/docs', 'rail-sdks']">RAIL Python SDK</a> that allow you to interact with
-            RAIL from
-            your Python code.</li>
+        <li>
+            Using the <a [routerLink]="['/docs', 'rail-sdks']">RAIL Python SDK</a> that allow you to interact with
+            RAIL from your Python code.
+        </li>
         <li>Using the RAIL web application that allows you to interact with RAIL through a web interface.</li>
     </ul>
 
@@ -102,10 +103,10 @@
     </p>
     <p>
         An Experiment must be linked to a particular Experiment Template, that represents a definition of <i>runtime
-            environment</i>, <i>software dependencies</i> and <i>code</i> - in your case, you need an Experiment
+        environment</i>, <i>software dependencies</i> and <i>code</i> - in your case, you need an Experiment
         template that takes HuggingFace dataset and model and perform a classification task. If no such Experiment
         template is available in the <a [routerLink]="['/experiments', 'templates', 'all']">list of all
-            templates</a>, you can <a [routerLink]="['/experiments', 'templates', 'create']"> create your own</a>
+        templates</a>, you can <a [routerLink]="['/experiments', 'templates', 'create']"> create your own</a>
         (and share it with others or reuse it on your own).
     </p>
     <p>
