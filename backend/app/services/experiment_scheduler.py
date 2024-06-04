@@ -214,8 +214,8 @@ class ExperimentScheduler:
         dataset_names_env = ",".join(
             [await get_dataset_name(x) for x in experiment.dataset_ids]
         )
-        model_ids_env = [str(id) for id in experiment.model_ids]
-        dataset_ids_env = [str(id) for id in experiment.dataset_ids]
+        model_ids_env = ",".join([str(id) for id in experiment.model_ids])
+        dataset_ids_env = ",".join([str(id) for id in experiment.dataset_ids])
         reserved_env_values = [
             model_names_env,
             dataset_names_env,
