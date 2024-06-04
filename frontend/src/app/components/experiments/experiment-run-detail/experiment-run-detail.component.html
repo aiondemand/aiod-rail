@@ -45,13 +45,6 @@
                     <div *ngFor="let metric of experimentRun.metrics | keyvalue">{{metric.key}}: {{metric.value}}</div>
                 </td>
             </tr>
-            <tr *ngIf="wandbLink(logs) as wandbRunLink">
-                <!-- TODO - demo hack. If ExperimentTemplate doesn't support WandB, it will work, but it will be unnecessary (will always show nothing).-->
-                <th>WandB link</th>
-                <td>
-                    <a [href]="wandbRunLink" target="_blank">Open run {{getRunNameFromWandBLink(wandbRunLink)}} in WandB</a>
-                </td>
-            </tr>
         </table>
     </div>
 

@@ -60,7 +60,6 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { HIGHLIGHT_OPTIONS, HighlightModule, HighlightOptions } from 'ngx-highlightjs';
 import { CodeEditorModule } from '@ngstack/code-editor';
 import { FeedbackComponent } from './components/general/feedback/feedback.component';
-import { AboutComponent } from './components/general/about/about.component';
 import { AdminComponent } from './components/admin/admin.component';
 import { NgOptimizedImage } from '@angular/common';
 import { MatTreeModule } from '@angular/material/tree';
@@ -70,6 +69,17 @@ import { ConfirmPopupComponent } from './components/general/popup/confirm-popup.
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { ProfileComponent } from './components/profile/profile.component';
+import { DocsComponent } from './docs/docs.component';
+import { AboutComponent as DocsAboutComponent } from './docs/about/about.component';
+import { RailSdksComponent } from './docs/rail-sdks/rail-sdks.component';
+import { RailOuterSdkComponent } from './docs/rail-outer-sdk/rail-outer-sdk.component';
+import { RailMainConceptsComponent } from './docs/rail-main-concepts/rail-main-concepts.component';
+import { RailMainConceptsExperimentRunComponent } from './docs/rail-main-concepts/rail-main-concepts-experiment-run.component';
+import { RailMainConceptsExperimentComponent } from './docs/rail-main-concepts/rail-main-concepts-experiment.component';
+import { RailMainConceptsExperimentTemplateComponent } from './docs/rail-main-concepts/rail-main-concepts-experiment-template.component';
+import { RailInnerSdkComponent } from './docs/rail-inner-sdk/rail-inner-sdk.component';
+import { BaseDocComponent } from './docs/base-doc/base-doc.component';
+import { ImageWithCoordMapComponent } from './components/general/image-with-coord-map/image-with-coord-map.component';
 
 
 
@@ -105,11 +115,21 @@ import { ProfileComponent } from './components/profile/profile.component';
     ExperimentTemplateListItemComponent,
     ExperimentTemplateDetailComponent,
     FeedbackComponent,
-    AboutComponent,
     AdminComponent,
     EditExperimentTemplateComponent,
     ConfirmPopupComponent,
-    ProfileComponent
+    ProfileComponent,
+    DocsComponent,
+    DocsAboutComponent,
+    RailSdksComponent,
+    RailOuterSdkComponent,
+    RailMainConceptsComponent,
+    RailMainConceptsExperimentRunComponent,
+    RailMainConceptsExperimentComponent,
+    RailMainConceptsExperimentTemplateComponent,
+    RailInnerSdkComponent,
+    BaseDocComponent,
+    ImageWithCoordMapComponent,
   ],
   imports: [
     BrowserModule,
@@ -153,7 +173,7 @@ import { ProfileComponent } from './components/profile/profile.component';
         sendAccessToken: true
       }
     }),
-    NgOptimizedImage
+    NgOptimizedImage,
   ],
   providers: [
     { provide: OAuthStorage, useFactory: () => localStorage },
