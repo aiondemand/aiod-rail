@@ -60,7 +60,6 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { HIGHLIGHT_OPTIONS, HighlightModule, HighlightOptions } from 'ngx-highlightjs';
 import { CodeEditorModule } from '@ngstack/code-editor';
 import { FeedbackComponent } from './components/general/feedback/feedback.component';
-import { AboutComponent } from './components/general/about/about.component';
 import { AdminComponent } from './components/admin/admin.component';
 import { NgOptimizedImage } from '@angular/common';
 import { MatTreeModule } from '@angular/material/tree';
@@ -116,7 +115,6 @@ import { ImageWithCoordMapComponent } from './components/general/image-with-coor
     ExperimentTemplateListItemComponent,
     ExperimentTemplateDetailComponent,
     FeedbackComponent,
-    AboutComponent,
     AdminComponent,
     EditExperimentTemplateComponent,
     ConfirmPopupComponent,

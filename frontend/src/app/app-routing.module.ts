@@ -18,7 +18,6 @@ import { PublicExperimentTemplateListComponent } from './components/experiments/
 import { MyExperimentTemplateListComponent } from './components/experiments/experiment-template-lists/my-experiment-template-list.component';
 import { AllExperimentTemplateListComponent } from './components/admin/experiment-template-lists/all-experiment-template-list.component';
 import { PendingExperimentTemplateListComponent } from './components/admin/experiment-template-lists/pending-experiment-template-list.component';
-import { AboutComponent } from './components/general/about/about.component';
 import { EditExperimentTemplateComponent } from './components/experiments/edit-experiment-template/edit-experiment-template.component';
 import { ProfileComponent } from './components/profile/profile.component';
 import { AdminComponent } from './components/admin/admin.component';
@@ -34,7 +33,6 @@ import { RailInnerSdkComponent } from './docs/rail-inner-sdk/rail-inner-sdk.comp
 
 const routes: Routes = [
   { path: '', redirectTo: 'docs/about', pathMatch: 'full' },
-  { path: 'about', component: AboutComponent },
   {
     path: 'experiments',
     component: ExperimentsComponent,
