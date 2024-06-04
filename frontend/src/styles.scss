@@ -41,7 +41,7 @@ body {
   font-family: "Jura", Roboto, "Helvetica Neue", sans-serif;
 }
 
-* {
+*:not(code *) {
   font-family: "Jura", Roboto, "Helvetica Neue", sans-serif;
 }
 
