@@ -237,31 +237,6 @@ export class ExperimentRunDetailComponent {
     private router: Router,
   ) { }
 
-  wandbLink(logs: string | null): string {
-    if (!logs) return '';
-
-    // regex to match https://wandb.ai/WANDB_ENTITY/aiod-demo/runs/RUN_ID
-    const regex = /https:\/\/wandb.ai\/(.*)\/(.*)\/runs\/(.*)/g;
-    const match = regex.exec(logs);
-    if (match) {
-      return match[0];
-    }
-    else {
-      return '';
-    }
-  }
-
-  getRunNameFromWandBLink(link: string): string {
-    const regex = /https:\/\/wandb.ai\/(.*)\/(.*)\/runs\/(.*)/g;
-    const match = regex.exec(link);
-    if (match) {
-      return match[3];
-    }
-    else {
-      return '';
-    }
-  }
-
   deleteRun(): void {
     let popupInput: ConfirmPopupInput = {
       message: "Do you wish to DELETE this run?",
