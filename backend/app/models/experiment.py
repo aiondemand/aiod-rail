@@ -47,17 +47,33 @@ class Experiment(Document):
     class Settings:
         name = "experiments"
 
-    def map_to_response(self, user: dict | None = None) -> ExperimentResponse:
-        is_mine = user is not None and self.created_by == user["email"]
-
-        # TODO quickfix to hide env vars from others
-        kwargs = self.dict()
+    @classmethod
+    async def create_experiment(
+        cls,
+        experiment_req: ExperimentCreate,
+        template: ExperimentTemplate,
+        created_by: str,
+    ) -> Experiment:
+        kwargs = experiment_req.dict()
         kwargs["env_vars"] = [
-            EnvironmentVar(key=var.key, value=var.value if is_mine else "*****")
-            for var in self.env_vars
+            EnvironmentVar.create_variable(
+                var, template.envs_required + template.envs_optional
+            )
+            for var in experiment_req.env_vars
         ]
 
-        return ExperimentResponse(**kwargs, is_mine=is_mine)
+        experiment = Experiment(**kwargs, created_by=created_by)
+        if not await experiment.is_valid(template):
+            return None
+
+        return experiment
+
+    def map_to_response(self, user: dict | None = None) -> ExperimentResponse:
+        is_mine = user is not None and self.created_by == user["email"]
+        for var in self.env_vars:
+            var.censor(is_mine)
+
+        return ExperimentResponse(**self.dict(), is_mine=is_mine)
 
     def is_readable_by_user(self, user: dict | None) -> bool:
         if self.is_public:
@@ -116,21 +132,19 @@ class Experiment(Document):
         new_template: ExperimentTemplate,
         editable_assets: bool,
     ) -> Experiment | None:
-        new_experiment = Experiment(
-            **experiment_req.dict(), created_by=original_experiment.created_by
+        new_experiment = await Experiment.create_experiment(
+            experiment_req, new_template, created_by=original_experiment.created_by
         )
+        if new_experiment is None:
+            return None
+
         same_template = (
             original_experiment.experiment_template_id
             == new_experiment.experiment_template_id
         )
         same_assets = original_experiment.has_same_assets(new_experiment)
 
-        if not await new_experiment.is_valid(new_template) or (
-            # we check whether we update a new experiment template to
-            # an archived one
-            same_template is False
-            and new_template.allows_experiment_creation is False
-        ):
+        if same_template is False and new_template.allows_experiment_creation is False:
             return None
 
         experiment_to_return = None

@@ -82,10 +82,10 @@ async def create_experiment_template(
     experiment_template: ExperimentTemplateCreate,
     user: dict = Depends(get_current_user(required=True, from_api_key=True)),
 ) -> Any:
-    experiment_template_obj = ExperimentTemplate(
-        **experiment_template.dict(), created_by=user["email"]
+    experiment_template_obj = await ExperimentTemplate.create_template(
+        experiment_template, user["email"]
     )
-    if experiment_template_obj.is_valid() is False:
+    if experiment_template_obj is None:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid Experiment Template",

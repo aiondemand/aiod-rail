@@ -228,7 +228,8 @@ export class EditExperimentTemplateComponent {
 
     dataTable.push({
       name: newEnvName,
-      description: form.value.description ?? ""
+      description: form.value.description ?? "",
+      is_secret: false
     });
 
     form.reset();
