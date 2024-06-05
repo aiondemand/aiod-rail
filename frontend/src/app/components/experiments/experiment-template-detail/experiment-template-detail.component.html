@@ -147,6 +147,11 @@
                     <td mat-cell *matCellDef="let env"> {{env.description}} </td>
                 </ng-container>
 
+                <ng-container matColumnDef="isSecret">
+                    <th mat-header-cell *matHeaderCellDef>Secret</th>
+                    <td mat-cell *matCellDef="let env">{{env.is_secret}} </td>
+                </ng-container>
+
                 <tr mat-header-row *matHeaderRowDef="displayedEnvVarColumns"></tr>
                 <tr mat-row *matRowDef="let row; columns: displayedEnvVarColumns;"></tr>
             </table>
@@ -159,7 +164,12 @@
             <table mat-table [dataSource]="experimentTemplate.envs_optional" class="mat-elevation-z8">
                 <ng-container matColumnDef="name">
                     <th mat-header-cell *matHeaderCellDef>Name</th>
-                    <td mat-cell *matCellDef="let env"> {{env.name}}</td>
+                    <td mat-cell *matCellDef="let env">
+                        <span class="env-names">
+                            {{env.name}}
+                            <mat-icon *ngIf="env.is_secret" matTooltip="Secret">lock</mat-icon>
+                        </span>
+                    </td>
                 </ng-container>
 
                 <ng-container matColumnDef="description">

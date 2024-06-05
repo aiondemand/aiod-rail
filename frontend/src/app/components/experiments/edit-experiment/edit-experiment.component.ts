@@ -4,7 +4,7 @@ import { MatSelectChange } from '@angular/material/select';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Subscription, catchError, combineLatest, debounceTime, firstValueFrom, of, retry, startWith, switchMap } from 'rxjs';
 import { Dataset } from 'src/app/models/dataset';
-import { EnvironmentVarCreate } from 'src/app/models/env-vars';
+import { EnvironmentVarCreate, EnvironmentVarDef } from 'src/app/models/env-vars';
 import { Experiment, ExperimentCreate } from 'src/app/models/experiment';
 import { ExperimentTemplate } from 'src/app/models/experiment-template';
 import { Model } from 'src/app/models/model';
@@ -247,7 +247,7 @@ export class EditExperimentComponent implements OnInit {
     });
 
     this.inputExperimentTemplate?.envs_optional.forEach(env => {
-      this.envsOptional.addControl(env.name, new FormControl<string>("", Validators.required));
+      this.envsOptional.addControl(env.name, new FormControl<string>(""));
       this.envsOptional.get(env.name)?.setValue(exp?.env_vars.find(e => e.key == env.name)?.value ?? "");
     });
 
