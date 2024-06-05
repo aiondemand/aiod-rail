@@ -176,9 +176,12 @@ async def archive_experiment_template(
 async def get_experiments_of_template_count(
     id: PydanticObjectId,
     only_mine: bool = False,
-    user: dict = Depends(get_current_user(required=True, from_api_key=True)),
+    user: dict = Depends(get_current_user(required=False, from_api_key=True)),
 ) -> Any:
     await get_experiment_template_if_accessible_or_raise(id, user)
+
+    if user is None and only_mine:
+        raise_requires_auth()
 
     search_conditions = [Experiment.created_by == user["email"]] if only_mine else []
     search_conditions.append(Experiment.experiment_template_id == id)
