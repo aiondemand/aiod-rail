@@ -8,6 +8,13 @@ from app.schemas.env_vars import EnvironmentVarDef
 from app.schemas.states import TemplateState
 
 
+class ReservedEnvVars(str, Enum):
+    MODEL_NAMES = "MODEL_NAMES"
+    DATASET_NAMES = "DATASET_NAMES"
+    MODEL_IDS = "MODEL_IDS"
+    DATASET_IDS = "DATASET_IDS"
+
+
 class TaskType(str, Enum):
     IMAGE_CLASSIFICATION = "IMAGE_CLASSIFICATION"
     OBJECT_DETECTION = "OBJECT_DETECTION"
@@ -42,10 +49,9 @@ class ExperimentTemplateBase(BaseModel):
     models_schema: AssetSchema
     envs_required: list[EnvironmentVarDef]
     envs_optional: list[EnvironmentVarDef]
-    # TODO: Rethink the metrics logic
-    available_metrics: list[str]
     script: str
     pip_requirements: str
+    is_public: bool
 
 
 class ExperimentTemplateCreate(ExperimentTemplateBase):
@@ -58,7 +64,9 @@ class ExperimentTemplateResponse(ExperimentTemplateBase):
     updated_at: datetime
     state: TemplateState
     dockerfile: str
-    approved: bool
+    is_archived: bool
+    is_approved: bool
+    is_mine: bool
 
 
 class ExperimentTemplateId(BaseModel):
@@ -66,7 +74,7 @@ class ExperimentTemplateId(BaseModel):
     A class that is used for projecting the entire ExperimentTemplate documents
     into only their IDs and that we use when fetching ExperimentTemplate documents.
     Using the beanie library, we cannot simply choose what fields to return,
-    but rather we need to create a projection definition using a seperate class.
+    but rather we need to create a projection definition using a separate class.
     """
 
     id: PydanticObjectId

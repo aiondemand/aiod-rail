@@ -47,7 +47,7 @@ export class DatasetListComponent implements OnInit {
     this.updateDatasets();
   }
 
-  search_datasets(query: string) {
+  searchDatasets(query: string) {
     if (query.length == 0 && this.searchQuery == query) {
       return;
     }
@@ -65,7 +65,7 @@ export class DatasetListComponent implements OnInit {
       searchQuery?: string
     }
 
-    var queryParams: QueryParams = {
+    let queryParams: QueryParams = {
       pageSize: this.pagination.pageSize,
       pageIndex: this.pagination.pageIndex
     };
@@ -88,6 +88,7 @@ export class DatasetListComponent implements OnInit {
     );
 
     firstValueFrom(this.backend.getDatasetsCount(this.searchQuery))
-      .then(count => this.pagination.length = count);
+      .then(count => this.pagination.length = count)
+      .catch(err => console.error(err));
   }
 }

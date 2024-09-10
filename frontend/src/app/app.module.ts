@@ -27,7 +27,6 @@ import { DefaultIfEmptyPipe } from './pipes/default-if-empty.pipe';
 import { MarkdownModule } from 'ngx-markdown';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { SavedDatasetsComponent } from './components/datasets/saved-datasets/saved-datasets.component';
-import { SaveRemoveDatasetButtonComponent } from './components/datasets/utils/save-remove-dataset-button/save-remove-dataset-button.component';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { OAuthModule, OAuthStorage } from 'angular-oauth2-oidc';
 import { LoginLogoutComponent } from './authorization/login-logout/login-logout.component';
@@ -40,7 +39,7 @@ import { MatInputModule } from '@angular/material/input';
 import { TextFieldModule } from '@angular/cdk/text-field';
 import { HuggingfaceFormComponent } from './components/datasets/create-dataset/huggingface-form/huggingface-form.component';
 import { FormatPlatformNamePipe } from './pipes/format-platform-name.pipe';
-import { CreateExperimentComponent } from './components/experiments/create-experiment/create-experiment.component';
+import { EditExperimentComponent } from './components/experiments/edit-experiment/edit-experiment.component';
 import { ExperimentDetailComponent } from './components/experiments/experiment-detail/experiment-detail.component';
 import { ExperimentListItemComponent } from './components/experiments/experiment-list-item/experiment-list-item.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -48,18 +47,41 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { ExperimentRunListComponent } from './components/experiments/experiment-run-list/experiment-run-list.component';
 import { ExperimentRunDetailComponent } from './components/experiments/experiment-run-detail/experiment-run-detail.component';
 import { MatTableModule } from '@angular/material/table';
-import { AllExperimentListComponent } from './components/experiments/experiment-lists/all-experiment-list.component';
+import { PublicExperimentListComponent } from './components/experiments/experiment-lists/public-experiment-list.component';
 import { MyExperimentListComponent } from './components/experiments/experiment-lists/my-experiment-list.component';
-import { CreateExperimentTemplateComponent } from './components/experiments/create-experiment-template/create-experiment-template.component';
-import { AllExperimentTemplateList } from './components/experiments/experiment-template-lists/all-experiment-template-list.component';
-import { MyExperimentTemplateList } from './components/experiments/experiment-template-lists/my-experiment-template-list.component';
+import { AllExperimentListComponent } from './components/admin/experiment-list/all-experiment-list.component';
+import { PublicExperimentTemplateListComponent } from './components/experiments/experiment-template-lists/public-experiment-template-list.component';
+import { MyExperimentTemplateListComponent } from './components/experiments/experiment-template-lists/my-experiment-template-list.component';
+import { AllExperimentTemplateListComponent } from './components/admin/experiment-template-lists/all-experiment-template-list.component';
+import { PendingExperimentTemplateListComponent } from './components/admin/experiment-template-lists/pending-experiment-template-list.component';
 import { ExperimentTemplateListItemComponent } from './components/experiments/experiment-template-list-item/experiment-template-list-item.component';
 import { ExperimentTemplateDetailComponent } from './components/experiments/experiment-template-detail/experiment-template-detail.component';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { HIGHLIGHT_OPTIONS, HighlightModule, HighlightOptions } from 'ngx-highlightjs';
 import { CodeEditorModule } from '@ngstack/code-editor';
 import { FeedbackComponent } from './components/general/feedback/feedback.component';
-import { AboutComponent } from './components/general/about/about.component';
+import { AdminComponent } from './components/admin/admin.component';
+import { NgOptimizedImage } from '@angular/common';
+import { MatTreeModule } from '@angular/material/tree';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { EditExperimentTemplateComponent } from './components/experiments/edit-experiment-template/edit-experiment-template.component';
+import { ConfirmPopupComponent } from './components/general/popup/confirm-popup.component';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { ProfileComponent } from './components/profile/profile.component';
+import { DocsComponent } from './docs/docs.component';
+import { AboutComponent as DocsAboutComponent } from './docs/about/about.component';
+import { RailSdksComponent } from './docs/rail-sdks/rail-sdks.component';
+import { RailOuterSdkComponent } from './docs/rail-outer-sdk/rail-outer-sdk.component';
+import { RailMainConceptsComponent } from './docs/rail-main-concepts/rail-main-concepts.component';
+import { RailMainConceptsExperimentRunComponent } from './docs/rail-main-concepts/rail-main-concepts-experiment-run.component';
+import { RailMainConceptsExperimentComponent } from './docs/rail-main-concepts/rail-main-concepts-experiment.component';
+import { RailMainConceptsExperimentTemplateComponent } from './docs/rail-main-concepts/rail-main-concepts-experiment-template.component';
+import { RailInnerSdkComponent } from './docs/rail-inner-sdk/rail-inner-sdk.component';
+import { BaseDocComponent } from './docs/base-doc/base-doc.component';
+import { ImageWithCoordMapComponent } from './components/general/image-with-coord-map/image-with-coord-map.component';
+
+
 
 
 @NgModule({
@@ -74,25 +96,40 @@ import { AboutComponent } from './components/general/about/about.component';
     EllipsisPipe,
     DefaultIfEmptyPipe,
     SavedDatasetsComponent,
-    SaveRemoveDatasetButtonComponent,
     CreateDatasetComponent,
     HuggingfaceFormComponent,
     LoginLogoutComponent,
     FormatPlatformNamePipe,
-    CreateExperimentComponent,
+    EditExperimentComponent,
     ExperimentDetailComponent,
     ExperimentListItemComponent,
     ExperimentRunListComponent,
     ExperimentRunDetailComponent,
+    PublicExperimentListComponent,
     MyExperimentListComponent,
     AllExperimentListComponent,
-    CreateExperimentTemplateComponent,
-    AllExperimentTemplateList,
-    MyExperimentTemplateList,
+    PublicExperimentTemplateListComponent,
+    MyExperimentTemplateListComponent,
+    AllExperimentTemplateListComponent,
+    PendingExperimentTemplateListComponent,
     ExperimentTemplateListItemComponent,
     ExperimentTemplateDetailComponent,
     FeedbackComponent,
-    AboutComponent
+    AdminComponent,
+    EditExperimentTemplateComponent,
+    ConfirmPopupComponent,
+    ProfileComponent,
+    DocsComponent,
+    DocsAboutComponent,
+    RailSdksComponent,
+    RailOuterSdkComponent,
+    RailMainConceptsComponent,
+    RailMainConceptsExperimentRunComponent,
+    RailMainConceptsExperimentComponent,
+    RailMainConceptsExperimentTemplateComponent,
+    RailInnerSdkComponent,
+    BaseDocComponent,
+    ImageWithCoordMapComponent,
   ],
   imports: [
     BrowserModule,
@@ -124,6 +161,10 @@ import { AboutComponent } from './components/general/about/about.component';
     TextFieldModule,
     MatAutocompleteModule,
     HighlightModule,
+    MatTreeModule,
+    MatProgressBarModule,
+    MatDialogModule,
+    MatSlideToggleModule,
     MarkdownModule.forRoot(),
     CodeEditorModule.forRoot(),
     OAuthModule.forRoot({
@@ -131,7 +172,8 @@ import { AboutComponent } from './components/general/about/about.component';
         allowedUrls: [environment.BACKEND_API_URL],
         sendAccessToken: true
       }
-    })
+    }),
+    NgOptimizedImage,
   ],
   providers: [
     { provide: OAuthStorage, useFactory: () => localStorage },

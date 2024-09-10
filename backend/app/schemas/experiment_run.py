@@ -8,11 +8,15 @@ from app.schemas.states import RunState
 
 class ExperimentRunBase(BaseModel):
     id: PydanticObjectId
+    experiment_id: PydanticObjectId
     created_at: datetime
     updated_at: datetime
     retry_count: int
     state: RunState
     metrics: dict[str, float]
+    is_public: bool
+    is_archived: bool
+    is_mine: bool
 
 
 class ExperimentRunResponse(ExperimentRunBase):

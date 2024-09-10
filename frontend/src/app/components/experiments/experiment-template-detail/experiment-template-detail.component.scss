@@ -1,12 +1,80 @@
 @import '../../../../variables.scss';
 
-h1 {
-    span {
-        font-size: 0.5em;
-        opacity: 0.75;
-        font-weight: normal;
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .header-name {
+        display: flex;
+        align-items: center;
+        gap: 0.75em;
+
+        mat-icon {
+            color: rgb(220, 220, 220);
+            transform: scale(1.5);
+        }
+    }
+
+    
+    .header-buttons {
+        display: flex;
+        gap: 0.25em;
+
+        color: grey;
+        // mat-icon {
+        //     color: grey;
+        // }
+
+        button:hover {
+            color: black;
+        }
     }
 }
+
+.deleted-state {
+    display: flex;
+    gap: 1em;
+    
+    span {
+        display: flex;
+        align-items: center;
+        gap: 0.25em;
+    }
+    
+    font-size: 0.7em;
+    
+    .crashed {
+        color: red;
+    }
+
+    .undo-button {
+        border-color: red;
+        font-size: 1em;
+    }
+}
+
+.state {
+    margin-bottom: 1em;
+    margin-left: 0.5em;
+    
+    span {
+        display: flex;
+        align-items: center;
+        gap: 0.25em;
+    }
+    
+    font-size: 0.7em;
+    
+    .in-progress {
+        color: green;
+    }
+
+    .crashed {
+        color: red;
+    }
+}
+
 
 .code {
     margin-top: 0;

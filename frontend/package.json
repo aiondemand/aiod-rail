@@ -1,13 +1,16 @@
 {
-  "name": "aiod-practitioners-portal-frontend",
+  "name": "aiod-rail-frontend",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
+    "start-local": "ng serve --watch --configuration local",
+    "build-prod": "ng build --configuration production --output-path=dist",
+    "build-dev": "ng build --configuration development --output-path=dist",
+    "build-local": "ng build --configuration local --output-path=dist",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "build-prod-flat": "ng build --configuration production --output-path=dist"
+    "start-inside-dev-container": "ng serve -c local-docker --watch --port 80 --host 0.0.0.0 --poll 2000 --disable-host-check"
   },
   "private": true,
   "dependencies": {
@@ -23,16 +26,18 @@
     "@angular/router": "^16.0.0",
     "@ngstack/code-editor": "^5.1.0",
     "angular-oauth2-oidc": "^15.0.1",
+    "clipboard": "^2.0.11",
     "marked": "^4.3.0",
     "ngx-highlightjs": "^10.0.0",
     "ngx-markdown": "^16.0.0",
+    "prismjs": "^1.29.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.13.0"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^16.0.1",
-    "@angular/cli": "~16.0.1",
+    "@angular-devkit/build-angular": "^16.2.12",
+    "@angular/cli": "^16.0.6",
     "@angular/compiler-cli": "^16.0.0",
     "@types/jasmine": "~4.3.0",
     "@types/marked": "^4.3.1",

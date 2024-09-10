@@ -1,15 +1,17 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, catchError, combineLatest, of, switchMap, tap, throwError } from 'rxjs';
+import { catchError, combineLatest, map, Observable, of, switchMap, throwError } from 'rxjs';
 import { Dataset } from '../models/dataset';
 import { environment } from 'src/environments/environment';
 import { Platform } from '../models/platform';
-import { ExperimentCreate, Experiment } from '../models/experiment';
+import { Experiment, ExperimentCreate } from '../models/experiment';
 import { Model } from '../models/model';
-import { ExperimentTemplateCreate, ExperimentTemplate } from '../models/experiment-template';
+import { ExperimentTemplate, ExperimentTemplateCreate } from '../models/experiment-template';
 import { Publication } from '../models/publication';
 import { ExperimentRun, ExperimentRunDetails } from '../models/experiment-run';
-import { ExperimentQueries, ExperimentTemplateQueries, PageQueries, QueryOperator } from '../models/queries';
+import { ExperimentFilter, ExperimentTemplateFilter, PageQueries } from '../models/queries';
+import { FileDetail } from '../models/file-detail';
+import { UserRailProfile } from '../models/user-rail-profile';
 
 
 @Injectable({
@@ -17,35 +19,23 @@ import { ExperimentQueries, ExperimentTemplateQueries, PageQueries, QueryOperato
 })
 export class BackendApiService {
 
-  mockedSavedDatasets: Dataset[] = [];
-
-  constructor(private http: HttpClient) {
-    const savedDatasets = localStorage.getItem('savedDatasets');
-    if (savedDatasets) {
-      this.mockedSavedDatasets = JSON.parse(savedDatasets);
-    }
-  }
+  constructor(private http: HttpClient) { }
 
   ////////////////////////////// DATASETS //////////////////////////////
 
   getDatasets(query: string = "", pageQueries?: PageQueries): Observable<Dataset[]> {
     // TODO: handle the "is_in_my_saved" property on backend
-    var backend_route = `${environment.BACKEND_API_URL}/assets/datasets`;
+    let backend_route = `${environment.BACKEND_API_URL}/assets/datasets`;
     if (query?.length > 0) {
       backend_route += `/search/${query}`
     }
     backend_route += `?${this._buildPageQueries(pageQueries)}`;
 
-    return this.http.get<Dataset[]>(backend_route)
-      .pipe(tap(datasets => {
-        datasets.forEach(dataset => {
-          dataset.is_in_my_saved = this.mockedSavedDatasets.some(d => d.identifier === dataset.identifier);
-        });
-      }));
+    return this.http.get<Dataset[]>(backend_route);
   }
 
   getDatasetsCount(query: string = ""): Observable<number> {
-    var backend_route = `${environment.BACKEND_API_URL}/assets/counts/datasets`;
+    let backend_route = `${environment.BACKEND_API_URL}/assets/counts/datasets`;
     if (query?.length > 0) {
       backend_route += `/search/${query}`
     }
@@ -54,11 +44,7 @@ export class BackendApiService {
   }
 
   getDataset(id: string): Observable<Dataset> {
-    // TODO: handle the "is_in_my_saved" property on backend
-    return this.http.get<Dataset>(`${environment.BACKEND_API_URL}/assets/datasets/${id}`)
-      .pipe(tap(dataset => {
-        dataset.is_in_my_saved = this.mockedSavedDatasets.some(d => d.identifier === dataset.identifier);
-      }));
+    return this.http.get<Dataset>(`${environment.BACKEND_API_URL}/assets/datasets/${id}`);
   }
 
   createDataset(dataset: Dataset, file: any, hf_username: string = '', hf_token: string = ''): Observable<Dataset> {
@@ -100,41 +86,42 @@ export class BackendApiService {
   private deleteDataset(dataset: Dataset): Observable<boolean> {
     return this.http.delete<Dataset>(`${environment.BACKEND_API_URL}/assets/datasets/${dataset.identifier}`)
       .pipe(
-        switchMap(_ => {
-          return this.removeFromSaved(dataset);
-        }),
-        catchError(err => throwError(() => new Error(err)))
+        map(_ => true)
       );
   }
 
-  saveDataset(dataset: Dataset): Observable<boolean> {
-    // TODO: call the backend API to save the dataset once we have the endpoint
-    this.mockedSavedDatasets.push(dataset);
-    localStorage.setItem('savedDatasets', JSON.stringify(this.mockedSavedDatasets));
-    return of(true);
+  getMyDatasets(query: string = "", pageQueries?: PageQueries): Observable<Dataset[]> {
+    let queries = `?${this._buildPageQueries(pageQueries)}`;
+
+    return this.http.get<Dataset[]>(`${environment.BACKEND_API_URL}/assets/datasets/my${queries}`).pipe(
+      // TODO: Implement in MyLibrary and Backend
+      // Filter only datasets their name contains th  e query
+      map(datasets => query && datasets
+        ? datasets.filter(dataset => dataset.name.includes(query))
+        : datasets
+      )
+    );
   }
 
-  removeFromSaved(dataset: Dataset): Observable<boolean> {
-    this.mockedSavedDatasets = this.mockedSavedDatasets.filter(d => d.identifier !== dataset.identifier);
-    localStorage.setItem('savedDatasets', JSON.stringify(this.mockedSavedDatasets));
-    return of(true);
+  getMyModels(query: string = "", pageQueries?: PageQueries): Observable<Model[]> {
+    let queries = `?${this._buildPageQueries(pageQueries)}`;
+
+    return this.http.get<Model[]>(`${environment.BACKEND_API_URL}/assets/models/my${queries}`).pipe(
+      // TODO: Implement in MyLibrary and Backend
+      // Filter only models their name contains the query
+      map(models => query && models
+        ? models.filter(model => model.name.includes(query))
+        : models
+      )
+    );
   }
 
-  getSavedDatasets(pageQueries?: PageQueries): Observable<Dataset[]> {
-    // TODO: call the backend API to get the saved datasets once we have the endpoint
-    // TODO: handle the "is_in_my_saved" property on backend
-    let offset = pageQueries?.offset ?? 0;
-    let limit = pageQueries?.limit ?? environment.DEFAULT_PAGE_SIZE;
-
-    return of(this.mockedSavedDatasets.slice(offset, offset + limit))
-      .pipe(tap(datasets => {
-        datasets.forEach(dataset => dataset.is_in_my_saved = true);
-      }));
+  getMyDatasetsCount(): Observable<number> {
+    return this.http.get<number>(`${environment.BACKEND_API_URL}/assets/counts/datasets/my`);
   }
 
-  getSavedDatasetsCount(): Observable<number> {
-    // TODO: call the backend API to get the saved datasets count once we have the endpoint
-    return of<number>(this.mockedSavedDatasets.length);
+  getMyModelsCount(): Observable<number> {
+    return this.http.get<number>(`${environment.BACKEND_API_URL}/assets/counts/models/my`);
   }
 
   ////////////////////////////// MODELS //////////////////////////////
@@ -143,11 +130,10 @@ export class BackendApiService {
    * Get list of models
    * @returns Observable<Model[]>
    * @param query
-   * @param offset
-   * @param limit
+   * @param pageQueries
    */
   getModels(query: string = "", pageQueries?: PageQueries): Observable<Model[]> {
-    var backend_route = `${environment.BACKEND_API_URL}/assets/models`;
+    let backend_route = `${environment.BACKEND_API_URL}/assets/models`;
     if (query?.length > 0) {
       backend_route += `/search/${query}`
     }
@@ -165,11 +151,11 @@ export class BackendApiService {
   }
 
   getModelsCount(query: string = ""): Observable<number> {
-    var backend_route = `${environment.BACKEND_API_URL}/assets/counts/models`;
+    let backend_route = `${environment.BACKEND_API_URL}/assets/counts/models`;
     if (query?.length > 0) {
       backend_route += `/search/${query}`
     }
-    
+
     return this.http.get<number>(backend_route);
   }
 
@@ -187,15 +173,14 @@ export class BackendApiService {
     return combineLatest(experiment.publication_ids.map(id => this.getPublication(id)));
   }
 
-   /**
+  /**
    * Get list of publications
    * @returns Observable<Publication[]>
    * @param query
-   * @param offset
-   * @param limit
+   * @param pageQueries
    */
-   getPublications(query: string = "", pageQueries?: PageQueries): Observable<Publication[]> {
-    var backend_route = `${environment.BACKEND_API_URL}/assets/publications`;
+  getPublications(query: string = "", pageQueries?: PageQueries): Observable<Publication[]> {
+    let backend_route = `${environment.BACKEND_API_URL}/assets/publications`;
     if (query?.length > 0) {
       backend_route += `/search/${query}`
     }
@@ -214,7 +199,7 @@ export class BackendApiService {
   }
 
   getPublicationsCount(query: string = ""): Observable<number> {
-    var backend_route = `${environment.BACKEND_API_URL}/assets/counts/publications`;
+    let backend_route = `${environment.BACKEND_API_URL}/assets/counts/publications`;
     if (query?.length > 0) {
       backend_route += `/search/${query}`
     }
@@ -223,15 +208,6 @@ export class BackendApiService {
   }
 
   ////////////////////////////// MISC //////////////////////////////
-
-  /**
-   * Tests an API that requires authentication on backend.
-   * Fails if the user is not authenticated.
-   * @returns Observable<any>
-   */
-  authenticationTest(): Observable<any> {
-    return this.http.get<any>(`${environment.BACKEND_API_URL}/assets/authentication_test`);
-  }
 
   /**
    * Get list of platforms from the backend.
@@ -248,10 +224,11 @@ export class BackendApiService {
    * @returns Observable<Experiment[]>
    */
   getExperiments(
+    query: string,
     pageQueries?: PageQueries,
-    experimentQueries?: ExperimentQueries
+    experimentFilter?: ExperimentFilter
   ): Observable<Experiment[]> {
-    var queries = `?${this._buildPageQueries(pageQueries)}&${this._buildExperimentQueries(experimentQueries)}`;
+    let queries = `?query=${query}&${this._buildPageQueries(pageQueries)}&${this._buildExperimentFilter(experimentFilter)}`;
     return this.http.get<Experiment[]>(`${environment.BACKEND_API_URL}/experiments${queries}`);
   }
 
@@ -268,8 +245,8 @@ export class BackendApiService {
    * Get count of experiments
    * @returns Observable<number> (count)
    */
-  getExperimentsCount(experimentQueries?: ExperimentQueries): Observable<number> {
-    var queries = `?${this._buildExperimentQueries(experimentQueries)}`;
+  getExperimentsCount(query: string, experimentFilter?: ExperimentFilter): Observable<number> {
+    let queries = `?query=${query}&${this._buildExperimentFilter(experimentFilter)}`;
     return this.http.get<number>(`${environment.BACKEND_API_URL}/count/experiments${queries}`);
   }
 
@@ -282,6 +259,18 @@ export class BackendApiService {
     return this.http.post<Experiment>(`${environment.BACKEND_API_URL}/experiments`, experiment);
   }
 
+  updateExperiment(id: string, experiment: ExperimentCreate): Observable<Experiment> {
+    return this.http.put<Experiment>(`${environment.BACKEND_API_URL}/experiments/${id}`, experiment);
+  }
+
+  archiveExperiment(id: string, archive: boolean): Observable<void> {
+    return this.http.patch<void>(`${environment.BACKEND_API_URL}/experiments/${id}/archive?archive=${archive}`, {});
+  }
+
+  deleteExperiment(id: string): Observable<boolean> {
+    return this.http.delete<boolean>(`${environment.BACKEND_API_URL}/experiments/${id}`);
+  }
+
   ////////////////////////////// EXPERIMENT TEMPLATES //////////////////////////////
 
   /**
@@ -289,10 +278,11 @@ export class BackendApiService {
    * @returns Observable<ExperimentTemplate[]>
    */
   getExperimentTemplates(
+    query: string,
     pageQueries?: PageQueries,
-    templateQueries?: ExperimentTemplateQueries
+    experimentTemplateFilter?: ExperimentTemplateFilter
   ): Observable<ExperimentTemplate[]> {
-    var queries = `?${this._buildPageQueries(pageQueries)}&${this._buildExperimentTemplateQueries(templateQueries)}`;
+    let queries = `?query=${query}&${this._buildPageQueries(pageQueries)}&${this._buildExperimentTemplateFilter(experimentTemplateFilter)}`;
     return this.http.get<ExperimentTemplate[]>(`${environment.BACKEND_API_URL}/experiment-templates${queries}`);
   }
 
@@ -310,10 +300,15 @@ export class BackendApiService {
    * @returns Observable<number> (count)
    */
   getExperimentTemplatesCount(
-    templateQueries?: ExperimentTemplateQueries
+    query: string,
+    experimentTemplateFilter?: ExperimentTemplateFilter
   ): Observable<number> {
-    var queries = `?${this._buildExperimentTemplateQueries(templateQueries)}`;
+    let queries = `?query=${query}&${this._buildExperimentTemplateFilter(experimentTemplateFilter)}`;
     return this.http.get<number>(`${environment.BACKEND_API_URL}/count/experiment-templates${queries}`);
+  }
+
+  getExperimentsOfTemplateCount(id: string, only_mine: boolean): Observable<number> {
+    return this.http.get<number>(`${environment.BACKEND_API_URL}/count/experiment-templates/${id}/experiments?only_mine=${only_mine}`);
   }
 
   /**
@@ -324,28 +319,51 @@ export class BackendApiService {
     return this.http.post<ExperimentTemplate>(`${environment.BACKEND_API_URL}/experiment-templates`, experimentTemplate);
   }
 
+  updateExperimentTemplate(id: string, experimentTemplate: ExperimentTemplateCreate): Observable<ExperimentTemplate> {
+    return this.http.put<ExperimentTemplate>(`${environment.BACKEND_API_URL}/experiment-templates/${id}`, experimentTemplate);
+  }
+
+  archiveExperimentTemplate(id: string, archive: boolean): Observable<void> {
+    return this.http.patch<void>(`${environment.BACKEND_API_URL}/experiment-templates/${id}/archive?archive=${archive}`, {});
+  }
+
+  deleteExperimentTemplate(id: string): Observable<void> {
+    return this.http.delete<void>(`${environment.BACKEND_API_URL}/experiment-templates/${id}`);
+  }
+
+  approveExperimentTemplate(id: string, approve: boolean): Observable<void> {
+    return this.http.patch<void>(`${environment.BACKEND_API_URL}/experiment-templates/${id}/approve?approve=${approve}`, {});
+  }
+
   ////////////////////////////// EXPERIMENT RUNS //////////////////////////////
 
   /**
    * Get list of experiment runs
    * @returns Observable<ExperimentRun[]>
-   * @param offset
-   * @param limit
+   * @param pageQueries
    * @param experimentId
    */
-  getExperimentRuns(experimentId: string = "", pageQueries?: PageQueries): Observable<ExperimentRun[]> {
+  getExperimentRuns(experimentId: string, pageQueries?: PageQueries): Observable<ExperimentRun[]> {
     let pageQueriesStr = `?${this._buildPageQueries(pageQueries)}`;
-    
-    if (experimentId == "") {
-      return this.http.get<ExperimentRun[]>(`${environment.BACKEND_API_URL}/experiment-runs${pageQueriesStr}`);
-    }    
     return this.http.get<ExperimentRun[]>(`${environment.BACKEND_API_URL}/experiments/${experimentId}/runs${pageQueriesStr}`);
   }
 
   getExperimentRunsCount(experimentId: string): Observable<number> {
     return this.http.get<number>(`${environment.BACKEND_API_URL}/count/experiments/${experimentId}/runs`);
   }
-  
+
+
+  listFilesFromExperimentRun(experimentId: string): Observable<FileDetail[]> {
+    return this.http.get<FileDetail[]>(`${environment.BACKEND_API_URL}/experiment-runs/${experimentId}/files/list`);
+  }
+
+  downloadFileFromExperimentRun(experimentId: string, filepath: string): Observable<any> {
+    return this.http.get(
+      `${environment.BACKEND_API_URL}/experiment-runs/${experimentId}/files/download?filepath=${filepath}`,
+      { responseType: 'blob', observe: 'response', reportProgress: true }
+    );
+  }
+
   /**
    * Get experiment run by id
    * @returns Observable<ExperimentRun>
@@ -353,6 +371,14 @@ export class BackendApiService {
    */
   getExperimentRun(experimentRunId: string): Observable<ExperimentRunDetails> {
     return this.http.get<ExperimentRunDetails>(`${environment.BACKEND_API_URL}/experiment-runs/${experimentRunId}`);
+  }
+
+  stopExperimentRun(experimentRunId: string): Observable<void> {
+    return this.http.get<void>(`${environment.BACKEND_API_URL}/experiment-runs/${experimentRunId}/stop`);
+  }
+
+  deleteExperimentRun(experimentRunId: string): Observable<void> {
+    return this.http.delete<void>(`${environment.BACKEND_API_URL}/experiment-runs/${experimentRunId}`);
   }
 
   /**
@@ -374,8 +400,23 @@ export class BackendApiService {
     return this.http.get<ExperimentRun>(`${environment.BACKEND_API_URL}/experiments/${experimentId}/execute`);
   }
 
+
+  ////////////////////////////// PROFILE //////////////////////////////
+  getUserProfile(): Observable<UserRailProfile> {
+    return this.http.get<UserRailProfile>(`${environment.BACKEND_API_URL}/users/profile`);
+  }
+
+  getUserApiKey(): Observable<string> {
+    return this.http.get<string>(`${environment.BACKEND_API_URL}/users/api_key`);
+  }
+
+  createOrUpdateUserApiKey(): Observable<string> {
+    return this.http.post<string>(`${environment.BACKEND_API_URL}/users/api_key`, {});
+  }
+
+
   _buildPageQueries(pageQueries?: PageQueries): string {
-    if (pageQueries == null) {
+    if (pageQueries == undefined) {
       pageQueries = {};
     }
     if (pageQueries.limit == null) {
@@ -387,43 +428,28 @@ export class BackendApiService {
     return `offset=${pageQueries.offset}&limit=${pageQueries.limit}`
   }
 
-  _buildExperimentQueries(experimentQueries?: ExperimentQueries): string {
-    if (experimentQueries == null) {
-      experimentQueries = {};
-    }
-    if (experimentQueries.include_mine == null) {
-      experimentQueries.include_mine = false;
-    }
-    if (experimentQueries.query_operator == null) {
-      experimentQueries.query_operator = QueryOperator.And;
+  _buildExperimentFilter(experimentFilter?: ExperimentFilter): string {
+    if (experimentFilter == undefined) {
+      return "";
     }
 
     let q: string = "";
-    let key: keyof ExperimentQueries
-    for (key in experimentQueries) {
-      q += `${key}=${experimentQueries[key]}&`;
+    let key: keyof ExperimentFilter;
+    for (key in experimentFilter) {
+      q += `${key}=${experimentFilter[key]}&`;
     }
     return q.slice(0, q.length - 1);
   }
 
-  _buildExperimentTemplateQueries(templateQueries?: ExperimentTemplateQueries): string {
-    if (templateQueries == null) {
-      templateQueries = {};
-    }
-    if (templateQueries.include_mine == null) {
-      templateQueries.include_mine = false;
-    }
-    if (templateQueries.include_approved == null) {
-      templateQueries.include_approved = false;
-    }
-    if (templateQueries.query_operator == null) {
-      templateQueries.query_operator = QueryOperator.And;
+  _buildExperimentTemplateFilter(experimentTemplateFilter?: ExperimentTemplateFilter): string {
+    if (experimentTemplateFilter == undefined) {
+      return "";
     }
 
     let q: string = "";
-    let key: keyof ExperimentTemplateQueries
-    for (key in templateQueries) {
-      q += `${key}=${templateQueries[key]}&`;
+    let key: keyof ExperimentTemplateFilter;
+    for (key in experimentTemplateFilter) {
+      q += `${key}=${experimentTemplateFilter[key]}&`;
     }
     return q.slice(0, q.length - 1);
   }

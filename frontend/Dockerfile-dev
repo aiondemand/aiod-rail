@@ -1,0 +1,10 @@
+### STAGE 1: Build ###
+FROM node:lts
+
+# Install dependencies
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci
+
+# Build
+COPY . .

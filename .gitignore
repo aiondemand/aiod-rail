@@ -120,14 +120,14 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-.env
+**/.env
+**/.env-dev
 .venv
 env/
 venv/
 ENV/
 env.bak/
 venv.bak/
-backend/.env
 
 # Spyder project settings
 .spyderproject
@@ -161,12 +161,16 @@ cython_debug/
 .idea/
 
 # Visual Studio Code
-.vscode/
+**/.vscode/*
 .vs/
+# Don's exclude launch.json in all subfolders
+!**/.vscode/launch.json
 # !.vscode/settings.json
 # !.vscode/tasks.json
 # !.vscode/extensions.json
 # !.vscode/*.code-snippets
+
+*.code-workspace
 
 
 # Local History for Visual Studio Code
@@ -175,5 +179,6 @@ cython_debug/
 # Built Visual Studio Code Extensions
 *.vsix
 
-db
-eee-data
+db/
+eee-data/
+temp/

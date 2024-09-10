@@ -2,20 +2,28 @@
     <mat-card-header [routerLink]="['/experiments/templates', template.id]">
         <mat-card-subtitle>{{template.id}}</mat-card-subtitle>
         <mat-card-title>
-            <h3>{{template.name}}</h3>
+
+            <span class="template-name">
+                <h3>{{template.name}}</h3>
+                <mat-icon *ngIf="template.is_public" matTooltip="Public template">public</mat-icon>
+                <mat-icon *ngIf="!template.is_public" matTooltip="Private template">public_off</mat-icon>
+            </span>
         </mat-card-title>
     </mat-card-header>
     <mat-card-content>
-        <div class="state" *ngIf="template.state != 'FINISHED'">
-            <ng-container *ngIf="!template.approved">
-                <span class="crashed"><mat-icon matTooltip="Experiment templates created by users are manually reviewed and then approved for use">search</mat-icon>Waiting for approval</span>
+        <div class="state" *ngIf="template.is_archived">
+            <span class="crashed"><mat-icon matTooltip="New experiments cannot use this template">delete</mat-icon>Archived</span>
+        </div>
+        <div class="state" *ngIf="!template.is_archived && template.state != 'FINISHED'">
+            <ng-container *ngIf="!template.is_approved">
+                <span class="crashed"><mat-icon matTooltip="Experiment templates are manually reviewed before being approved for use">search</mat-icon>Waiting for approval</span>
             </ng-container>
-            <ng-container *ngIf="template.approved">
+            <ng-container *ngIf="template.is_approved">
                 <span *ngIf="template.state == 'CREATED'"><mat-icon>schedule</mat-icon>Scheduled</span>
                 <span class="in-progress" *ngIf="template.state == 'IN_PROGRESS'"><mat-icon>rotate_right</mat-icon>Building image</span>
                 <span class="crashed" *ngIf="template.state == 'CRASHED'"><mat-icon>error</mat-icon>Crashed</span>
             </ng-container>
-            
+
         </div>
         <div>
             {{template.description | ellipsis:300}}

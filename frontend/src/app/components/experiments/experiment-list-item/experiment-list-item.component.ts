@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { combineLatest } from 'rxjs';
+import { combineLatest, firstValueFrom } from 'rxjs';
 import { Dataset } from 'src/app/models/dataset';
 import { Experiment } from 'src/app/models/experiment';
 import { Model } from 'src/app/models/model';
@@ -20,19 +20,19 @@ export class ExperimentListItemComponent {
   constructor(private backend: BackendApiService, private snackBar: SnackBarService) { }
 
   onShowMore() {
-    combineLatest([
-      // TODO: Update to use arrays
-      this.backend.getDataset(this.experiment.dataset_ids[0]),
-      this.backend.getModel(this.experiment.model_ids[0])
-    ]).subscribe({
-      next: ([dataset, model]) => {
+    firstValueFrom(
+      combineLatest([
+        // TODO: Update to use arrays
+        this.backend.getDataset(this.experiment.dataset_ids[0]),
+        this.backend.getModel(this.experiment.model_ids[0])
+      ]))
+      .then(([dataset, model]) => {
         this.dataset = dataset;
         this.model = model;
-      },
-      error: (err) => {
+      })
+      .catch(err => {
         console.error(err);
         this.snackBar.showError("Failed to load experiment details");
-      }
-    });
+      })
   }
 }

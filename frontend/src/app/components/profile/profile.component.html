@@ -1,0 +1,28 @@
+<h1>User profile</h1>
+
+<div *ngIf="profile">
+    <ng-container *ngIf="profile.email">
+        <h2>Email</h2>
+        {{profile.email}}
+    </ng-container>
+    <ng-container *ngIf="profile.api_key">
+        <h2>API Key</h2>
+        <div>
+            <mat-form-field>
+                <mat-label>API Key</mat-label>
+                <input disabled="true" [type]="showKey ? 'text' : 'password'" matInput placeholder="API Key" [value]="profile.api_key">
+            </mat-form-field>
+        </div>
+        <div>
+            <button mat-raised-button (click)="showKey = !showKey">{{showKey ? 'Hide' : 'Show'}}</button>
+            <button mat-raised-button (click)="copyApiKeyToClipboard()">Copy to clipboard</button>
+            <button mat-raised-button color="warn" (click)="createOrUpdateApiKey()">Generate new API Key (current key will be replaced)</button>
+        </div>
+    </ng-container>
+    <ng-container *ngIf="!profile.api_key">
+        <h2>API Key</h2>
+        <button mat-raised-button (click)="createOrUpdateApiKey()">Create API Key</button>
+    </ng-container>
+</div>
+
+

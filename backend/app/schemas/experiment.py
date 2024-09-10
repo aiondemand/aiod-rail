@@ -9,13 +9,13 @@ from app.schemas.env_vars import EnvironmentVar
 class ExperimentBase(BaseModel):
     name: str
     description: str
-    publication_ids: list[str] = []
+    is_public: bool
 
     experiment_template_id: PydanticObjectId
     dataset_ids: list[str]
     model_ids: list[str]
+    publication_ids: list[str] = []
     env_vars: list[EnvironmentVar]
-    metrics: list[str]
 
 
 class ExperimentCreate(ExperimentBase):
@@ -26,3 +26,5 @@ class ExperimentResponse(ExperimentBase):
     id: PydanticObjectId
     created_at: datetime
     updated_at: datetime
+    is_archived: bool
+    is_mine: bool

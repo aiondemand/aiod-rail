@@ -1,5 +1,5 @@
-import { FormControl } from "@angular/forms";
-import { Platform } from "src/app/models/platform";
+import { FormControl } from '@angular/forms';
+import { Platform } from 'src/app/models/platform';
 
 export function isPlatformSupported(platform: Platform | string): boolean {
     const platformName = typeof platform == 'string' ? platform : platform.name;

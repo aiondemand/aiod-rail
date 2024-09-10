@@ -1,8 +1,7 @@
-# AIOD - Practitioner's Portal
+# AIoD - RAIL Backend
 
-## Architecture
-
-Practitioner's Portal consists of a REST API service (FastAPI) and a non-relational database (MongoDB).
+_RAIL Backend_ serves as a backend application for [RAIL service](../README.md).
+This backend consists of a REST API service (FastAPI) and a non-relational database (MongoDB).
 
 ## Setup
 
@@ -17,7 +16,8 @@ As a database we use a containerized MongoDB server (through Docker), the REST A
     - `MAX_PARALLEL_IMAGE_BUILDS`: Define a maximum number of Python (asyncio) tasks that build and push docker images
       in parallel
     - `MAX_PARALLEL_CONTAINERS`: Define a maximum number of Python (asyncio) tasks that run REANA workflows in parallel
-    - `MAX_IMAGE_BUILDS_ATTEMPTS`: Define a maximum number of ATTEMPTS that are executed for each failing process of building a docker image
+    - `MAX_IMAGE_BUILDS_ATTEMPTS`: Define a maximum number of ATTEMPTS that are executed for each failing process of
+      building a docker image
     - `MAX_EXPERIMENT_RUN_ATTEMPTS`: Define a maximum number of ATTEMPTS that are executed for each failing experiment
       run
     - `REANA_SERVER_URL`: Define the URL used for connecting to REANA server
@@ -28,14 +28,13 @@ As a database we use a containerized MongoDB server (through Docker), the REST A
       defined in variable `DOCKER_REGISTRY_URL`
     - `DOCKER_REGISTRY_PASSWORD`: Define a password for a Docker Hub profile that has push permissions to a repository
       defined in variable `DOCKER_REGISTRY_URL`
-    - `PASSWORD_FOR_TEMPLATE_APPROVAL`: Define a password that authorizes you to approve a new experiment template
     - `AIOD_KEYCLOAK__*`: Variables related to authentication using Keycloak
 1. Start the service using the following command: `docker compose up -d --build`
 
 **IMPORTANT**: Make sure you check and potentially modify the host port mappings for specific components
 in [docker-compose.yml](docker-compose.yml) file.
 
-### Locally installation
+### Local installation
 
 1. Create two arbitrarily located folders that will be used to store:
     1. MongoDB database, e.g. `./db`
@@ -90,24 +89,37 @@ ExperimentRun:
 └── experiments-userdata
     └── run-64d22795090f4a38dbbf9764
         ├── .env
+        ├── log.txt
         ├── reana.yaml
         ├── script.py
         └── output
-            ├── log.txt
             └── metrics.json
 ```
 
 ## Contributing
 
-1. Install dependencies
-   ```shell
-   pip install -r requirements-dev.txt
-   ```
-1. Setup pre-commit hooks
-   ```shell
-   pre-commit install
-   ```
-1. [OPTIONAL] Trigger execution of pre-commit hooks manually
+### 1. Install dependencies
+```shell
+pip install -r requirements-dev.txt
+```
+### 2. Setup pre-commit hooks
+```shell
+pre-commit install
+```
+You can also trigger the execution of pre-commit hooks on all files manually by running the following command:
    ```shell
    pre-commit run --all-files
    ```
+### 3. Run unit tests
+This project uses [pytest](https://docs.pytest.org/) framework for testing.
+
+You need to run the unit tests from root directory `backend` where also the config file `pytest.ini` is located.
+The execution of all tests can be then simply done by running the command:
+```shell
+pytest
+```
+
+#### Code coverage
+The configuration makes sure that code coverage is computed by `pytest-cov` as well.
+You can browse the generated coverage report in HTML format found in directory `htmlcov`.
+   
