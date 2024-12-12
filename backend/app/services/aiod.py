@@ -1,5 +1,6 @@
 from enum import Enum
 from pathlib import Path
+from time import sleep
 from typing import List
 
 import httpx
@@ -43,6 +44,9 @@ class AsyncClientWrapper:
 aiod_client_wrapper = AsyncClientWrapper(base_url=settings.AIOD_API.BASE_URL)
 aiod_library_client_wrapper = AsyncClientWrapper(
     base_url=settings.AIOD_LIBRARY_API.BASE_URL
+)
+aiod_enhanced_search_client_wrapper = AsyncClientWrapper(
+    base_url=settings.AIOD_ENHANCED_SEARCH_API.BASE_URL
 )
 
 
@@ -208,6 +212,64 @@ async def search_assets(
         )
 
     return res.json()["resources"]
+
+
+async def enhanced_search(
+    asset_type: AssetType, query: str, pagination: Pagination
+) -> list:
+    initial_response = await aiod_enhanced_search_client_wrapper.client.post(
+        "query",
+        params={
+            "query": query,
+            "asset_type": asset_type.value,
+            # TODO: Update pagination
+            "topk": min(pagination.offset + pagination.limit, 100),
+        },
+    )
+
+    if initial_response.status_code != 202:
+        raise HTTPException(
+            status_code=initial_response.status_code, detail="Failed to initiate query"
+        )
+
+    # Extract the location header to poll for results
+    result_location = initial_response.headers.get("location")
+    if not result_location:
+        raise HTTPException(
+            status_code=500, detail="Missing Location header in external API response"
+        )
+
+    # Poll the result endpoint until we get the result
+    max_retries = 10
+    delay = 2
+    for _ in range(max_retries):
+        result_response: httpx.Response = (
+            await aiod_enhanced_search_client_wrapper.client.get(
+                result_location, follow_redirects=True
+            )
+        )
+
+        if (
+            result_response.status_code == 200
+            and result_response.json()["status"] == "Completed"
+        ):
+            # TODO: Fix the type of response IDs
+            asset_ids: list[str] = result_response.json()["result_doc_ids"]
+
+            return [
+                await get_asset(asset_type, int(asset_id))
+                for asset_id in asset_ids[-pagination.limit :]
+            ]
+        elif result_response.status_code == 200:
+            sleep(delay)
+        else:
+            raise HTTPException(
+                status_code=result_response.status_code, detail="Error fetching results"
+            )
+
+    raise HTTPException(
+        status_code=504, detail="Timed out waiting for result from external API"
+    )
 
 
 async def get_dataset_name(id: int) -> str:

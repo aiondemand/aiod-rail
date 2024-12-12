@@ -29,6 +29,10 @@ class AIoDLibraryApiConfig(BaseModel):
     BASE_URL: AnyHttpUrl
 
 
+class AIoDEnhancedSearchApiConfig(BaseModel):
+    BASE_URL: AnyHttpUrl
+
+
 class AIODKeycloakConfig(BaseModel):
     REALM: str
     CLIENT_ID: str
@@ -43,6 +47,7 @@ class Settings(BaseSettings):
 
     AIOD_API: AIoDApiConfig
     AIOD_LIBRARY_API: AIoDLibraryApiConfig
+    AIOD_ENHANCED_SEARCH_API: AIoDEnhancedSearchApiConfig
     AIOD_KEYCLOAK: AIODKeycloakConfig
     DEFAULT_RESPONSE_LIMIT: int = 100
 

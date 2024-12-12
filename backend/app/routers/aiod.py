@@ -13,6 +13,7 @@ from app.schemas.publication import Publication
 from app.services.aiod import (
     AssetType,
     aiod_client_wrapper,
+    enhanced_search,
     get_asset,
     get_assets,
     get_assets_count,
@@ -55,12 +56,21 @@ async def get_my_datasets(
 
 
 @router.get("/datasets/search/{query}", response_model=list[Dataset])
-async def search_datasets(query: str, pagination: Pagination = Depends()) -> Any:
-    return await search_assets(
-        asset_type=AssetType.DATASETS,
-        query=query,
-        pagination=pagination,
-    )
+async def search_datasets(
+    query: str, enhanced: bool = False, pagination: Pagination = Depends()
+) -> Any:
+    if not enhanced:
+        return await search_assets(
+            asset_type=AssetType.DATASETS,
+            query=query,
+            pagination=pagination,
+        )
+    else:
+        return await enhanced_search(
+            asset_type=AssetType.DATASETS,
+            query=query,
+            pagination=pagination,
+        )
 
 
 @router.get("/datasets/{id}", response_model=Dataset)
