@@ -3,3 +3,17 @@
     justify-content: space-between;
     align-items: center;
 }
+
+.search-div {
+    display: flex;
+    flex-direction: column;
+}
+
+.search-field-container {
+    display: flex;
+    align-items: center;
+}
+
+.enhanced-checkbox {
+  font-size: 0.7em;
+}
