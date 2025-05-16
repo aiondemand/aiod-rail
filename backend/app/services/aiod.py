@@ -1,6 +1,6 @@
+import asyncio
 from enum import Enum
 from pathlib import Path
-from time import sleep
 from typing import List
 
 import httpx
@@ -217,14 +217,11 @@ async def search_assets(
 async def enhanced_search(
     asset_type: AssetType, query: str, pagination: Pagination
 ) -> list:
+    # TODO: Update pagination
+    topk = min(pagination.offset + pagination.limit, 100)
     initial_response = await aiod_enhanced_search_client_wrapper.client.post(
         "query",
-        params={
-            "query": query,
-            "asset_type": asset_type.value,
-            # TODO: Update pagination
-            "topk": min(pagination.offset + pagination.limit, 100),
-        },
+        params={"search_query": query, "asset_type": asset_type.value, "topk": topk},
     )
 
     if initial_response.status_code != 202:
@@ -240,7 +237,7 @@ async def enhanced_search(
         )
 
     # Poll the result endpoint until we get the result
-    max_retries = 10
+    max_retries = 5 + round(topk * 0.15)
     delay = 2
     for _ in range(max_retries):
         result_response: httpx.Response = (
@@ -253,15 +250,14 @@ async def enhanced_search(
             result_response.status_code == 200
             and result_response.json()["status"] == "Completed"
         ):
-            # TODO: Fix the type of response IDs
-            asset_ids: list[str] = result_response.json()["result_doc_ids"]
+            asset_ids: list[int] = result_response.json()["result_asset_ids"]
 
             return [
-                await get_asset(asset_type, int(asset_id))
+                await get_asset(asset_type, asset_id)
                 for asset_id in asset_ids[-pagination.limit :]
             ]
         elif result_response.status_code == 200:
-            sleep(delay)
+            await asyncio.sleep(delay)
         else:
             raise HTTPException(
                 status_code=result_response.status_code, detail="Error fetching results"
