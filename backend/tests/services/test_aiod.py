@@ -26,10 +26,10 @@ async def mock_current_user(token):
 @pytest.mark.parametrize(
     "asset_type, expected_url",
     [
-        (AssetType.DATASETS, "datasets/v0"),
-        (AssetType.ML_MODELS, "ml_models/v1"),
-        (AssetType.PUBLICATIONS, "publications/v2"),
-        (AssetType.PLATFORMS, "platforms/v3"),
+        (AssetType.DATASETS, "datasets"),
+        (AssetType.ML_MODELS, "ml_models"),
+        (AssetType.PUBLICATIONS, "publications"),
+        (AssetType.PLATFORMS, "platforms"),
     ],
 )
 @pytest.mark.asyncio
@@ -232,9 +232,9 @@ async def test_get_my_asset_ids_raises_exception_on_non_200_status_code(
 @pytest.mark.parametrize(
     "asset_type, expected_url",
     [
-        (AssetType.DATASETS, "datasets/v0"),
-        (AssetType.ML_MODELS, "ml_models/v1"),
-        (AssetType.PUBLICATIONS, "publications/v2"),
+        (AssetType.DATASETS, "datasets"),
+        (AssetType.ML_MODELS, "ml_models"),
+        (AssetType.PUBLICATIONS, "publications"),
     ],
 )
 @pytest.mark.asyncio
@@ -264,10 +264,10 @@ async def test_get_asset_raises_exception_on_non_200_status_code(
 @pytest.mark.parametrize(
     "asset_type, expected_url",
     [
-        (AssetType.DATASETS, "counts/datasets/v0"),
-        (AssetType.ML_MODELS, "counts/ml_models/v1"),
-        (AssetType.PUBLICATIONS, "counts/publications/v2"),
-        (AssetType.PLATFORMS, "counts/platforms/v3"),
+        (AssetType.DATASETS, "counts/datasets"),
+        (AssetType.ML_MODELS, "counts/ml_models"),
+        (AssetType.PUBLICATIONS, "counts/publications"),
+        (AssetType.PLATFORMS, "counts/platforms"),
     ],
 )
 @pytest.mark.asyncio
@@ -286,9 +286,9 @@ async def test_get_assets_count_happy_path(asset_type, expected_url, async_clien
 @pytest.mark.parametrize(
     "asset_type, expected_url",
     [
-        (AssetType.DATASETS, "search/datasets/v0"),
-        (AssetType.ML_MODELS, "search/ml_models/v1"),
-        (AssetType.PUBLICATIONS, "search/publications/v2"),
+        (AssetType.DATASETS, "search/datasets"),
+        (AssetType.ML_MODELS, "search/ml_models"),
+        (AssetType.PUBLICATIONS, "search/publications"),
     ],
 )
 @pytest.mark.asyncio
@@ -337,9 +337,9 @@ async def test_get_assets_count_raises_exception_on_non_200_status_code(
 @pytest.mark.parametrize(
     "asset_type, expected_url",
     [
-        (AssetType.DATASETS, "search/datasets/v0"),
-        (AssetType.ML_MODELS, "search/ml_models/v1"),
-        (AssetType.PUBLICATIONS, "search/publications/v2"),
+        (AssetType.DATASETS, "search/datasets"),
+        (AssetType.ML_MODELS, "search/ml_models"),
+        (AssetType.PUBLICATIONS, "search/publications"),
     ],
 )
 @pytest.mark.asyncio
