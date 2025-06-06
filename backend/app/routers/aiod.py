@@ -4,7 +4,6 @@ from typing import Any
 from fastapi import APIRouter, Depends, HTTPException, Response, UploadFile, status
 
 from app.auth import get_current_user, get_current_user_token
-from app.config import settings
 from app.helpers import Pagination
 from app.schemas.dataset import Dataset
 from app.schemas.ml_model import MLModel
@@ -17,7 +16,6 @@ from app.services.aiod import (
     get_asset,
     get_assets,
     get_assets_count,
-    get_assets_version,
     get_my_asset_ids,
     get_my_assets,
     search_assets,
@@ -120,7 +118,7 @@ async def create_dataset(
 ) -> Any:
     # Create a new dataset in AIoD (just metadata)
     res = await aiod_client_wrapper.client.post(
-        Path(AssetType.DATASETS.value, get_assets_version(AssetType.DATASETS)),
+        Path(AssetType.DATASETS.value),
         headers={"Authorization": f"{token}"},
         json=dataset.dict(exclude_unset=True),
     )
@@ -142,7 +140,7 @@ async def create_dataset(
 @router.delete("/datasets/{id}", response_model=bool)
 async def delete_dataset(id: int, token: str = Depends(get_current_user_token)) -> Any:
     res = await aiod_client_wrapper.client.delete(
-        Path("datasets", settings.AIOD_API.DATASETS_VERSION, str(id)),
+        Path("datasets", str(id)),
         headers={"Authorization": f"{token}"},
     )
 

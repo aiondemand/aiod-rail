@@ -50,22 +50,10 @@ aiod_enhanced_search_client_wrapper = AsyncClientWrapper(
 )
 
 
-def get_assets_version(asset_type: AssetType) -> str:
-    match asset_type:
-        case AssetType.DATASETS:
-            return settings.AIOD_API.DATASETS_VERSION
-        case AssetType.ML_MODELS:
-            return settings.AIOD_API.ML_MODELS_VERSION
-        case AssetType.PUBLICATIONS:
-            return settings.AIOD_API.PUBLICATIONS_VERSION
-        case AssetType.PLATFORMS:
-            return settings.AIOD_API.PLATFORMS_VERSION
-
-
 async def get_assets(asset_type: AssetType, pagination: Pagination) -> list:
     """Wrapper function to call the AIoD API and return a list of requested assets."""
     res = await aiod_client_wrapper.client.get(
-        Path(asset_type.value, get_assets_version(asset_type)).as_posix(),
+        Path(asset_type.value).as_posix(),
         params={"offset": pagination.offset, "limit": pagination.limit},
     )
 
@@ -140,9 +128,7 @@ async def get_my_asset_ids(
 async def get_asset(asset_type: AssetType, asset_id: int) -> Json:
     """Wrapper function to call the AIoD API and return requested asset data."""
     res = await aiod_client_wrapper.client.get(
-        Path(
-            asset_type.value, get_assets_version(asset_type), str(asset_id)
-        ).as_posix(),
+        Path(asset_type.value, str(asset_id)).as_posix(),
     )
 
     if res.status_code != 200:
@@ -162,14 +148,12 @@ async def get_assets_count(asset_type: AssetType, filter_query: str = None) -> i
     """
     if filter_query is None:
         res = await aiod_client_wrapper.client.get(
-            Path(
-                f"counts/{asset_type.value}", get_assets_version(asset_type)
-            ).as_posix(),
+            Path(f"counts/{asset_type.value}").as_posix(),
         )
     else:
         res = await aiod_client_wrapper.client.get(
             Path(
-                f"search/{asset_type.value}", get_assets_version(asset_type)
+                f"search/{asset_type.value}",
             ).as_posix(),
             params={
                 "search_query": filter_query,
@@ -195,7 +179,7 @@ async def search_assets(
 ) -> list:
     """Wrapper function to call the AIoD API and return a list of requested assets."""
     res = await aiod_client_wrapper.client.get(
-        Path(f"search/{asset_type.value}", get_assets_version(asset_type)).as_posix(),
+        Path(f"search/{asset_type.value}").as_posix(),
         params={
             "search_query": query,
             "search_fields": "name",
