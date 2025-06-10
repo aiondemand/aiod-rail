@@ -45,13 +45,13 @@ Following the installation instructions above, the web application may be reache
 Documentation of the underlying backend REST API is automatically generated and can be viewed at `127.0.0.1:80/api/docs`.
 
 ## Development and debugging
-For development purposes, we recommend running RAIL's development docker containers (docker-compose) and then attach to the applications running inside. This helps to ensure that all developers develop in the same environment.
+For development purposes, we recommend running RAIL's development docker containers (docker compose) and then attach to the applications running inside. This helps to ensure that all developers develop in the same environment.
 
 To start development and debugging, follow these steps:
 1. Create development `.env-dev` file in the Backend root folder. It must define all variables the `.env` file defines.
 1. Start the images either by running [`run-dev-docker-env.sh`](./run-dev-docker-env.sh) or by running the following command from the root of the project:   
     * ```bash 
-      docker-compose -f docker-compose.yml -f docker-compose-dev.yml up -d --build
+      docker compose -f docker-compose.yml -f docker-compose-dev.yml up -d --build
       ```
 1. Attach to the application.
     * For **Visual Studio Code**, there are a [`.vscode/launch.json`](.vscode/launch.json) configuration file in the root directory. In the *Run and Debug* menu, you should see:

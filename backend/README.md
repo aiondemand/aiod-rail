@@ -59,6 +59,7 @@ in [docker-compose.yml](docker-compose.yml) file.
       use `unix:///var/run/docker.sock`
     - `EEE_DATA_PATH`: Not necessarily an absolute path of the so called `eee-data` folder you have created beforehand
       in the step 1.2.
+1. Manually export REANA env variables in the terminal you shall use for running the application: `export REANA_SERVER_URL=<URL_PLACEHOLDER> && export REANA_ACCESS_TOKEN=<TOKEN_PLACEHOLDER>`
 1. Start the FastAPI server using the following command: `uvicorn app.main:app --reload`
 
 ### Fill some toy data into the database
