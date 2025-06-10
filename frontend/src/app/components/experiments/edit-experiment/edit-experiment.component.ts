@@ -274,7 +274,6 @@ export class EditExperimentComponent implements OnInit {
     return this.backend.getExperimentTemplates(query, {}, {
       finalized: true,
       approved: true,
-      public: true,
       archived: false
     });
   }

@@ -12,18 +12,36 @@
   letter-spacing: 1px
 }
 
-.left-sidebar {
+.left-sidebar, .left-sidebar-minimized {
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
-  border: 1px solid gray;
-  height: calc(100vh - 2 * $margin-double);
+  border-right: 1px solid gray;
+  height: 100vh;
   align-items: center;
-  margin: $margin-double;
+  margin-right: $margin-default;
 
   // Stick the sidebar to the top of the page
   position: sticky;
-  top: $margin-double;
+  top: 0;
+
+  width: 230px;
+}
+
+.left-sidebar-minimized {
+  width: $margin-double;
+}
+
+.left-sidebar, .left-sidebar-minimized {
+  .toggle-left-sidebar {
+    border: 1px solid black;
+    border-radius: 50%;
+    background-color: white;
+    left: calc(50%);
+    position: relative;
+    bottom: 50vh;
+    cursor: pointer;
+  }
 
   div {
     margin-bottom: $margin-default;
@@ -86,7 +104,11 @@
 .main-content {
   flex: 1;
   overflow: auto;
-  margin: $margin-double;
+  margin: $margin-default;
+
+  nav {
+    margin-bottom: $margin-default;
+  }
 }
 
 .selected-route {
