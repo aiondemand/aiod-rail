@@ -19,10 +19,6 @@ TEMP_DIRNAME = "temp"
 
 class AIoDApiConfig(BaseModel):
     BASE_URL: AnyHttpUrl
-    # DATASETS_VERSION: str = "v2"
-    # ML_MODELS_VERSION: str = "v2"
-    # PUBLICATIONS_VERSION: str = "v2"
-    # PLATFORMS_VERSION: str = "v2"
 
 
 class AIoDLibraryApiConfig(BaseModel):
