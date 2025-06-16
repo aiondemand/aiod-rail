@@ -1,21 +1,32 @@
-[tool.poetry]
+# 2
+[project]
 name = "aiod_rail_sdk"
 version = "1.0.0"
-description = "AIoD - RAIL"
-authors = ["OpenAPI Generator Community <team@openapitools.org>"]
-license = "NoLicense"
+description = "AIoD - RAIL, First TestPypi publish"
 readme = "README.md"
-repository = "https://github.com/GIT_USER_ID/GIT_REPO_ID"
-keywords = ["OpenAPI", "OpenAPI-Generator", "AIoD - RAIL"]
-include = ["aiod_rail_sdk/py.typed"]
+requires-python = ">=3.7"
+license = { text = "MIT" }
+authors = [
+    {name = "Jozef Barut",  email="jozef.barut@intern.kinit.sk"}
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "urllib3>=1.25.3",
+    "python-dateutil>=2.8.2",
+    "pydantic>=2",
+    "typing-extensions>=4.7.1"
+]
+#license-files = ["LICEN[CS]E*"]
 
-[tool.poetry.dependencies]
-python = "^3.7"
+#repository = "https://github.com/GIT_USER_ID/GIT_REPO_ID"
+#keywords = ["OpenAPI", "OpenAPI-Generator", "AIoD - RAIL"]
 
-urllib3 = ">= 1.25.3"
-python-dateutil = ">=2.8.2"
-pydantic = ">=2"
-typing-extensions = ">=4.7.1"
+[project.urls]
+repository = "https://github.com/aiondemand/aiod-rail/tree/feature/sdk"
+
 
 [tool.poetry.dev-dependencies]
 pytest = ">=7.2.1"
@@ -29,17 +40,18 @@ mypy = "1.4.1"
 requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
+
 [tool.pylint.'MESSAGES CONTROL']
 extension-pkg-whitelist = "pydantic"
 
 [tool.mypy]
 files = [
-  "aiod_rail_sdk",
-  #"test",  # auto-generated tests
-  "tests", # hand-written tests
+    "aiod_rail_sdk",
+    #"test",  # auto-generated tests
+    "tests", # hand-written tests
 ]
 # TODO: enable "strict" once all these individual checks are passing
-# strict = true
+ strict = true
 
 # List from: https://mypy.readthedocs.io/en/stable/existing_code.html#introduce-stricter-options
 warn_unused_configs = true
@@ -59,13 +71,13 @@ disallow_subclassing_any = true
 disallow_untyped_decorators = true
 disallow_any_generics = true
 
-### These next few are various gradations of forcing use of type annotations
-#disallow_untyped_calls = true
-#disallow_incomplete_defs = true
-#disallow_untyped_defs = true
-#
-### This one isn't too hard to get passing, but return on investment is lower
-#no_implicit_reexport = true
-#
-### This one can be tricky to get passing if you use a lot of untyped libraries
-#warn_return_any = true
+## These next few are various gradations of forcing use of type annotations
+disallow_untyped_calls = true
+disallow_incomplete_defs = true
+disallow_untyped_defs = true
+
+## This one isn't too hard to get passing, but return on investment is lower
+no_implicit_reexport = true
+
+## This one can be tricky to get passing if you use a lot of untyped libraries
+warn_return_any = true
