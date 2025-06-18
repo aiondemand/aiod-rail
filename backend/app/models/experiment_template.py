@@ -194,7 +194,7 @@ class ExperimentTemplate(Document):
             }
         )
 
-    async def validate_models(self, model_ids: list[int]) -> bool:
+    async def validate_models(self, model_ids: list[str]) -> bool:
         model_names = [await get_model_name(x) for x in model_ids]
 
         checks = [
@@ -204,7 +204,7 @@ class ExperimentTemplate(Document):
 
         return all(checks)
 
-    async def validate_datasets(self, dataset_ids: list[int]) -> bool:
+    async def validate_datasets(self, dataset_ids: list[str]) -> bool:
         dataset_names = [await get_dataset_name(x) for x in dataset_ids]
 
         checks = [

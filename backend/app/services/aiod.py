@@ -80,7 +80,7 @@ async def get_my_assets(
 
 async def get_my_asset_ids(
     asset_type: AssetType, token: str, pagination: Pagination
-) -> List[int]:
+) -> List[str]:
     """Wrapper function to call the AIoD's My Library and return a list of identifiers of my requested assets.
 
     Pagination is currently not supported by My Library, so the behavior is just mimicked.
@@ -117,7 +117,7 @@ async def get_my_asset_ids(
     }
 
     requested_assets = [
-        int(asset["identifier"])
+        asset["identifier"]
         for asset in my_assets
         if asset["category"] == asset_name_mapper[asset_type]
     ]
@@ -125,7 +125,7 @@ async def get_my_asset_ids(
     return requested_assets[pagination.offset : pagination.offset + pagination.limit]
 
 
-async def get_asset(asset_type: AssetType, asset_id: int) -> Json:
+async def get_asset(asset_type: AssetType, asset_id: str) -> Json:
     """Wrapper function to call the AIoD API and return requested asset data."""
     res = await aiod_client_wrapper.client.get(
         Path(asset_type.value, str(asset_id)).as_posix(),
@@ -234,7 +234,7 @@ async def enhanced_search(
             result_response.status_code == 200
             and result_response.json()["status"] == "Completed"
         ):
-            asset_ids: list[int] = result_response.json()["result_asset_ids"]
+            asset_ids: list[str] = result_response.json()["result_asset_ids"]
 
             return [
                 await get_asset(asset_type, asset_id)
@@ -252,13 +252,13 @@ async def enhanced_search(
     )
 
 
-async def get_dataset_name(id: int) -> str:
+async def get_dataset_name(id: str) -> str:
     """Helper function to fetch requested Dataset and return its name"""
     dataset = Dataset(**await get_asset(asset_type=AssetType.DATASETS, asset_id=id))
     return dataset.name
 
 
-async def get_model_name(id: int) -> str:
+async def get_model_name(id: str) -> str:
     """Helper function to fetch requested MLModel and return its name"""
     ml_model = MLModel(**await get_asset(asset_type=AssetType.ML_MODELS, asset_id=id))
     return ml_model.name

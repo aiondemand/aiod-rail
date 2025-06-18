@@ -72,7 +72,7 @@ async def search_datasets(
 
 
 @router.get("/datasets/{id}", response_model=Dataset)
-async def get_dataset(id: int) -> Any:
+async def get_dataset(id: str) -> Any:
     return await get_asset(asset_type=AssetType.DATASETS, asset_id=id)
 
 
@@ -138,7 +138,7 @@ async def create_dataset(
 
 
 @router.delete("/datasets/{id}", response_model=bool)
-async def delete_dataset(id: int, token: str = Depends(get_current_user_token)) -> Any:
+async def delete_dataset(id: str, token: str = Depends(get_current_user_token)) -> Any:
     res = await aiod_client_wrapper.client.delete(
         Path("datasets", str(id)),
         headers={"Authorization": f"{token}"},
@@ -156,7 +156,7 @@ async def delete_dataset(id: int, token: str = Depends(get_current_user_token)) 
 
 @router.post("/datasets/{id}/upload-file-to-huggingface", response_model=Dataset)
 async def dataset_upload_file_to_huggingface(
-    id: int,
+    id: str,
     file: UploadFile,
     huggingface_name: str,
     huggingface_token: str,
@@ -224,7 +224,7 @@ async def search_models(query: str, pagination: Pagination = Depends()) -> Any:
 
 
 @router.get("/models/{id}", response_model=MLModel)
-async def get_model(id: int) -> Any:
+async def get_model(id: str) -> Any:
     return await get_asset(asset_type=AssetType.ML_MODELS, asset_id=id)
 
 
@@ -277,7 +277,7 @@ async def search_publications(query: str, pagination: Pagination = Depends()) ->
 
 
 @router.get("/publications/{id}", response_model=Publication)
-async def get_publication(id: int) -> Any:
+async def get_publication(id: str) -> Any:
     return await get_asset(asset_type=AssetType.PUBLICATIONS, asset_id=id)
 
 
