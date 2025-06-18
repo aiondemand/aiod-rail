@@ -22,12 +22,12 @@ def migrate_ids(table: pd.DataFrame, old_ids: list[int]) -> list[str]:
     return new_ids
 
 
-def update_mongodb(collection: Collection, tsv_conversion_dirpath: str):
+def update_mongodb(collection: Collection, tsv_conversion_dirpath: str) -> None:
     fields_to_update = ["dataset_ids", "model_ids", "publication_ids"]
-    tsv_names = ["datasets.tsv", "models.tsv", "publications.tsv"]
+    tsv_filenames = ["datasets.tsv", "models.tsv", "publications.tsv"]
     tsv_tables = [
         load_tsv(os.path.join(tsv_conversion_dirpath, tsv_name))
-        for tsv_name in tsv_names
+        for tsv_name in tsv_filenames
     ]
 
     cursor = collection.find({})
@@ -52,10 +52,9 @@ def update_mongodb(collection: Collection, tsv_conversion_dirpath: str):
 if __name__ == "__main__":
     load_dotenv()
 
-    # === Config ===
-    tsv_conversion_dirpath = os.getenv("TSV_DIRPATH", "backend/temp-id")
-    mongo_uri = os.getenv("MONGO_URI", "mongodb://localhost:27017/")
-    db_name = "aiod"
+    tsv_conversion_dirpath = os.getenv("TSV_DIRPATH", "/data/id_tsv_files")
+    mongo_uri = os.getenv("MONGO_URI", "mongodb://backend-db:27017")
+    db_name = os.getenv("MONGO_DBNAME", "aiod")
     collection_name = "experiments"
 
     client = MongoClient(mongo_uri)

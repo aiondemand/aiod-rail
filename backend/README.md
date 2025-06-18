@@ -41,7 +41,7 @@ in [docker-compose.yml](docker-compose.yml) file.
     1. files corresponding to individual experiments (*throughout this documentation we tend to call this
        folder `eee-data`, however you can name this directory however you would like*)
 1. Create MongoDB container using following
-   command: `docker run --name eee-mongo -p 27017:27017 -d -v <PATH_TO_DB_FOLDER>:/data/db mongo`
+   command: `docker run --name eee-mongo -p 27017:27017 -d -v <PATH_TO_DB_FOLDER>:/data/db mongo:6.0.6`
 1. [IF YOU'RE ON WINDOWS] Open specific port for Docker to listen to, so that you can communicate with it. Specifically
    use Docker Desktop application and:
     - Go to "settings"
