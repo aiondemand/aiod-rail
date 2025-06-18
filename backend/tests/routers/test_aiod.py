@@ -7,7 +7,6 @@ from app.schemas.platform import Platform
 from app.schemas.publication import Publication
 from app.services.aiod import AssetType
 
-
 example_id = "data_ceREqVzRDnJAtw4VMGENCsmI"
 
 

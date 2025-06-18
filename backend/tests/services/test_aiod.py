@@ -18,6 +18,7 @@ example_id = "data_ceREqVzRDnJAtw4VMGENCsmI"
 example_id2 = "data_ceREqVzRDnJAtw4VMGENCsFF"
 example_id3 = "data_ceREqVzRDnJAtw4VMGENCs56"
 
+
 async def mock_current_user(token):
     return {
         "sub": "user-id",
@@ -69,7 +70,8 @@ async def test_get_assets_raises_exception_on_non_200_status_code(
 async def test_get_my_assets_happy_path(mocker, asset_type):
     pagination = Pagination(offset=7, limit=13)
     mock_get_my_asset_ids = mocker.patch(
-        "app.services.aiod.get_my_asset_ids", return_value=[example_id, example_id2, example_id3]
+        "app.services.aiod.get_my_asset_ids",
+        return_value=[example_id, example_id2, example_id3],
     )
     mock_get_asset = mocker.patch(
         "app.services.aiod.get_asset", return_value=[{}, {}, {}]

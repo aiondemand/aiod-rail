@@ -1,0 +1,15 @@
+services:
+  migrate-ids:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file: .env
+    depends_on:
+      - backend-db
+
+  backend-db:
+    image: mongo:6.0.6
+    ports:
+      - "${HOST_MONGO_PORT}:27017"
+    volumes:
+      - ${MOUNT_BIND_PATH}:/data/db
