@@ -39,12 +39,12 @@ const routes: Routes = [
     children: [
       // experiments
       { path: '', redirectTo: 'public', pathMatch: 'full' },
-      { path: 'public', component: PublicExperimentListComponent},
-      { path: 'my',  component: MyExperimentListComponent, canActivate: [authGuard] },
+      { path: 'public', component: PublicExperimentListComponent, data: { crawlMeta: 'true' } },
+      { path: 'my',  component: MyExperimentListComponent, canActivate: [authGuard], data: { crawlMeta: 'true' } },
       { path: 'create', component: EditExperimentComponent, canActivate: [authGuard] },
       // TODO check whether :ID is valid or whether a specific experiment / template actually exists
-      { path: ':id', component: ExperimentDetailComponent },
-      { path: ':id/update', component: EditExperimentComponent, canActivate: [authGuard] },
+      { path: ':id', component: ExperimentDetailComponent, data: { crawlMeta: 'true' } },
+      { path: ':id/update', component: EditExperimentComponent, canActivate: [authGuard], data: { crawlMeta: 'true' } },
 
       // experiment runs
       { path: 'runs/:runId', component: ExperimentRunDetailComponent },
@@ -54,11 +54,11 @@ const routes: Routes = [
         path: 'templates',
         children: [
           { path: '', redirectTo: 'public', pathMatch: 'full' },
-          { path: "public", component: PublicExperimentTemplateListComponent},
-          { path: "my", component: MyExperimentTemplateListComponent, canActivate: [authGuard] },
+          { path: "public", component: PublicExperimentTemplateListComponent, data: { crawlMeta: 'true' } },
+          { path: "my", component: MyExperimentTemplateListComponent, canActivate: [authGuard], data: { crawlMeta: 'true' } },
           { path: 'create', component: EditExperimentTemplateComponent, canActivate: [authGuard] },
-          { path: ':id', component: ExperimentTemplateDetailComponent },
-          { path: ':id/update', component: EditExperimentTemplateComponent, canActivate: [authGuard] },
+          { path: ':id', component: ExperimentTemplateDetailComponent, data: { crawlMeta: 'true' } },
+          { path: ':id/update', component: EditExperimentTemplateComponent, canActivate: [authGuard], data: { crawlMeta: 'true' } },
         ]
       }
     ],
@@ -67,22 +67,22 @@ const routes: Routes = [
     path: 'datasets', component: DatasetsComponent,
     children: [
       { path: '', redirectTo: 'all', pathMatch: 'full' },
-      { path: 'all', component: DatasetListComponent },
-      { path: 'my', component: SavedDatasetsComponent, canActivate: [authGuard] },
+      { path: 'all', component: DatasetListComponent, data: { crawlMeta: 'true' } },
+      { path: 'my', component: SavedDatasetsComponent, canActivate: [authGuard], data: { crawlMeta: 'true' } },
       { path: 'create', component: CreateDatasetComponent },
-      { path: ':id', component: DatasetDetailComponent }
+      { path: ':id', component: DatasetDetailComponent, data: { crawlMeta: 'true' } }
     ]
   },
   {
-    path: 'profile', component: ProfileComponent, canActivate: [authGuard]
+    path: 'profile', component: ProfileComponent, canActivate: [authGuard], data: { crawlMeta: 'true' }
   },
   {
     path: 'admin', component: AdminComponent, canActivate: [authGuard, adminGuard],
     children: [
       { path: '', redirectTo: 'experiments/all', pathMatch: 'full' },
-      { path: 'experiments/all', component: AllExperimentListComponent },
-      { path: 'experiments/templates/all', component: AllExperimentTemplateListComponent },
-      { path: 'experiments/templates/pending', component: PendingExperimentTemplateListComponent },
+      { path: 'experiments/all', component: AllExperimentListComponent, data: { crawlMeta: 'true' } },
+      { path: 'experiments/templates/all', component: AllExperimentTemplateListComponent, data: { crawlMeta: 'true' } },
+      { path: 'experiments/templates/pending', component: PendingExperimentTemplateListComponent, data: { crawlMeta: 'true' } },
     ]
   },
   {
