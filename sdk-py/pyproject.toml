@@ -51,7 +51,7 @@ files = [
     "tests", # hand-written tests
 ]
 # TODO: enable "strict" once all these individual checks are passing
- strict = true
+strict = true
 
 # List from: https://mypy.readthedocs.io/en/stable/existing_code.html#introduce-stricter-options
 warn_unused_configs = true
