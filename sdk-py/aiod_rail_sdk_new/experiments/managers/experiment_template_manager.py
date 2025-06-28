@@ -152,83 +152,12 @@ class ExperimentTemplateManager:
                 api_response = api_instance.create_experiment_template_v1_experiment_templates_post(
                     experiment_template_create
                 )
-                return api_response
-            except Exception as e:
-                raise e
-
-
-
-    def remove(self, id: str) -> None:
-        """
-        Remove specific experiment template specified by ID.
-        Args:
-            id (str): ID of experiment template to be removed.
-        Returns:
-            None.
-        """
-        with ApiClient(self._configuration) as api_client:
-            api_instance = ExperimentTemplatesApi(api_client)
-
-            try:
-                api_instance.remove_experiment_template_v1_experiment_templates_id_delete(
-                    id=id
-                )
-            except Exception as e:
-                raise e
-
-    def archive(self, id: str, archive: bool = False) -> None:
-        """
-        Archives specific experiment template specified by ID.
-        Args:
-            id (str): ID of experiment template to be archived.
-            archive (bool): If experiment template should be archived or un-archived. Defaults to False.
-        Returns:
-            None.
-        """
-        with ApiClient(self._configuration) as api_client:
-            api_instance = ExperimentTemplatesApi(api_client)
-
-            try:
-                api_instance.archive_experiment_template_v1_experiment_templates_id_archive_patch(
-                    id=id, archive=archive
-                )
-            except Exception as e:
-                raise e
-
-    def update(
-            self, id: str, template: dict | tuple[str, str, str, dict]
-    ) -> ExperimentTemplate:
-        """
-        Updates specific experiment template.
-        Args:
-            id (str): ID of experiment template to be updated.
-            template: (dict | tuple[str, str, str, dict]):  The file can be passed either as full specified json (dictionary)
-                                                            or as a tuple of three strings and a json (dictionary) specifying
-                                                            the paths to script, requirements and docker image in this order
-                                                            and template description (name, description, task etc.).
-        Returns:
-            ExperimentTemplateResponse: Updated Experiment template by given ID.
-        """
-        experiment_template_instance = self._create_experiment_template_instance(
-            template
-        )
-
-        with ApiClient(self._configuration) as api_client:
-            api_instance = ExperimentTemplatesApi(api_client)
-
-            try:
-                api_response = api_instance.update_experiment_template_v1_experiment_templates_id_put(
-                    id=id,
-                    experiment_template_create=experiment_template_instance,
-                )
-                return api_response
+                return ExperimentTemplate.from_dict(api_response)
             except Exception as e:
                 raise e
 
     @staticmethod
-    def _create_experiment_template_instance(
-            template: dict | tuple[str, str, str, dict]
-    ):
+    def _create_experiment_template_instance( template: dict | tuple[str, str, str, dict]):
         if isinstance(template, dict):
             json_data = json.dumps(template)
 
