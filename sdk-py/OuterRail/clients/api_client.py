@@ -32,7 +32,7 @@ from aiod_rail_sdk.exceptions import ApiException, ApiValueError
 from dateutil.parser import parse
 from pydantic import SecretStr
 
-from aiod_rail_sdk_new.experiments import Experiment, ExperimentTemplate, ExperimentRun
+from OuterRail.experiments import Experiment, ExperimentTemplate, ExperimentRun
 
 RequestSerialized = Tuple[str, str, Dict[str, str], Optional[str], List[str]]
 

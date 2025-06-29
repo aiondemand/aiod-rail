@@ -13,7 +13,7 @@
 
 from typing import Any, Dict, List, Optional, Tuple, Union
 
-from aiod_rail_sdk_new.api_client import ApiClient
+from OuterRail.api_client import ApiClient
 from aiod_rail_sdk.api_client import RequestSerialized
 from aiod_rail_sdk.api_response import ApiResponse
 from aiod_rail_sdk.models.experiment_template_create import ExperimentTemplateCreate

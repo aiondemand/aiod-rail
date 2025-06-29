@@ -5,10 +5,10 @@ from typing_extensions import Self
 from typing import Any, ClassVar, Dict, List, Optional
 from pydantic import BaseModel, StrictBool, StrictStr
 
-from aiod_rail_sdk_new import Configuration, ApiClient, ExperimentTemplatesApi
-from aiod_rail_sdk_new.models.task_type import TaskType
-from aiod_rail_sdk_new.models.asset_schema import AssetSchema
-from aiod_rail_sdk_new.models.environment_var_def import EnvironmentVarDef
+from OuterRail import Configuration, ApiClient, ExperimentTemplatesApi
+from OuterRail.models.task_type import TaskType
+from OuterRail.models.asset_schema import AssetSchema
+from OuterRail.models.environment_var_def import EnvironmentVarDef
 
 """
     AIoD - RAIL

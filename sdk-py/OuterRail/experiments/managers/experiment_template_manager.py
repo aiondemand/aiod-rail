@@ -1,7 +1,7 @@
 import json
 from typing import Optional
 
-from aiod_rail_sdk_new import Configuration, ApiClient, ExperimentTemplatesApi, ExperimentTemplate
+from OuterRail import Configuration, ApiClient, ExperimentTemplatesApi, ExperimentTemplate
 
 
 """

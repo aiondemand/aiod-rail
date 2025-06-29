@@ -1,4 +1,4 @@
-from aiod_rail_sdk_new.experiments import ExperimentTemplate
+from OuterRail.experiments import ExperimentTemplate
 
 class Experiment(ExperimentTemplate):
 
