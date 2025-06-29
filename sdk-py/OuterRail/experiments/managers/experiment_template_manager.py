@@ -1,5 +1,5 @@
 import json
-from typing import Optional
+from typing import Optional, List
 
 from OuterRail import Configuration, ApiClient, ExperimentTemplatesApi, ExperimentTemplate
 
@@ -70,7 +70,7 @@ class ExperimentTemplateManager:
             public: Optional[bool] = None,
             offset: int = 0,
             limit: int = 100,
-            ) -> list[ExperimentTemplate]:
+            ) -> List[ExperimentTemplate]:
         """
         Gets experiment templates based of on specified filters.
 
