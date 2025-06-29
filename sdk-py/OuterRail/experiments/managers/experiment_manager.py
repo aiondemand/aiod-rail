@@ -1,11 +1,7 @@
 import json
-from typing import Optional
+from typing import Optional, List, Dict
 
-from OuterRail import (
-    Configuration,
-    ApiClient,
-    ExperimentsApi
-)
+from OuterRail import Configuration, ApiClient, ExperimentsApi, Experiment
 
 """
 AIoD - RAIL
@@ -29,8 +25,8 @@ class ExperimentManager:
         """
         self._config = client_config
 
-    def count( self, query: str = "", mine: Optional[bool] = None, archived: Optional[bool] = None,
-                           public: Optional[bool] = None) -> int:
+    def count(self, query: str = "", mine: Optional[bool] = None, archived: Optional[bool] = None,
+              public: Optional[bool] = None) -> int:
         """
         Counts the number of experiments based on filters specified in Args.
 
@@ -44,25 +40,22 @@ class ExperimentManager:
             int: Number of experiments.
 
         Raises:
-            HTTPException: If something goes wrong.
+            ApiException: In case of a failed HTTP request.
         """
 
         with ApiClient(self._config) as api_client:
             api_instance = ExperimentsApi(api_client)
         try:
-            api_response = (
-                api_instance.get_experiments_count_v1_count_experiments_get(
-                    query=query, mine=mine, archived=archived, public=public
+            api_response = api_instance.get_experiments_count_v1_count_experiments_get(
+                query=query, mine=mine, archived=archived, public=public
                 )
-            )
             return api_response
         except Exception as e:
             raise e
 
 
-    def get( self, query: str = "", mine: Optional[bool] = None, archived: Optional[bool] = None,
-             public: Optional[bool] = None, offset: int = 0, limit: int = 100):
-
+    def get(self, query: str = "", mine: Optional[bool] = None, archived: Optional[bool] = None,
+            public: Optional[bool] = None, offset: int = 0, limit: int = 100) -> List[Experiment]:
         """
         Retrieves a lis of experiments based on specific filters.
 
@@ -78,19 +71,55 @@ class ExperimentManager:
             list[ExperimentResponse]: The list of experiments.
 
         Raises:
-            HTTPException: If something goes wrong.
+            ApiException: In case of a failed HTTP request.
         """
         with ApiClient(self._config) as api_client:
             api_instance = ExperimentsApi(api_client)
             try:
                 api_response = api_instance.get_experiments_v1_experiments_get(
-                    query=query,
-                    mine=mine,
-                    archived=archived,
-                    public=public,
-                    offset=offset,
-                    limit=limit,
+                    query=query, mine=mine, archived=archived, public=public, offset=offset, limit=limit,
                 )
-                return api_response
+                return [Experiment.from_dict(sub_data, self._config) for sub_data in api_response]
+            except Exception as e:
+                raise e
+
+    def get_by_id(self, id: str) -> Experiment:
+        """
+        Gets specific experiment by its ID.
+
+        Args:
+            id (str): ID of experiment to be retrieved.
+
+        Returns:
+            ExperimentResponse: Experiment specified by its ID.
+
+        Raises:
+            ApiException: In case of a failed HTTP request or failure to retrieve an experiment with given ID.
+        """
+        with ApiClient(self._config) as api_client:
+            api_instance = ExperimentsApi(api_client)
+            try:
+                api_response = api_instance.get_experiment_v1_experiments_id_get(id)
+                return Experiment.from_dict(api_response, self._config)
+            except Exception as e:
+                raise e
+
+    def create(self, experiment: Dict) -> Experiment:
+        """
+        Creates experiment from specified experiment file.
+        Args:
+            experiment (dict): Experiment described in a dictionary.
+
+        Returns:
+            ExperimentResponse: Experiment created from given template.
+
+        Raises:
+            ApiException: In case of a failed HTTP request.
+        """
+        with ApiClient(self._config) as api_client:
+            api_instance = ExperimentsApi(api_client)
+            try:
+                api_response = api_instance.create_experiment_v1_experiments_post(experiment)
+                return Experiment.from_dict(api_response, self._config)
             except Exception as e:
                 raise e

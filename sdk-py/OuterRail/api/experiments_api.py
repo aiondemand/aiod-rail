@@ -292,7 +292,7 @@ class ExperimentsApi:
     @validate_call
     def create_experiment_v1_experiments_post(
         self,
-        experiment_create: ExperimentCreate,
+        experiment_create: Dict,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -304,7 +304,7 @@ class ExperimentsApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ExperimentResponse:
+    ) -> Dict:
         """Create Experiment
 
 
@@ -341,7 +341,7 @@ class ExperimentsApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            "201": "ExperimentResponse",
+            "201": "dict",
             "422": "HTTPValidationError",
         }
         response_data = self.api_client.call_api(
@@ -1536,9 +1536,8 @@ class ExperimentsApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ExperimentResponse:
+    ) -> Dict:
         """Get Experiment
-
 
         :param id: (required)
         :type id: str
@@ -1573,7 +1572,7 @@ class ExperimentsApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            "200": "ExperimentResponse",
+            "200": "dict",
             "422": "HTTPValidationError",
         }
         response_data = self.api_client.call_api(
@@ -2066,7 +2065,7 @@ class ExperimentsApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> List[ExperimentResponse]:
+    ) -> Dict:
         """Get Experiments
 
 
@@ -2118,7 +2117,7 @@ class ExperimentsApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            "200": "List[ExperimentResponse]",
+            "200": "dict",
             "422": "HTTPValidationError",
         }
         response_data = self.api_client.call_api(
