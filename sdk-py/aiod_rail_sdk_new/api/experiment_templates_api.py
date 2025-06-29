@@ -292,7 +292,7 @@ class ExperimentTemplatesApi:
     # @validate_call
     def create_experiment_template_v1_experiment_templates_post(
         self,
-        experiment_template_create: ExperimentTemplateCreate,
+        experiment_template_create,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -304,7 +304,7 @@ class ExperimentTemplatesApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ExperimentTemplateResponse:
+    ) -> Dict:
         """Create Experiment Template
 
 
@@ -2002,7 +2002,7 @@ class ExperimentTemplatesApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            "200": "ExperimentTemplateResponse",
+            "200": "dict",
             "422": "HTTPValidationError",
         }
         response_data = self.api_client.call_api(

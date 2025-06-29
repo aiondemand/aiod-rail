@@ -299,7 +299,7 @@ class ApiClient:
                     match = re.search(r"charset=([a-zA-Z\-\d]+)[\s;]?", content_type)
                 encoding = match.group(1) if match else "utf-8"
                 response_text = response_data.data.decode(encoding)
-                if response_text == "dict":
+                if response_type == "dict":
                     return_data = json.loads(response_text)
                 elif response_type in ["bytearray", "str"]:
                     return_data = self.__deserialize_primitive(

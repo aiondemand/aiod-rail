@@ -1,4 +1,3 @@
-
 import json
 from typing import Optional
 
@@ -6,11 +5,11 @@ from aiod_rail_sdk_new import Configuration, ApiClient, ExperimentTemplatesApi, 
 
 
 """
-AIoD - RAIL
+    AIoD - RAIL
 
-ExperimentManager class
+    ExperimentManager class
 
-Class aggregating methods for operating on multiple experiments.
+    Class aggregating methods for operating on multiple experiments.
 """
 
 
@@ -102,7 +101,7 @@ class ExperimentTemplateManager:
                     finalized=finalized,
                     offset=offset,
                     limit=limit)
-                return [ExperimentTemplate.from_dict(sub_data) for sub_data in api_response]
+                return [ExperimentTemplate.from_dict(sub_data, self._config) for sub_data in api_response]
             except Exception as e:
                 raise e
 
@@ -123,7 +122,7 @@ class ExperimentTemplateManager:
             api_instance = ExperimentTemplatesApi(api_client)
             try:
                 api_response = api_instance.get_experiment_template_v1_experiment_templates_id_get(id)
-                return ExperimentTemplate.from_dict(api_response)
+                return ExperimentTemplate.from_dict(api_response, self._config)
             except Exception as e:
                 raise e
 
@@ -144,47 +143,12 @@ class ExperimentTemplateManager:
         Raises:
             ApiException: In case of a failed HTTP request.
         """
-        experiment_template_instance = self._create_experiment_template_instance(template)
+        creation_dict = ExperimentTemplate.build_creation_dict(template)
         with ApiClient(self._config) as api_client:
             api_instance = ExperimentTemplatesApi(api_client)
-            experiment_template_create = experiment_template_instance
             try:
-                api_response = api_instance.create_experiment_template_v1_experiment_templates_post(
-                    experiment_template_create
-                )
-                return ExperimentTemplate.from_dict(api_response)
+                api_response = api_instance.create_experiment_template_v1_experiment_templates_post(creation_dict)
+                return ExperimentTemplate.from_dict(api_response, self._config)
             except Exception as e:
                 raise e
 
-    @staticmethod
-    def _create_experiment_template_instance( template: dict | tuple[str, str, str, dict]):
-        if isinstance(template, dict):
-            json_data = json.dumps(template)
-
-        elif (
-                isinstance(template, tuple)
-                and len(template) == 4
-                and all(isinstance(item, (str, dict)) for item in template)
-        ):
-            path_script, path_requirements, base_image, config = template
-            if isinstance(config, dict):
-                with (
-                    open(path_script, "r") as s,
-                    open(path_requirements, "r") as r,
-                ):
-                    script = s.read()
-                    requirements = r.read()
-                    config.update(
-                        {
-                            "script": script,
-                            "pip_requirements": requirements,
-                            "base_image": base_image,
-                        }
-                    )
-                    json_data = json.dumps(config)
-            else:
-                raise ValueError("Fourth element must be a dictionary")
-        else:
-            raise ValueError("Invalid input format")
-
-        return ExperimentTemplate.from_json(json_data)
