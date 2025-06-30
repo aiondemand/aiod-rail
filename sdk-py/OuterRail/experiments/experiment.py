@@ -1,13 +1,12 @@
 from __future__ import annotations
 
-import json
-import pprint
 from datetime import datetime
-from typing import Any, ClassVar, Dict, List, Optional, Set, Union
-from pydantic import BaseModel, ConfigDict, StrictBool, StrictFloat, StrictInt, StrictStr
+from typing import Any, ClassVar, Dict, List, Optional
+from pydantic import BaseModel, ConfigDict, StrictBool, StrictStr
 from typing_extensions import Self
 
-from OuterRail import EnvironmentVar, Configuration
+from OuterRail import EnvironmentVar, Configuration, ApiClient, ExperimentsApi
+from OuterRail.experiments.experiment_run import ExperimentRun
 
 """
     AIoD - RAIL
@@ -39,12 +38,74 @@ class Experiment(BaseModel):
     ]
     model_config = ConfigDict(populate_by_name=True, validate_assignment=True, protected_namespaces=())
 
+    def archive(self, archive: bool = False) -> None:
+        """
+        Archives specific experiment template specified by ID.
+
+        Args:
+            archive (bool): If experiment should be archived or un-archived. Defaults to False.
+        Returns:
+            None.
+
+        Raises:
+            ApiException: In case of a failed HTTP request.
+        """
+        with ApiClient(self._config) as api_client:
+            api_instance = ExperimentsApi(api_client)
+            try:
+                api_instance.archive_experiment_v1_experiments_id_archive_patch(id=self.id, archive=archive)
+                self.is_archived = archive
+            except Exception as e:
+                raise e
+
+    def update(self, experiment: dict) -> Experiment:
+        """
+        Updates the experiment.
+
+        Args:
+            experiment (dict): Dictionary containing updated experiment specification.
+
+        Returns:
+            Experiment: Updated Experiment.
+
+        Raises:
+            ApiException: In case of a failed HTTP request.
+        """
+        with ApiClient(self._config) as api_client:
+            api_instance = ExperimentsApi(api_client)
+            try:
+                api_response = api_instance.update_experiment_v1_experiments_id_put(
+                    id=self.id, experiment_create=experiment
+                )
+                self.__dict__.update(api_response)
+                return self
+            except Exception as e:
+                raise e
+
+    def delete(self) -> None:
+        """
+        Delete specific experiment specified by ID.
+
+        Returns:
+            None.
+
+        Raises:
+            ApiException: In case of a failed HTTP request.
+        """
+        with ApiClient(self._config) as api_client:
+            api_instance = ExperimentsApi(api_client)
+            try:
+                api_instance.delete_experiment_v1_experiments_id_delete(id=self.id)
+                self._deleted = True
+            except Exception as e:
+                raise e
+
     def _set_config(self, config: Configuration) -> None:
         """
         Sets the configuration of the experiment template required for API calls.
 
         Args:
-        config (Configuration): The api configuration.
+            config (:obj:`Configuration`): The api configuration.
 
         Returns:
             None:
@@ -72,3 +133,65 @@ class Experiment(BaseModel):
             _obj._set_config(config)
         return _obj
 
+    def count_runs(self) -> int:
+        """
+        Counts the number of runs of an experiment.
+
+        Returns:
+            int: Number of experiment runs of selected experiment.
+
+        Raises:
+            ApiException: In case of a failed HTTP request.
+        """
+        with ApiClient(self._config) as api_client:
+            api_instance = ExperimentsApi(api_client)
+            try:
+                api_response = api_instance.get_experiment_runs_of_experiment_count_v1_count_experiments_id_runs_get(
+                    id=self.id
+                )
+                return api_response
+            except Exception as e:
+                raise e
+
+    def get_runs(self, offset: int = 0, limit: int = 100) -> List[ExperimentRun]:
+        """
+        Gets runs of specified experiment in selected range.
+
+        Args:
+            offset (int, optional): Starting index of experiment run range from which to retrieve. Defaults to 0.
+            limit (int, optional): Ending index of experiment run range to which to retrieve. Defaults to 100.
+
+        Returns:
+            None.
+
+        Raises:
+            ApiException: In case of a failed HTTP request.
+        """
+        with ApiClient(self._config) as api_client:
+            api_instance = ExperimentsApi(api_client)
+            try:
+                api_response = api_instance.get_experiment_runs_of_experiment_v1_experiments_id_runs_get(
+                    id=self.id, offset=offset, limit=limit
+                )
+                return [ExperimentRun.from_dict(sub_data, self._config) for sub_data in api_response]
+            except Exception as e:
+                raise e
+
+
+    def run(self) -> ExperimentRun:
+        """
+        Runs an experiment.
+
+        Returns:
+            ExperimentRun: Instance of the experiment run.
+
+        Raises:
+            ApiException: In case of a failed HTTP request.
+        """
+        with ApiClient(self._config) as api_client:
+            api_instance = ExperimentsApi(api_client)
+            try:
+                api_response = api_instance.execute_experiment_run_v1_experiments_id_execute_get(self.id)
+                return ExperimentRun.from_dict(api_response, self._config)
+            except Exception as e:
+                raise e

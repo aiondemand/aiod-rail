@@ -790,7 +790,7 @@ class ExperimentsApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ExperimentRunResponse:
+    ) -> Dict:
         """Execute Experiment Run
 
 
@@ -827,7 +827,7 @@ class ExperimentsApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            "200": "ExperimentRunResponse",
+            "200": "dict",
             "422": "HTTPValidationError",
         }
         response_data = self.api_client.call_api(
@@ -1268,7 +1268,7 @@ class ExperimentsApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> List[ExperimentRunResponse]:
+    ) -> List[Dict]:
         """Get Experiment Runs Of Experiment
 
 
@@ -1311,7 +1311,7 @@ class ExperimentsApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            "200": "List[ExperimentRunResponse]",
+            "200": "dict",
             "422": "HTTPValidationError",
         }
         response_data = self.api_client.call_api(
@@ -2065,7 +2065,7 @@ class ExperimentsApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> Dict:
+    ) -> List[Dict]:
         """Get Experiments
 
 
@@ -2368,7 +2368,7 @@ class ExperimentsApi:
     def update_experiment_v1_experiments_id_put(
         self,
         id: StrictStr,
-        experiment_create: ExperimentCreate,
+        experiment_create: Dict,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -2380,7 +2380,7 @@ class ExperimentsApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ExperimentResponse:
+    ) -> Dict:
         """Update Experiment
 
 
@@ -2420,7 +2420,7 @@ class ExperimentsApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            "200": "ExperimentResponse",
+            "200": "dict",
             "422": "HTTPValidationError",
         }
         response_data = self.api_client.call_api(
