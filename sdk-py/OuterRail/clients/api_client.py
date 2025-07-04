@@ -17,7 +17,6 @@ import json
 import mimetypes
 import os
 import re
-import sys
 import tempfile
 from enum import Enum
 from typing import Dict, List, Optional, Tuple, Union

@@ -5,8 +5,7 @@ from typing import Any, ClassVar, Dict, List, Optional
 from pydantic import BaseModel, ConfigDict, StrictBool, StrictStr
 from typing_extensions import Self
 
-from OuterRail import EnvironmentVar, Configuration, ApiClient, ExperimentsApi
-from OuterRail.experiments.experiment_run import ExperimentRun
+from OuterRail import EnvironmentVar, Configuration, ApiClient, ExperimentsApi, ExperimentRun
 
 """
     AIoD - RAIL

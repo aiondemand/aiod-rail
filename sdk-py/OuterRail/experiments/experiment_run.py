@@ -1,12 +1,10 @@
-import json
-import pprint
-
+from pathlib import Path
 from datetime import datetime
 from typing_extensions import Self
 from typing import Any, ClassVar, Dict, List, Optional, Set, Union
 from pydantic import BaseModel, ConfigDict, StrictBool, StrictFloat, StrictInt, StrictStr
 
-from OuterRail import RunState, Configuration
+from OuterRail import RunState, Configuration, ApiClient, ExperimentRunsApi
 
 """
     AIoD - RAIL
@@ -19,6 +17,7 @@ from OuterRail import RunState, Configuration
 
 
 class ExperimentRun(BaseModel):
+
     id: StrictStr
     experiment_id: StrictStr
     retry_count: StrictInt
@@ -35,67 +34,73 @@ class ExperimentRun(BaseModel):
     ]
     model_config = ConfigDict(populate_by_name=True, validate_assignment=True, protected_namespaces=())
 
-    # def delete_experiment_run(self, id: str) -> None:
-    #     """
-    #     Deletes experiment run.
-    #     Args:
-    #         id (str): ID of experiment run to be deleted.
-    #     Returns:
-    #         None.
-    #     """
-    #     with ApiClient(self._config) as api_client:
-    #         api_instance = ExperimentRunsApi(api_client)
-    #
-    #         try:
-    #             api_instance.delete_experiment_run_v1_experiment_runs_id_delete(id)
-    #         except Exception as e:
-    #             raise e
-    #
-    # def download_experiment_run(self, id: str, filepath: str, to_dir: str) -> None:
-    #     """
-    #     Downloads experiment run.
-    #     Args:
-    #         id (str): ID of experiment run to be downloaded.
-    #         filepath (str): File to be downloaded.
-    #         to_dir (Path): Local directory path to which run will be downloaded.
-    #     Returns:
-    #         None.
-    #     """
-    #     with ApiClient(self._config) as api_client:
-    #         api_instance = ExperimentRunsApi(api_client)
-    #
-    #         try:
-    #             data = api_instance.download_file_from_experiment_run_v1_experiment_runs_id_files_download_get(
-    #                 id=id, filepath=filepath
-    #             )
-    #         except Exception as e:
-    #             raise e
-    #
-    #     local_file_path = Path(to_dir) / Path(filepath)
-    #     local_file_path.parent.mkdir(parents=True, exist_ok=True)
-    #     with local_file_path.open("w") as f:
-    #         f.write(data)
-    #
-    # def logs_experiment_run(self, id: str) -> str:
-    #     """
-    #     Gets logs of experiment run.
-    #     Args:
-    #         id (str): ID of experiment run of which logs will be fetched.
-    #     Returns:
-    #         str: Logs of experiment run.
-    #     """
-    #     with ApiClient(self._config) as api_client:
-    #         api_instance = ExperimentRunsApi(api_client)
-    #
-    #         try:
-    #             api_response = (
-    #                 api_instance.get_experiment_run_logs_v1_experiment_runs_id_logs_get(
-    #                     id=id
-    #                 )
-    #             )
-    #             return api_response
-    #         except Exception as e:
-    #             raise e
+    def delete(self) -> None:
+        """
+         Archives specific experiment template specified by ID.
+
+         Args:
+             archive (bool): If experiment should be archived or un-archived. Defaults to False.
+
+         Returns:
+             None.
+
+         Raises:
+             ApiException: In case of a failed HTTP request.
+         """
+        with ApiClient(self._config) as api_client:
+            api_instance = ExperimentRunsApi(api_client)
+            try:
+                api_instance.delete_experiment_run_v1_experiment_runs_id_delete(self.id)
+                self._deleted = True
+            except Exception as e:
+                raise e
+
+    def download_file(self, filepath: str, to_dir: str) -> None:
+        """
+        Downloads a specific file contained in outputs for the run.
+
+        Args:
+            filepath (str): File to be downloaded.
+            to_dir (Path): Local directory path to which run will be downloaded.
+
+        Returns:
+            None.
+
+         Raises:
+             ApiException: In case of a failed HTTP request.
+        """
+        with ApiClient(self._config) as api_client:
+            api_instance = ExperimentRunsApi(api_client)
+
+            try:
+                data = api_instance.download_file_from_experiment_run_v1_experiment_runs_id_files_download_get(
+                    id=self.id, filepath=filepath
+                )
+            except Exception as e:
+                raise e
+
+        local_file_path = Path(to_dir) / Path(filepath)
+        local_file_path.parent.mkdir(parents=True, exist_ok=True)
+        with local_file_path.open("w") as f:
+            f.write(data)
+
+    def logs(self) -> str:
+        """
+        Fetches the logs of the experiment run.
+
+        Returns:
+            str: Logs of experiment run.
+
+         Raises:
+             ApiException: In case of a failed HTTP request.
+        """
+        with ApiClient(self._config) as api_client:
+            api_instance = ExperimentRunsApi(api_client)
+            try:
+                api_response = api_instance.get_experiment_run_logs_v1_experiment_runs_id_logs_get(id=self.id)
+                return api_response
+            except Exception as e:
+                raise e
 
     def _set_config(self, config: Configuration) -> None:
         """

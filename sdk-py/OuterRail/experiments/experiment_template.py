@@ -1,11 +1,9 @@
-from __future__ import annotations
-
 import json
 from typing_extensions import Self
 from typing import Any, ClassVar, Dict, List, Optional
 from pydantic import BaseModel, StrictBool, StrictStr, ConfigDict
 
-from OuterRail import Configuration, ApiClient, ExperimentTemplatesApi
+from OuterRail import Configuration, ApiClient, ExperimentTemplatesApi, ExperimentTemplate
 from OuterRail.models.task_type import TaskType
 from OuterRail.models.asset_schema import AssetSchema
 from OuterRail.models.environment_var_def import EnvironmentVarDef
