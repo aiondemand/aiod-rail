@@ -1,11 +1,10 @@
-from __future__ import annotations
-
 from datetime import datetime
+from typing_extensions import Self
 from typing import Any, ClassVar, Dict, List, Optional
 from pydantic import BaseModel, ConfigDict, StrictBool, StrictStr
-from typing_extensions import Self
 
-from OuterRail import EnvironmentVar, Configuration, ApiClient, ExperimentsApi, ExperimentRun
+from OuterRail.experiments.experiment_run import ExperimentRun
+from OuterRail import EnvironmentVar, Configuration, ApiClient, ExperimentsApi
 
 """
     AIoD - RAIL
@@ -57,7 +56,7 @@ class Experiment(BaseModel):
             except Exception as e:
                 raise e
 
-    def update(self, experiment: dict) -> Experiment:
+    def update(self, experiment: dict) -> Self:
         """
         Updates the experiment.
 

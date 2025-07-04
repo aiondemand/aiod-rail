@@ -25,8 +25,8 @@ class Experiment(Document):
     is_archived: bool = False
 
     experiment_template_id: PydanticObjectId
-    dataset_ids: list[int]
-    model_ids: list[int]
+    dataset_ids: list[str]
+    model_ids: list[str]
     publication_ids: list[int]
     env_vars: list[EnvironmentVar]
 

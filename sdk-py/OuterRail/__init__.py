@@ -1,5 +1,4 @@
 from OuterRail.configuration import Configuration
-from OuterRail.api_client import ApiClient
 
 from OuterRail.models import *
 from OuterRail.api import *

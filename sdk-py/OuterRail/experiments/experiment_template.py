@@ -3,7 +3,7 @@ from typing_extensions import Self
 from typing import Any, ClassVar, Dict, List, Optional
 from pydantic import BaseModel, StrictBool, StrictStr, ConfigDict
 
-from OuterRail import Configuration, ApiClient, ExperimentTemplatesApi, ExperimentTemplate
+from OuterRail import Configuration, ApiClient, ExperimentTemplatesApi
 from OuterRail.models.task_type import TaskType
 from OuterRail.models.asset_schema import AssetSchema
 from OuterRail.models.environment_var_def import EnvironmentVarDef
@@ -68,7 +68,7 @@ class ExperimentTemplate(BaseModel):
             except Exception as e:
                 raise e
 
-    def update(self, template: dict | tuple[str, str, str, dict]) -> ExperimentTemplate:
+    def update(self, template: dict | tuple[str, str, str, dict]) -> Self:
         """
         Updates specific experiment template.
         Args:
