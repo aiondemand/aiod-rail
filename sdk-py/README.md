@@ -1,5 +1,3 @@
-from tmp_test import new_experiment
-
 # OuterRail
 
 An SDK for AIoD - RAIL tool.

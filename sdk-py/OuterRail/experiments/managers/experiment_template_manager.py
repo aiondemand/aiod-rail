@@ -3,16 +3,16 @@ from typing import Optional, List
 from OuterRail import Configuration, ApiClient, ExperimentTemplatesApi, ExperimentTemplate
 
 
-"""
-    AIoD - RAIL
-
-    ExperimentManager class
-
-    Class aggregating methods for operating on multiple experiments.
-"""
-
-
 class ExperimentTemplateManager:
+
+    """
+        AIoD - RAIL
+
+        ExperimentManager class
+
+        Class aggregating methods for operating on multiple experiments.
+    """
+
     def __init__(self, client_config: Configuration):
         """
         Initializes a new ExperimentTemplateManager.
@@ -33,6 +33,7 @@ class ExperimentTemplateManager:
               ) -> int:
         """
         Counts the number of experiments based on filters specified in Args.
+
         Args:
             query (str, optional): Query used to filter experiment templates. Defaults to empty string, which means that by default count is not filtered.
             mine (bool, optional): If own personal experiment templates should be counted or the opposite. Defaults to None.
@@ -132,7 +133,7 @@ class ExperimentTemplateManager:
         Args:
             template: (dict | tuple[str, str, str, dict]):
             The file can be passed either as full specified json (dictionary) or
-            as a tuple of three strings with paths to: (script, requirements and docker imageand a json
+            as a tuple of three strings with paths to: (script, requirements and docker image and a json
             (dictionary) specifying the paths to script, requirements and docker image in this order and template
             description (name, description, task etc.).
 

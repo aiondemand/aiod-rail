@@ -2,16 +2,17 @@ from typing import Optional, List, Dict
 
 from OuterRail import Configuration, ApiClient, ExperimentsApi, Experiment
 
-"""
-AIoD - RAIL
-
-ExperimentManager class
-
-Class aggregating methods for operating on multiple experiments.
-"""
-
 
 class ExperimentManager:
+
+    """
+    AIoD - RAIL
+
+    ExperimentManager class
+
+    Class aggregating methods for operating on multiple experiments.
+    """
+
     def __init__(self, client_config: Configuration):
         """
         Initializes a new ExperimentManager.
