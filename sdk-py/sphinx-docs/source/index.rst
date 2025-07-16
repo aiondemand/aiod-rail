@@ -94,7 +94,7 @@ The code for this would look something like:
 
 
 Reference Table
-=================
+----------------
 
 .. toctree::
    :maxdepth: 2
