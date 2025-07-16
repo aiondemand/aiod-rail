@@ -22,10 +22,16 @@ class ExperimentTemplateManager:
 
         Returns:
             ExperimentTemplateManager: Initialized  ExperimentTemplateManager.
+
+        Examples:
+            >>> config = Configuration(...)
+            >>> ExperimentTemplateManager(config)
+            ExperimentTemplateManager
         """
         self._config = client_config
 
-    def count(self, query: str = "",
+    def count(self,
+              query: str = "",
               mine: Optional[bool] = None,
               finalized: Optional[bool] = None,
               approved: Optional[bool] = None,
@@ -46,6 +52,11 @@ class ExperimentTemplateManager:
 
         Raises:
             ApiException: In case of a failed HTTP request.
+
+        Examples:
+            >>> template_manager = ExperimentTemplateManager(...)
+            >>> template_manager.count(finalized=True, approved=True, public=True)
+            1234
         """
 
         with ApiClient(self._config) as api_client:
@@ -75,7 +86,9 @@ class ExperimentTemplateManager:
         Gets experiment templates based of on specified filters.
 
         Args:
-            query (str, optional): Query used to filter experiment templates. Defaults to empty string, which means that by default, it's not used.
+            query (str, optional): Query used to filter experiment templates.
+                This parameter is case-insensitive and matches full words in template names.
+                Defaults to empty string, in which case it's not used.
             mine (bool, optional): If own personal experiment templates should be included or the opposite. Defaults to None.
             finalized (bool, optional): If experiment templates that are successfully build and ready to use should be listed or the opposite. Defaults to None.
             approved (bool, optional): If already approved experiments should be listed or the opposite. Defaults to None.
@@ -88,6 +101,15 @@ class ExperimentTemplateManager:
 
         Raises:
             ApiException: In case of a failed HTTP request.
+
+        Examples:
+            >>> template_manager = ExperimentTemplateManager(...)
+            >>> template_manager.get()
+            List[ExperimentTemplate]
+            >>> len(template_manager.get(finalized=True, approved=True, limit=1000))
+            1000
+            >>> template_manager.get(query="Tutorial")
+            List[ExperimentTemplate] # only templates that contain word "Tutorial" in their name.
         """
 
         with ApiClient(self._config) as api_client:
@@ -117,6 +139,11 @@ class ExperimentTemplateManager:
 
         Raises:
             ApiException: In case of a failed HTTP request.
+
+        Examples:
+            >>> template_manager = ExperimentTemplateManager(...)
+            >>> template_manager.get_by_id("685151f2d08da970a3a5d6ce")
+            ExperimentTemplate
         """
         with ApiClient(self._config) as api_client:
             api_instance = ExperimentTemplatesApi(api_client)
@@ -142,6 +169,24 @@ class ExperimentTemplateManager:
 
         Raises:
             ApiException: In case of a failed HTTP request.
+
+        Examples:
+            >>> script_path = "path/to/script.py"
+            >>> requirements_path = "path/to/requirements.txt"
+            >>> base_image = "python:3.9"
+            >>> template_config = {
+            >>> "name": "Example Template",
+            >>> "description": "Template in Examples",
+            >>> "task": "TEXT_CLASSIFICATION",
+            >>> "datasets_schema": { "cardinality": "1-1" },
+            >>> "models_schema": { "cardinality": "1-1" },
+            >>> "envs_required": [ { "name": "SPLIT_NAME", "description": "name of a subset" } ],
+            >>> "envs_optional": [],
+            >>> "available_metrics": [ "accuracy" ],
+            >>> "is_public": True
+            >>> }
+            >>> template_manager.create((script_path, requirements_path, base_image, template_config))
+            ExperimentTemplate # newly created instance
         """
         creation_dict = ExperimentTemplate.build_creation_dict(template)
         with ApiClient(self._config) as api_client:

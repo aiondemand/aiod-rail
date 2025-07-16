@@ -7,7 +7,6 @@ class ExperimentManager:
 
     """
     AIoD - RAIL
-
     ExperimentManager class
 
     Class aggregating methods for operating on multiple experiments.
@@ -22,11 +21,21 @@ class ExperimentManager:
 
         Returns:
             ExperimentManager: Initialized ExperimentManager.
+
+        Examples:
+            >>> config = Configuration(...)
+            >>> ExperimentManager(config)
+            ExperimentManager
         """
+
         self._config = client_config
 
-    def count(self, query: str = "", mine: Optional[bool] = None, archived: Optional[bool] = None,
-              public: Optional[bool] = None) -> int:
+    def count(self,
+              query: str = "",
+              mine: Optional[bool] = None,
+              archived: Optional[bool] = None,
+              public: Optional[bool] = None
+              ) -> int:
         """
         Counts the number of experiments based on filters specified in Args.
 
@@ -41,6 +50,11 @@ class ExperimentManager:
 
         Raises:
             ApiException: In case of a failed HTTP request.
+
+        Examples:
+            >>> experiment_manager =  ExperimentManager(...)
+            >>> experiment_manager.count(query="Tutorial", mine=True, archived=True)
+            ExperimentTemplate
         """
 
         with ApiClient(self._config) as api_client:
@@ -72,7 +86,17 @@ class ExperimentManager:
 
         Raises:
             ApiException: In case of a failed HTTP request.
+
+        Examples:
+            >>> experiment_manager =  ExperimentManager(...)
+            >>> experiment_manager.get()
+            List[Experiment]
+            >>> len(experiment_manager.get(archived=False, public=True, limit=1000))
+            1000
+            >>> template_manager.get(query="Tutorial")
+            List[Experiment] # only experimenets that contain word "Tutorial" in their name.
         """
+
         with ApiClient(self._config) as api_client:
             api_instance = ExperimentsApi(api_client)
             try:
@@ -95,7 +119,13 @@ class ExperimentManager:
 
         Raises:
             ApiException: In case of a failed HTTP request or failure to retrieve an experiment with given ID.
+
+        Examples:
+            >>> experiment_manager =  ExperimentManager(...)
+            >>> experiment_manager.get_by_id("6861d3c954d2c02536469a30")
+            Experiment
         """
+
         with ApiClient(self._config) as api_client:
             api_instance = ExperimentsApi(api_client)
             try:
@@ -115,7 +145,24 @@ class ExperimentManager:
 
         Raises:
             ApiException: In case of a failed HTTP request.
+
+        Examples:
+            >>> experiment_dict = {
+            >>>     "name": "test123",
+            >>>     "description": "321test",
+            >>>     "is_public": True,
+            >>>     "experiment_template_id": "685151f2d08da970a3a5d6ce",
+            >>>     "dataset_ids": ["data_000002AhzqHqOQwQLP0qCRds"],
+            >>>     "model_ids": ["mdl_003Csk8QjNfE80c7g6Rt8yVb"],
+            >>>     "publication_ids": [],
+            >>>     "env_vars": [{"key": "SPLIT_NAME", "value": "PES"}
+            >>>     ]
+            >>> }
+            >>> experiment_manager =  ExperimentManager(...)
+            >>> experiment_manager.create(experiment_dict)
+            Experiment # Newly created experiment.
         """
+
         with ApiClient(self._config) as api_client:
             api_instance = ExperimentsApi(api_client)
             try:

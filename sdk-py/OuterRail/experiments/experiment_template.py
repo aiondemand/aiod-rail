@@ -1,4 +1,5 @@
 import json
+
 from typing_extensions import Self
 from typing import Any, ClassVar, Dict, List, Optional
 from pydantic import BaseModel, StrictBool, StrictStr, ConfigDict
@@ -8,17 +9,19 @@ from OuterRail.models.task_type import TaskType
 from OuterRail.models.asset_schema import AssetSchema
 from OuterRail.models.environment_var_def import EnvironmentVarDef
 
-"""
-    AIoD - RAIL
 
-    ExperimentTemplate class. 
-    
-    Implementation of class representing an instance of experiment template and methods
-    operating with this instance.
-"""
 
 
 class ExperimentTemplate(BaseModel):
+    """
+        AIoD - RAIL
+
+        ExperimentTemplate class.
+
+        Implementation of class representing an instance of experiment template and methods
+        operating with this instance.
+    """
+
     id: StrictStr
     name: StrictStr
     state: StrictStr
@@ -56,6 +59,12 @@ class ExperimentTemplate(BaseModel):
 
         Raises:
             ApiException: In case of a failed HTTP request.
+
+        Examples:
+            >>> self.archive(True)
+            >>> self.is_archived
+            True
+
         """
 
         with ApiClient(self._config) as api_client:
@@ -71,16 +80,36 @@ class ExperimentTemplate(BaseModel):
     def update(self, template: dict | tuple[str, str, str, dict]) -> Self:
         """
         Updates specific experiment template.
+
         Args:
             template: (dict | tuple[str, str, str, dict]):  The file can be passed either as full specified json (dictionary)
                                                             or as a tuple of three strings and a json (dictionary) specifying
                                                             the paths to script, requirements and docker image in this order
                                                             and template description (name, description, task etc.).
+
         Returns:
             ExperimentTemplateResponse: Updated Experiment template by given ID.
 
         Raises:
             ApiException: In case of a failed HTTP request.
+
+        Examples:
+            >>> script_path = "path/to/script.py"
+            >>> requirements_path = "path/to/requirements.txt"
+            >>> base_image = "python:3.9"
+            >>> template_config = {
+            >>> "name": "Example Template",
+            >>> "description": "Template in Examples",
+            >>> "task": "TEXT_CLASSIFICATION",
+            >>> "datasets_schema": { "cardinality": "1-1" },
+            >>> "models_schema": { "cardinality": "1-1" },
+            >>> "envs_required": [ { "name": "SPLIT_NAME", "description": "name of a subset" } ],
+            >>> "envs_optional": [],
+            >>> "available_metrics": [ "accuracy" ],
+            >>> "is_public": True
+            >>> }
+            >>> self.update((script_path, requirements_path, base_image, template_config))
+            Self # The instance is also updated in place.
         """
 
         update_dict = self.build_creation_dict(template)
@@ -98,14 +127,21 @@ class ExperimentTemplate(BaseModel):
 
     def delete(self) -> None:
         """
-        Deletes the experiment template.
+        Deletes the experiment template. After this method is called any operations on the template instance will
+        result in an HTTP exception as the template no longer exists.
 
         Returns:
             None.
 
         Raises:
             ApiException: In case of a failed HTTP request.
+
+        Examples:
+            >>> self.delete()
+            >>> self._deleted
+            True
         """
+
         with ApiClient(self._config) as api_client:
             api_instance = ExperimentTemplatesApi(api_client)
             try:
@@ -124,19 +160,26 @@ class ExperimentTemplate(BaseModel):
         Returns:
             None:
         """
+
         self._config = config
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
         """
-        Creates an instance of ExperimentTemplateCreate from a JSON string.
+        Creates an instance of ExperimentTemplate from a JSON string.
 
         Args:
             json_str: The JSON string to create the instance from.
 
         Returns:
             ExperimentTemplate: Instance of ExperimentTemplate.
+
+        Examples:
+            >>> template_json = ...
+            >>> ExperimentTemplate.from_json(template_json)
+            ExperimentTemplate
         """
+
         return cls.from_dict(json.loads(json_str))
 
     @classmethod
@@ -150,7 +193,13 @@ class ExperimentTemplate(BaseModel):
 
         Returns:
             ExperimentTemplate: An instance of ExperimentTemplate.
+
+        Examples:
+            >>> template_dict = ...
+            >>> ExperimentTemplate.from_dict(template_dict)
+            ExperimentTemplate
         """
+
         if obj is None:
             return None
 

@@ -1,3 +1,5 @@
+import json
+
 from datetime import datetime
 from typing_extensions import Self
 from typing import Any, ClassVar, Dict, List, Optional
@@ -6,17 +8,18 @@ from pydantic import BaseModel, ConfigDict, StrictBool, StrictStr
 from OuterRail.experiments.experiment_run import ExperimentRun
 from OuterRail import EnvironmentVar, Configuration, ApiClient, ExperimentsApi
 
-"""
-    AIoD - RAIL
-
-    Experiment class. 
-    
-    Implementation of class representing an instance of experiment and methods
-    operating with this instance.
-"""
 
 
 class Experiment(BaseModel):
+    """
+        AIoD - RAIL
+
+        Experiment class.
+
+        Implementation of class representing an instance of experiment and methods
+        operating with this instance.
+    """
+
     id: StrictStr
     name: StrictStr
     description: StrictStr
@@ -47,7 +50,13 @@ class Experiment(BaseModel):
 
         Raises:
             ApiException: In case of a failed HTTP request.
+
+        Examples:
+            >>> self.archive(True)
+            >>> self.is_archived
+            True
         """
+
         with ApiClient(self._config) as api_client:
             api_instance = ExperimentsApi(api_client)
             try:
@@ -68,7 +77,23 @@ class Experiment(BaseModel):
 
         Raises:
             ApiException: In case of a failed HTTP request.
+
+       Examples:
+            >>> experiment_dict = {
+            >>>     "name": "test123",
+            >>>     "description": "321test",
+            >>>     "is_public": True,
+            >>>     "experiment_template_id": "685151f2d08da970a3a5d6ce",
+            >>>     "dataset_ids": ["data_000002AhzqHqOQwQLP0qCRds"],
+            >>>     "model_ids": ["mdl_003Csk8QjNfE80c7g6Rt8yVb"],
+            >>>     "publication_ids": [],
+            >>>     "env_vars": [{"key": "SPLIT_NAME", "value": "PES"}
+            >>>     ]
+            >>> }
+            >>> self.update(experiment_dict)
+            Self # The instance is also updated in place.
         """
+
         with ApiClient(self._config) as api_client:
             api_instance = ExperimentsApi(api_client)
             try:
@@ -89,6 +114,11 @@ class Experiment(BaseModel):
 
         Raises:
             ApiException: In case of a failed HTTP request.
+
+        Examples:
+            >>> self.delete()
+            >>> self._deleted
+            True
         """
         with ApiClient(self._config) as api_client:
             api_instance = ExperimentsApi(api_client)
@@ -97,39 +127,6 @@ class Experiment(BaseModel):
                 self._deleted = True
             except Exception as e:
                 raise e
-
-    def _set_config(self, config: Configuration) -> None:
-        """
-        Sets the configuration of the experiment template required for API calls.
-
-        Args:
-            config (:obj:`Configuration`): The api configuration.
-
-        Returns:
-            None:
-        """
-        self._config = config
-
-    @classmethod
-    def from_dict(cls, obj: Optional[Dict[str, Any]], config: Configuration = None) -> Optional[Self]:
-        """
-        Create an instance of ExperimentRunResponse from a dict
-
-        Args:
-            obj (Optional[Dict[str, Any]]): Obj representing the experiment in either a dictionary or
-            an already existing instance.
-            config (:obj:`Configuration`, optional): The api configuration. Defaults to None.
-
-        Returns:
-            None: If input arg "obj" is None.
-            Experiment: In successful conversion from dict.
-        """
-        if obj is None:
-            return None
-        _obj = cls.model_validate(obj)
-        if config is not None:
-            _obj._set_config(config)
-        return _obj
 
     def count_runs(self) -> int:
         """
@@ -140,7 +137,12 @@ class Experiment(BaseModel):
 
         Raises:
             ApiException: In case of a failed HTTP request.
+
+        Examples:
+            >>> self.count_runs()
+            123
         """
+
         with ApiClient(self._config) as api_client:
             api_instance = ExperimentsApi(api_client)
             try:
@@ -153,7 +155,7 @@ class Experiment(BaseModel):
 
     def get_runs(self, offset: int = 0, limit: int = 100) -> List[ExperimentRun]:
         """
-        Gets runs of specified experiment in selected range.
+        Gets runs of specified experiment in a selected range.
 
         Args:
             offset (int, optional): Starting index of experiment run range from which to retrieve. Defaults to 0.
@@ -164,7 +166,12 @@ class Experiment(BaseModel):
 
         Raises:
             ApiException: In case of a failed HTTP request.
+
+        Examples:
+            >>> self.get_runs()
+            List[ExperimentRun] # associated with the specific experiment.
         """
+
         with ApiClient(self._config) as api_client:
             api_instance = ExperimentsApi(api_client)
             try:
@@ -185,7 +192,12 @@ class Experiment(BaseModel):
 
         Raises:
             ApiException: In case of a failed HTTP request.
+
+        Examples:
+            >>> self.run()
+            ExperimentRun
         """
+
         with ApiClient(self._config) as api_client:
             api_instance = ExperimentsApi(api_client)
             try:
@@ -193,3 +205,63 @@ class Experiment(BaseModel):
                 return ExperimentRun.from_dict(api_response, self._config)
             except Exception as e:
                 raise e
+
+    @classmethod
+    def from_json(cls, json_str: str) -> Self:
+        """
+        Creates an instance of Experiment from a JSON string.
+
+        Args:
+            json_str: The JSON string to create the instance from.
+
+        Returns:
+            Experiment: Instance of Experiment.
+
+        Examples:
+            >>> experiment_json = ...
+            >>> Experiment.from_json(experiment_json)
+            Experiment
+        """
+
+        return cls.from_dict(json.loads(json_str))
+
+    @classmethod
+    def from_dict(cls, obj: Optional[Dict[str, Any]], config: Configuration = None) -> Optional[Self]:
+        """
+        Create an instance of Experiment from a dict.
+
+        Args:
+            obj (Optional[Dict[str, Any]]): Obj representing the experiment in either a dictionary or
+            an already existing instance.
+            config (:obj:`Configuration`, optional): The api configuration. Defaults to None.
+
+        Returns:
+            None: If input arg "obj" is None.
+            Experiment: In successful conversion from dict.
+
+        Examples:
+            >>> experiment_dict = ...
+            >>> Experiment.from_dict(experiment_dict)
+            Experiment
+        """
+
+        if obj is None:
+            return None
+        _obj = cls.model_validate(obj)
+        if config is not None:
+            _obj._set_config(config)
+        return _obj
+
+    def _set_config(self, config: Configuration) -> None:
+        """
+        Sets the configuration of the experiment template required for API calls.
+
+        Args:
+            config (:obj:`Configuration`): The api configuration.
+
+        Returns:
+            None:
+        """
+
+        self._config = config
+

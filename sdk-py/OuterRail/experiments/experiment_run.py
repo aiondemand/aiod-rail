@@ -1,3 +1,5 @@
+import json
+
 from pathlib import Path
 from datetime import datetime
 from typing_extensions import Self
@@ -36,17 +38,20 @@ class ExperimentRun(BaseModel):
 
     def delete(self) -> None:
         """
-         Archives specific experiment template specified by ID.
-
-         Args:
-             archive (bool): If experiment should be archived or un-archived. Defaults to False.
+         Deletes specific experiment run. Afterward, operation on deleted instance will result in HTTP exception.
 
          Returns:
              None.
 
          Raises:
              ApiException: In case of a failed HTTP request.
+
+         Examples:
+             >>> self.delete()
+             >>> self._deleted
+             True
          """
+
         with ApiClient(self._config) as api_client:
             api_instance = ExperimentRunsApi(api_client)
             try:
@@ -68,17 +73,20 @@ class ExperimentRun(BaseModel):
 
          Raises:
              ApiException: In case of a failed HTTP request.
+
+         Examples:
+            >>> self.download_file("path/to/remote.txt", "path/to/local/dir/")
+            None # Specified file will be downloaded from remote computing resource where the run is being executed.
         """
+
         with ApiClient(self._config) as api_client:
             api_instance = ExperimentRunsApi(api_client)
-
             try:
                 data = api_instance.download_file_from_experiment_run_v1_experiment_runs_id_files_download_get(
                     id=self.id, filepath=filepath
                 )
             except Exception as e:
                 raise e
-
         local_file_path = Path(to_dir) / Path(filepath)
         local_file_path.parent.mkdir(parents=True, exist_ok=True)
         with local_file_path.open("w") as f:
@@ -93,7 +101,12 @@ class ExperimentRun(BaseModel):
 
          Raises:
              ApiException: In case of a failed HTTP request.
+
+         Examples:
+             >>> self.logs()
+             str # string dump of logs produced by the experiment run.
         """
+
         with ApiClient(self._config) as api_client:
             api_instance = ExperimentRunsApi(api_client)
             try:
@@ -102,17 +115,25 @@ class ExperimentRun(BaseModel):
             except Exception as e:
                 raise e
 
-    def _set_config(self, config: Configuration) -> None:
+    @classmethod
+    def from_json(cls, json_str: str) -> Self:
         """
-        Sets the configuration  required for API calls.
+        Creates an instance of Experiment run from a JSON string.
 
         Args:
-        config (:obj:`Configuration`): The api configuration.
+            json_str: The JSON string to create the instance from.
 
         Returns:
-            None:
+            ExperimentRun: Instance of ExperimentRun.
+
+        Examples:
+            >>> run_json = ...
+            >>> ExperimentRun.from_json(run_json)
+            ExperimentRun
         """
-        self._config = config
+
+        return cls.from_dict(json.loads(json_str))
+
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]], config: Configuration = None) -> Optional[Self]:
@@ -127,11 +148,29 @@ class ExperimentRun(BaseModel):
         Returns:
             None: If input arg "obj" is None.
             ExperimentRun: In successful conversion from dict.
+
+        Examples:
+            >>> run_dict = ...
+            >>> ExperimentRun.from_dict(run_dict)
+            ExperimentRun
         """
+
         if obj is None:
             return None
-
         _obj = cls.model_validate(obj)
         if config is not None:
             _obj._set_config(config)
         return _obj
+
+    def _set_config(self, config: Configuration) -> None:
+        """
+        Sets the configuration  required for API calls.
+
+        Args:
+        config (:obj:`Configuration`): The api configuration.
+
+        Returns:
+            None:
+        """
+
+        self._config = config
