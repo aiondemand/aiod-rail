@@ -97,7 +97,7 @@ class ExperimentTemplateManager:
             limit (int, optional): Ending index of experiment template range to which to retrieve. Defaults to 100.
 
         Returns:
-            list[ExperimentTemplateResponse]: List of all experiments in given range
+            list[ExperimentTemplate]: List of all experiments in given range
 
         Raises:
             ApiException: In case of a failed HTTP request.
@@ -165,7 +165,7 @@ class ExperimentTemplateManager:
             description (name, description, task etc.).
 
         Returns:
-            ExperimentTemplateResponse: Created experiment template.
+            ExperimentTemplate: Created experiment template.
 
         Raises:
             ApiException: In case of a failed HTTP request.

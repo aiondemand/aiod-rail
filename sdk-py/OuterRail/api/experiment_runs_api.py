@@ -638,7 +638,7 @@ class ExperimentRunsApi:
         return self.api_client.response_deserialize(
             response_data=response_data,
             response_types_map=_response_types_map,
-        )
+        ).data
 
     @validate_call
     def get_experiment_run_logs_v1_experiment_runs_id_logs_get_without_preload_content(
@@ -751,7 +751,7 @@ class ExperimentRunsApi:
         )
 
     @validate_call
-    def get_experiment_run_v1_experiment_runs_id_get_without_preload_content(
+    def get_run_by_id(
         self,
         id: StrictStr,
         _request_timeout: Union[
@@ -765,7 +765,7 @@ class ExperimentRunsApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> RESTResponseType:
+    ) -> dict:
         """Get Experiment Run
 
 
@@ -802,13 +802,17 @@ class ExperimentRunsApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {  # noqa: F841
-            "200": "ExperimentRunDetails",
+            "200": "dict",
             "422": "HTTPValidationError",
         }
         response_data = self.api_client.call_api(
             *_param, _request_timeout=_request_timeout
         )
-        return response_data.response
+        response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
 
     def _get_experiment_run_v1_experiment_runs_id_get_serialize(
         self,

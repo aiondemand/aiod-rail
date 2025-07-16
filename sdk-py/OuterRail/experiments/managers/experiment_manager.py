@@ -82,7 +82,7 @@ class ExperimentManager:
             limit (int, optional): Ending index of experiment range to which to retrieve. Defaults to 100.
 
         Returns:
-            list[ExperimentResponse]: The list of experiments.
+            list[Experiment]: The list of experiments.
 
         Raises:
             ApiException: In case of a failed HTTP request.
@@ -115,7 +115,7 @@ class ExperimentManager:
             id (str): ID of experiment to be retrieved.
 
         Returns:
-            ExperimentResponse: Experiment specified by its ID.
+            Experiment: Experiment specified by its ID.
 
         Raises:
             ApiException: In case of a failed HTTP request or failure to retrieve an experiment with given ID.
@@ -141,7 +141,7 @@ class ExperimentManager:
             experiment (dict): Experiment described in a dictionary.
 
         Returns:
-            ExperimentResponse: Experiment created from given template.
+            Experiment: Experiment created from given template.
 
         Raises:
             ApiException: In case of a failed HTTP request.
