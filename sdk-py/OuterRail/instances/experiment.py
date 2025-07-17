@@ -5,7 +5,7 @@ from typing_extensions import Self
 from typing import Any, ClassVar, Dict, List, Optional
 from pydantic import BaseModel, ConfigDict, StrictBool, StrictStr
 
-from OuterRail.experiments.experiment_run import ExperimentRun
+from OuterRail.instances.experiment_run import ExperimentRun
 from OuterRail import EnvironmentVar, Configuration, ApiClient, ExperimentsApi
 
 

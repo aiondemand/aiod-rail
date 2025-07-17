@@ -1,8 +1,8 @@
 Instances
 ============
 
-.. automodule:: OuterRail.experiments.experiment_template
-.. automodule:: OuterRail.experiments.experiment
-.. automodule:: OuterRail.experiments.experiment_run
+.. automodule:: OuterRail.instances.experiment_template
+.. automodule:: OuterRail.instances.experiment
+.. automodule:: OuterRail.instances.experiment_run
 
 

@@ -3,8 +3,8 @@ from typing import Optional, List
 from OuterRail import Configuration, ApiClient, ExperimentTemplatesApi, ExperimentTemplate
 
 
-class ExperimentTemplateManager:
 
+class ExperimentTemplateManager:
     """
         AIoD - RAIL
 

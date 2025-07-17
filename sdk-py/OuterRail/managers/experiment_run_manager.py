@@ -3,7 +3,6 @@ from OuterRail import Configuration, ApiClient, ExperimentRun, ExperimentRunsApi
 
 
 class ExperimentRunManager:
-
     """
     AIoD - RAIL
     ExperimentRunManager class

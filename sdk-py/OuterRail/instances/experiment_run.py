@@ -3,22 +3,22 @@ import json
 from pathlib import Path
 from datetime import datetime
 from typing_extensions import Self
-from typing import Any, ClassVar, Dict, List, Optional, Set, Union
+from typing import Any, ClassVar, Dict, List, Optional, Union
 from pydantic import BaseModel, ConfigDict, StrictBool, StrictFloat, StrictInt, StrictStr
 
 from OuterRail import RunState, Configuration, ApiClient, ExperimentRunsApi
 
-"""
-    AIoD - RAIL
-
-    ExperimentRun class. 
-
-    Implementation of class representing a specific experiment run with 
-    methods for operating on this run.
-"""
 
 
 class ExperimentRun(BaseModel):
+    """
+        AIoD - RAIL
+
+        ExperimentRun class.
+
+        Implementation of class representing a specific experiment run with
+        methods for operating on this run.
+    """
 
     id: StrictStr
     experiment_id: StrictStr
