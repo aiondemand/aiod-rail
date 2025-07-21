@@ -1,3 +1,4 @@
+import os
 import copy
 import http.client as httplib
 import logging
@@ -105,8 +106,12 @@ class Configuration:
         """
         # Authentication Settings
         self.api_key = {}
-        if api_key:
+        self.api_key["APIKeyHeader"] = os.getenv("AIOD_RAIL_API_KEY")
+        if isinstance(api_key, str):
+            self.api_key["APIKeyHeader"] = api_key
+        elif api_key:
             self.api_key = api_key
+
         """dict to store API key(s)
         """
         self.api_key_prefix = {}
