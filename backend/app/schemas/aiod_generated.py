@@ -244,7 +244,7 @@ class PlatformRead(BaseModel):
         example="example_platform",
         title="Name",
     )
-    identifier: int = Field(..., title="Identifier")
+    identifier: str = Field(..., title="Identifier")
 
 
 class RunnableDistribution(BaseModel):
@@ -636,8 +636,8 @@ class CaseStudyRead(BaseModel):
     version: Optional[constr(max_length=256)] = Field(
         None, description="The version of this asset.", example="1.1.0", title="Version"
     )
-    ai_asset_identifier: Optional[int] = Field(None, title="Ai Asset Identifier")
-    ai_resource_identifier: Optional[int] = Field(
+    ai_asset_identifier: Optional[str] = Field(None, title="Ai Asset Identifier")
+    ai_resource_identifier: Optional[str] = Field(
         None,
         description="This resource can be identified by its own identifier, but also by the resource_identifier.",
         title="Ai Resource Identifier",
@@ -727,7 +727,7 @@ class CaseStudyRead(BaseModel):
         example=["Anomaly Detection", "Voice Recognition", "Computer Vision."],
         title="Scientific Domain",
     )
-    identifier: int = Field(..., title="Identifier")
+    identifier: str = Field(..., title="Identifier")
 
 
 class ComputationalAssetCreate(BaseModel):
@@ -907,8 +907,8 @@ class ComputationalAssetRead(BaseModel):
         example="https://www.example.com/cluster-status",
         title="Status Info",
     )
-    ai_asset_identifier: Optional[int] = Field(None, title="Ai Asset Identifier")
-    ai_resource_identifier: Optional[int] = Field(
+    ai_asset_identifier: Optional[str] = Field(None, title="Ai Asset Identifier")
+    ai_resource_identifier: Optional[str] = Field(
         None,
         description="This resource can be identified by its own identifier, but also by the resource_identifier.",
         title="Ai Resource Identifier",
@@ -1004,7 +1004,7 @@ class ComputationalAssetRead(BaseModel):
         example="storage",
         title="Type",
     )
-    identifier: int = Field(..., title="Identifier")
+    identifier: str = Field(..., title="Identifier")
 
 
 class ContactCreate(BaseModel):
@@ -1071,7 +1071,7 @@ class ContactRead(BaseModel):
         example=[],
         title="Telephone",
     )
-    identifier: int = Field(..., title="Identifier")
+    identifier: str = Field(..., title="Identifier")
 
 
 class DatasetCreate(BaseModel):
@@ -1285,8 +1285,8 @@ class DatasetRead(BaseModel):
         example="2011/2012",
         title="Temporal Coverage",
     )
-    ai_asset_identifier: Optional[int] = Field(None, title="Ai Asset Identifier")
-    ai_resource_identifier: Optional[int] = Field(
+    ai_asset_identifier: Optional[str] = Field(None, title="Ai Asset Identifier")
+    ai_resource_identifier: Optional[str] = Field(
         None,
         description="This resource can be identified by its own identifier, but also by the resource_identifier.",
         title="Ai Resource Identifier",
@@ -1392,7 +1392,7 @@ class DatasetRead(BaseModel):
         description="A location that describes the spatial aspect of this dataset. For example, a point where all the measurements were collected.",
         title="Spatial Coverage",
     )
-    identifier: int = Field(..., title="Identifier")
+    identifier: str = Field(..., title="Identifier")
 
 
 class DcatAPDataset(BaseModel):
@@ -1687,7 +1687,7 @@ class EducationalResourceRead(BaseModel):
         example=["textual"],
         title="Access Mode",
     )
-    ai_resource_identifier: Optional[int] = Field(
+    ai_resource_identifier: Optional[str] = Field(
         None,
         description="This resource can be identified by its own identifier, but also by the resource_identifier.",
         title="Ai Resource Identifier",
@@ -1811,7 +1811,7 @@ class EducationalResourceRead(BaseModel):
         example="presentation",
         title="Type",
     )
-    identifier: int = Field(..., title="Identifier")
+    identifier: str = Field(..., title="Identifier")
 
 
 class EventCreate(BaseModel):
@@ -2019,7 +2019,7 @@ class EventRead(BaseModel):
         example="https://example.com/registration-form",
         title="Registration Link",
     )
-    ai_resource_identifier: Optional[int] = Field(
+    ai_resource_identifier: Optional[str] = Field(
         None,
         description="This resource can be identified by its own identifier, but also by the resource_identifier.",
         title="Ai Resource Identifier",
@@ -2123,7 +2123,7 @@ class EventRead(BaseModel):
         example="scheduled",
         title="Status",
     )
-    identifier: int = Field(..., title="Identifier")
+    identifier: str = Field(..., title="Identifier")
 
 
 class ExperimentCreate(BaseModel):
@@ -2335,8 +2335,8 @@ class ExperimentRead(BaseModel):
         description="A description of how the output of the experiment matches the experiments in the paper.",
         title="Reproducibility Explanation",
     )
-    ai_asset_identifier: Optional[int] = Field(None, title="Ai Asset Identifier")
-    ai_resource_identifier: Optional[int] = Field(
+    ai_asset_identifier: Optional[str] = Field(None, title="Ai Asset Identifier")
+    ai_resource_identifier: Optional[str] = Field(
         None,
         description="This resource can be identified by its own identifier, but also by the resource_identifier.",
         title="Ai Resource Identifier",
@@ -2432,7 +2432,7 @@ class ExperimentRead(BaseModel):
         example=["Anomaly Detection", "Voice Recognition", "Computer Vision."],
         title="Scientific Domain",
     )
-    identifier: int = Field(..., title="Identifier")
+    identifier: str = Field(..., title="Identifier")
 
 
 class HTTPValidationError(BaseModel):
@@ -2619,8 +2619,8 @@ class MLModelRead(BaseModel):
         example="https://doi.org/10.1000/182",
         title="Pid",
     )
-    ai_asset_identifier: Optional[int] = Field(None, title="Ai Asset Identifier")
-    ai_resource_identifier: Optional[int] = Field(
+    ai_asset_identifier: Optional[str] = Field(None, title="Ai Asset Identifier")
+    ai_resource_identifier: Optional[str] = Field(
         None,
         description="This resource can be identified by its own identifier, but also by the resource_identifier.",
         title="Ai Resource Identifier",
@@ -2719,7 +2719,7 @@ class MLModelRead(BaseModel):
         example="Large Language Model",
         title="Type",
     )
-    identifier: int = Field(..., title="Identifier")
+    identifier: str = Field(..., title="Identifier")
 
 
 class NewsCreate(BaseModel):
@@ -2885,7 +2885,7 @@ class NewsRead(BaseModel):
         example="An alternative headline.",
         title="Alternative Headline",
     )
-    ai_resource_identifier: Optional[int] = Field(
+    ai_resource_identifier: Optional[str] = Field(
         None,
         description="This resource can be identified by its own identifier, but also by the resource_identifier.",
         title="Ai Resource Identifier",
@@ -2971,7 +2971,7 @@ class NewsRead(BaseModel):
         example=["Anomaly Detection", "Voice Recognition", "Computer Vision."],
         title="Scientific Domain",
     )
-    identifier: int = Field(..., title="Identifier")
+    identifier: str = Field(..., title="Identifier")
 
 
 class OrganisationCreate(BaseModel):
@@ -3160,7 +3160,7 @@ class OrganisationRead(BaseModel):
         title="Ai Relevance",
     )
     agent_identifier: Optional[int] = Field(None, title="Agent Identifier")
-    ai_resource_identifier: Optional[int] = Field(
+    ai_resource_identifier: Optional[str] = Field(
         None,
         description="This resource can be identified by its own identifier, but also by the resource_identifier.",
         title="Ai Resource Identifier",
@@ -3256,7 +3256,7 @@ class OrganisationRead(BaseModel):
         example="Research Institution",
         title="Type",
     )
-    identifier: int = Field(..., title="Identifier")
+    identifier: str = Field(..., title="Identifier")
 
 
 class PersonCreate(BaseModel):
@@ -3455,7 +3455,7 @@ class PersonRead(BaseModel):
         title="Wants To Be Contacted",
     )
     agent_identifier: Optional[int] = Field(None, title="Agent Identifier")
-    ai_resource_identifier: Optional[int] = Field(
+    ai_resource_identifier: Optional[str] = Field(
         None,
         description="This resource can be identified by its own identifier, but also by the resource_identifier.",
         title="Ai Resource Identifier",
@@ -3551,7 +3551,7 @@ class PersonRead(BaseModel):
         example=["Anomaly Detection", "Voice Recognition", "Computer Vision."],
         title="Scientific Domain",
     )
-    identifier: int = Field(..., title="Identifier")
+    identifier: str = Field(..., title="Identifier")
 
 
 class ProjectCreate(BaseModel):
@@ -3751,7 +3751,7 @@ class ProjectRead(BaseModel):
         example=1000000,
         title="Total Cost Euro",
     )
-    ai_resource_identifier: Optional[int] = Field(
+    ai_resource_identifier: Optional[str] = Field(
         None,
         description="This resource can be identified by its own identifier, but also by the resource_identifier.",
         title="Ai Resource Identifier",
@@ -3859,7 +3859,7 @@ class ProjectRead(BaseModel):
         example=[],
         title="Used",
     )
-    identifier: int = Field(..., title="Identifier")
+    identifier: str = Field(..., title="Identifier")
 
 
 class PublicationCreate(BaseModel):
@@ -4067,8 +4067,8 @@ class PublicationRead(BaseModel):
         example="20493630",
         title="Issn",
     )
-    ai_asset_identifier: Optional[int] = Field(None, title="Ai Asset Identifier")
-    ai_resource_identifier: Optional[int] = Field(
+    ai_asset_identifier: Optional[str] = Field(None, title="Ai Asset Identifier")
+    ai_resource_identifier: Optional[str] = Field(
         None,
         description="This resource can be identified by its own identifier, but also by the resource_identifier.",
         title="Ai Resource Identifier",
@@ -4168,7 +4168,7 @@ class PublicationRead(BaseModel):
     type: Optional[str] = Field(
         None, description="The type of publication.", example="journal", title="Type"
     )
-    identifier: int = Field(..., title="Identifier")
+    identifier: str = Field(..., title="Identifier")
 
 
 class SchemaDotOrgDataset(BaseModel):
@@ -4395,7 +4395,7 @@ class ServiceCreate(BaseModel):
         description="The scientific domain is related to the methods with which an objective is reached.",
         example=["Anomaly Detection", "Voice Recognition", "Computer Vision."],
         title="Scientific Domain",
-    )
+)
 
 
 class ServiceRead(BaseModel):
@@ -4438,7 +4438,7 @@ class ServiceRead(BaseModel):
         example="Your use of this service is subject to the following terms: [...].",
         title="Terms Of Service",
     )
-    ai_resource_identifier: Optional[int] = Field(
+    ai_resource_identifier: Optional[str] = Field(
         None,
         description="This resource can be identified by its own identifier, but also by the resource_identifier.",
         title="Ai Resource Identifier",
@@ -4517,7 +4517,7 @@ class ServiceRead(BaseModel):
         example=["Anomaly Detection", "Voice Recognition", "Computer Vision."],
         title="Scientific Domain",
     )
-    identifier: int = Field(..., title="Identifier")
+    identifier: str = Field(..., title="Identifier")
 
 
 class TeamCreate(BaseModel):
@@ -4687,7 +4687,7 @@ class TeamRead(BaseModel):
         example=10,
         title="Size",
     )
-    ai_resource_identifier: Optional[int] = Field(
+    ai_resource_identifier: Optional[str] = Field(
         None,
         description="This resource can be identified by its own identifier, but also by the resource_identifier.",
         title="Ai Resource Identifier",
@@ -4777,7 +4777,7 @@ class TeamRead(BaseModel):
         example=["Anomaly Detection", "Voice Recognition", "Computer Vision."],
         title="Scientific Domain",
     )
-    identifier: int = Field(..., title="Identifier")
+    identifier: str = Field(..., title="Identifier")
 
 
 class DcatApWrapper(BaseModel):
