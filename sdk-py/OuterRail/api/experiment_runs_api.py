@@ -4,7 +4,7 @@ from pydantic import Field, StrictFloat, StrictInt, StrictStr, validate_call
 
 from OuterRail.api import ApiResponse
 from OuterRail.api.rest import RESTResponseType
-from OuterRail.clients.api_client import ApiClient, RequestSerialized
+from OuterRail.api.api_client import ApiClient, RequestSerialized
 
 """
     AioD - OuterRAIL SDK

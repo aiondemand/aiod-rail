@@ -11,7 +11,7 @@ from pydantic import Field, StrictFloat, StrictInt, StrictStr, validate_call, St
 
 from OuterRail.api import ApiResponse
 from OuterRail.api.rest import RESTResponseType
-from OuterRail.clients.api_client import ApiClient, RequestSerialized
+from OuterRail.api.api_client import ApiClient, RequestSerialized
 
 
 class AssetsApi:
