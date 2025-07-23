@@ -1,8 +1,8 @@
 from typing import List
 
-from OuterRail import Configuration, ApiClient, AssetsApi, Dataset
+from OuterRail import Configuration
+from OuterRail import ApiClient, AssetsApi, Dataset, Platform, Publication, Model
 
-from aiod_rail_sdk import Publication
 
 
 class AssetManager:
@@ -13,7 +13,7 @@ class AssetManager:
     Class containing methods that operate on simpler assets such as: models, datasets, publications, etc..
     """
 
-    def __init__(self, client_config: Configuration):
+    def __init__(self, api_config: Configuration):
         """
         Initializes a new ExperimentRunManager.
 
@@ -29,7 +29,63 @@ class AssetManager:
             AssetManager
         """
 
-        self._config = client_config
+        self._config = api_config
+
+    def count_datasets(self, query: str = None) -> int:
+        """
+        Counts the number of datasets.
+
+        Args:
+            query: (Optional[str]): Count only datasets that in their name contain a string given in this arg.
+
+        Returns:
+            int: Number of datasets.
+
+        Raises:
+            ApiException: In case of a failed HTTP request.
+
+        Examples:
+            >>> asset_manager =  AssetManager(...)
+            >>> asset_manager.count_datasets()
+            4321
+            >>> asset_manager.count_datasets(query="Image")
+            1234 # count of datasets that contain the phrase "Image"
+        """
+
+        with ApiClient(self._config) as api_client:
+            api_instance = AssetsApi(api_client)
+            try:
+                if query is None:
+                    api_response = api_instance.count_datasets()
+                else:
+                    api_response = api_instance.query_count_datasets(query=query)
+                return api_response
+            except Exception as e:
+                raise e
+
+    def count_my_datasets(self) -> int:
+        """
+        Counts the number of datasets of the current user.
+
+        Returns:
+            int: Number of datasets.
+
+        Raises:
+            ApiException: In case of a failed HTTP request.
+
+        Examples:
+            >>> asset_manager =  AssetManager(...)
+            >>> asset_manager.count_my_datasets()
+            123
+        """
+
+        with ApiClient(self._config) as api_client:
+            api_instance = AssetsApi(api_client)
+            try:
+                api_response = api_instance.count_my_datasets()
+                return api_response
+            except Exception as e:
+                raise e
 
     def get_datasets(self, query: str = None, offset: int = 0, limit: int = 100) -> List[Dataset]:
         """
@@ -48,18 +104,222 @@ class AssetManager:
             ApiException: In case of a failed HTTP request.
 
         Examples:
+            >>> asset_manager = AssetManager(...)
+            >>> asset_manager.get_datasets(query="AI", offset=2, limit=10)
+            List[Dataset] # 10 datasets that contain the text "AI" in their name
         """
 
         with ApiClient(self._config) as api_client:
             api_instance = AssetsApi(api_client)
-        try:
-            if query is None:
-                api_response = api_instance.get_datasets(offset=offset, limit=limit)
-            else:
-                api_response = api_instance.query_get_datasets(query=query, offset=offset, limit=limit)
-            return [Dataset.from_dict(sub_data, self._config) for sub_data in api_response]
-        except Exception as e:
-            raise e
+            try:
+                if query is None:
+                    api_response = api_instance.get_datasets(offset=offset, limit=limit)
+                else:
+                    api_response = api_instance.query_get_datasets(query=query, offset=offset, limit=limit)
+                return [Dataset.from_dict(sub_data, self._config) for sub_data in api_response]
+            except Exception as e:
+                raise e
+
+    def get_my_datasets(self, offset: int = 0, limit: int = 100) -> List[Dataset]:
+        """
+        Retrieves a list of datasets created by the current user.
+
+        Args:
+            offset (int, optional): Starting index from which to retrieve. Defaults to 0.
+            limit (int, optional): How many items to retrieve. Defaults to 100.
+
+        Returns:
+            List[Dataset]: The list of datasets.
+
+        Raises:
+            ApiException: In case of a failed HTTP request.
+
+        Examples:
+        """
+
+        with ApiClient(self._config) as api_client:
+            api_instance = AssetsApi(api_client)
+            try:
+                api_response = api_instance.get_my_datasets(offset=offset, limit=limit)
+                return [Dataset.from_dict(sub_data, self._config) for sub_data in api_response]
+            except Exception as e:
+                raise e
+
+
+    def get_dataset_by_id(self, id: str) -> Dataset:
+        """
+        Retrieves dataset specified by its ID.
+
+        Args:
+            id (str): Unique identifier of dataset in database.
+
+        Returns:
+             Dataset: The dataset corresponding to the given ID.
+
+        Raises:
+            ApiException: In case of a failed HTTP request.
+
+        Examples:
+            >>> asset_manager = AssetManager(...)
+            >>> asset_manager.get_dataset_by_id(id="data_000002AhzqHqOQwQLP0qCRds")
+            Dataset
+        """
+
+        with ApiClient(self._config) as api_client:
+            api_instance = AssetsApi(api_client)
+            try:
+                api_response = api_instance.get_dataset_by_id(id)
+                return Dataset.from_dict(api_response, self._config)
+            except Exception as e:
+                raise e
+
+    def create_dataset(self, dataset_dict: dict):
+        #TODO: implement
+        pass
+
+    def count_models(self, query: str = None) -> int:
+        """
+        Counts the number of models.
+
+        Args:
+            query: (Optional[str]): Count only models that contain in their name a string given by this arg.
+
+        Returns:
+            int: Number of models.
+
+        Raises:
+            ApiException: In case of a failed HTTP request.
+
+        Examples:
+            >>> asset_manager =  AssetManager(...)
+            >>> asset_manager.count_models()
+            4321
+            >>> asset_manager.count_models(query="LLM")
+            1234 # count of models that contain the phrase "LLM"
+        """
+
+        with ApiClient(self._config) as api_client:
+            api_instance = AssetsApi(api_client)
+            try:
+                if query is None:
+                    api_response = api_instance.count_models()
+                else:
+                    api_response = api_instance.query_count_models(query=query)
+                return api_response
+            except Exception as e:
+                raise e
+
+    def count_my_models(self) -> int:
+        """
+        Counts the number of models of the current user.
+
+        Returns:
+            int: Number of models.
+
+        Raises:
+            ApiException: In case of a failed HTTP request.
+
+        Examples:
+            >>> asset_manager =  AssetManager(...)
+            >>> asset_manager.count_my_models()
+            123
+        """
+
+        with ApiClient(self._config) as api_client:
+            api_instance = AssetsApi(api_client)
+            try:
+                api_response = api_instance.count_my_models()
+                return api_response
+            except Exception as e:
+                raise e
+
+    def get_models(self, query: str = None, offset: int = 0, limit: int = 100) -> List[Model]:
+        """
+        Retrieves a list of models.
+
+        Args:
+            query (str, optional): Search string used to filter models. Defaults to empty string,
+            which means that by default, it's not used.
+            offset (int, optional): Starting index from which to retrieve. Defaults to 0.
+            limit (int, optional): How many items to retrieve. Defaults to 100.
+
+        Returns:
+            List[Model]: The list of models.
+
+        Raises:
+            ApiException: In case of a failed HTTP request.
+
+        Examples:
+            >>> asset_manager = AssetManager(...)
+            >>> asset_manager.get_models(query="LLM", offset=2, limit=10)
+            List[Model] # 10 models that contain the phrase "LLM" in their name
+        """
+
+        with ApiClient(self._config) as api_client:
+            api_instance = AssetsApi(api_client)
+            try:
+                if query is None:
+                    api_response = api_instance.get_models(offset=offset, limit=limit)
+                else:
+                    api_response = api_instance.query_get_models(query=query, offset=offset, limit=limit)
+                return [Publication.from_dict(sub_data) for sub_data in api_response]
+            except Exception as e:
+                raise e
+
+    def get_my_models(self, offset: int = 0, limit: int = 100) -> List[Model]:
+        """
+        Retrieves a list of models created by the current user.
+
+        Args:
+            offset (int, optional): Starting index from which to retrieve. Defaults to 0.
+            limit (int, optional): How many items to retrieve. Defaults to 100.
+
+        Returns:
+            List[Model]: A list of user's models.
+
+        Raises:
+            ApiException: In case of a failed HTTP request.
+
+        Examples:
+            >>> asset_manager = AssetManager(...)
+            >>> asset_manager.get_my_models(limit=2)
+            List[Model] # first 2 models created by a current user
+        """
+
+        with ApiClient(self._config) as api_client:
+            api_instance = AssetsApi(api_client)
+            try:
+                api_response = api_instance.get_my_models(offset=offset, limit=limit)
+                return [Model.from_dict(sub_data) for sub_data in api_response]
+            except Exception as e:
+                raise e
+
+    def get_model_by_id(self, id: str) -> Model:
+        """
+        Retrieves a model specified by its ID.
+
+        Args:
+            id (str): Unique identifier of a model.
+
+        Returns:
+             Model: The model corresponding to the given ID.
+
+        Raises:
+            ApiException: In case of a failed HTTP request.
+
+        Examples:
+            >>> asset_manager = AssetManager(...)
+            >>> asset_manager.get_model_by_id(id="mdl_000028bcIa2SCbO9aVlIB0Xc")
+            Model
+        """
+
+        with ApiClient(self._config) as api_client:
+            api_instance = AssetsApi(api_client)
+            try:
+                api_response = api_instance.get_model_by_id(id)
+                return Model.from_dict(api_response)
+            except Exception as e:
+                raise e
 
     def count_publications(self, query: str = None) -> int:
         """
@@ -84,14 +344,14 @@ class AssetManager:
 
         with ApiClient(self._config) as api_client:
             api_instance = AssetsApi(api_client)
-        try:
-            if query is None:
-                api_response = api_instance.count_publications()
-            else:
-                api_response = api_instance.query_count_publications(query=query)
-            return api_response
-        except Exception as e:
-            raise e
+            try:
+                if query is None:
+                    api_response = api_instance.count_publications()
+                else:
+                    api_response = api_instance.query_count_publications(query=query)
+                return api_response
+            except Exception as e:
+                raise e
 
     def get_publications(self, query: str = None, offset: int = 0, limit: int = 100) -> List[Publication]:
         """
@@ -100,25 +360,84 @@ class AssetManager:
         Args:
             query (str, optional): Search string used to filter publications. Defaults to empty string,
             which means that by default, it's not used.
-            offset (int, optional): Starting index of experiment range from which to retrieve. Defaults to 0.
-            limit (int, optional): Ending index of experiment range to which to retrieve. Defaults to 100.
+            offset (int, optional): Starting index from which to retrieve. Defaults to 0.
+            limit (int, optional): How many items to retrieve. Defaults to 100.
 
         Returns:
-            List[Experiment]: The list of experiments.
+            List[Publication]: The list of publications.
 
         Raises:
             ApiException: In case of a failed HTTP request.
 
         Examples:
+            >>> asset_manager = AssetManager(...)
+            >>> asset_manager.get_publications(query="AI", offset=2, limit=10)
+            List[Publication]
         """
 
         with ApiClient(self._config) as api_client:
             api_instance = AssetsApi(api_client)
-        try:
-            if query is None:
-                api_response = api_instance.get_publications(offset=offset, limit=limit)
-            else:
-                api_response = api_instance.query_get_publications(query=query, offset=offset, limit=limit)
-            return api_response
-        except Exception as e:
-            raise e
+            try:
+                if query is None:
+                    api_response = api_instance.get_publications(offset=offset, limit=limit)
+                else:
+                    api_response = api_instance.query_get_publications(query=query, offset=offset, limit=limit)
+                return [Publication.from_dict(sub_data) for sub_data in api_response]
+            except Exception as e:
+                raise e
+
+    def get_publication_by_id(self, id: str) -> Publication:
+        """
+        Retrieves a publication specified by its ID.
+
+        Args:
+            id (str): Unique identifier of a publication in database.
+
+        Returns:
+             Dataset: The publication corresponding to the given ID.
+
+        Raises:
+            ApiException: In case of a failed HTTP request.
+
+        Examples:
+            >>> asset_manager = AssetManager(...)
+            >>> asset_manager.get_publication_by_id(id="pub_03F6jLXedDDQSzc6expGpLGI")
+            Publication
+        """
+
+        with ApiClient(self._config) as api_client:
+            api_instance = AssetsApi(api_client)
+            try:
+                api_response = api_instance.get_publication_by_id(id)
+                return Publication.from_dict(api_response)
+            except Exception as e:
+                raise e
+
+    def get_platforms(self, offset: int = 0, limit: int = 100) -> List[Platform]:
+        """
+        Retrieves a list of platforms.
+
+        Args:
+            offset (int, optional): Starting index from which to retrieve. Defaults to 0.
+            limit (int, optional): How many items to retrieve. Defaults to 100.
+
+        Returns:
+            List[Platform]: The list of platforms.
+
+        Raises:
+            ApiException: In case of a failed HTTP request.
+
+        Examples:
+            >>> asset_manager = AssetManager(...)
+            >>> asset_manager.get_platforms(offset=2, limit=5)
+            5
+        """
+
+        with ApiClient(self._config) as api_client:
+            api_instance = AssetsApi(api_client)
+            try:
+                api_response = api_instance.get_platforms(offset=offset, limit=limit)
+                return [Platform.from_dict(sub_data) for sub_data in api_response]
+            except Exception as e:
+                raise e
+
