@@ -11,7 +11,7 @@ class ExperimentRunManager:
     experiment.
     """
 
-    def __init__(self, client_config: Configuration):
+    def __init__(self, api_config: Configuration):
         """
         Initializes a new ExperimentRunManager.
 
@@ -27,7 +27,7 @@ class ExperimentRunManager:
             ExperimentRunManager
         """
 
-        self._config = client_config
+        self._config = api_config
 
     def get_by_id(self, id: str) -> ExperimentRun:
         """

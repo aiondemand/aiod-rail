@@ -5,11 +5,8 @@ from typing_extensions import Self
 from pydantic import BaseModel, ConfigDict
 from typing import Any, ClassVar, Dict, List, Optional, Set
 
-from OuterRail.models.asset_cardinality import AssetCardinality
+from OuterRail.models import AssetCardinality
 
-"""
-    Model for asset schema.
-"""
 
 
 class AssetSchema(BaseModel):

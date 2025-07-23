@@ -13,7 +13,7 @@ class ExperimentTemplateManager:
         Class aggregating methods for operating on multiple experiments.
     """
 
-    def __init__(self, client_config: Configuration):
+    def __init__(self, api_config: Configuration):
         """
         Initializes a new ExperimentTemplateManager.
 
@@ -28,7 +28,7 @@ class ExperimentTemplateManager:
             >>> ExperimentTemplateManager(config)
             ExperimentTemplateManager
         """
-        self._config = client_config
+        self._config = api_config
 
     def count(self,
               query: str = "",
@@ -50,8 +50,8 @@ class ExperimentTemplateManager:
         Returns:
             int: Number of experiment templates.
 
-        Raises:
             ApiException: In case of a failed HTTP request.
+        Raises:
 
         Examples:
             >>> template_manager = ExperimentTemplateManager(...)

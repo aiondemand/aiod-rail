@@ -13,7 +13,7 @@ class ExperimentManager:
     Class aggregating methods for operating on multiple experiments.
     """
 
-    def __init__(self, client_config: Configuration):
+    def __init__(self, api_config: Configuration):
         """
         Initializes a new ExperimentManager.
 
@@ -29,7 +29,7 @@ class ExperimentManager:
             ExperimentManager
         """
 
-        self._config = client_config
+        self._config = api_config
 
     def count(self,
               query: str = "",
@@ -60,13 +60,13 @@ class ExperimentManager:
 
         with ApiClient(self._config) as api_client:
             api_instance = ExperimentsApi(api_client)
-        try:
-            api_response = api_instance.get_experiments_count_v1_count_experiments_get(
-                query=query, mine=mine, archived=archived, public=public
-                )
-            return api_response
-        except Exception as e:
-            raise e
+            try:
+                api_response = api_instance.get_experiments_count_v1_count_experiments_get(
+                    query=query, mine=mine, archived=archived, public=public
+                    )
+                return api_response
+            except Exception as e:
+                raise e
 
 
     def get(self, query: str = "", mine: Optional[bool] = None, archived: Optional[bool] = None,
