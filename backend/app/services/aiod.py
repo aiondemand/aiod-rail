@@ -133,11 +133,11 @@ async def get_my_asset_ids(
     return requested_assets[pagination.offset : pagination.offset + pagination.limit]
 
 
-async def get_asset(asset_type: AssetType, asset_id: int) -> Json:
+async def get_asset(asset_type: AssetType, asset_id: str) -> Json:
     """Wrapper function to call the AIoD API and return requested asset data."""
     res = await aiod_client_wrapper.client.get(
         Path(
-            asset_type.value, get_assets_version(asset_type), str(asset_id)
+            asset_type.value, get_assets_version(asset_type), asset_id
         ).as_posix(),
     )
 

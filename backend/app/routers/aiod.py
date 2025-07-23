@@ -64,7 +64,7 @@ async def search_datasets(query: str, pagination: Pagination = Depends()) -> Any
 
 
 @router.get("/datasets/{id}", response_model=Dataset)
-async def get_dataset(id: int) -> Any:
+async def get_dataset(id: str) -> Any:
     return await get_asset(asset_type=AssetType.DATASETS, asset_id=id)
 
 
@@ -216,7 +216,7 @@ async def search_models(query: str, pagination: Pagination = Depends()) -> Any:
 
 
 @router.get("/models/{id}", response_model=MLModel)
-async def get_model(id: int) -> Any:
+async def get_model(id: str) -> Any:
     return await get_asset(asset_type=AssetType.ML_MODELS, asset_id=id)
 
 
@@ -269,7 +269,7 @@ async def search_publications(query: str, pagination: Pagination = Depends()) ->
 
 
 @router.get("/publications/{id}", response_model=Publication)
-async def get_publication(id: int) -> Any:
+async def get_publication(id: str) -> Any:
     return await get_asset(asset_type=AssetType.PUBLICATIONS, asset_id=id)
 
 
