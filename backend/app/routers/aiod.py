@@ -110,7 +110,7 @@ async def create_dataset(
 ) -> Any:
     # Create a new dataset in AIoD (just metadata)
     res = await aiod_client_wrapper.client.post(
-        Path(AssetType.DATASETS.value, get_assets_version(AssetType.DATASETS)),
+        str(Path(AssetType.DATASETS.value, get_assets_version(AssetType.DATASETS))),
         headers={"Authorization": f"{token}"},
         json=dataset.dict(exclude_unset=True),
     )
@@ -130,9 +130,9 @@ async def create_dataset(
 
 
 @router.delete("/datasets/{id}", response_model=bool)
-async def delete_dataset(id: int, token: str = Depends(get_current_user_token)) -> Any:
+async def delete_dataset(id: str, token: str = Depends(get_current_user_token)) -> Any:
     res = await aiod_client_wrapper.client.delete(
-        Path("datasets", settings.AIOD_API.DATASETS_VERSION, str(id)),
+        str(Path("datasets", settings.AIOD_API.DATASETS_VERSION, id)),
         headers={"Authorization": f"{token}"},
     )
 
@@ -148,14 +148,14 @@ async def delete_dataset(id: int, token: str = Depends(get_current_user_token)) 
 
 @router.post("/datasets/{id}/upload-file-to-huggingface", response_model=Dataset)
 async def dataset_upload_file_to_huggingface(
-    id: int,
+    id: str,
     file: UploadFile,
     huggingface_name: str,
     huggingface_token: str,
     token: str = Depends(get_current_user_token),
 ) -> Any:
     res = await aiod_client_wrapper.client.post(
-        Path("upload/datasets", str(id), "huggingface"),
+        str(Path("upload/datasets", str(id), "huggingface")),
         params={"token": huggingface_token, "username": huggingface_name},
         headers={"Authorization": f"{token}"},
         files={"file": (file.filename, file.file, file.content_type)},
