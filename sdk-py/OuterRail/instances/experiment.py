@@ -78,7 +78,7 @@ class Experiment(BaseModel):
         Raises:
             ApiException: In case of a failed HTTP request.
 
-       Examples:
+        Examples:
             >>> experiment_dict = {
             >>>     "name": "test123",
             >>>     "description": "321test",

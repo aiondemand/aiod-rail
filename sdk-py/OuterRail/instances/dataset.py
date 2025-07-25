@@ -6,6 +6,7 @@ from typing_extensions import Annotated, Self
 from typing import Any, ClassVar, Dict, List, Optional, Set
 from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictInt, StrictStr
 
+from OuterRail import ApiClient, AssetsApi
 from OuterRail import Note, AIoDEntryRead, DatasetSize, Distribution, Location, Text, Configuration
 
 
@@ -165,11 +166,43 @@ class Dataset(BaseModel):
         "identifier",
     ]
 
-    model_config = ConfigDict(
-        populate_by_name=True,
-        validate_assignment=True,
-        protected_namespaces=(),
-    )
+    model_config = ConfigDict(populate_by_name=True, validate_assignment=True, protected_namespaces=())
+
+    def _set_config(self, config: Configuration) -> None:
+        """
+        Sets the configuration for API calls.
+
+        Args:
+        config (Configuration): The api configuration.
+
+        Returns:
+            None:
+        """
+
+        self._config = config
+
+    def delete(self) -> None:
+        """
+        Deletes specific dataset. Afterward, operations on deleted instance will result in HTTP exception.
+
+        Returns:
+            None.
+
+        Raises:
+            ApiException: In case of a failed HTTP request.
+
+        Examples:
+            >>> self.delete()
+            >>> self._deleted
+            True
+        """
+        with ApiClient(self._config) as api_client:
+            api_instance = AssetsApi(api_client)
+            try:
+                api_instance.delete_dataset(id=self.identifier)
+                self._deleted = True
+            except Exception as e:
+                raise e
 
     def to_str(self) -> str:
         """Returns the string representation of the model using alias"""
@@ -318,15 +351,3 @@ class Dataset(BaseModel):
             _obj._set_config(config)
         return _obj
 
-    def _set_config(self, config: Configuration) -> None:
-        """
-        Sets the configuration for API calls.
-
-        Args:
-        config (Configuration): The api configuration.
-
-        Returns:
-            None:
-        """
-
-        self._config = config

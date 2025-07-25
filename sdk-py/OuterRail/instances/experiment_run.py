@@ -38,7 +38,7 @@ class ExperimentRun(BaseModel):
 
     def delete(self) -> None:
         """
-         Deletes specific experiment run. Afterward, operation on deleted instance will result in HTTP exception.
+         Deletes specific experiment run. Afterward, operations on deleted instance will result in HTTP exception.
 
          Returns:
              None.
@@ -99,12 +99,12 @@ class ExperimentRun(BaseModel):
         Returns:
             str: Logs of experiment run.
 
-         Raises:
-             ApiException: In case of a failed HTTP request.
+        Raises:
+            ApiException: In case of a failed HTTP request.
 
-         Examples:
-             >>> self.logs()
-             str # string dump of logs produced by the experiment run.
+        Examples:
+            >>> self.logs()
+            str # string dump of logs produced by the experiment run.
         """
 
         with ApiClient(self._config) as api_client:

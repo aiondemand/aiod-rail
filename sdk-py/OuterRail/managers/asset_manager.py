@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Dict
 
 from OuterRail import Configuration
 from OuterRail import ApiClient, AssetsApi, Dataset, Platform, Publication, Model
@@ -173,9 +173,106 @@ class AssetManager:
             except Exception as e:
                 raise e
 
-    def create_dataset(self, dataset_dict: dict):
-        #TODO: implement
-        pass
+    def create_dataset(self, dataset: Dict) -> Dataset:
+        """
+        Creates dataset from a given dictionary.
+
+        Args:
+            dataset (dict): dataset described in a dictionary.
+
+        Returns:
+            Dataset: Instance of the created dataset.
+
+        Raises:
+            ApiException: In case of a failed HTTP request.
+
+        Examples:
+            >>> EXAMPLE DATASET DICT
+            >>> dataset_dict = {
+            >>> 'ai_asset_identifier': 'string', 'ai_resource_identifier': 'string',
+            >>> 'aiod_entry': {'date_created': '2022-01-01T15:15:00.000', 'date_modified': '2023-01-01T15:15:00.000',
+            >>>                'editor': [], 'status': 'published'},
+            >>> 'alternate_name': ['alias 1', 'alias 2'],
+            >>> 'application_area': ['Fraud Prevention', 'Voice Assistance', 'Disease Classification'],
+            >>> 'citation': [],
+            >>> 'contact': [],
+            >>> 'creator': [],
+            >>> 'date_published': '2022-01-01T15:15:00.000',
+            >>> 'description': {'html': '<p>Text with <strong>html formatting</strong>.</p>',
+            >>>                 'plain': 'Plain text.'},
+            >>> 'distribution': [],
+            >>> 'funder': [],
+            >>> 'has_part': [],
+            >>> 'identifier': 'string',
+            >>> 'industrial_sector': ['Finance', 'eCommerce', 'Healthcare'],
+            >>> 'is_accessible_for_free': True,
+            >>> 'is_part_of': [],
+            >>> 'issn': '20493630',
+            >>> 'keyword': ['keyword1', 'keyword2'],
+            >>> 'license': 'https://creativecommons.org/share-your-work/public-domain/cc0/',
+            >>> 'measurement_technique': 'mass spectrometry',
+            >>> 'media': [],
+            >>> 'name': 'The name of this resource',
+            >>> 'note': [],
+            >>> 'platform': 'example',
+            >>> 'platform_resource_identifier': '1',
+            >>> 'relevant_link': ['https://www.example.com/a_relevant_link', 'https://www.example.com/another_relevant_link'],
+            >>> 'relevant_resource': [],
+            >>> 'relevant_to': [],
+            >>> 'research_area': ['Explainable AI', 'Physical AI'],
+            >>> 'same_as': 'https://www.example.com/resource/this_resource',
+            >>> 'scientific_domain': ['Anomaly Detection', 'Voice Recognition', 'Computer Vision.'],
+            >>> 'size': {'unit': 'Rows', 'value': 100},
+            >>> 'spatial_coverage': {'address': {'address': 'Wetstraat 170, 1040 Brussel', 'country': 'BEL', 'locality': 'Paris',
+            >>>                               'postal_code': '1040 AA', 'region': 'California', 'street': 'Wetstraat 170'},
+            >>>                      'geo': {'elevation_millimeters': 0, 'latitude': 37.42242, 'longitude': -122.08585}},
+            >>> 'temporal_coverage': '2011/2012',
+            >>> 'version': '1.1.0'}
+            >>> asset_manager = AssetManager(...)
+            >>> asset_manager.create_dataset(dataset_dict)
+            Dataset # Newly created dataset.
+        """
+
+        with ApiClient(self._config) as api_client:
+            api_instance = AssetsApi(api_client)
+            try:
+                api_response = api_instance.create_dataset(dataset)
+                return Dataset.from_dict(api_response, self._config)
+            except Exception as e:
+                raise e
+
+    def upload_file_to_huggingface(self, id: str, name: str, huggingface_token: str, file_path : str) -> Dataset:
+        """
+        Uploads a file to Huggingface under the dataset specified by its id.
+
+        Args:
+            id (str): The ID of the dataset.
+            name (str): The name of the file as it will appear on Huggingface.
+            huggingface_token: Authentication token from Huggingface.
+            file_path (str): Path to the file to upload.
+
+        Returns:
+            Dataset: Dataset under which the file was uploaded.
+
+        Raises:
+            ApiException: In case of a failed HTTP request.
+
+        Examples:
+            >>> asset_manager =  AssetManager(...)
+            >>> asset_manager.upload_file_to_huggingface("data_000017VBQZZ7s3cvm7Gx0AnT", "Example Name", "huggingface_token", "path/to/file.txt")
+            Dataset
+        """
+
+        with ApiClient(self._config) as api_client:
+            api_instance = AssetsApi(api_client)
+            try:
+                with open(file_path, 'rb') as file:
+                    file_bytes = file.read()
+                api_response = api_instance.dataset_upload_file_to_huggingface(id, name, huggingface_token, file_bytes)
+                return api_response
+            except Exception as e:
+                raise e
+
 
     def count_models(self, query: str = None) -> int:
         """
