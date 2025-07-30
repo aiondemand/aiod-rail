@@ -1,0 +1,36 @@
+name: docs - build, deploy
+
+on:
+  push:
+    # TODO: update after merge to dev / main
+    branches:
+      - feature/outer-sdk
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        persist-credentials: false
+
+    # TODO: move docs to root instead of them being in sdk-py directory
+    - name: Build HTML
+      uses: ammaraskar/sphinx-action@master
+      with:
+        docs-folder: sdk-py/sphinx-docs/
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: html-docs
+        path: sdk-py/sphinx-docs/build/html/
+
+    - name: Deploy
+      uses: peaceiris/actions-gh-pages@v3
+      #if: github.ref == 'refs/heads/main'
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: sdk-py/sphinx-docs/build/html/
