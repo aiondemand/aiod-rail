@@ -1,0 +1,392 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OuterRail.instances.experiment_template &mdash; Outer RAIL documentation 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            Outer RAIL documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../index.html">Intro</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../managers.html">Managers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../instances.html">Instances</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Outer RAIL documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">OuterRail.instances.experiment_template</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for OuterRail.instances.experiment_template</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing_extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Self</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">ClassVar</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">StrictBool</span><span class="p">,</span> <span class="n">StrictStr</span><span class="p">,</span> <span class="n">ConfigDict</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">OuterRail</span><span class="w"> </span><span class="kn">import</span> <span class="n">Configuration</span><span class="p">,</span> <span class="n">ApiClient</span><span class="p">,</span> <span class="n">ExperimentTemplatesApi</span><span class="p">,</span> <span class="n">TaskType</span><span class="p">,</span> <span class="n">AssetSchema</span><span class="p">,</span> <span class="n">EnvironmentVarDef</span>
+
+
+
+<div class="viewcode-block" id="ExperimentTemplate">
+<a class="viewcode-back" href="../../../instances.html#OuterRail.instances.experiment_template.ExperimentTemplate">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ExperimentTemplate</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        AIoD - RAIL</span>
+
+<span class="sd">        ExperimentTemplate class.</span>
+
+<span class="sd">        Implementation of class representing an instance of experiment template and methods</span>
+<span class="sd">        operating with this instance.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nb">id</span><span class="p">:</span> <span class="n">StrictStr</span>
+    <span class="n">name</span><span class="p">:</span> <span class="n">StrictStr</span>
+    <span class="n">state</span><span class="p">:</span> <span class="n">StrictStr</span>
+    <span class="n">script</span><span class="p">:</span> <span class="n">StrictStr</span>
+    <span class="n">created_at</span><span class="p">:</span> <span class="n">StrictStr</span>
+    <span class="n">updated_at</span><span class="p">:</span> <span class="n">StrictStr</span>
+    <span class="n">dockerfile</span><span class="p">:</span> <span class="n">StrictStr</span>
+    <span class="n">base_image</span><span class="p">:</span> <span class="n">StrictStr</span>
+    <span class="n">description</span><span class="p">:</span> <span class="n">StrictStr</span>
+    <span class="n">pip_requirements</span><span class="p">:</span> <span class="n">StrictStr</span>
+    <span class="n">is_mine</span><span class="p">:</span> <span class="n">StrictBool</span>
+    <span class="n">is_public</span><span class="p">:</span> <span class="n">StrictBool</span>
+    <span class="n">is_archived</span><span class="p">:</span> <span class="n">StrictBool</span>
+    <span class="n">is_approved</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">StrictBool</span><span class="p">]</span>
+    <span class="n">task</span><span class="p">:</span> <span class="n">TaskType</span>
+    <span class="n">datasets_schema</span><span class="p">:</span> <span class="n">AssetSchema</span>
+    <span class="n">models_schema</span><span class="p">:</span> <span class="n">AssetSchema</span>
+    <span class="n">envs_required</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">EnvironmentVarDef</span><span class="p">]</span>
+    <span class="n">envs_optional</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">EnvironmentVarDef</span><span class="p">]</span>
+    <span class="n">__properties</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;description&quot;</span><span class="p">,</span> <span class="s2">&quot;task&quot;</span><span class="p">,</span> <span class="s2">&quot;datasets_schema&quot;</span><span class="p">,</span> <span class="s2">&quot;models_schema&quot;</span><span class="p">,</span> <span class="s2">&quot;envs_required&quot;</span><span class="p">,</span> <span class="s2">&quot;envs_optional&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;script&quot;</span><span class="p">,</span> <span class="s2">&quot;pip_requirements&quot;</span><span class="p">,</span> <span class="s2">&quot;is_public&quot;</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;created_at&quot;</span><span class="p">,</span> <span class="s2">&quot;updated_at&quot;</span><span class="p">,</span> <span class="s2">&quot;state&quot;</span><span class="p">,</span> <span class="s2">&quot;dockerfile&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;is_archived&quot;</span><span class="p">,</span> <span class="s2">&quot;is_approved&quot;</span><span class="p">,</span> <span class="s2">&quot;is_mine&quot;</span><span class="p">,</span> <span class="s2">&quot;base_image&quot;</span>
+    <span class="p">]</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">populate_by_name</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">validate_assignment</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">protected_namespaces</span><span class="o">=</span><span class="p">())</span>
+
+<div class="viewcode-block" id="ExperimentTemplate.archive">
+<a class="viewcode-back" href="../../../instances.html#OuterRail.instances.experiment_template.ExperimentTemplate.archive">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">archive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">archive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Archives specific experiment template specified by ID.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            archive (bool): If experiment template should be archived or un-archived. Defaults to False.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            None.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ApiException: In case of a failed HTTP request.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; self.archive(True)</span>
+<span class="sd">            &gt;&gt;&gt; self.is_archived</span>
+<span class="sd">            True</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">with</span> <span class="n">ApiClient</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="p">)</span> <span class="k">as</span> <span class="n">api_client</span><span class="p">:</span>
+            <span class="n">api_instance</span> <span class="o">=</span> <span class="n">ExperimentTemplatesApi</span><span class="p">(</span><span class="n">api_client</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">api_instance</span><span class="o">.</span><span class="n">archive_experiment_template_v1_experiment_templates_id_archive_patch</span><span class="p">(</span>
+                    <span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">archive</span><span class="o">=</span><span class="n">archive</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">is_archived</span> <span class="o">=</span> <span class="n">archive</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">e</span></div>
+
+
+<div class="viewcode-block" id="ExperimentTemplate.update">
+<a class="viewcode-back" href="../../../instances.html#OuterRail.instances.experiment_template.ExperimentTemplate.update">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Updates specific experiment template.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            template: (dict | tuple[str, str, str, dict]):  The file can be passed either as full specified json (dictionary)</span>
+<span class="sd">                                                            or as a tuple of three strings and a json (dictionary) specifying</span>
+<span class="sd">                                                            the paths to script, requirements and docker image in this order</span>
+<span class="sd">                                                            and template description (name, description, task etc.).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            ExperimentTemplateResponse: Updated Experiment template by given ID.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ApiException: In case of a failed HTTP request.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; script_path = &quot;path/to/script.py&quot;</span>
+<span class="sd">            &gt;&gt;&gt; requirements_path = &quot;path/to/requirements.txt&quot;</span>
+<span class="sd">            &gt;&gt;&gt; base_image = &quot;python:3.9&quot;</span>
+<span class="sd">            &gt;&gt;&gt; template_config = {</span>
+<span class="sd">            &gt;&gt;&gt; &quot;name&quot;: &quot;Example Template&quot;,</span>
+<span class="sd">            &gt;&gt;&gt; &quot;description&quot;: &quot;Template in Examples&quot;,</span>
+<span class="sd">            &gt;&gt;&gt; &quot;task&quot;: &quot;TEXT_CLASSIFICATION&quot;,</span>
+<span class="sd">            &gt;&gt;&gt; &quot;datasets_schema&quot;: { &quot;cardinality&quot;: &quot;1-1&quot; },</span>
+<span class="sd">            &gt;&gt;&gt; &quot;models_schema&quot;: { &quot;cardinality&quot;: &quot;1-1&quot; },</span>
+<span class="sd">            &gt;&gt;&gt; &quot;envs_required&quot;: [ { &quot;name&quot;: &quot;SPLIT_NAME&quot;, &quot;description&quot;: &quot;name of a subset&quot; } ],</span>
+<span class="sd">            &gt;&gt;&gt; &quot;envs_optional&quot;: [],</span>
+<span class="sd">            &gt;&gt;&gt; &quot;available_metrics&quot;: [ &quot;accuracy&quot; ],</span>
+<span class="sd">            &gt;&gt;&gt; &quot;is_public&quot;: True</span>
+<span class="sd">            &gt;&gt;&gt; }</span>
+<span class="sd">            &gt;&gt;&gt; self.update((script_path, requirements_path, base_image, template_config))</span>
+<span class="sd">            Self # The instance is also updated in place.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">update_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">build_creation_dict</span><span class="p">(</span><span class="n">template</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">ApiClient</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="p">)</span> <span class="k">as</span> <span class="n">api_client</span><span class="p">:</span>
+            <span class="n">api_instance</span> <span class="o">=</span> <span class="n">ExperimentTemplatesApi</span><span class="p">(</span><span class="n">api_client</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">api_response</span> <span class="o">=</span> <span class="n">api_instance</span><span class="o">.</span><span class="n">update_experiment_template_v1_experiment_templates_id_put</span><span class="p">(</span>
+                    <span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                    <span class="n">experiment_template_create</span><span class="o">=</span><span class="n">update_dict</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">api_response</span><span class="p">)</span>
+                <span class="k">return</span> <span class="bp">self</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">e</span></div>
+
+
+<div class="viewcode-block" id="ExperimentTemplate.delete">
+<a class="viewcode-back" href="../../../instances.html#OuterRail.instances.experiment_template.ExperimentTemplate.delete">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Deletes the experiment template. After this method is called any operations on the template instance will</span>
+<span class="sd">        result in an HTTP exception as the template no longer exists.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ApiException: In case of a failed HTTP request.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; self.delete()</span>
+<span class="sd">            &gt;&gt;&gt; self._deleted</span>
+<span class="sd">            True</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">with</span> <span class="n">ApiClient</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="p">)</span> <span class="k">as</span> <span class="n">api_client</span><span class="p">:</span>
+            <span class="n">api_instance</span> <span class="o">=</span> <span class="n">ExperimentTemplatesApi</span><span class="p">(</span><span class="n">api_client</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">api_instance</span><span class="o">.</span><span class="n">remove_experiment_template_v1_experiment_templates_id_delete</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_deleted</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">e</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets the configuration of the experiment template required for API calls.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">        config (Configuration): The api configuration.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_config</span> <span class="o">=</span> <span class="n">config</span>
+
+<div class="viewcode-block" id="ExperimentTemplate.from_json">
+<a class="viewcode-back" href="../../../instances.html#OuterRail.instances.experiment_template.ExperimentTemplate.from_json">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_json</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">json_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Self</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates an instance of ExperimentTemplate from a JSON string.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            json_str: The JSON string to create the instance from.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            ExperimentTemplate: Instance of ExperimentTemplate.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; template_json = ...</span>
+<span class="sd">            &gt;&gt;&gt; ExperimentTemplate.from_json(template_json)</span>
+<span class="sd">            ExperimentTemplate</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">json_str</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="ExperimentTemplate.from_dict">
+<a class="viewcode-back" href="../../../instances.html#OuterRail.instances.experiment_template.ExperimentTemplate.from_dict">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">obj</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="n">config</span><span class="p">:</span> <span class="n">Configuration</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Self</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates an instance of ExperimentTemplate from a dict.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            obj (Optional[Dict[str, Any]]): Dictionary representation of an ExperimentTemplate</span>
+<span class="sd">            config (Configuration): Configuration associated with API calls.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            ExperimentTemplate: An instance of ExperimentTemplate.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; template_dict = ...</span>
+<span class="sd">            &gt;&gt;&gt; ExperimentTemplate.from_dict(template_dict)</span>
+<span class="sd">            ExperimentTemplate</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">obj</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+
+        <span class="n">obj</span><span class="p">[</span><span class="s2">&quot;base_image&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;base_image&quot;</span><span class="p">,</span> <span class="s2">&quot;FIX ME&quot;</span><span class="p">)</span>
+        <span class="n">tmp</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;datasets_schema&quot;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="n">AssetSchema</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;datasets_schema&quot;</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;datasets_schema&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                <span class="k">else</span> <span class="kc">None</span>
+            <span class="p">),</span>
+            <span class="s2">&quot;models_schema&quot;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="n">AssetSchema</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;models_schema&quot;</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;models_schema&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                <span class="k">else</span> <span class="kc">None</span>
+            <span class="p">),</span>
+            <span class="s2">&quot;envs_required&quot;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="p">[</span>
+                    <span class="n">EnvironmentVarDef</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">_item</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">_item</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;envs_required&quot;</span><span class="p">)</span>
+                <span class="p">]</span>
+                <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;envs_required&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                <span class="k">else</span> <span class="kc">None</span>
+            <span class="p">),</span>
+            <span class="s2">&quot;envs_optional&quot;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="p">[</span>
+                    <span class="n">EnvironmentVarDef</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">_item</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">_item</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;envs_optional&quot;</span><span class="p">)</span>
+                <span class="p">]</span>
+                <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;envs_optional&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                <span class="k">else</span> <span class="kc">None</span>
+            <span class="p">),</span>
+        <span class="p">}</span>
+        <span class="n">tmp</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+        <span class="n">_obj</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">config</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">_obj</span><span class="o">.</span><span class="n">_set_config</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_obj</span></div>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">build_creation_dict</span><span class="p">(</span> <span class="n">template</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">template</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="n">json_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">template</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="p">(</span>
+                <span class="nb">isinstance</span><span class="p">(</span><span class="n">template</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span>
+                <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">template</span><span class="p">)</span> <span class="o">==</span> <span class="mi">4</span>
+                <span class="ow">and</span> <span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">))</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">template</span><span class="p">)</span>
+        <span class="p">):</span>
+            <span class="n">path_script</span><span class="p">,</span> <span class="n">path_requirements</span><span class="p">,</span> <span class="n">base_image</span><span class="p">,</span> <span class="n">config</span> <span class="o">=</span> <span class="n">template</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="k">with</span> <span class="p">(</span>
+                    <span class="nb">open</span><span class="p">(</span><span class="n">path_script</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">s</span><span class="p">,</span>
+                    <span class="nb">open</span><span class="p">(</span><span class="n">path_requirements</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">r</span><span class="p">,</span>
+                <span class="p">):</span>
+                    <span class="n">script</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+                    <span class="n">requirements</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+                    <span class="n">config</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                        <span class="p">{</span>
+                            <span class="s2">&quot;script&quot;</span><span class="p">:</span> <span class="n">script</span><span class="p">,</span>
+                            <span class="s2">&quot;pip_requirements&quot;</span><span class="p">:</span> <span class="n">requirements</span><span class="p">,</span>
+                            <span class="s2">&quot;base_image&quot;</span><span class="p">:</span> <span class="n">base_image</span><span class="p">,</span>
+                        <span class="p">}</span>
+                    <span class="p">)</span>
+                    <span class="n">json_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Fourth element must be a dictionary&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid input format&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">json_data</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, KInIT @ AIoD.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
