@@ -18,7 +18,7 @@ jobs:
 
     # TODO: move docs to root instead of them being in sdk-py directory
     - name: Build HTML
-      uses: ammaraskar/sphinx-action@6.0.0
+      uses: ammaraskar/sphinx-action@8.2.3
       with:
         docs-folder: sdk-py/sphinx-docs/
 
