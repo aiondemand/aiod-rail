@@ -1,2 +1,4 @@
-#furo==2021.11.16
+pydantic>=2
+python_dateutil>=2.5.3
+
 sphinx-rtd-theme
