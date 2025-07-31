@@ -1,0 +1,5 @@
+Configuration
+==============================
+
+.. automodule:: OuterRail.configuration
+
