@@ -1,10 +1,3 @@
-from aiod_rail_sdk.models.dataset import Dataset
-
-pass
-from aiod_rail_sdk.models.ml_model import MLModel
-from aiod_rail_sdk.models.platform import Platform
-from aiod_rail_sdk.models.publication import Publication
-
 from typing_extensions import Annotated
 from typing import Any, Dict, List, Optional, Tuple, Union
 from pydantic import Field, StrictFloat, StrictInt, StrictStr, validate_call, StrictBytes
@@ -12,6 +5,7 @@ from pydantic import Field, StrictFloat, StrictInt, StrictStr, validate_call, St
 from OuterRail.api import ApiResponse
 from OuterRail.api.rest import RESTResponseType
 from OuterRail.api.api_client import ApiClient, RequestSerialized
+
 
 
 class AssetsApi:
@@ -163,7 +157,7 @@ class AssetsApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> Dataset:
+    ) -> dict:
         """Dataset Upload File To Huggingface
 
 
@@ -209,7 +203,7 @@ class AssetsApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {  # noqa: F841
-            "200": "Dataset",
+            "200": "dict",
             "422": "HTTPValidationError",
         }
         response_data = self.api_client.call_api(

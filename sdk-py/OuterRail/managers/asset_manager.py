@@ -269,7 +269,7 @@ class AssetManager:
                 with open(file_path, 'rb') as file:
                     file_bytes = file.read()
                 api_response = api_instance.dataset_upload_file_to_huggingface(id, name, huggingface_token, file_bytes)
-                return api_response
+                return Dataset.from_dict(api_response, self._config)
             except Exception as e:
                 raise e
 
