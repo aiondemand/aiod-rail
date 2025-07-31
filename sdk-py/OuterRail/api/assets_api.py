@@ -2706,7 +2706,7 @@ class AssetsApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[List[Publication]]:
+    ) -> ApiResponse[List[Dict]]:
         """Search Publications
 
 
