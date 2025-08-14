@@ -1518,7 +1518,7 @@ class AssetsApi:
         )
 
         # authentication setting
-        _auth_settings: List[str] = ["OpenIdConnect"]
+        _auth_settings: List[str] = ["APIKeyHeader", "OpenIdConnect"]
 
         return self.api_client.param_serialize(
             method="GET",
