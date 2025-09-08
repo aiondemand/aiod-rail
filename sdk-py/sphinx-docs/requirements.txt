@@ -1,4 +1,6 @@
 pydantic>=2
 python_dateutil>=2.5.3
+python-keycloak
+pyjwt
 
 sphinx-rtd-theme
