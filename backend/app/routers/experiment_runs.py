@@ -21,7 +21,7 @@ router = APIRouter()
 @router.get("/experiment-runs/{id}", response_model=ExperimentRunDetails | None)
 async def get_experiment_run(
     id: PydanticObjectId,
-    user: dict = Depends(get_current_user(required=False, from_api_key=True)),
+    user: dict | None = Depends(get_current_user(required=False, from_api_key=True)),
 ) -> Any:
     experiment_run = await get_experiment_run_if_accessible_or_raise(id, user)
     return experiment_run.map_to_response(user, return_detailed_response=True)
@@ -31,7 +31,7 @@ async def get_experiment_run(
 # @router.get("/experiment-runs/{id}/stop", response_model=None)
 # async def stop_experiment_run(
 #     id: PydanticObjectId,
-#     user: dict = Depends(get_current_user(required=True, from_api_key=True)),
+#     user: dict | None = Depends(get_current_user(required=True, from_api_key=True)),
 #     workflow_engine: WorkflowEngineBase = Depends(ReanaService.get_service),
 # ) -> Any:
 #     # TODO this case needs to be properly addressed
@@ -56,7 +56,7 @@ async def get_experiment_run(
 @router.delete("/experiment-runs/{id}", response_model=None)
 async def delete_experiment_run(
     id: PydanticObjectId,
-    user: dict = Depends(get_current_user(required=True, from_api_key=True)),
+    user: dict | None = Depends(get_current_user(required=True, from_api_key=True)),
     workflow_engine: WorkflowEngineBase = Depends(ReanaService.get_service),
 ) -> Any:
     # TODO this case needs to be properly addressed
@@ -86,7 +86,7 @@ async def delete_experiment_run(
 @router.get("/experiment-runs/{id}/logs", response_class=PlainTextResponse)
 async def get_experiment_run_logs(
     id: PydanticObjectId,
-    user: dict = Depends(get_current_user(required=True, from_api_key=True)),
+    user: dict | None = Depends(get_current_user(required=False, from_api_key=True)),
 ) -> str:
     experiment_run = await get_experiment_run_if_accessible_or_raise(id, user)
     return experiment_run.logs
@@ -97,7 +97,7 @@ async def download_file_from_experiment_run(
     id: PydanticObjectId,
     filepath: str,
     workflow_engine: WorkflowEngineBase = Depends(ReanaService.get_service),
-    user: dict = Depends(get_current_user(required=True, from_api_key=True)),
+    user: dict | None = Depends(get_current_user(required=False, from_api_key=True)),
 ) -> bytes:
     experiment_run = await get_experiment_run_if_accessible_or_raise(id, user)
 
@@ -131,7 +131,7 @@ async def download_file_from_experiment_run(
 async def list_files_of_experiment_run(
     id: PydanticObjectId,
     workflow_engine: WorkflowEngineBase = Depends(ReanaService.get_service),
-    user: dict = Depends(get_current_user(required=True, from_api_key=True)),
+    user: dict | None = Depends(get_current_user(required=False, from_api_key=True)),
 ) -> list[FileDetail]:
     experiment_run = await get_experiment_run_if_accessible_or_raise(id, user)
     return await workflow_engine.list_files(experiment_run)
