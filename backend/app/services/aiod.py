@@ -202,7 +202,6 @@ async def search_assets(
 async def enhanced_search(
     asset_type: AssetType, query: str, pagination: Pagination
 ) -> list:
-    # TODO: Update pagination
     topk = min(pagination.offset + pagination.limit, 100)
     initial_response = await aiod_enhanced_search_client_wrapper.client.post(
         "query",
@@ -227,20 +226,19 @@ async def enhanced_search(
     for _ in range(max_retries):
         result_response: httpx.Response = (
             await aiod_enhanced_search_client_wrapper.client.get(
-                result_location, follow_redirects=True
+                result_location,
+                params={"return_entire_assets": True},
+                follow_redirects=True,
             )
         )
-
         if (
             result_response.status_code == 200
             and result_response.json()["status"] == "Completed"
         ):
-            asset_ids: list[AssetId] = result_response.json()["result_asset_ids"]
+            results = result_response.json()["results"][-pagination.limit :]
+            assets = [result["asset"] for result in results]
+            return assets
 
-            return [
-                await get_asset(asset_type, asset_id)
-                for asset_id in asset_ids[-pagination.limit :]
-            ]
         elif result_response.status_code == 200:
             await asyncio.sleep(delay)
         else:
