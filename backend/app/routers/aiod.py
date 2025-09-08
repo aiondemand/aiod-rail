@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, Response, UploadFile, sta
 
 from app.auth import get_current_user, get_current_user_token
 from app.helpers import Pagination
+from app.schemas.asset_id import AssetIdPathArg
 from app.schemas.dataset import Dataset
 from app.schemas.ml_model import MLModel
 from app.schemas.platform import Platform
@@ -72,7 +73,7 @@ async def search_datasets(
 
 
 @router.get("/datasets/{id}", response_model=Dataset)
-async def get_dataset(id: str) -> Any:
+async def get_dataset(id: AssetIdPathArg) -> Any:
     return await get_asset(asset_type=AssetType.DATASETS, asset_id=id)
 
 
@@ -138,9 +139,11 @@ async def create_dataset(
 
 
 @router.delete("/datasets/{id}", response_model=bool)
-async def delete_dataset(id: str, token: str = Depends(get_current_user_token)) -> Any:
+async def delete_dataset(
+    id: AssetIdPathArg, token: str = Depends(get_current_user_token)
+) -> Any:
     res = await aiod_client_wrapper.client.delete(
-        Path("datasets", str(id)),
+        Path("datasets", id),
         headers={"Authorization": f"{token}"},
     )
 
@@ -156,14 +159,14 @@ async def delete_dataset(id: str, token: str = Depends(get_current_user_token)) 
 
 @router.post("/datasets/{id}/upload-file-to-huggingface", response_model=Dataset)
 async def dataset_upload_file_to_huggingface(
-    id: str,
+    id: AssetIdPathArg,
     file: UploadFile,
     huggingface_name: str,
     huggingface_token: str,
     token: str = Depends(get_current_user_token),
 ) -> Any:
     res = await aiod_client_wrapper.client.post(
-        Path("upload/datasets", str(id), "huggingface"),
+        Path("upload/datasets", id, "huggingface"),
         params={"token": huggingface_token, "username": huggingface_name},
         headers={"Authorization": f"{token}"},
         files={"file": (file.filename, file.file, file.content_type)},
@@ -224,7 +227,7 @@ async def search_models(query: str, pagination: Pagination = Depends()) -> Any:
 
 
 @router.get("/models/{id}", response_model=MLModel)
-async def get_model(id: str) -> Any:
+async def get_model(id: AssetIdPathArg) -> Any:
     return await get_asset(asset_type=AssetType.ML_MODELS, asset_id=id)
 
 
@@ -277,7 +280,7 @@ async def search_publications(query: str, pagination: Pagination = Depends()) ->
 
 
 @router.get("/publications/{id}", response_model=Publication)
-async def get_publication(id: str) -> Any:
+async def get_publication(id: AssetIdPathArg) -> Any:
     return await get_asset(asset_type=AssetType.PUBLICATIONS, asset_id=id)
 
 

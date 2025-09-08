@@ -14,6 +14,9 @@ export interface Platform {
      * The name of the platform, such as huggingface, openml or zenodo. Preferably using snake_case.
      */
     name: string;
+    /**
+     * AIoD Asset ID. Must be a 3 or 4 letter code followed by a 24 character random case-sensitive alphanumeric sequence
+     */
     identifier: string;
 }
 

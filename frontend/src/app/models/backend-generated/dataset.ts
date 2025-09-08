@@ -131,6 +131,9 @@ export interface Dataset {
      * A location that describes the spatial aspect of this dataset. For example, a point where all the measurements were collected.
      */
     spatial_coverage?: Location;
+    /**
+     * AIoD Asset ID. Must be a 3 or 4 letter code followed by a 24 character random case-sensitive alphanumeric sequence
+     */
     identifier: string;
 }
 

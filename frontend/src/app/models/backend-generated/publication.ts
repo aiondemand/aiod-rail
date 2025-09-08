@@ -127,6 +127,9 @@ export interface Publication {
      * The type of publication.
      */
     type?: string;
+    /**
+     * AIoD Asset ID. Must be a 3 or 4 letter code followed by a 24 character random case-sensitive alphanumeric sequence
+     */
     identifier: string;
 }
 
