@@ -12,11 +12,11 @@
 /**
  * An enumeration.
  */
-export const TemplateState = {
-    Created: 'CREATED',
-    InProgress: 'IN_PROGRESS',
-    Finished: 'FINISHED',
-    Crashed: 'CRASHED'
+export const EntryStatus = {
+    Draft: 'draft',
+    Published: 'published',
+    Rejected: 'rejected',
+    Submitted: 'submitted'
 } as const;
-export type TemplateState = typeof TemplateState[keyof typeof TemplateState];
+export type EntryStatus = typeof EntryStatus[keyof typeof EntryStatus];
 

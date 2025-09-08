@@ -1,0 +1,4 @@
+python-dotenv==1.0.0
+pymongo==4.9
+tqdm==4.67.1
+pandas==2.3.0
