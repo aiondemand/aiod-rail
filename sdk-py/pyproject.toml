@@ -17,7 +17,9 @@ dependencies = [
     "urllib3>=1.25.3",
     "python-dateutil>=2.8.2",
     "pydantic>=2",
-    "typing-extensions>=4.7.1"
+    "typing-extensions>=4.7.1",
+    "python-keycloak",
+    "pyjwt"
 ]
 keywords = ["SDK", "AIoD", "RAIL", "Machine Learning", "ML Experiments"]
 

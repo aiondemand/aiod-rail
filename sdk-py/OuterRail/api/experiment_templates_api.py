@@ -257,7 +257,7 @@ class ExperimentTemplatesApi:
         )
 
         # authentication setting
-        _auth_settings: List[str] = ["APIKeyHeader", "OpenIdConnect"]
+        _auth_settings: List[str] = ["AccessToken", "OpenIdConnect"]
 
         return self.api_client.param_serialize(
             method="PATCH",
@@ -384,7 +384,7 @@ class ExperimentTemplatesApi:
                 _header_params["Content-Type"] = _default_content_type
 
         # authentication setting
-        _auth_settings: List[str] = ["APIKeyHeader", "OpenIdConnect"]
+        _auth_settings: List[str] = ["AccessToken", "OpenIdConnect"]
 
         return self.api_client.param_serialize(
             method="POST",
@@ -559,7 +559,7 @@ class ExperimentTemplatesApi:
         )
 
         # authentication setting
-        _auth_settings: List[str] = ["APIKeyHeader", "OpenIdConnect"]
+        _auth_settings: List[str] = ["AccessToken", "OpenIdConnect"]
 
         return self.api_client.param_serialize(
             method="GET",
@@ -878,7 +878,7 @@ class ExperimentTemplatesApi:
         )
 
         # authentication setting
-        _auth_settings: List[str] = ["APIKeyHeader", "OpenIdConnect"]
+        _auth_settings: List[str] = ["AccessToken", "OpenIdConnect"]
 
         return self.api_client.param_serialize(
             method="GET",
@@ -1137,7 +1137,7 @@ class ExperimentTemplatesApi:
         )
 
         # authentication setting
-        _auth_settings: List[str] = ["APIKeyHeader", "OpenIdConnect"]
+        _auth_settings: List[str] = ["AccessToken", "OpenIdConnect"]
 
         return self.api_client.param_serialize(
             method="GET",
@@ -1391,7 +1391,7 @@ class ExperimentTemplatesApi:
         )
 
         # authentication setting
-        _auth_settings: List[str] = ["APIKeyHeader", "OpenIdConnect"]
+        _auth_settings: List[str] = ["AccessToken", "OpenIdConnect"]
 
         return self.api_client.param_serialize(
             method="GET",
@@ -1629,7 +1629,7 @@ class ExperimentTemplatesApi:
         )
 
         # authentication setting
-        _auth_settings: List[str] = ["APIKeyHeader", "OpenIdConnect"]
+        _auth_settings: List[str] = ["AccessToken", "OpenIdConnect"]
 
         return self.api_client.param_serialize(
             method="DELETE",
@@ -1762,7 +1762,7 @@ class ExperimentTemplatesApi:
                 _header_params["Content-Type"] = _default_content_type
 
         # authentication setting
-        _auth_settings: List[str] = ["APIKeyHeader", "OpenIdConnect"]
+        _auth_settings: List[str] = ["AccessToken", "OpenIdConnect"]
 
         return self.api_client.param_serialize(
             method="PUT",

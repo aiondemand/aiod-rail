@@ -67,7 +67,6 @@ class ApiClient:
         self.cookie = cookie
         # Set default User-Agent.
         self.user_agent = "OpenAPI-Generator/1.0.0/python"
-        self.client_side_validation = configuration.client_side_validation
 
     def __enter__(self):
         return self
@@ -170,7 +169,7 @@ class ApiClient:
             for k, v in path_params:
                 # specified safe chars, encode everything
                 resource_path = resource_path.replace(
-                    "{%s}" % k, quote(str(v), safe=config.safe_chars_for_path_param)
+                    "{%s}" % k, quote(str(v), safe="")
                 )
 
         # post parameters
@@ -212,7 +211,7 @@ class ApiClient:
         return method, url, header_params, body, post_params
 
     def call_api(
-        self,
+    self,
         method,
         url,
         header_params=None,
@@ -569,7 +568,7 @@ class ApiClient:
             )
         else:
             for auth in auth_settings:
-                auth_setting = self.configuration.auth_settings().get(auth)
+                auth_setting = self.configuration._auth_settings(auth)
                 if auth_setting:
                     self._apply_auth_params(
                         headers, queries, resource_path, method, body, auth_setting
