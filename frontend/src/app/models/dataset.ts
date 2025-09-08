@@ -31,7 +31,7 @@ export function createDatasetFromFormData(
         has_part: [],
         is_accessible_for_free: true,
         creator: [],
-        identifier: 0,
+        identifier: '0',
         version: formValue.version,
     }
 
