@@ -33,7 +33,7 @@ class ExperimentFilter(BaseModel):
 @router.get("/experiments", response_model=list[ExperimentResponse])
 async def get_experiments(
     query: str = "",
-    user: dict = Depends(get_current_user(required=False, from_api_key=True)),
+    user: dict = Depends(get_current_user(required=False)),
     pagination: Pagination = Depends(),
     filters: ExperimentFilter = Depends(),
 ) -> Any:
@@ -51,7 +51,7 @@ async def get_experiments(
 @router.get("/count/experiments", response_model=int)
 async def get_experiments_count(
     query: str = "",
-    user: dict = Depends(get_current_user(required=False, from_api_key=True)),
+    user: dict = Depends(get_current_user(required=False)),
     filters: ExperimentFilter = Depends(),
 ) -> Any:
     result_set = find_specific_experiments(
@@ -65,7 +65,7 @@ async def get_experiments_count(
 @router.get("/experiments/{id}", response_model=ExperimentResponse)
 async def get_experiment(
     id: PydanticObjectId,
-    user: dict = Depends(get_current_user(required=False, from_api_key=True)),
+    user: dict = Depends(get_current_user(required=False)),
 ) -> Any:
     experiment = await get_experiment_if_accessible_or_raise(id, user)
     return experiment.map_to_response(user)
@@ -75,7 +75,7 @@ async def get_experiment(
 async def get_experiment_runs_of_experiment(
     id: PydanticObjectId,
     pagination: Pagination = Depends(),
-    user: dict = Depends(get_current_user(required=False, from_api_key=True)),
+    user: dict = Depends(get_current_user(required=False)),
 ) -> Any:
     await get_experiment_if_accessible_or_raise(id, user)
 
@@ -91,7 +91,7 @@ async def get_experiment_runs_of_experiment(
 @router.get("/count/experiments/{id}/runs", response_model=int)
 async def get_experiment_runs_of_experiment_count(
     id: PydanticObjectId,
-    user: dict = Depends(get_current_user(required=False, from_api_key=True)),
+    user: dict = Depends(get_current_user(required=False)),
 ) -> Any:
     await get_experiment_if_accessible_or_raise(id, user)
     return await ExperimentRun.find(ExperimentRun.experiment_id == id).count()
@@ -104,7 +104,7 @@ async def get_experiment_runs_of_experiment_count(
 )
 async def create_experiment(
     experiment: ExperimentCreate,
-    user: dict = Depends(get_current_user(required=True, from_api_key=True)),
+    user: dict = Depends(get_current_user(required=True)),
 ) -> Any:
     template = await get_experiment_template_if_accessible_or_raise(
         experiment.experiment_template_id, user, write_access=False
@@ -129,7 +129,7 @@ async def create_experiment(
 @router.get("/experiments/{id}/execute", response_model=ExperimentRunResponse)
 async def execute_experiment_run(
     id: PydanticObjectId,
-    user: dict = Depends(get_current_user(required=True, from_api_key=True)),
+    user: dict = Depends(get_current_user(required=True)),
     exp_scheduler: ExperimentScheduler = Depends(ExperimentScheduler.get_service),
     workflow_engine: WorkflowEngineBase = Depends(WorkflowEngineBase.get_service),
 ) -> Any:
@@ -162,7 +162,7 @@ async def execute_experiment_run(
 async def update_experiment(
     id: PydanticObjectId,
     experiment: ExperimentCreate,
-    user: dict = Depends(get_current_user(required=True, from_api_key=True)),
+    user: dict = Depends(get_current_user(required=True)),
 ) -> Any:
     original_experiment = await get_experiment_if_accessible_or_raise(
         id, user, write_access=True
@@ -200,7 +200,7 @@ async def update_experiment(
 @router.delete("/experiments/{id}", response_model=None)
 async def delete_experiment(
     id: PydanticObjectId,
-    user: dict = Depends(get_current_user(required=True, from_api_key=True)),
+    user: dict = Depends(get_current_user(required=True)),
     workflow_engine: WorkflowEngineBase = Depends(ReanaService.get_service),
 ) -> Any:
     await get_experiment_if_accessible_or_raise(id, user, write_access=True)
@@ -216,7 +216,7 @@ async def delete_experiment(
 async def archive_experiment(
     id: PydanticObjectId,
     archive: bool = False,
-    user: dict = Depends(get_current_user(required=True, from_api_key=True)),
+    user: dict = Depends(get_current_user(required=True)),
 ) -> Any:
     experiment = await get_experiment_if_accessible_or_raise(
         id, user, write_access=True

@@ -125,7 +125,7 @@ async def get_my_asset_ids(
     }
 
     requested_assets = [
-        int(asset["identifier"])
+        asset["identifier"]
         for asset in my_assets
         if asset["category"] == asset_name_mapper[asset_type]
     ]

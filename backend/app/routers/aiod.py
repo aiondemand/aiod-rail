@@ -101,7 +101,7 @@ async def get_my_datasets_count(
 
 @router.post(
     "/datasets",
-    dependencies=[Depends(get_current_user(required=True, from_api_key=False))],
+    dependencies=[Depends(get_current_user(required=True))],
     response_model=Dataset,
 )
 async def create_dataset(
