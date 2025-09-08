@@ -11,6 +11,7 @@ from pydantic import Field
 
 from app.auth import has_admin_role
 from app.models.experiment_template import ExperimentTemplate
+from app.schemas.asset_id import AssetId
 from app.schemas.env_vars import EnvironmentVar
 from app.schemas.experiment import ExperimentCreate, ExperimentResponse
 
@@ -25,9 +26,9 @@ class Experiment(Document):
     is_archived: bool = False
 
     experiment_template_id: PydanticObjectId
-    dataset_ids: list[str]
-    model_ids: list[str]
-    publication_ids: list[str]
+    dataset_ids: list[AssetId]
+    model_ids: list[AssetId]
+    publication_ids: list[AssetId]
     env_vars: list[EnvironmentVar]
 
     @property

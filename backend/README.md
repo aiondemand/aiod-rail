@@ -64,6 +64,8 @@ in [docker-compose.yml](docker-compose.yml) file.
 
 ### Fill some toy data into the database
 
+*Note: These scripts doesn't currently work as they haven't been updated to the current RAIL version.*
+
 Execute Python script found on the path: `dev-scripts/experiments/create_experiment_template.py` that creates one
 ExperimentTemplate that will be stored in MongoDB database.
 

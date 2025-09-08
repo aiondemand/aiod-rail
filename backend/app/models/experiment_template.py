@@ -19,6 +19,7 @@ from app.config import (
     RUN_TEMP_OUTPUT_FOLDER,
     settings,
 )
+from app.schemas.asset_id import AssetId
 from app.schemas.env_vars import EnvironmentVar, EnvironmentVarDef
 from app.schemas.experiment_template import (
     AssetSchema,
@@ -118,7 +119,9 @@ class ExperimentTemplate(Document):
             ]
         )
 
-    def initialize_files(self, base_image, pip_requirements, script):
+    def initialize_files(
+        self, base_image: str, pip_requirements: str, script: str
+    ) -> None:
         base_path = self.experiment_template_path
         base_path.mkdir(exist_ok=True, parents=True)
 
@@ -194,7 +197,7 @@ class ExperimentTemplate(Document):
             }
         )
 
-    async def validate_models(self, model_ids: list[str]) -> bool:
+    async def validate_models(self, model_ids: list[AssetId]) -> bool:
         model_names = [await get_model_name(x) for x in model_ids]
 
         checks = [
@@ -204,7 +207,7 @@ class ExperimentTemplate(Document):
 
         return all(checks)
 
-    async def validate_datasets(self, dataset_ids: list[str]) -> bool:
+    async def validate_datasets(self, dataset_ids: list[AssetId]) -> bool:
         dataset_names = [await get_dataset_name(x) for x in dataset_ids]
 
         checks = [
