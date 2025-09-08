@@ -66,9 +66,7 @@ async def delete_experiment_run(
     # object from the database will be deleted which will cause problems down the line
     # of the experiment run execution pipeline
 
-    experiment_run = await get_experiment_run_if_accessible_or_raise(
-        id, user, write_access=True
-    )
+    experiment_run = await get_experiment_run_if_accessible_or_raise(id, user, write_access=True)
 
     # TODO for now we can only delete experiment runs that have already been finished
     if (
@@ -105,9 +103,7 @@ async def download_file_from_experiment_run(
     tempdir = Path(TEMP_DIRNAME)
     tempdir.mkdir(parents=True, exist_ok=True)
 
-    savepath = await workflow_engine.download_file(
-        experiment_run, filepath, savedir=tempdir
-    )
+    savepath = await workflow_engine.download_file(experiment_run, filepath, savedir=tempdir)
     if savepath is None:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -122,9 +118,7 @@ async def download_file_from_experiment_run(
         savepath.unlink()
 
     headers = {"Content-Disposition": f'attachment; filename="{savepath.name}"'}
-    return StreamingResponse(
-        iterfile(), headers=headers, media_type="application/octet-stream"
-    )
+    return StreamingResponse(iterfile(), headers=headers, media_type="application/octet-stream")
 
 
 @router.get("/experiment-runs/{id}/files/list", response_model=list[FileDetail])
@@ -158,17 +152,11 @@ async def get_experiment_run_if_accessible_or_raise(
 
 
 async def set_public_run(run: ExperimentRun, value: bool, updated_at: datetime) -> None:
-    await run.set(
-        {ExperimentRun.is_public: value, ExperimentRun.updated_at: updated_at}
-    )
+    await run.set({ExperimentRun.is_public: value, ExperimentRun.updated_at: updated_at})
 
 
-async def set_archived_run(
-    run: ExperimentRun, value: bool, updated_at: datetime
-) -> None:
-    await run.set(
-        {ExperimentRun.is_archived: value, ExperimentRun.updated_at: updated_at}
-    )
+async def set_archived_run(run: ExperimentRun, value: bool, updated_at: datetime) -> None:
+    await run.set({ExperimentRun.is_archived: value, ExperimentRun.updated_at: updated_at})
 
 
 async def delete_run(run: ExperimentRun, workflow_engine: WorkflowEngineBase) -> None:

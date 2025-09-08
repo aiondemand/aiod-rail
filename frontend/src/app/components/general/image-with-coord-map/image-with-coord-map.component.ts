@@ -39,7 +39,7 @@ export class ImageWithCoordMapComponent implements AfterContentChecked {
       if (!area.hasAttribute("originalCoords")) {
         area.setAttribute("originalCoords", area.coords);
       }
-      
+
       let coords = (area.getAttribute("originalCoords") || '').split(',');
       let newCoords = coords.map(coord => {
         if (coords.indexOf(coord) % 2 === 0) {

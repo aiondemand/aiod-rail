@@ -31,15 +31,15 @@
 .deleted-state {
     display: flex;
     gap: 1em;
-    
+
     span {
         display: flex;
         align-items: center;
         gap: 0.25em;
     }
-    
+
     font-size: 0.7em;
-    
+
     .crashed {
         color: red;
     }

@@ -45,8 +45,7 @@ async def get_experiment_templates(
     experiment_templates = await result_set.to_list()
 
     return [
-        experiment_template.map_to_response(user)
-        for experiment_template in experiment_templates
+        experiment_template.map_to_response(user) for experiment_template in experiment_templates
     ]
 
 
@@ -109,9 +108,7 @@ async def update_experiment_template(
     original_template = await get_experiment_template_if_accessible_or_raise(
         id, user, write_access=True
     )
-    has_experiments = (
-        await Experiment.find(Experiment.experiment_template_id == id).count() > 0
-    )
+    has_experiments = await Experiment.find(Experiment.experiment_template_id == id).count() > 0
     has_experiments_of_others = (
         await Experiment.find(
             Experiment.experiment_template_id == id,
@@ -142,9 +139,7 @@ async def remove_experiment_template(
     user: dict | None = Depends(get_current_user(required=True, from_api_key=True)),
 ) -> Any:
     await get_experiment_template_if_accessible_or_raise(id, user, write_access=True)
-    exist_experiments = (
-        await Experiment.find(Experiment.experiment_template_id == id).count() > 0
-    )
+    exist_experiments = await Experiment.find(Experiment.experiment_template_id == id).count() > 0
     if exist_experiments:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -197,9 +192,7 @@ def find_specific_experiment_templates(
     pagination: Pagination = None,
 ) -> FindMany[ExperimentTemplate]:
     page_kwargs = (
-        {"skip": pagination.offset, "limit": pagination.limit}
-        if pagination is not None
-        else {}
+        {"skip": pagination.offset, "limit": pagination.limit} if pagination is not None else {}
     )
 
     # applying filters
@@ -209,9 +202,7 @@ def find_specific_experiment_templates(
     if filters.mine is not None:
         if user is not None:
             filter_conditions.append(
-                get_compare_operator_fn(filters.mine)(
-                    Experiment.created_by, user["email"]
-                )
+                get_compare_operator_fn(filters.mine)(Experiment.created_by, user["email"])
             )
         else:
             # Authentication required to see your experiment templates

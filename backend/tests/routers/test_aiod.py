@@ -29,9 +29,7 @@ async def test_api_get_assets(client, mocker, api_path, asset_type, asset_class)
 
     res = client.get(api_path, params=pagination.dict())
 
-    mock_get_assets.assert_called_once_with(
-        asset_type=asset_type, pagination=pagination
-    )
+    mock_get_assets.assert_called_once_with(asset_type=asset_type, pagination=pagination)
     assert res.status_code == 200
     assets = res.json()
     assert isinstance(assets, list) and len(assets) == 1
@@ -164,8 +162,6 @@ async def test_api_get_filtered_assets_count(client, mocker, api_path, asset_typ
 
     res = client.get(api_path)
 
-    mock_get_assets_count.assert_called_once_with(
-        asset_type=asset_type, filter_query="asset_name"
-    )
+    mock_get_assets_count.assert_called_once_with(asset_type=asset_type, filter_query="asset_name")
     assert res.status_code == 200
     assert isinstance(res.json(), int) and res.json() == 7

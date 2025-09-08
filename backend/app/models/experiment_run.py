@@ -64,17 +64,13 @@ class ExperimentRun(Document):
         self.state = state
         self.updated_at = datetime.now(tz=timezone.utc)
 
-        await self.set(
-            {ExperimentRun.state: self.state, ExperimentRun.updated_at: self.updated_at}
-        )
+        await self.set({ExperimentRun.state: self.state, ExperimentRun.updated_at: self.updated_at})
 
     def map_to_response(
         self, user: dict | None = None, return_detailed_response: bool = False
     ) -> ExperimentRunResponse | ExperimentRunDetails:
         is_mine = user is not None and self.created_by == user["email"]
-        response = ExperimentRunResponse(
-            **self.dict(), metrics=self.metrics, is_mine=is_mine
-        )
+        response = ExperimentRunResponse(**self.dict(), metrics=self.metrics, is_mine=is_mine)
 
         if return_detailed_response:
             return ExperimentRunDetails(**response.dict(), logs=self.logs)

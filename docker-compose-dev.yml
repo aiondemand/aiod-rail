@@ -18,7 +18,7 @@ services:
         "-c",
         "pip install debugpy -t /tmp && python /tmp/debugpy --listen 0.0.0.0:5678 -m uvicorn app.main:app --host 0.0.0.0 --port 80 --root-path /api --reload"
       ]
-    
+
   # FRONTEND
   frontend-app:
     build:
@@ -29,7 +29,7 @@ services:
         PROFILE: local-docker
     volumes:
       - ./frontend/src:/app/src
-    command: 
+    command:
       [
         "sh",
         "-c",

@@ -79,10 +79,7 @@ class Settings(BaseSettings):
         return self.userdata_path / f"{EXPERIMENT_RUN_DIR_PREFIX}{run_id}"
 
     def get_experiment_template_path(self, template_id: str) -> Path:
-        return (
-            self.experiment_templates_path
-            / f"{EXPERIMENT_TEMPLATE_DIR_PREFIX}{template_id}"
-        )
+        return self.experiment_templates_path / f"{EXPERIMENT_TEMPLATE_DIR_PREFIX}{template_id}"
 
     def get_experiment_run_output_path(self, run_id: str) -> Path:
         return self.get_experiment_run_path(run_id) / RUN_OUTPUT_FOLDER

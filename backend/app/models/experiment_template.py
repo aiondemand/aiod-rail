@@ -112,16 +112,9 @@ class ExperimentTemplate(Document):
 
     def is_valid(self) -> bool:
         reserved_vars = list(ReservedEnvVars)
-        return all(
-            [
-                e.name not in reserved_vars
-                for e in self.envs_required + self.envs_optional
-            ]
-        )
+        return all([e.name not in reserved_vars for e in self.envs_required + self.envs_optional])
 
-    def initialize_files(
-        self, base_image: str, pip_requirements: str, script: str
-    ) -> None:
+    def initialize_files(self, base_image: str, pip_requirements: str, script: str) -> None:
         base_path = self.experiment_template_path
         base_path.mkdir(exist_ok=True, parents=True)
 
@@ -137,9 +130,7 @@ class ExperimentTemplate(Document):
         base_path.joinpath("script.py").write_text(script)
 
         reana_cfg = yaml.safe_load(open("app/data/template-reana.yaml"))
-        reana_cfg["workflow"]["specification"]["steps"][0][
-            "environment"
-        ] = self.image_name
+        reana_cfg["workflow"]["specification"]["steps"][0]["environment"] = self.image_name
         reana_cfg["outputs"]["directories"][0] = RUN_TEMP_OUTPUT_FOLDER
 
         with base_path.joinpath("reana.yaml").open("w") as fp:
@@ -223,9 +214,7 @@ class ExperimentTemplate(Document):
 
         return required_environment_var_names.issubset(experiment_environment_var_names)
 
-    def is_same_environment(
-        self, experiment_template_req: ExperimentTemplateCreate
-    ) -> bool:
+    def is_same_environment(self, experiment_template_req: ExperimentTemplateCreate) -> bool:
         return all(
             [
                 bool(
@@ -254,12 +243,8 @@ class ExperimentTemplate(Document):
         if new_template.is_valid() is False:
             return None
 
-        same_environment = original_template.is_same_environment(
-            experiment_template_req
-        )
-        same_visibility = (
-            original_template.is_public == experiment_template_req.is_public
-        )
+        same_environment = original_template.is_same_environment(experiment_template_req)
+        same_visibility = original_template.is_public == experiment_template_req.is_public
 
         template_to_return = None
         if same_environment and (same_visibility or editable_visibility):

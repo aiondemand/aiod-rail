@@ -16,7 +16,7 @@ import { ConfirmPopupComponent } from '../../general/popup/confirm-popup.compone
 })
 export class ExperimentRunListComponent implements OnInit {
   @ViewChild(MatSort) sort: MatSort;
-  
+
   @Input() experiment: Experiment;
 
   runs$: Observable<ExperimentRun[]>;
@@ -48,7 +48,7 @@ export class ExperimentRunListComponent implements OnInit {
   }
 
   stopRun(id: string): void {
-    // TODO for now we disable the ability to stop a run 
+    // TODO for now we disable the ability to stop a run
     // TODO later on we can enable this functionality again once we can
     // stop the experiment run whenever during the experiment run execution pipeline
     let popupInput: ConfirmPopupInput = {

@@ -139,9 +139,7 @@ async def create_dataset(
 
 
 @router.delete("/datasets/{id}", response_model=bool)
-async def delete_dataset(
-    id: AssetIdPathArg, token: str = Depends(get_current_user_token)
-) -> Any:
+async def delete_dataset(id: AssetIdPathArg, token: str = Depends(get_current_user_token)) -> Any:
     res = await aiod_client_wrapper.client.delete(
         Path("datasets", id),
         headers={"Authorization": f"{token}"},

@@ -16,7 +16,7 @@
         }
     }
 
-    
+
     .header-buttons {
         display: flex;
         gap: 0.25em;
@@ -35,15 +35,15 @@
 .deleted-state {
     display: flex;
     gap: 1em;
-    
+
     span {
         display: flex;
         align-items: center;
         gap: 0.25em;
     }
-    
+
     font-size: 0.7em;
-    
+
     .crashed {
         color: red;
     }
@@ -57,15 +57,15 @@
 .state {
     margin-bottom: 1em;
     margin-left: 0.5em;
-    
+
     span {
         display: flex;
         align-items: center;
         gap: 0.25em;
     }
-    
+
     font-size: 0.7em;
-    
+
     .in-progress {
         color: green;
     }
@@ -82,13 +82,13 @@
 
     border: 1px #ccc solid;
     display: block;
-    
+
     width: 100%;
     max-height: 495px;
 
     white-space: pre-wrap;
     overflow-y: auto;
-    
+
 }
 
 .description-section {
@@ -107,7 +107,7 @@
     align-items: center;
     gap: 0.25em;
     margin-top: 1em;
-    
+
     mat-icon {
         color: grey;
     }

@@ -43,9 +43,7 @@ class AsyncClientWrapper:
 
 
 aiod_client_wrapper = AsyncClientWrapper(base_url=settings.AIOD_API.BASE_URL)
-aiod_library_client_wrapper = AsyncClientWrapper(
-    base_url=settings.AIOD_LIBRARY_API.BASE_URL
-)
+aiod_library_client_wrapper = AsyncClientWrapper(base_url=settings.AIOD_LIBRARY_API.BASE_URL)
 aiod_enhanced_search_client_wrapper = AsyncClientWrapper(
     base_url=settings.AIOD_ENHANCED_SEARCH_API.BASE_URL
 )
@@ -67,14 +65,11 @@ async def get_assets(asset_type: AssetType, pagination: Pagination) -> list:
     return res.json()
 
 
-async def get_my_assets(
-    asset_type: AssetType, token: str, pagination: Pagination
-) -> List[Json]:
+async def get_my_assets(asset_type: AssetType, token: str, pagination: Pagination) -> List[Json]:
     """Wrapper function to fetch my assets from AIoD's My Library."""
     my_asset_ids = await get_my_asset_ids(asset_type, token, pagination)
     my_assets = [
-        await get_asset(asset_type=asset_type, asset_id=asset_id)
-        for asset_id in my_asset_ids
+        await get_asset(asset_type=asset_type, asset_id=asset_id) for asset_id in my_asset_ids
     ]
     return my_assets
 
@@ -175,9 +170,7 @@ async def get_assets_count(asset_type: AssetType, filter_query: str = None) -> i
         return res.json()["total_hits"]
 
 
-async def search_assets(
-    asset_type: AssetType, query: str, pagination: Pagination
-) -> list:
+async def search_assets(asset_type: AssetType, query: str, pagination: Pagination) -> list:
     """Wrapper function to call the AIoD API and return a list of requested assets."""
     res = await aiod_client_wrapper.client.get(
         Path(f"search/{asset_type.value}").as_posix(),
@@ -199,9 +192,7 @@ async def search_assets(
     return res.json()["resources"]
 
 
-async def enhanced_search(
-    asset_type: AssetType, query: str, pagination: Pagination
-) -> list:
+async def enhanced_search(asset_type: AssetType, query: str, pagination: Pagination) -> list:
     topk = min(pagination.offset + pagination.limit, 100)
     initial_response = await aiod_enhanced_search_client_wrapper.client.post(
         "query",
@@ -224,17 +215,12 @@ async def enhanced_search(
     max_retries = 5 + round(topk * 0.15)
     delay = 2
     for _ in range(max_retries):
-        result_response: httpx.Response = (
-            await aiod_enhanced_search_client_wrapper.client.get(
-                result_location,
-                params={"return_entire_assets": True},
-                follow_redirects=True,
-            )
+        result_response: httpx.Response = await aiod_enhanced_search_client_wrapper.client.get(
+            result_location,
+            params={"return_entire_assets": True},
+            follow_redirects=True,
         )
-        if (
-            result_response.status_code == 200
-            and result_response.json()["status"] == "Completed"
-        ):
+        if result_response.status_code == 200 and result_response.json()["status"] == "Completed":
             results = result_response.json()["results"][-pagination.limit :]
             assets = [result["asset"] for result in results]
             return assets
@@ -246,9 +232,7 @@ async def enhanced_search(
                 status_code=result_response.status_code, detail="Error fetching results"
             )
 
-    raise HTTPException(
-        status_code=504, detail="Timed out waiting for result from external API"
-    )
+    raise HTTPException(status_code=504, detail="Timed out waiting for result from external API")
 
 
 async def get_dataset_name(id: AssetId) -> str:

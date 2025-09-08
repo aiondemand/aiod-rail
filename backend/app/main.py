@@ -35,9 +35,7 @@ from app.services.workflow_engines.reana import ReanaService
 app = FastAPI(title="AIoD - RAIL", version=__version__)
 
 app.include_router(aiod.router, prefix="/v1/assets", tags=["assets"])
-app.include_router(
-    experiment_templates.router, prefix="/v1", tags=["experiment-templates"]
-)
+app.include_router(experiment_templates.router, prefix="/v1", tags=["experiment-templates"])
 app.include_router(experiments.router, prefix="/v1", tags=["experiments"])
 app.include_router(experiment_runs.router, prefix="/v1", tags=["experiment-runs"])
 
@@ -77,9 +75,7 @@ async def app_init():
     workflow_engine: WorkflowEngineBase = await ReanaService.init()
 
     # Setup ExperimentScheduler and create queues of experiments and images to execute
-    experiment_scheduler = await ExperimentScheduler.init(
-        container_platform, workflow_engine
-    )
+    experiment_scheduler = await ExperimentScheduler.init(container_platform, workflow_engine)
 
     # Create separate tasks for scheduling experiments and images
     asyncio.create_task(experiment_scheduler.schedule_image_building())

@@ -76,9 +76,7 @@ class DockerService(ContainerPlatformBase):
                 "\tPushing docker image to a remote repository "
                 + f"for ExperimentTemplate id={template_id}"
             )
-            await asyncio.to_thread(
-                self.docker_client.images.push, repository=image_name
-            )
+            await asyncio.to_thread(self.docker_client.images.push, repository=image_name)
             await asyncio.to_thread(self.docker_client.images.remove, image=image_name)
         except Exception as e:
             self.logger.error(

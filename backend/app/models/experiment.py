@@ -121,16 +121,14 @@ class Experiment(Document):
             **experiment_req.dict(), created_by=original_experiment.created_by
         )
         same_template = (
-            original_experiment.experiment_template_id
-            == new_experiment.experiment_template_id
+            original_experiment.experiment_template_id == new_experiment.experiment_template_id
         )
         same_assets = original_experiment.has_same_assets(new_experiment)
 
         if not await new_experiment.is_valid(new_template) or (
             # we check whether we update a new experiment template to
             # an archived one
-            same_template is False
-            and new_template.allows_experiment_creation is False
+            same_template is False and new_template.allows_experiment_creation is False
         ):
             return None
 

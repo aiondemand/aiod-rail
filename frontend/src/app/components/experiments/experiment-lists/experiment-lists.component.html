@@ -3,12 +3,12 @@
         <mat-form-field>
             <mat-label>Full-text search</mat-label>
             <input matInput #searchField
-                (keyup.enter)="searchExperiments(searchField.value)" 
+                (keyup.enter)="searchExperiments(searchField.value)"
             />
         </mat-form-field>
         <button mat-icon-button #searchIconBtn
             (click)="searchExperiments(searchField.value)"
-            aria-label="Search Experiments"> 
+            aria-label="Search Experiments">
             <mat-icon>search</mat-icon>
         </button>
     </div>
