@@ -115,8 +115,10 @@ async def create_experiment(
             detail="Invalid Experiment template",
         )
 
-    experiment_obj = Experiment(**experiment.dict(), created_by=user["email"])
-    if not await experiment_obj.is_valid(template):
+    experiment_obj = await Experiment.create_experiment(
+        experiment, template, user["email"]
+    )
+    if experiment_obj is None:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Experiment request does not match its ExperimentTemplate",

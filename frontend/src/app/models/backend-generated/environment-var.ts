@@ -9,8 +9,9 @@
  */
 
 
-export interface EnvironmentVar { 
-    key: string;
-    value: string;
+export interface EnvironmentVar {
+  key: string;
+  value: string;
+  is_secret: boolean;
 }
 
