@@ -25,9 +25,9 @@ OuterRail organization
 
 SDK provides two types of interfaces:
 
-#. Instances - Classes that provide a way to work with individual instances of different
+#. :ref:`Instances <instances>` - are classes that provide a way to work with individual instances of different
    parts of RAIL, e. g. individual templates, experiments, runs, datasets
-#. Managers - Contain operations that function on multiple instances, such as querying, counting,...
+#. :ref:`Managers <managers>` - contain operations that function on multiple instances, such as querying, counting,...
    Special case that is also handled by managers is creation of new Instances.
 
 Links associated with the SDK
@@ -57,6 +57,7 @@ The OuterRail package can simply be installed with pip via command:
 
 Manually with wheel
 ^^^^^^^^^^^^^^^^^^^
+**To Be Determined**
 
 In code setup
 ----------------------------------
@@ -76,11 +77,13 @@ Alternatively you can import only needed parts with:
 
    from OuterRail import what_you_need
 
-Configuration
+Config and Logging in
 ^^^^^^^^^^^^^^^^^^
 
 For the SDK to work with underlying RAIL backend, you need to
-specify the URL of the RAIL as well as your API key.
+specify the URL of the RAIL service. Additionally, most of the functionality
+requires authentication and therefore you need to be logged in to use this functionality.
+
 The code for this would look something like:
 
 .. code-block:: python
@@ -89,8 +92,27 @@ The code for this would look something like:
    import os
    from OuterRail import Configuration
 
-   os.environ["AIOD_RAIL_API_KEY"] = "your_api_key"
-   config = Configuration(host="http://localhost:8000")
+   config = Configuration(host="https://rail.aiod.eu/api/docs") # 1. Specify URL
+   config.login(username="username", password="password") # 2. Log in
+   ... your logic here ...
+   config.logout() # 3. After your code, logout
+
+Important considerations
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. note::
+   It is at the moment only possible to register via google account or similar identity provider method.
+   As such, you will need to get access to username and password from personal request to support of the authentication
+   providers. Unfortunately, the proper channels for this are not yet in place.
+
+.. note::
+   Successfully created template will need to be approved by an administrator and afterward built as
+   a docker container by the backend service. Only after these operations are done can it be used to
+   make new experiments.
+
+.. note::
+   To create an experiment successfully, the template it is based on needs to be approved and built as a docker
+   container.
 
 
 Reference Table

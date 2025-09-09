@@ -170,6 +170,11 @@ class ExperimentTemplateManager:
         Raises:
             ApiException: In case of a failed HTTP request.
 
+        Note:
+            Successfully created template will need to be approved by an administrator and afterward built as
+            a docker container by the backend service. Only after these operations are done can it be used to
+            make new experiments.
+
         Examples:
             >>> script_path = "path/to/script.py"
             >>> requirements_path = "path/to/requirements.txt"

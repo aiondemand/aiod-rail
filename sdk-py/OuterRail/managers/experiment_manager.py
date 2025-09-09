@@ -147,6 +147,10 @@ class ExperimentManager:
         Raises:
             ApiException: In case of a failed HTTP request.
 
+        Note:
+            To create an experiment successfully, the template it is based on needs to be approved and built as a docker
+            container.
+
         Examples:
             >>> experiment_dict = {
             >>>     "name": "test123",
