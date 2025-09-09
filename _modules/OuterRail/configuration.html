@@ -84,6 +84,21 @@
 <a class="viewcode-back" href="../../configuration.html#OuterRail.configuration.Configuration">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Configuration</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The configuration class servers for the setting up the SDK to work with external services.</span>
+
+<span class="sd">    Any manager and most of the instances of the SDK need to be initialized with this class to work.</span>
+
+<span class="sd">    Basic workflow when dealing with configuration would look as follows:</span>
+
+<span class="sd">    1. Config has to be initialized with host url for the RAIL backend or optionally with other non-default constructor values.</span>
+
+<span class="sd">    2. User needs to login to enable functionality that requires auth privileges.</span>
+
+<span class="sd">    3. Instance of the config needs to be sent to managers that user wants to work with.</span>
+
+<span class="sd">    &gt;&gt;&gt; config = Configuration(host=&quot;https://rail.aiod.eu/api/docs&quot;) # 1</span>
+<span class="sd">    &gt;&gt;&gt; config.login(username=&quot;username&quot;, password=&quot;password&quot;) # 2</span>
+<span class="sd">    &gt;&gt;&gt; AssetManager(config) # 3</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="Configuration.__init__">
@@ -94,19 +109,65 @@
                  <span class="n">auth_realm</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;aiod&quot;</span><span class="p">,</span>
                  <span class="n">auth_client_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;outer-rail-sdk&quot;</span>
                  <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes a new Configuration.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            host: (str): The url address that the SDK should connect to.</span>
+<span class="sd">            auth_host: (str): Url of the keycloak server providing auth logic of the SDK.</span>
+<span class="sd">            auth_realm: (str): The realm of the SSO for login.</span>
+<span class="sd">            auth_client_id: (str): The client id of the SDK.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Configuration: Initialized Configuration.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; Configuration(host=&quot;https://rail.aiod.eu/api/docs&quot;)</span>
+<span class="sd">            Configuration</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="n">host</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">auth_client</span> <span class="o">=</span> <span class="n">KeycloakOpenID</span><span class="p">(</span><span class="n">server_url</span><span class="o">=</span><span class="n">auth_host</span><span class="p">,</span> <span class="n">client_id</span><span class="o">=</span><span class="n">auth_client_id</span><span class="p">,</span> <span class="n">realm_name</span><span class="o">=</span><span class="n">auth_realm</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="Configuration.login">
+<a class="viewcode-back" href="../../configuration.html#OuterRail.configuration.Configuration.login">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">login</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">auth_client</span><span class="o">.</span><span class="n">token</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="s2">&quot;openid profile email&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_update_from_response</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Logs in the user with the given username and password.</span>
 
+<span class="sd">        Args:</span>
+<span class="sd">            username: (str): Username of the user in the RAIL service.</span>
+<span class="sd">            password: (str): Password of the user in the RAIL service.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; config = Configuration(host=&quot;https://rail.aiod.eu/api/docs&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; config.login(username=&quot;username&quot;, password=&quot;password&quot;)</span>
+<span class="sd">            # User is logged in</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">auth_client</span><span class="o">.</span><span class="n">token</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="s2">&quot;openid profile email&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_from_response</span><span class="p">(</span><span class="n">response</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Configuration.logout">
+<a class="viewcode-back" href="../../configuration.html#OuterRail.configuration.Configuration.logout">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">logout</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Logs out the currently logged in user.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; config = Configuration(host=&quot;https://rail.aiod.eu/api/docs&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; config.login(username=&quot;username&quot;, password=&quot;password&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; config.logout()</span>
+<span class="sd">            # User is logged out</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">auth_client</span><span class="o">.</span><span class="n">logout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">refresh_token</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">expiration</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">access_token</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">refresh_token</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">refresh_token</span> <span class="o">=</span> <span class="kc">None</span></div>
+
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_token</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">expiration</span> <span class="o">&lt;</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">timestamp</span><span class="p">():</span>

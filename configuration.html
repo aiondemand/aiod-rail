@@ -47,6 +47,8 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Configuration</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#OuterRail.configuration.Configuration"><code class="docutils literal notranslate"><span class="pre">Configuration</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#OuterRail.configuration.Configuration.__init__"><code class="docutils literal notranslate"><span class="pre">Configuration.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#OuterRail.configuration.Configuration.login"><code class="docutils literal notranslate"><span class="pre">Configuration.login()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#OuterRail.configuration.Configuration.logout"><code class="docutils literal notranslate"><span class="pre">Configuration.logout()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -84,10 +86,78 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="OuterRail.configuration.Configuration">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Configuration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auth_host</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'http://ec2-63-179-32-80.eu-central-1.compute.amazonaws.com/aiod-auth/'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auth_realm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'aiod'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auth_client_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'outer-rail-sdk'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OuterRail/configuration.html#Configuration"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OuterRail.configuration.Configuration" title="Link to this definition"></a></dt>
-<dd><dl class="py method">
+<dd><p>The configuration class servers for the setting up the SDK to work with external services.</p>
+<p>Any manager and most of the instances of the SDK need to be initialized with this class to work.</p>
+<p>Basic workflow when dealing with configuration would look as follows:</p>
+<ol class="arabic simple">
+<li><p>Config has to be initialized with host url for the RAIL backend or optionally with other non-default constructor values.</p></li>
+<li><p>User needs to login to enable functionality that requires auth privileges.</p></li>
+<li><p>Instance of the config needs to be sent to managers that user wants to work with.</p></li>
+</ol>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">config</span> <span class="o">=</span> <span class="n">Configuration</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s2">&quot;https://rail.aiod.eu/api/docs&quot;</span><span class="p">)</span> <span class="c1"># 1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">config</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="s2">&quot;username&quot;</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s2">&quot;password&quot;</span><span class="p">)</span> <span class="c1"># 2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">AssetManager</span><span class="p">(</span><span class="n">config</span><span class="p">)</span> <span class="c1"># 3</span>
+</pre></div>
+</div>
+<dl class="py method">
 <dt class="sig sig-object py" id="OuterRail.configuration.Configuration.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auth_host</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'http://ec2-63-179-32-80.eu-central-1.compute.amazonaws.com/aiod-auth/'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auth_realm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'aiod'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auth_client_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'outer-rail-sdk'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="reference internal" href="_modules/OuterRail/configuration.html#Configuration.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OuterRail.configuration.Configuration.__init__" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Initializes a new Configuration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>host</strong> – (str): The url address that the SDK should connect to.</p></li>
+<li><p><strong>auth_host</strong> – (str): Url of the keycloak server providing auth logic of the SDK.</p></li>
+<li><p><strong>auth_realm</strong> – (str): The realm of the SSO for login.</p></li>
+<li><p><strong>auth_client_id</strong> – (str): The client id of the SDK.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Initialized Configuration.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#OuterRail.configuration.Configuration" title="OuterRail.configuration.Configuration">Configuration</a></p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Configuration</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s2">&quot;https://rail.aiod.eu/api/docs&quot;</span><span class="p">)</span>
+<span class="go">Configuration</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="OuterRail.configuration.Configuration.login">
+<span class="sig-name descname"><span class="pre">login</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">password</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OuterRail/configuration.html#Configuration.login"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OuterRail.configuration.Configuration.login" title="Link to this definition"></a></dt>
+<dd><p>Logs in the user with the given username and password.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>username</strong> – (str): Username of the user in the RAIL service.</p></li>
+<li><p><strong>password</strong> – (str): Password of the user in the RAIL service.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">config</span> <span class="o">=</span> <span class="n">Configuration</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s2">&quot;https://rail.aiod.eu/api/docs&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">config</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="s2">&quot;username&quot;</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s2">&quot;password&quot;</span><span class="p">)</span>
+<span class="go"># User is logged in</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="OuterRail.configuration.Configuration.logout">
+<span class="sig-name descname"><span class="pre">logout</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OuterRail/configuration.html#Configuration.logout"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OuterRail.configuration.Configuration.logout" title="Link to this definition"></a></dt>
+<dd><p>Logs out the currently logged in user.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">config</span> <span class="o">=</span> <span class="n">Configuration</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s2">&quot;https://rail.aiod.eu/api/docs&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">config</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="s2">&quot;username&quot;</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s2">&quot;password&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">config</span><span class="o">.</span><span class="n">logout</span><span class="p">()</span>
+<span class="go"># User is logged out</span>
+</pre></div>
+</div>
+</dd></dl>
 
 </dd></dl>
 

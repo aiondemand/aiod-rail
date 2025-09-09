@@ -116,9 +116,9 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-OuterRail.managers.asset_manager">
-<span id="managers"></span><h1>Managers<a class="headerlink" href="#module-OuterRail.managers.asset_manager" title="Link to this heading"></a></h1>
-<dl class="py class">
+  <section id="managers">
+<span id="id1"></span><h1>Managers<a class="headerlink" href="#managers" title="Link to this heading"></a></h1>
+<dl class="py class" id="module-OuterRail.managers.asset_manager">
 <dt class="sig sig-object py" id="OuterRail.managers.asset_manager.AssetManager">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">AssetManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="configuration.html#OuterRail.configuration.Configuration" title="OuterRail.configuration.Configuration"><span class="pre">Configuration</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OuterRail/managers/asset_manager.html#AssetManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OuterRail.managers.asset_manager.AssetManager" title="Link to this definition"></a></dt>
 <dd><p>AIoD - RAIL
@@ -719,6 +719,12 @@ AssetManager class</p>
 <dd class="field-even"><p><strong>ApiException</strong> – In case of a failed HTTP request.</p>
 </dd>
 </dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Successfully created template will need to be approved by an administrator and afterward built as
+a docker container by the backend service. Only after these operations are done can it be used to
+make new experiments.</p>
+</div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">script_path</span> <span class="o">=</span> <span class="s2">&quot;path/to/script.py&quot;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">requirements_path</span> <span class="o">=</span> <span class="s2">&quot;path/to/requirements.txt&quot;</span>
@@ -885,6 +891,11 @@ ExperimentManager class</p>
 <dd class="field-odd"><p><strong>ApiException</strong> – In case of a failed HTTP request.</p>
 </dd>
 </dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>To create an experiment successfully, the template it is based on needs to be approved and built as a docker
+container.</p>
+</div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">experiment_dict</span> <span class="o">=</span> <span class="p">{</span>
 <span class="gp">&gt;&gt;&gt; </span>    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;test123&quot;</span><span class="p">,</span>

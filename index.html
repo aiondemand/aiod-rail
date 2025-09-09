@@ -91,10 +91,11 @@
 <li><p><a class="reference internal" href="#in-code-setup" id="id8">In code setup</a></p>
 <ul>
 <li><p><a class="reference internal" href="#importing-the-package" id="id9">Importing the package</a></p></li>
-<li><p><a class="reference internal" href="#configuration" id="id10">Configuration</a></p></li>
+<li><p><a class="reference internal" href="#config-and-logging-in" id="id10">Config and Logging in</a></p></li>
+<li><p><a class="reference internal" href="#important-considerations" id="id11">Important considerations</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#reference-table" id="id11">Reference Table</a></p></li>
+<li><p><a class="reference internal" href="#reference-table" id="id12">Reference Table</a></p></li>
 </ul>
 </nav>
 <section id="what-is-rail">
@@ -109,9 +110,9 @@ of the <a class="reference external" href="https://aiod.eu">AI on Demand platfor
 <h2><a class="toc-backref" href="#id2" role="doc-backlink">OuterRail organization</a><a class="headerlink" href="#outerrail-organization" title="Link to this heading"></a></h2>
 <p>SDK provides two types of interfaces:</p>
 <ol class="arabic simple">
-<li><p>Instances - Classes that provide a way to work with individual instances of different
+<li><p><a class="reference internal" href="instances.html#instances"><span class="std std-ref">Instances</span></a> - are classes that provide a way to work with individual instances of different
 parts of RAIL, e. g. individual templates, experiments, runs, datasets</p></li>
-<li><p>Managers - Contain operations that function on multiple instances, such as querying, counting,…
+<li><p><a class="reference internal" href="managers.html#managers"><span class="std std-ref">Managers</span></a> - contain operations that function on multiple instances, such as querying, counting,…
 Special case that is also handled by managers is creation of new Instances.</p></li>
 </ol>
 </section>
@@ -139,6 +140,7 @@ Special case that is also handled by managers is creation of new Instances.</p><
 </section>
 <section id="manually-with-wheel">
 <h3><a class="toc-backref" href="#id7" role="doc-backlink">Manually with wheel</a><a class="headerlink" href="#manually-with-wheel" title="Link to this heading"></a></h3>
+<p><strong>To Be Determined</strong></p>
 </section>
 </section>
 <section id="in-code-setup">
@@ -154,22 +156,45 @@ Special case that is also handled by managers is creation of new Instances.</p><
 </pre></div>
 </div>
 </section>
-<section id="configuration">
-<h3><a class="toc-backref" href="#id10" role="doc-backlink">Configuration</a><a class="headerlink" href="#configuration" title="Link to this heading"></a></h3>
+<section id="config-and-logging-in">
+<h3><a class="toc-backref" href="#id10" role="doc-backlink">Config and Logging in</a><a class="headerlink" href="#config-and-logging-in" title="Link to this heading"></a></h3>
 <p>For the SDK to work with underlying RAIL backend, you need to
-specify the URL of the RAIL as well as your API key.
-The code for this would look something like:</p>
+specify the URL of the RAIL service. Additionally, most of the functionality
+requires authentication and therefore you need to be logged in to use this functionality.</p>
+<p>The code for this would look something like:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="linenos">2</span><span class="kn">from</span><span class="w"> </span><span class="nn">OuterRail</span><span class="w"> </span><span class="kn">import</span> <span class="n">Configuration</span>
 <span class="linenos">3</span>
-<span class="linenos">4</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;AIOD_RAIL_API_KEY&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;your_api_key&quot;</span>
-<span class="linenos">5</span><span class="n">config</span> <span class="o">=</span> <span class="n">Configuration</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s2">&quot;http://localhost:8000&quot;</span><span class="p">)</span>
+<span class="linenos">4</span><span class="n">config</span> <span class="o">=</span> <span class="n">Configuration</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s2">&quot;https://rail.aiod.eu/api/docs&quot;</span><span class="p">)</span> <span class="c1"># 1. Specify URL</span>
+<span class="linenos">5</span><span class="n">config</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="s2">&quot;username&quot;</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s2">&quot;password&quot;</span><span class="p">)</span> <span class="c1"># 2. Log in</span>
+<span class="linenos">6</span><span class="o">...</span> <span class="n">your</span> <span class="n">logic</span> <span class="n">here</span> <span class="o">...</span>
+<span class="linenos">7</span><span class="n">config</span><span class="o">.</span><span class="n">logout</span><span class="p">()</span> <span class="c1"># 3. After your code, logout</span>
 </pre></div>
+</div>
+</section>
+<section id="important-considerations">
+<h3><a class="toc-backref" href="#id11" role="doc-backlink">Important considerations</a><a class="headerlink" href="#important-considerations" title="Link to this heading"></a></h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>It is at the moment only possible to register via google account or similar identity provider method.
+As such, you will need to get access to username and password from personal request to support of the authentication
+providers. Unfortunately, the proper channels for this are not yet in place.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Successfully created template will need to be approved by an administrator and afterward built as
+a docker container by the backend service. Only after these operations are done can it be used to
+make new experiments.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>To create an experiment successfully, the template it is based on needs to be approved and built as a docker
+container.</p>
 </div>
 </section>
 </section>
 <section id="reference-table">
-<h2><a class="toc-backref" href="#id11" role="doc-backlink">Reference Table</a><a class="headerlink" href="#reference-table" title="Link to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id12" role="doc-backlink">Reference Table</a><a class="headerlink" href="#reference-table" title="Link to this heading"></a></h2>
 <div class="toctree-wrapper compound">
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Intro</a></li>
