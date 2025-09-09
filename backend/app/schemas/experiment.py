@@ -3,6 +3,7 @@ from datetime import datetime
 from beanie import PydanticObjectId
 from pydantic import BaseModel
 
+from app.schemas.asset_id import AssetId
 from app.schemas.env_vars import EnvironmentVar, EnvironmentVarCreate
 
 
@@ -12,9 +13,10 @@ class ExperimentBase(BaseModel):
     is_public: bool
 
     experiment_template_id: PydanticObjectId
-    dataset_ids: list[str]
-    model_ids: list[str]
-    publication_ids: list[str] = []
+
+    dataset_ids: list[AssetId]
+    model_ids: list[AssetId]
+    publication_ids: list[AssetId] = []
 
 
 class ExperimentCreate(ExperimentBase):

@@ -1,16 +1,21 @@
 <div class="header">
     <div class="search-div">
-        <mat-form-field>
-            <mat-label>Full-text search</mat-label>
-            <input matInput #searchField
-                (keyup.enter)="searchDatasets(searchField.value)" 
-            />
-        </mat-form-field>
-        <button mat-icon-button #searchIconBtn
-            (click)="searchDatasets(searchField.value)"
-            aria-label="Search datasets"> 
-            <mat-icon>search</mat-icon>
-        </button>
+        <div class="search-field-container">
+            <mat-form-field>
+                <mat-label>Full-text search</mat-label>
+                <input matInput #searchField
+                    (keyup.enter)="searchDatasets(searchField.value)"
+                />
+            </mat-form-field>
+            <button mat-icon-button #searchIconBtn
+                (click)="searchDatasets(searchField.value)"
+                aria-label="Search datasets">
+                <mat-icon>search</mat-icon>
+            </button>
+        </div>
+        <mat-checkbox [(ngModel)]="isEnhanced" class="enhanced-checkbox">
+            Enhanced
+        </mat-checkbox>
     </div>
 
     <mat-paginator #paginator

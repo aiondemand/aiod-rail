@@ -294,14 +294,14 @@ export class EditExperimentComponent implements OnInit {
 
   datasetAutocompleteFilter(query: string | Dataset | null): Observable<Dataset[]> {
     if (typeof query != "string") {
-      return this.datasets$ ? this.datasets$ : of([]);;
+      return this.datasets$ ? this.datasets$ : of([]);
     }
     return this.backend.getDatasets(query);
   }
 
   myDatasetAutocompleteFilter(query: string | Dataset | null): Observable<Dataset[]> {
     if (typeof query != "string") {
-      return this.myDatasets$ ? this.myDatasets$ : of([]);;
+      return this.myDatasets$ ? this.myDatasets$ : of([]);
     }
     return this.backend.getMyDatasets(query);
   }
