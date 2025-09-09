@@ -1,13 +1,7 @@
 ```python
-import json
-import os
+from OuterRail import Configuration
 
-from aiod_rail_sdk import Configuration
-from aiod_rail_sdk.clients import RailClient
-
-RAIL_API_URI = "https://rail.aiod.eu/api"
-os.environ["AIOD_RAIL_API_KEY"] = "YOUR_RAIL_API_KEY"
-
-config = Configuration(host=RAIL_API_URI)
-rail_client = RailClient(config)
+config = Configuration(host="https://rail.aiod.eu/api/docs") # 1. Specify URL
+config.login(username="username", password="password") # 2. Log in
+config.logout() # 3. Don't forget to logout at the end as well
 ```

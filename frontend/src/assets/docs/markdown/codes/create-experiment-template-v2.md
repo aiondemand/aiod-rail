@@ -1,16 +1,11 @@
 ```python
-from aiod_rail_sdk import Configuration
-from aiod_rail_sdk.clients import RailClient
+from OuterRail import Configuration, ExperimentTemplateManager
 
+# Login
+config = Configuration(host="http://localhost:8000")
+config.login(username="username", password="password")
 
-RAIL_API_URI = "https://rail.aiod.eu/api"
-os.environ["AIOD_RAIL_API_KEY"] = "YOUR_RAIL_API_KEY"
-
-config = Configuration(host=RAIL_API_URI)
-rail_client = RailClient(config)
-
-# Define all properties, script, base image and
-# requirements.txt in Dictionary
+# Define all properties, script, base image and requirements.txt in your dictionary
 template_config = {
     "name": "Cobra Experiment Template",
     "description": "Simple demo experiment template",
@@ -38,7 +33,6 @@ template_config = {
 }
 
 # Create template
-rail_client.experiments_templates.create_experiment_template(
-    template=template_config
-)
+template_manager = ExperimentTemplateManager(config)
+template_manager.create(template=template_config)
 ```
