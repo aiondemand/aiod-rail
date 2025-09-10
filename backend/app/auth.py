@@ -9,7 +9,7 @@ from app.config import settings
 from app.models.rail_user import RailUser
 
 oidc = OpenIdConnect(
-    openIdConnectUrl=settings.AIOD_KEYCLOAK.OIDC_URL,
+    openIdConnectUrl=str(settings.AIOD_KEYCLOAK.OIDC_URL),
     auto_error=False,
 )
 

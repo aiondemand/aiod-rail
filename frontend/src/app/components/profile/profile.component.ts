@@ -10,7 +10,7 @@ import { SnackBarService } from 'src/app/services/snack-bar.service';
   styleUrls: ['./profile.component.scss']
 })
 export class ProfileComponent {
-  profile: UserRailProfile = { email: '', api_key: '' };
+  profile: UserRailProfile = { email: '' };
   showKey: boolean = false;
 
   constructor(
@@ -22,7 +22,7 @@ export class ProfileComponent {
     this.profile = await firstValueFrom(
       this.backend.getUserProfile().pipe(
         catchError(_ => {
-          this.snackBar.showError("Failed to load user profile");
+        this.snackBar.showError("Failed to load user profile");
           return EMPTY;
         })
       )
@@ -41,7 +41,7 @@ export class ProfileComponent {
   }
 
   copyApiKeyToClipboard() {
-    navigator.clipboard.writeText(this.profile.api_key).then(() => {
+    navigator.clipboard.writeText(this.profile.api_key || '').then(() => {
       this.snackBar.show("API key copied to clipboard");
     }, () => {
       this.snackBar.showError("Failed to copy API key to clipboard");

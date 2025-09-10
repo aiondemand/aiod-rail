@@ -19,6 +19,7 @@ from app.config import (
     RUN_TEMP_OUTPUT_FOLDER,
     settings,
 )
+from app.schemas.asset_id import AssetId
 from app.schemas.env_vars import EnvironmentVar, EnvironmentVarDef
 from app.schemas.experiment_template import (
     AssetSchema,
@@ -109,6 +110,17 @@ class ExperimentTemplate(Document):
     class Settings:
         name = "experimentTemplates"
 
+    @classmethod
+    async def create_template(
+        self, template_req: ExperimentTemplateCreate, created_by: str
+    ) -> ExperimentTemplate:
+        experiment_template = ExperimentTemplate(
+            **template_req.dict(), created_by=created_by
+        )
+        if experiment_template.is_valid() is False:
+            return None
+        return experiment_template
+
     def is_valid(self) -> bool:
         reserved_vars = list(ReservedEnvVars)
         return all(
@@ -118,7 +130,9 @@ class ExperimentTemplate(Document):
             ]
         )
 
-    def initialize_files(self, base_image, pip_requirements, script):
+    def initialize_files(
+        self, base_image: str, pip_requirements: str, script: str
+    ) -> None:
         base_path = self.experiment_template_path
         base_path.mkdir(exist_ok=True, parents=True)
 
@@ -194,7 +208,7 @@ class ExperimentTemplate(Document):
             }
         )
 
-    async def validate_models(self, model_ids: list[int]) -> bool:
+    async def validate_models(self, model_ids: list[AssetId]) -> bool:
         model_names = [await get_model_name(x) for x in model_ids]
 
         checks = [
@@ -204,7 +218,7 @@ class ExperimentTemplate(Document):
 
         return all(checks)
 
-    async def validate_datasets(self, dataset_ids: list[int]) -> bool:
+    async def validate_datasets(self, dataset_ids: list[AssetId]) -> bool:
         dataset_names = [await get_dataset_name(x) for x in dataset_ids]
 
         checks = [
@@ -245,10 +259,10 @@ class ExperimentTemplate(Document):
         editable_environment: bool,
         editable_visibility: bool,
     ) -> ExperimentTemplate | None:
-        new_template = ExperimentTemplate(
-            **experiment_template_req.dict(), created_by=original_template.created_by
+        new_template = await ExperimentTemplate.create_template(
+            experiment_template_req, original_template.created_by
         )
-        if new_template.is_valid() is False:
+        if new_template is None:
             return None
 
         same_environment = original_template.is_same_environment(

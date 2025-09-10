@@ -33,10 +33,12 @@ export class EditExperimentTemplateComponent {
   newRequiredEnvForm = this.fb.group({
     name: [''],
     description: [''],
+    isSecret: [false]
   });
   newOptionalEnvForm = this.fb.group({
     name: [''],
     description: [''],
+    isSecret: [false]
   });
 
   scriptCode: string = "";
@@ -132,9 +134,11 @@ export class EditExperimentTemplateComponent {
 
       this.newRequiredEnvForm.get("name")?.disable();
       this.newRequiredEnvForm.get("description")?.disable();
+      this.newRequiredEnvForm.get("isSecret")?.disable();
 
       this.newOptionalEnvForm.get("name")?.disable();
       this.newOptionalEnvForm.get("description")?.disable();
+      this.newOptionalEnvForm.get("isSecret")?.disable();
     }
     if (!this.editableVisibility) {
       this.experimentTemplateForm.get("visibility")?.disable();
@@ -226,9 +230,12 @@ export class EditExperimentTemplateComponent {
       return;
     }
 
+    console.log(`VALUE ${form.value.isSecret}`)
+
     dataTable.push({
       name: newEnvName,
-      description: form.value.description ?? ""
+      description: form.value.description ?? "",
+      is_secret: form.value.isSecret ?? false
     });
 
     form.reset();

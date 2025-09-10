@@ -23,18 +23,23 @@ export class BackendApiService {
 
   ////////////////////////////// DATASETS //////////////////////////////
 
-  getDatasets(query: string = "", pageQueries?: PageQueries): Observable<Dataset[]> {
+  getDatasets(query: string = "", pageQueries?: PageQueries, enhanced: boolean = false): Observable<Dataset[]> {
     // TODO: handle the "is_in_my_saved" property on backend
     let backend_route = `${environment.BACKEND_API_URL}/assets/datasets`;
     if (query?.length > 0) {
       backend_route += `/search/${query}`
     }
-    backend_route += `?${this._buildPageQueries(pageQueries)}`;
+    backend_route += `?${this._buildPageQueries(pageQueries)}&enhanced=${enhanced}`;
 
     return this.http.get<Dataset[]>(backend_route);
   }
 
-  getDatasetsCount(query: string = ""): Observable<number> {
+  getDatasetsCount(query: string = "", enhanced: boolean = false): Observable<number> {
+    // TODO: Enhanced search doesn't return counts
+    if (enhanced) {
+      return of(100);
+    }
+
     let backend_route = `${environment.BACKEND_API_URL}/assets/counts/datasets`;
     if (query?.length > 0) {
       backend_route += `/search/${query}`

@@ -1,3 +1,4 @@
+import asyncio
 from enum import Enum
 from pathlib import Path
 from typing import List
@@ -9,6 +10,7 @@ from pydantic import Json
 from app.auth import get_current_user
 from app.config import settings
 from app.helpers import Pagination
+from app.schemas.asset_id import AssetId
 from app.schemas.dataset import Dataset
 from app.schemas.ml_model import MLModel
 
@@ -44,24 +46,15 @@ aiod_client_wrapper = AsyncClientWrapper(base_url=settings.AIOD_API.BASE_URL)
 aiod_library_client_wrapper = AsyncClientWrapper(
     base_url=settings.AIOD_LIBRARY_API.BASE_URL
 )
-
-
-def get_assets_version(asset_type: AssetType) -> str:
-    match asset_type:
-        case AssetType.DATASETS:
-            return settings.AIOD_API.DATASETS_VERSION
-        case AssetType.ML_MODELS:
-            return settings.AIOD_API.ML_MODELS_VERSION
-        case AssetType.PUBLICATIONS:
-            return settings.AIOD_API.PUBLICATIONS_VERSION
-        case AssetType.PLATFORMS:
-            return settings.AIOD_API.PLATFORMS_VERSION
+aiod_enhanced_search_client_wrapper = AsyncClientWrapper(
+    base_url=settings.AIOD_ENHANCED_SEARCH_API.BASE_URL
+)
 
 
 async def get_assets(asset_type: AssetType, pagination: Pagination) -> list:
     """Wrapper function to call the AIoD API and return a list of requested assets."""
     res = await aiod_client_wrapper.client.get(
-        Path(asset_type.value, get_assets_version(asset_type)).as_posix(),
+        Path(asset_type.value).as_posix(),
         params={"offset": pagination.offset, "limit": pagination.limit},
     )
 
@@ -88,7 +81,7 @@ async def get_my_assets(
 
 async def get_my_asset_ids(
     asset_type: AssetType, token: str, pagination: Pagination
-) -> List[int]:
+) -> List[AssetId]:
     """Wrapper function to call the AIoD's My Library and return a list of identifiers of my requested assets.
 
     Pagination is currently not supported by My Library, so the behavior is just mimicked.
@@ -133,12 +126,10 @@ async def get_my_asset_ids(
     return requested_assets[pagination.offset : pagination.offset + pagination.limit]
 
 
-async def get_asset(asset_type: AssetType, asset_id: str) -> Json:
+async def get_asset(asset_type: AssetType, asset_id: AssetId) -> Json:
     """Wrapper function to call the AIoD API and return requested asset data."""
     res = await aiod_client_wrapper.client.get(
-        Path(
-            asset_type.value, get_assets_version(asset_type), asset_id
-        ).as_posix(),
+        Path(asset_type.value, asset_id).as_posix(),
     )
 
     if res.status_code != 200:
@@ -158,14 +149,12 @@ async def get_assets_count(asset_type: AssetType, filter_query: str = None) -> i
     """
     if filter_query is None:
         res = await aiod_client_wrapper.client.get(
-            Path(
-                f"counts/{asset_type.value}", get_assets_version(asset_type)
-            ).as_posix(),
+            Path(f"counts/{asset_type.value}").as_posix(),
         )
     else:
         res = await aiod_client_wrapper.client.get(
             Path(
-                f"search/{asset_type.value}", get_assets_version(asset_type)
+                f"search/{asset_type.value}",
             ).as_posix(),
             params={
                 "search_query": filter_query,
@@ -191,7 +180,7 @@ async def search_assets(
 ) -> list:
     """Wrapper function to call the AIoD API and return a list of requested assets."""
     res = await aiod_client_wrapper.client.get(
-        Path(f"search/{asset_type.value}", get_assets_version(asset_type)).as_posix(),
+        Path(f"search/{asset_type.value}").as_posix(),
         params={
             "search_query": query,
             "search_fields": "name",
@@ -210,13 +199,65 @@ async def search_assets(
     return res.json()["resources"]
 
 
-async def get_dataset_name(id: int) -> str:
+async def enhanced_search(
+    asset_type: AssetType, query: str, pagination: Pagination
+) -> list:
+    topk = min(pagination.offset + pagination.limit, 100)
+    initial_response = await aiod_enhanced_search_client_wrapper.client.post(
+        "query",
+        params={"search_query": query, "asset_type": asset_type.value, "topk": topk},
+    )
+
+    if initial_response.status_code != 202:
+        raise HTTPException(
+            status_code=initial_response.status_code, detail="Failed to initiate query"
+        )
+
+    # Extract the location header to poll for results
+    result_location = initial_response.headers.get("location")
+    if not result_location:
+        raise HTTPException(
+            status_code=500, detail="Missing Location header in external API response"
+        )
+
+    # Poll the result endpoint until we get the result
+    max_retries = 5 + round(topk * 0.15)
+    delay = 2
+    for _ in range(max_retries):
+        result_response: httpx.Response = (
+            await aiod_enhanced_search_client_wrapper.client.get(
+                result_location,
+                params={"return_entire_assets": True},
+                follow_redirects=True,
+            )
+        )
+        if (
+            result_response.status_code == 200
+            and result_response.json()["status"] == "Completed"
+        ):
+            results = result_response.json()["results"][-pagination.limit :]
+            assets = [result["asset"] for result in results]
+            return assets
+
+        elif result_response.status_code == 200:
+            await asyncio.sleep(delay)
+        else:
+            raise HTTPException(
+                status_code=result_response.status_code, detail="Error fetching results"
+            )
+
+    raise HTTPException(
+        status_code=504, detail="Timed out waiting for result from external API"
+    )
+
+
+async def get_dataset_name(id: AssetId) -> str:
     """Helper function to fetch requested Dataset and return its name"""
     dataset = Dataset(**await get_asset(asset_type=AssetType.DATASETS, asset_id=id))
     return dataset.name
 
 
-async def get_model_name(id: int) -> str:
+async def get_model_name(id: AssetId) -> str:
     """Helper function to fetch requested MLModel and return its name"""
     ml_model = MLModel(**await get_asset(asset_type=AssetType.ML_MODELS, asset_id=id))
     return ml_model.name

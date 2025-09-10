@@ -1,9 +1,7 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { FormControl } from '@angular/forms';
-import { MatIconButton } from '@angular/material/button';
+import { Component, OnInit } from '@angular/core';
 import { PageEvent } from '@angular/material/paginator';
-import { ActivatedRoute, Data, Router } from '@angular/router';
-import { Observable, debounceTime, firstValueFrom, of, startWith, switchMap } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Observable, firstValueFrom } from 'rxjs';
 import { Dataset } from 'src/app/models/dataset';
 import { BackendApiService } from 'src/app/services/backend-api.service';
 import { environment } from 'src/environments/environment';
@@ -22,6 +20,7 @@ export class DatasetListComponent implements OnInit {
     length: 0
   }
   searchQuery: string = "";
+  isEnhanced: boolean = false;
 
   constructor(
     private backend: BackendApiService,
@@ -72,7 +71,7 @@ export class DatasetListComponent implements OnInit {
     if (this.searchQuery.length > 0) {
       queryParams.searchQuery = this.searchQuery
     }
-    
+
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: queryParams,
@@ -84,10 +83,11 @@ export class DatasetListComponent implements OnInit {
       {
         offset: this.pagination.pageIndex * this.pagination.pageSize,
         limit: this.pagination.pageSize
-      }
+      },
+      this.isEnhanced
     );
 
-    firstValueFrom(this.backend.getDatasetsCount(this.searchQuery))
+    firstValueFrom(this.backend.getDatasetsCount(this.searchQuery, this.isEnhanced))
       .then(count => this.pagination.length = count)
       .catch(err => console.error(err));
   }

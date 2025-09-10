@@ -14,6 +14,10 @@ from app.services.aiod import (
     search_assets,
 )
 
+example_id = "data_ceREqVzRDnJAtw4VMGENCsmI"
+example_id2 = "data_ceREqVzRDnJAtw4VMGENCsFF"
+example_id3 = "data_ceREqVzRDnJAtw4VMGENCs56"
+
 
 async def mock_current_user(token):
     return {
@@ -26,10 +30,10 @@ async def mock_current_user(token):
 @pytest.mark.parametrize(
     "asset_type, expected_url",
     [
-        (AssetType.DATASETS, "datasets/v0"),
-        (AssetType.ML_MODELS, "ml_models/v1"),
-        (AssetType.PUBLICATIONS, "publications/v2"),
-        (AssetType.PLATFORMS, "platforms/v3"),
+        (AssetType.DATASETS, "datasets"),
+        (AssetType.ML_MODELS, "ml_models"),
+        (AssetType.PUBLICATIONS, "publications"),
+        (AssetType.PLATFORMS, "platforms"),
     ],
 )
 @pytest.mark.asyncio
@@ -66,7 +70,8 @@ async def test_get_assets_raises_exception_on_non_200_status_code(
 async def test_get_my_assets_happy_path(mocker, asset_type):
     pagination = Pagination(offset=7, limit=13)
     mock_get_my_asset_ids = mocker.patch(
-        "app.services.aiod.get_my_asset_ids", return_value=[1, 2, 3]
+        "app.services.aiod.get_my_asset_ids",
+        return_value=[example_id, example_id2, example_id3],
     )
     mock_get_asset = mocker.patch(
         "app.services.aiod.get_asset", return_value=[{}, {}, {}]
@@ -76,9 +81,9 @@ async def test_get_my_assets_happy_path(mocker, asset_type):
 
     mock_get_my_asset_ids.assert_called_with(asset_type, "valid-user-token", pagination)
     assert mock_get_asset.mock_calls == [
-        call(asset_type=asset_type, asset_id=1),
-        call(asset_type=asset_type, asset_id=2),
-        call(asset_type=asset_type, asset_id=3),
+        call(asset_type=asset_type, asset_id=example_id),
+        call(asset_type=asset_type, asset_id=example_id2),
+        call(asset_type=asset_type, asset_id=example_id3),
     ]
 
 
@@ -89,19 +94,19 @@ async def test_get_my_assets_happy_path(mocker, asset_type):
             AssetType.DATASETS,
             Pagination(offset=0, limit=2),
             "api/libraries/{user_id}/assets",
-            [1, 2],
+            [example_id, example_id2],
         ),
         (
             AssetType.DATASETS,
             Pagination(offset=1, limit=1),
             "api/libraries/{user_id}/assets",
-            [2],
+            [example_id2],
         ),
         (
             AssetType.ML_MODELS,
             Pagination(offset=0, limit=10),
             "api/libraries/{user_id}/assets",
-            [14],
+            [example_id3],
         ),
         (
             AssetType.ML_MODELS,
@@ -120,7 +125,7 @@ async def test_get_my_asset_ids_happy_path(
     mock_response.json.return_value = {
         "data": [
             {
-                "identifier": "14",
+                "identifier": example_id3,
                 "name": "kinit/slovakbert-sentiment-twitter",
                 "category": "AIModel",
                 "url_metadata": "https://huggingface.co/kinit/slovakbert-sentiment-twitter",
@@ -128,7 +133,7 @@ async def test_get_my_asset_ids_happy_path(
                 "added_at": 30,
             },
             {
-                "identifier": "1",
+                "identifier": example_id,
                 "name": "acronym_identification",
                 "category": "Dataset",
                 "url_metadata": "https://huggingface.co/datasets/acronym_identification",
@@ -136,7 +141,7 @@ async def test_get_my_asset_ids_happy_path(
                 "added_at": 15,
             },
             {
-                "identifier": "2",
+                "identifier": example_id2,
                 "name": "ade_corpus_v2",
                 "category": "Dataset",
                 "url_metadata": "https://huggingface.co/datasets/ade_corpus_v2",
@@ -232,9 +237,9 @@ async def test_get_my_asset_ids_raises_exception_on_non_200_status_code(
 @pytest.mark.parametrize(
     "asset_type, expected_url",
     [
-        (AssetType.DATASETS, "datasets/v0"),
-        (AssetType.ML_MODELS, "ml_models/v1"),
-        (AssetType.PUBLICATIONS, "publications/v2"),
+        (AssetType.DATASETS, "datasets"),
+        (AssetType.ML_MODELS, "ml_models"),
+        (AssetType.PUBLICATIONS, "publications"),
     ],
 )
 @pytest.mark.asyncio
@@ -243,9 +248,9 @@ async def test_get_asset_happy_path(asset_type, expected_url, async_client_mock)
     mock_response.status_code = 200
     async_client_mock.get.return_value = mock_response
 
-    _ = await get_asset(asset_type, asset_id=42)
+    _ = await get_asset(asset_type, asset_id=example_id)
 
-    async_client_mock.get.assert_called_once_with(f"{expected_url}/42")
+    async_client_mock.get.assert_called_once_with(f"{expected_url}/{example_id}")
 
 
 @pytest.mark.parametrize("asset_type", list(AssetType))
@@ -258,16 +263,16 @@ async def test_get_asset_raises_exception_on_non_200_status_code(
     async_client_mock.get.return_value = mock_response
 
     with pytest.raises(HTTPException):
-        await get_asset(asset_type, asset_id=42)
+        await get_asset(asset_type, asset_id=example_id)
 
 
 @pytest.mark.parametrize(
     "asset_type, expected_url",
     [
-        (AssetType.DATASETS, "counts/datasets/v0"),
-        (AssetType.ML_MODELS, "counts/ml_models/v1"),
-        (AssetType.PUBLICATIONS, "counts/publications/v2"),
-        (AssetType.PLATFORMS, "counts/platforms/v3"),
+        (AssetType.DATASETS, "counts/datasets"),
+        (AssetType.ML_MODELS, "counts/ml_models"),
+        (AssetType.PUBLICATIONS, "counts/publications"),
+        (AssetType.PLATFORMS, "counts/platforms"),
     ],
 )
 @pytest.mark.asyncio
@@ -286,9 +291,9 @@ async def test_get_assets_count_happy_path(asset_type, expected_url, async_clien
 @pytest.mark.parametrize(
     "asset_type, expected_url",
     [
-        (AssetType.DATASETS, "search/datasets/v0"),
-        (AssetType.ML_MODELS, "search/ml_models/v1"),
-        (AssetType.PUBLICATIONS, "search/publications/v2"),
+        (AssetType.DATASETS, "search/datasets"),
+        (AssetType.ML_MODELS, "search/ml_models"),
+        (AssetType.PUBLICATIONS, "search/publications"),
     ],
 )
 @pytest.mark.asyncio
@@ -337,9 +342,9 @@ async def test_get_assets_count_raises_exception_on_non_200_status_code(
 @pytest.mark.parametrize(
     "asset_type, expected_url",
     [
-        (AssetType.DATASETS, "search/datasets/v0"),
-        (AssetType.ML_MODELS, "search/ml_models/v1"),
-        (AssetType.PUBLICATIONS, "search/publications/v2"),
+        (AssetType.DATASETS, "search/datasets"),
+        (AssetType.ML_MODELS, "search/ml_models"),
+        (AssetType.PUBLICATIONS, "search/publications"),
     ],
 )
 @pytest.mark.asyncio

@@ -19,13 +19,13 @@ TEMP_DIRNAME = "temp"
 
 class AIoDApiConfig(BaseModel):
     BASE_URL: AnyHttpUrl
-    DATASETS_VERSION: str = "v1"
-    ML_MODELS_VERSION: str = "v1"
-    PUBLICATIONS_VERSION: str = "v1"
-    PLATFORMS_VERSION: str = "v1"
 
 
 class AIoDLibraryApiConfig(BaseModel):
+    BASE_URL: AnyHttpUrl
+
+
+class AIoDEnhancedSearchApiConfig(BaseModel):
     BASE_URL: AnyHttpUrl
 
 
@@ -43,6 +43,7 @@ class Settings(BaseSettings):
 
     AIOD_API: AIoDApiConfig
     AIOD_LIBRARY_API: AIoDLibraryApiConfig
+    AIOD_ENHANCED_SEARCH_API: AIoDEnhancedSearchApiConfig
     AIOD_KEYCLOAK: AIODKeycloakConfig
     DEFAULT_RESPONSE_LIMIT: int = 100
 
