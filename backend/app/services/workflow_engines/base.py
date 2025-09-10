@@ -66,5 +66,5 @@ class WorkflowEngineBase(ABC):
         WorkflowEngineBase.SERVICE = service
 
     @staticmethod
-    def get_service() -> WorkflowEngineBase:
+    def get_service() -> WorkflowEngineBase | None:
         return WorkflowEngineBase.SERVICE

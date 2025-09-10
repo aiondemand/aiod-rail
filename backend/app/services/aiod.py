@@ -7,7 +7,7 @@ import httpx
 from fastapi import HTTPException
 from pydantic import Json
 
-from app.auth import get_current_user
+from app.auth import _get_user
 from app.config import settings
 from app.helpers import Pagination
 from app.schemas.asset_id import AssetId
@@ -85,7 +85,7 @@ async def get_my_asset_ids(
     """
     assert asset_type in [AssetType.DATASETS, AssetType.ML_MODELS]
 
-    user = await get_current_user(required=True)(token=token)
+    user = await _get_user(token=token)
     user_id = user.get("sub")
 
     res = await aiod_library_client_wrapper.client.get(
@@ -136,7 +136,7 @@ async def get_asset(asset_type: AssetType, asset_id: AssetId) -> Json:
     return res.json()
 
 
-async def get_assets_count(asset_type: AssetType, filter_query: str = None) -> int:
+async def get_assets_count(asset_type: AssetType, filter_query: str | None = None) -> int:
     """Wrapper function to call the AIoD API and return the total counts of requested assets.
 
     Note: The current AIoD API 'counts' endpoint does not support filtering of assets to count.

@@ -34,5 +34,5 @@ class ContainerPlatformBase(ABC):
         ContainerPlatformBase.SERVICE = service
 
     @staticmethod
-    def get_service() -> ContainerPlatformBase:
+    def get_service() -> ContainerPlatformBase | None:
         return ContainerPlatformBase.SERVICE

@@ -33,10 +33,12 @@ class DockerService(ContainerPlatformBase):
 
         return False
 
-    async def terminate(self) -> None:
+    async def terminate(self) -> bool:
         if self.docker_client:
             self.docker_client.close()
             self.docker_client = None
+
+        return True
 
     async def check_image(self, experiment_template: ExperimentTemplate) -> bool:
         try:

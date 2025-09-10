@@ -38,8 +38,8 @@ class ExperimentScheduler:
         self.experiment_semaphore = asyncio.Semaphore(settings.MAX_PARALLEL_CONTAINERS)
         self.image_semaphore = asyncio.Semaphore(settings.MAX_PARALLEL_IMAGE_BUILDS)
 
-        self.experiment_run_queue = asyncio.Queue()
-        self.image_building_queue = asyncio.Queue()
+        self.experiment_run_queue: asyncio.Queue[PydanticObjectId] = asyncio.Queue()
+        self.image_building_queue: asyncio.Queue[PydanticObjectId] = asyncio.Queue()
 
     async def init_run_queue(self) -> None:
         run_ids = (
@@ -47,7 +47,7 @@ class ExperimentScheduler:
                 ExperimentRun.state != RunState.FINISHED,
                 ExperimentRun.state != RunState.CRASHED,
             )
-            .sort(+ExperimentRun.updated_at)
+            .sort(+ExperimentRun.updated_at)  # type: ignore
             .project(ExperimentRunId)
             .to_list()
         )
@@ -68,7 +68,7 @@ class ExperimentScheduler:
                 ExperimentTemplate.state != TemplateState.CRASHED,
                 ExperimentTemplate.retry_count < settings.MAX_IMAGE_BUILDS_ATTEMPTS,
             )
-            .sort(+ExperimentTemplate.updated_at)
+            .sort(+ExperimentTemplate.updated_at)  # type: ignore
             .project(ExperimentTemplateId)
             .to_list()
         )
@@ -274,5 +274,5 @@ class ExperimentScheduler:
         return ExperimentScheduler.SERVICE
 
     @staticmethod
-    def get_service() -> ExperimentScheduler:
+    def get_service() -> ExperimentScheduler | None:
         return ExperimentScheduler.SERVICE

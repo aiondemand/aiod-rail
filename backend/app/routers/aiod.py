@@ -3,7 +3,7 @@ from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Response, UploadFile, status
 
-from app.auth import get_current_user, get_current_user_token
+from app.auth import get_current_user_or_raise, get_current_user_token
 from app.helpers import Pagination
 from app.schemas.asset_id import AssetIdPathArg
 from app.schemas.dataset import Dataset
@@ -110,7 +110,7 @@ async def get_my_datasets_count(
 
 @router.post(
     "/datasets",
-    dependencies=[Depends(get_current_user(required=True, from_api_key=False))],
+    dependencies=[Depends(get_current_user_or_raise(from_api_key=False))],
     response_model=Dataset,
 )
 async def create_dataset(
