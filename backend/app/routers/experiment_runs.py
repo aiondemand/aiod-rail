@@ -31,7 +31,7 @@ async def get_experiment_run(
 # @router.get("/experiment-runs/{id}/stop", response_model=None)
 # async def stop_experiment_run(
 #     id: PydanticObjectId,
-#     user: dict = Depends(get_current_user()),
+#     user: dict = Depends(get_current_user(from_api_key=True)),
 #     workflow_engine: WorkflowEngineBase = Depends(ReanaService.get_service),
 # ) -> Any:
 #     # TODO this case needs to be properly addressed
@@ -59,16 +59,9 @@ async def delete_experiment_run(
     user: dict = Depends(get_current_user_or_raise()),
     workflow_engine: WorkflowEngineBase = Depends(ReanaService.get_service),
 ) -> Any:
-    # TODO this case needs to be properly addressed
-    # TODO if this endpoint is executed even before the workflow has even started
-    # (the code execution is in _general_workflow_preparation function for example),
-    # it will not delete the workflow, however the relevant files as well as the
-    # object from the database will be deleted which will cause problems down the line
-    # of the experiment run execution pipeline
-
     experiment_run = await get_experiment_run_if_accessible_or_raise(id, user, write_access=True)
 
-    # TODO for now we can only delete experiment runs that have already been finished
+    # we can only delete experiment runs that have already been finished/crashed
     if (
         experiment_run.state not in [RunState.FINISHED, RunState.CRASHED]
         or experiment_run.is_archived

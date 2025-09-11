@@ -36,10 +36,9 @@
                 <a matTooltip="View run" mat-icon-button [routerLink]="['/experiments', 'runs', run.id]">
                     <mat-icon>visibility</mat-icon>
                 </a>
-                <!-- TODO add stopping functionality -->
-                <!-- <button mat-icon-button matTooltip="Stop run" *ngIf="run.is_mine && !run.is_archived && run.state == 'IN_PROGRESS'" (click)="stopRun(run.id)">
+                <button mat-icon-button matTooltip="Stop run" *ngIf="run.is_mine && !run.is_archived && run.state == 'RUNNING'" (click)="stopRun(run.id)">
                     <mat-icon>stop</mat-icon>
-                </button> -->
+                </button>
                 <button mat-icon-button matTooltip="Delete run" *ngIf="run.is_mine && !run.is_archived && (run.state == 'FINISHED' || run.state == 'CRASHED')" (click)="deleteRun(run.id)">
                     <mat-icon>delete</mat-icon>
                 </button>
