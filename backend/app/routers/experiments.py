@@ -7,7 +7,7 @@ from beanie.odm.queries.find import FindMany
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 
-from app.auth import get_current_user, raise_requires_auth
+from app.auth import get_current_user_if_exists, get_current_user_or_raise, raise_requires_auth
 from app.helpers import Pagination, QueryOperator, get_compare_operator_fn
 from app.models.experiment import Experiment
 from app.models.experiment_run import ExperimentRun
@@ -33,7 +33,7 @@ class ExperimentFilter(BaseModel):
 @router.get("/experiments", response_model=list[ExperimentResponse])
 async def get_experiments(
     query: str = "",
-    user: dict | None = Depends(get_current_user(required=False)),
+    user: dict | None = Depends(get_current_user_if_exists()),
     pagination: Pagination = Depends(),
     filters: ExperimentFilter = Depends(),
 ) -> Any:
@@ -51,7 +51,7 @@ async def get_experiments(
 @router.get("/count/experiments", response_model=int)
 async def get_experiments_count(
     query: str = "",
-    user: dict | None = Depends(get_current_user(required=False)),
+    user: dict | None = Depends(get_current_user_if_exists()),
     filters: ExperimentFilter = Depends(),
 ) -> Any:
     result_set = find_specific_experiments(
@@ -65,7 +65,7 @@ async def get_experiments_count(
 @router.get("/experiments/{id}", response_model=ExperimentResponse)
 async def get_experiment(
     id: PydanticObjectId,
-    user: dict | None = Depends(get_current_user(required=False)),
+    user: dict | None = Depends(get_current_user_if_exists()),
 ) -> Any:
     experiment = await get_experiment_if_accessible_or_raise(id, user)
     return experiment.map_to_response(user)
@@ -75,7 +75,7 @@ async def get_experiment(
 async def get_experiment_runs_of_experiment(
     id: PydanticObjectId,
     pagination: Pagination = Depends(),
-    user: dict | None = Depends(get_current_user(required=False)),
+    user: dict | None = Depends(get_current_user_if_exists()),
 ) -> Any:
     await get_experiment_if_accessible_or_raise(id, user)
 
@@ -91,7 +91,7 @@ async def get_experiment_runs_of_experiment(
 @router.get("/count/experiments/{id}/runs", response_model=int)
 async def get_experiment_runs_of_experiment_count(
     id: PydanticObjectId,
-    user: dict | None = Depends(get_current_user(required=False)),
+    user: dict | None = Depends(get_current_user_if_exists()),
 ) -> Any:
     await get_experiment_if_accessible_or_raise(id, user)
     return await ExperimentRun.find(ExperimentRun.experiment_id == id).count()
@@ -104,7 +104,7 @@ async def get_experiment_runs_of_experiment_count(
 )
 async def create_experiment(
     experiment: ExperimentCreate,
-    user: dict | None = Depends(get_current_user(required=True)),
+    user: dict = Depends(get_current_user_or_raise()),
 ) -> Any:
     template = await get_experiment_template_if_accessible_or_raise(
         experiment.experiment_template_id, user, write_access=False
@@ -115,9 +115,7 @@ async def create_experiment(
             detail="Invalid Experiment template",
         )
 
-    experiment_obj = await Experiment.create_experiment(
-        experiment, template, user["email"]
-    )
+    experiment_obj = await Experiment.create_experiment(experiment, template, user["email"])
     if experiment_obj is None:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -131,13 +129,11 @@ async def create_experiment(
 @router.get("/experiments/{id}/execute", response_model=ExperimentRunResponse)
 async def execute_experiment_run(
     id: PydanticObjectId,
-    user: dict | None = Depends(get_current_user(required=True)),
+    user: dict = Depends(get_current_user_or_raise()),
     exp_scheduler: ExperimentScheduler = Depends(ExperimentScheduler.get_service),
     workflow_engine: WorkflowEngineBase = Depends(WorkflowEngineBase.get_service),
 ) -> Any:
-    experiment = await get_experiment_if_accessible_or_raise(
-        id, user, write_access=True
-    )
+    experiment = await get_experiment_if_accessible_or_raise(id, user, write_access=True)
     if experiment.allows_execution is False:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -164,11 +160,9 @@ async def execute_experiment_run(
 async def update_experiment(
     id: PydanticObjectId,
     experiment: ExperimentCreate,
-    user: dict | None = Depends(get_current_user(required=True)),
+    user: dict = Depends(get_current_user_or_raise()),
 ) -> Any:
-    original_experiment = await get_experiment_if_accessible_or_raise(
-        id, user, write_access=True
-    )
+    original_experiment = await get_experiment_if_accessible_or_raise(id, user, write_access=True)
     runs = await ExperimentRun.find(ExperimentRun.experiment_id == id).to_list()
     template = await get_experiment_template_if_accessible_or_raise(
         experiment.experiment_template_id, user, write_access=False
@@ -202,15 +196,13 @@ async def update_experiment(
 @router.delete("/experiments/{id}", response_model=None)
 async def delete_experiment(
     id: PydanticObjectId,
-    user: dict | None = Depends(get_current_user(required=True)),
+    user: dict = Depends(get_current_user_or_raise()),
     workflow_engine: WorkflowEngineBase = Depends(ReanaService.get_service),
 ) -> Any:
     await get_experiment_if_accessible_or_raise(id, user, write_access=True)
 
     runs = await ExperimentRun.find(ExperimentRun.experiment_id == id).to_list()
-    await run_cascade_operation(
-        runs, partial(delete_run, workflow_engine=workflow_engine)
-    )
+    await run_cascade_operation(runs, partial(delete_run, workflow_engine=workflow_engine))
     await Experiment.find(Experiment.id == id).delete()
 
 
@@ -218,11 +210,9 @@ async def delete_experiment(
 async def archive_experiment(
     id: PydanticObjectId,
     archive: bool = False,
-    user: dict | None = Depends(get_current_user(required=True)),
+    user: dict = Depends(get_current_user_or_raise()),
 ) -> Any:
-    experiment = await get_experiment_if_accessible_or_raise(
-        id, user, write_access=True
-    )
+    experiment = await get_experiment_if_accessible_or_raise(id, user, write_access=True)
     updated_at = datetime.now(tz=timezone.utc)
 
     runs = await ExperimentRun.find(ExperimentRun.experiment_id == id).to_list()
@@ -230,9 +220,7 @@ async def archive_experiment(
         runs, partial(set_archived_run, value=archive, updated_at=updated_at)
     )
 
-    await experiment.set(
-        {Experiment.is_archived: archive, Experiment.updated_at: updated_at}
-    )
+    await experiment.set({Experiment.is_archived: archive, Experiment.updated_at: updated_at})
 
 
 def find_specific_experiments(
@@ -240,12 +228,10 @@ def find_specific_experiments(
     filters: ExperimentFilter,
     user: dict | None,
     query_operator: QueryOperator = QueryOperator.AND,
-    pagination: Pagination = None,
+    pagination: Pagination | None = None,
 ) -> FindMany[Experiment]:
     page_kwargs = (
-        {"skip": pagination.offset, "limit": pagination.limit}
-        if pagination is not None
-        else {}
+        {"skip": pagination.offset, "limit": pagination.limit} if pagination is not None else {}
     )
 
     # applying filters
@@ -255,9 +241,7 @@ def find_specific_experiments(
     if filters.mine is not None:
         if user is not None:
             filter_conditions.append(
-                get_compare_operator_fn(filters.mine)(
-                    Experiment.created_by, user["email"]
-                )
+                get_compare_operator_fn(filters.mine)(Experiment.created_by, user["email"])
             )
         else:
             # Authentication required to see your experiment templates

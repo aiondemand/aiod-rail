@@ -19,7 +19,7 @@ example_id2 = "data_ceREqVzRDnJAtw4VMGENCsFF"
 example_id3 = "data_ceREqVzRDnJAtw4VMGENCs56"
 
 
-async def mock_current_user(token):
+def mock_current_user():
     return {
         "sub": "user-id",
         "name": "John Doe",
@@ -44,16 +44,12 @@ async def test_get_assets_happy_path(asset_type, expected_url, async_client_mock
 
     _ = await get_assets(asset_type, pagination=Pagination())
 
-    async_client_mock.get.assert_called_once_with(
-        expected_url, params=Pagination().dict()
-    )
+    async_client_mock.get.assert_called_once_with(expected_url, params=Pagination().dict())
 
 
 @pytest.mark.parametrize("asset_type", list(AssetType))
 @pytest.mark.asyncio
-async def test_get_assets_raises_exception_on_non_200_status_code(
-    asset_type, async_client_mock
-):
+async def test_get_assets_raises_exception_on_non_200_status_code(asset_type, async_client_mock):
     mock_response = Mock()
     mock_response.status_code = 404
     async_client_mock.get.return_value = mock_response
@@ -73,9 +69,7 @@ async def test_get_my_assets_happy_path(mocker, asset_type):
         "app.services.aiod.get_my_asset_ids",
         return_value=[example_id, example_id2, example_id3],
     )
-    mock_get_asset = mocker.patch(
-        "app.services.aiod.get_asset", return_value=[{}, {}, {}]
-    )
+    mock_get_asset = mocker.patch("app.services.aiod.get_asset", return_value=[{}, {}, {}])
 
     _ = await get_my_assets(asset_type, token="valid-user-token", pagination=pagination)
 
@@ -153,8 +147,8 @@ async def test_get_my_asset_ids_happy_path(
     }
     async_client_mock.get.return_value = mock_response
     mocker.patch(
-        "app.services.aiod.get_current_user",
-        return_value=mock_current_user,
+        "app.services.aiod._get_user",
+        return_value=mock_current_user(),
     )
 
     my_asset_ids = await get_my_asset_ids(
@@ -204,14 +198,12 @@ async def test_get_my_asset_ids_no_library(
     mock_response.json.return_value = my_library_response
     async_client_mock.get.return_value = mock_response
     mocker.patch(
-        "app.services.aiod.get_current_user",
-        return_value=mock_current_user,
+        "app.services.aiod._get_user",
+        return_value=mock_current_user(),
     )
 
     with pytest.raises(HTTPException):
-        _ = await get_my_asset_ids(
-            asset_type, token="valid-user-token", pagination=Pagination()
-        )
+        _ = await get_my_asset_ids(asset_type, token="valid-user-token", pagination=Pagination())
 
     async_client_mock.get.assert_called_once_with(
         expected_url.format(user_id="user-id"),
@@ -229,9 +221,7 @@ async def test_get_my_asset_ids_raises_exception_on_non_200_status_code(
     async_client_mock.get.return_value = mock_response
 
     with pytest.raises(HTTPException):
-        await get_my_asset_ids(
-            asset_type, token="valid-user-token", pagination=Pagination()
-        )
+        await get_my_asset_ids(asset_type, token="valid-user-token", pagination=Pagination())
 
 
 @pytest.mark.parametrize(
@@ -255,9 +245,7 @@ async def test_get_asset_happy_path(asset_type, expected_url, async_client_mock)
 
 @pytest.mark.parametrize("asset_type", list(AssetType))
 @pytest.mark.asyncio
-async def test_get_asset_raises_exception_on_non_200_status_code(
-    asset_type, async_client_mock
-):
+async def test_get_asset_raises_exception_on_non_200_status_code(asset_type, async_client_mock):
     mock_response = Mock()
     mock_response.status_code = 404
     async_client_mock.get.return_value = mock_response
@@ -297,9 +285,7 @@ async def test_get_assets_count_happy_path(asset_type, expected_url, async_clien
     ],
 )
 @pytest.mark.asyncio
-async def test_get_assets_count_with_query_happy_path(
-    asset_type, expected_url, async_client_mock
-):
+async def test_get_assets_count_with_query_happy_path(asset_type, expected_url, async_client_mock):
     query = "asset_name"
     mock_search_response = {
         "total_hits": 1,
@@ -381,9 +367,7 @@ async def test_search_assets_happy_path(asset_type, expected_url, async_client_m
     "asset_type", [AssetType.DATASETS, AssetType.ML_MODELS, AssetType.PUBLICATIONS]
 )
 @pytest.mark.asyncio
-async def test_search_assets_raises_exception_on_non_200_status_code(
-    asset_type, async_client_mock
-):
+async def test_search_assets_raises_exception_on_non_200_status_code(asset_type, async_client_mock):
     mock_response = Mock()
     mock_response.status_code = 404
     async_client_mock.get.return_value = mock_response

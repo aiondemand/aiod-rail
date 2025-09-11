@@ -26,8 +26,7 @@ def update_mongodb(collection: Collection, tsv_conversion_dirpath: str) -> None:
     fields_to_update = ["dataset_ids", "model_ids", "publication_ids"]
     tsv_filenames = ["datasets.tsv", "models.tsv", "publications.tsv"]
     tsv_tables = [
-        load_tsv(os.path.join(tsv_conversion_dirpath, tsv_name))
-        for tsv_name in tsv_filenames
+        load_tsv(os.path.join(tsv_conversion_dirpath, tsv_name)) for tsv_name in tsv_filenames
     ]
 
     cursor = collection.find({})
@@ -35,12 +34,9 @@ def update_mongodb(collection: Collection, tsv_conversion_dirpath: str) -> None:
     for doc in tqdm(cursor):
         old_ids_arr = [doc.get(f) for f in fields_to_update]
         new_ids_arr = [
-            migrate_ids(table, old_ids)
-            for table, old_ids in zip(tsv_tables, old_ids_arr)
+            migrate_ids(table, old_ids) for table, old_ids in zip(tsv_tables, old_ids_arr)
         ]
-        set_dict = {
-            field: new_ids for field, new_ids in zip(fields_to_update, new_ids_arr)
-        }
+        set_dict = {field: new_ids for field, new_ids in zip(fields_to_update, new_ids_arr)}
 
         result = collection.update_one({"_id": doc["_id"]}, {"$set": set_dict})
         if result.modified_count == 0:

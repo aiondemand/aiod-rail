@@ -125,4 +125,3 @@ pytest
 #### Code coverage
 The configuration makes sure that code coverage is computed by `pytest-cov` as well.
 You can browse the generated coverage report in HTML format found in directory `htmlcov`.
-   

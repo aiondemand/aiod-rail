@@ -78,7 +78,7 @@ export class ExperimentDetailComponent {
 
     let reqEnvironmentVarNames = this.experimentTemplate.envs_required.map(env => env.name);
     let optEnvironmentVarNames = this.experimentTemplate.envs_optional.map(env => env.name);
-    
+
     for (let env of this.experiment.env_vars) {
       if (reqEnvironmentVarNames.includes(env.key)) {
         tableData.push({

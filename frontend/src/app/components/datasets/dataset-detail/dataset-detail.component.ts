@@ -19,5 +19,5 @@ export class DatasetDetailComponent {
     this.dataset$ = this.backend.getDataset(id);
   }
 
-  
+
 }

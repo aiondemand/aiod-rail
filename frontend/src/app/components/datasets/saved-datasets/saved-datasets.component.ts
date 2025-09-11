@@ -17,7 +17,7 @@ export class SavedDatasetsComponent {
   pagination = {
     pageSize: environment.DEFAULT_PAGE_SIZE,
     pageIndex: 0,
-    length: 0 
+    length: 0
   }
 
   subscription: Subscription;
@@ -45,7 +45,7 @@ export class SavedDatasetsComponent {
           this.snackBar.showError("Couldn't load my datasets count from MyLibrary.");
           return of(0);
         })
-      ))   
+      ))
     .then(count => this.pagination.length = count);
   }
 

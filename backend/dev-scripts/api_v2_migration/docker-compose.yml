@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    environment: 
+    environment:
       - TSV_DIRPATH=/data/id_tsv_files
       - MONGO_URI=mongodb://backend-db:27017
       - MONGO_DBNAME=aiod

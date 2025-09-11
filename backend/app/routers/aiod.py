@@ -3,7 +3,7 @@ from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Response, UploadFile, status
 
-from app.auth import get_current_user, get_current_user_token
+from app.auth import get_current_user_or_raise, get_current_user_token
 from app.helpers import Pagination
 from app.schemas.asset_id import AssetIdPathArg
 from app.schemas.dataset import Dataset
@@ -110,7 +110,7 @@ async def get_my_datasets_count(
 
 @router.post(
     "/datasets",
-    dependencies=[Depends(get_current_user(required=True))],
+    dependencies=[Depends(get_current_user_or_raise())],
     response_model=Dataset,
 )
 async def create_dataset(
@@ -139,9 +139,7 @@ async def create_dataset(
 
 
 @router.delete("/datasets/{id}", response_model=bool)
-async def delete_dataset(
-    id: AssetIdPathArg, token: str = Depends(get_current_user_token)
-) -> Any:
+async def delete_dataset(id: AssetIdPathArg, token: str = Depends(get_current_user_token)) -> Any:
     res = await aiod_client_wrapper.client.delete(
         Path("datasets", id),
         headers={"Authorization": f"{token}"},

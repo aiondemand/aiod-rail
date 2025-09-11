@@ -26,47 +26,35 @@ async def get_current_user_token(token=Security(oidc)):
     return token
 
 
-def get_current_user(
-    required: bool,
-) -> Callable[[str | None, str | None], Awaitable[dict | None]]:
-    """
-    Get the current user based on the token provided in the header (returns an async function).
+def get_current_user_or_raise() -> Callable[[str | None, str | None], Awaitable[dict]]:
+    async def _get_current_user_or_raise(
+        token: str | None = Security(oidc),
+    ) -> dict:
+        user = await _get_user(token)
+        if user is None:
+            raise_requires_auth("This endpoint requires authorization. You need to be logged in or provide an API key.")
+        return user  # type: ignore[return-value]
 
-    Args:
-        required (bool): Whether the user is required to be authenticated.
-        from_token (bool): Whether the user can be authenticated through OIDC.
-    """
-
-    async def _get_user(token: str = Security(oidc)) -> dict | None:
-        """
-        Get the current user based on the provided token
-
-        Args:
-            token (str): The token provided by the user.
-        """
-        if not required and not token:
-            return None
-        elif token:
-            return await _get_userinfo(token)
-        else:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="This endpoint requires authorization. You need to be logged in or provide an API key.",
-                headers={"WWW-Authenticate": "Bearer"},
-            )
-
-    return _get_user
+    return _get_current_user_or_raise
 
 
-async def is_admin(token: str = Security(oidc)):
+def get_current_user_if_exists(from_token: bool = True) -> Callable[[str | None, str | None], Awaitable[dict | None]]:
+    async def _get_current_user_if_exists( token: str | None = Security(oidc),
+    )-> dict | None:
+        return await _get_user(from_token, token)
+
+    return _get_current_user_if_exists
+
+
+async def _get_user(token: str | None = None) -> dict | None:
+    return await _get_userinfo(token)
+
+
+async def is_admin(token: str | None = Security(oidc)) -> None:
     user_info = await _get_userinfo(token)
 
     if not has_admin_role(user_info):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="You don't have enough privileges",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+        raise_requires_auth("You don't have enough privileges")
 
 
 def has_admin_role(user_info: dict) -> bool:
@@ -81,24 +69,28 @@ def has_admin_role(user_info: dict) -> bool:
 async def _get_userinfo(token: str) -> dict:
     if token is None:
         raise_requires_auth()
-
-    token = token.replace("Bearer ", "")
+    else:
+        token = token.replace("Bearer ", "")
 
     try:
-        return keycloak_openid.userinfo(token)
+        user_info = keycloak_openid.userinfo(token)
     except KeycloakError as e:
         _raise_invalid_token(e)
 
+    return user_info
 
-def raise_requires_auth():
+
+def raise_requires_auth(detail: str | None = None) -> None:
+    if detail is None:
+        detail = "This endpoint requires authorization. You need to be logged in."
     raise HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="This endpoint requires authorization. You need to be logged in.",
+        detail=detail,
         headers={"WWW-Authenticate": "Bearer"},
     )
 
 
-def _raise_invalid_token(ex: KeycloakError):
+def _raise_invalid_token(ex: KeycloakError) -> None:
     error_msg = ex.error_message
     error_detail = "Invalid authentication token"
 
