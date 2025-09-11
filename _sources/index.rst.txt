@@ -65,7 +65,7 @@ In code setup
 Importing the package
 ^^^^^^^^^^^^^^^^^^^^^
 
-You can the entire SDK with:
+You can import the entire SDK with:
 
 .. code-block:: python
 
