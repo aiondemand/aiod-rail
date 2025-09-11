@@ -60,9 +60,7 @@ if __name__ == "__main__":
             dataset = load_dataset(dataset_name)[split_name]
             break
         except Exception:
-            logging.getLogger().warning(
-                f"Failed to load model and data (attempt: {attempt})"
-            )
+            logging.getLogger().warning(f"Failed to load model and data (attempt: {attempt})")
             continue
     else:
         logging.getLogger().error("Failed to load model and data.")
@@ -81,9 +79,7 @@ if __name__ == "__main__":
         labels = dataset[start_idx:end_idx]["label"]
         labels = torch.tensor(labels)
 
-        encoding = tokenizer(
-            sentences, padding=True, truncation=True, return_tensors="pt"
-        )
+        encoding = tokenizer(sentences, padding=True, truncation=True, return_tensors="pt")
         encoding = {k: v.to(get_device()) for k, v in encoding.items()}
 
         with torch.no_grad():

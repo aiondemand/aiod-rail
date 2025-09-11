@@ -15,8 +15,8 @@ logs = json.loads(rail_client.experiments.logs_experiment_run(run.id))
 # to 'output' directory.
 # The results are downloaded to 'experiment-output' directory
 rail_client.experiments.download_experiment_run(
-    id=run.id, 
-    filepath="output/output.txt", 
+    id=run.id,
+    filepath="output/output.txt",
     to_dir="experiment-output"
 )
 ```

@@ -30,8 +30,6 @@ template_to_create = {
 }
 
 # don't forget to use correct port
-response = requests.post(
-    "http://localhost:8000/v1/experiment-templates", json=template_to_create
-)
+response = requests.post("http://localhost:8000/v1/experiment-templates", json=template_to_create)
 
 print(f"Experiment Template with ID: {response.json()['id']} has been added")

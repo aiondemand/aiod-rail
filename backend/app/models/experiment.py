@@ -54,12 +54,10 @@ class Experiment(Document):
         experiment_req: ExperimentCreate,
         template: ExperimentTemplate,
         created_by: str,
-    ) -> Experiment:
+    ) -> Experiment | None:
         kwargs = experiment_req.dict()
         kwargs["env_vars"] = [
-            EnvironmentVar.create_variable(
-                var, template.envs_required + template.envs_optional
-            )
+            EnvironmentVar.create_variable(var, template.envs_required + template.envs_optional)
             for var in experiment_req.env_vars
         ]
 
@@ -140,8 +138,7 @@ class Experiment(Document):
             return None
 
         same_template = (
-            original_experiment.experiment_template_id
-            == new_experiment.experiment_template_id
+            original_experiment.experiment_template_id == new_experiment.experiment_template_id
         )
         same_assets = original_experiment.has_same_assets(new_experiment)
 

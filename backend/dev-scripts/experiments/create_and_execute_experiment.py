@@ -22,8 +22,6 @@ experiment = {
 
 # Execute experiment
 experiment_id = "<YOUR_EXPERIMENT_ID>"
-response = requests.post(
-    f"http://localhost:8000/v1/experiments/{experiment_id}/execute"
-)
+response = requests.post(f"http://localhost:8000/v1/experiments/{experiment_id}/execute")
 experiment_run_id = response.json()["id"]
 print(f"Executing experiment run '{experiment_run_id}'")

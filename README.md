@@ -49,8 +49,8 @@ For development purposes, we recommend running RAIL's development docker contain
 
 To start development and debugging, follow these steps:
 1. Create development `.env-dev` file in the Backend root folder. It must define all variables the `.env` file defines.
-1. Start the images either by running [`run-dev-docker-env.sh`](./run-dev-docker-env.sh) or by running the following command from the root of the project:   
-    * ```bash 
+1. Start the images either by running [`run-dev-docker-env.sh`](./run-dev-docker-env.sh) or by running the following command from the root of the project:
+    * ```bash
       docker-compose -f docker-compose.yml -f docker-compose-dev.yml up -d --build
       ```
 1. Attach to the application.
