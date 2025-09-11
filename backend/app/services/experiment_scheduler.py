@@ -125,7 +125,7 @@ class ExperimentScheduler:
             if image_exists is False:
                 return
 
-            await experiment_run.update_state_in_db(RunState.IN_PROGRESS)
+            await experiment_run.update_state_in_db(RunState.PREPROCESSING)
             self.logger.info(
                 f"=== ExperimentRun id={experiment_run.id} "
                 + f"(retry_count={experiment_run.retry_count}) "
@@ -169,10 +169,14 @@ class ExperimentScheduler:
         await self.workflow_engine.preprocess_workflow(
             experiment_run, experiment, environment_variables
         )
+
+        await experiment_run.update_state_in_db(RunState.RUNNING)
         workflow_state = await self.workflow_engine.run_workflow(experiment_run)
 
         if workflow_state.manually_deleted is False:
+            await experiment_run.update_state_in_db(RunState.POSTPROCESSING)
             await self.workflow_engine.postprocess_workflow(experiment_run, workflow_state)
+
         return workflow_state
 
     async def _rebuild_image_if_necessary(

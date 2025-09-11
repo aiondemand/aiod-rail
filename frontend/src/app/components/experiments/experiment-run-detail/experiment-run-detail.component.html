@@ -5,10 +5,9 @@
         <h1>Experiment run - {{experimentRun.id}}</h1>
 
         <div class="header-menu">
-            <!-- TODO add stopping functionality -->
-            <!-- <button mat-icon-button matTooltip="Stop run" *ngIf="experimentRun.is_mine && !experimentRun.is_archived && experimentRun.state == 'IN_PROGRESS'" (click)="stopRun()">
+            <button mat-icon-button matTooltip="Stop run" *ngIf="experimentRun.is_mine && !experimentRun.is_archived && experimentRun.state == 'RUNNING'" (click)="stopRun()">
                 <mat-icon>stop</mat-icon>
-            </button> -->
+            </button>
             <button
                 mat-icon-button matTooltip="Delete run"
                 *ngIf="experimentRun.is_mine && !experimentRun.is_archived && (experimentRun.state == 'FINISHED' || experimentRun.state == 'CRASHED')"
@@ -34,7 +33,7 @@
                 <th>State</th>
                 <td class="state">{{experimentRun.state}}
                     <span *ngIf="experimentRun.state == 'CREATED'" class="material-symbols-outlined icon">schedule</span>
-                    <span *ngIf="experimentRun.state == 'IN_PROGRESS'" class="material-symbols-outlined">rotate_right</span>
+                    <span *ngIf="experimentRun.state == 'PREPROCESSING' || experimentRun.state == 'RUNNING' || experimentRun.state == 'POSTPROCESSING'" class="material-symbols-outlined">rotate_right</span>
                     <span *ngIf="experimentRun.state == 'FINISHED'" class="material-symbols-outlined icon">check_circle</span>
                     <span *ngIf="experimentRun.state == 'CRASHED'" class="material-symbols-outlined">error</span>
                 </td>

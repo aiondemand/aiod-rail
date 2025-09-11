@@ -49,7 +49,7 @@ export class ExperimentRunDetailComponent {
           .then(exp => this.experiment = exp)
           .catch(err => console.error(err));
 
-        if (run.state == 'CREATED' || run.state == 'IN_PROGRESS') {
+        if (['CREATED', 'PREPROCESSING', 'RUNNING', 'POSTPROCESSING'].includes(run.state)) {
           this.experimentRun = run;
           return interval(5000).pipe(switchMap(_ => this.backend.getExperimentRun(id)));
         }
@@ -70,7 +70,7 @@ export class ExperimentRunDetailComponent {
           this.logs == '';
         }
 
-        if (run.state != 'CREATED' && run.state != 'IN_PROGRESS') {
+        if (['FINISHED', 'CRASHED'].includes(run.state)) {
           this.subscription.unsubscribe();
 
           firstValueFrom(this.backend.listFilesFromExperimentRun(run.id))
@@ -236,6 +236,29 @@ export class ExperimentRunDetailComponent {
     private dialog: MatDialog,
     private router: Router,
   ) { }
+
+  stopRun(): void {
+    let popupInput: ConfirmPopupInput = {
+      message: "Do you wish to STOP this run?",
+      acceptBtnMessage: "Yes",
+      declineBtnMessage: "No",
+    }
+    firstValueFrom(this.dialog.open(ConfirmPopupComponent, {
+      maxWidth: '450px',
+      width: '100%',
+      autoFocus: false,
+      data: popupInput
+    }).afterClosed())
+      .then(state => {
+        if (state == ConfirmPopupResponse.Yes) {
+          firstValueFrom(this.backend.stopExperimentRun(this.experimentRun.id))
+            .then(_ => {
+              this.router.navigate(['/experiments', this.experiment.id]);
+            })
+            .catch(err => console.error(err));
+        }
+      });
+  }
 
   deleteRun(): void {
     let popupInput: ConfirmPopupInput = {
