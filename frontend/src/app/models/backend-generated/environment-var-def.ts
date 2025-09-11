@@ -10,6 +10,7 @@
 
 
 export interface EnvironmentVarDef {
-    name: string;
-    description: string;
+  name: string;
+  description: string;
+  is_secret: boolean;
 }

@@ -32,6 +32,17 @@
     }
 }
 
+.env-names {
+    display: flex;
+    align-items: center;
+    gap: 0.25em;
+
+    mat-icon {
+        color: rgb(220, 220, 220);
+        transform: scale(1.25);
+    }
+}
+
 .deleted-state {
     display: flex;
     gap: 1em;

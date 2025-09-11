@@ -81,22 +81,23 @@ async def create_experiment_template(
     experiment_template: ExperimentTemplateCreate,
     user: dict = Depends(get_current_user_or_raise(from_api_key=True)),
 ) -> Any:
-    experiment_template_obj = ExperimentTemplate(
-        **experiment_template.dict(), created_by=user["email"]
+    experiment_template_obj = await ExperimentTemplate.create_template(
+        experiment_template, user["email"]
     )
-    if experiment_template_obj.is_valid() is False:
+    if experiment_template_obj is None:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid Experiment Template",
         )
 
-    experiment_template_obj = await experiment_template_obj.create()
-    experiment_template_obj.initialize_files(
+    created_experiment_template = await experiment_template_obj.create()
+
+    created_experiment_template.initialize_files(
         base_image=experiment_template.base_image,
         pip_requirements=experiment_template.pip_requirements,
         script=experiment_template.script,
     )
-    return experiment_template_obj.map_to_response(user)
+    return created_experiment_template.map_to_response(user)
 
 
 @router.put("/experiment-templates/{id}", response_model=ExperimentTemplateResponse)

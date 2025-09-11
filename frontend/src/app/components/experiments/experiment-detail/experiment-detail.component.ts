@@ -83,13 +83,15 @@ export class ExperimentDetailComponent {
       if (reqEnvironmentVarNames.includes(env.key)) {
         tableData.push({
           key: `${env.key}*`,
-          value: env.value
+          value: env.value,
+          is_secret: env.is_secret
         });
       }
       else if (optEnvironmentVarNames.includes(env.key)) {
         tableData.push({
           key: env.key,
-          value: env.value
+          value: env.value,
+          is_secret: env.is_secret
         });
       }
     }

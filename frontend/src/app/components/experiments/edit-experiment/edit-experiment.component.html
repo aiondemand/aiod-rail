@@ -124,7 +124,12 @@
             <div formGroupName="envsRequired" *ngIf="experimentTemplateValue.envs_required.length > 0">
                 <b>Required environment variables</b>
                 <mat-form-field *ngFor="let env of experimentTemplateValue.envs_required">
-                    <mat-label>{{env.name}}</mat-label>
+                    <mat-label>
+                        <span class="env-names">
+                            {{env.name}}
+                            <mat-icon *ngIf="env.is_secret" matTooltip="Secret">lock</mat-icon>
+                        </span>
+                    </mat-label>
                     <input [type]="'text'" matInput placeholder="{{env.name}}" [formControlName]="env.name" />
                 </mat-form-field>
             </div>
@@ -132,7 +137,12 @@
             <div formGroupName="envsOptional" *ngIf="experimentTemplateValue.envs_optional.length > 0">
                 <b>Optional environment variables</b>
                 <mat-form-field *ngFor="let env of experimentTemplateValue.envs_optional">
-                    <mat-label>{{env.name}}</mat-label>
+                    <mat-label>
+                        <span class="env-names">
+                            {{env.name}}
+                            <mat-icon *ngIf="env.is_secret" matTooltip="Secret">lock</mat-icon>
+                        </span>
+                    </mat-label>
                     <input matInput placeholder="{{env.name}}" [formControlName]="env.name" />
                 </mat-form-field>
             </div>

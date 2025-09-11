@@ -48,6 +48,10 @@ mat-form-field {
         width: 35%;
     }
 
+    mat-checkbox {
+        margin-bottom: 20px;
+    }
+
     button {
         margin-bottom: 20px;
         width: 126px;
@@ -71,5 +75,16 @@ table {
 
     ngs-code-editor {
         height: 605px;
+    }
+}
+
+.env-names {
+    display: flex;
+    align-items: center;
+    gap: 0.25em;
+
+    mat-icon {
+        color: rgb(220, 220, 220);
+        transform: scale(1.25);
     }
 }

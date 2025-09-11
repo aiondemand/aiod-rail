@@ -156,6 +156,10 @@
                     <input matInput placeholder="Description" formControlName="description">
                 </mat-form-field>
 
+                <mat-checkbox formControlName="isSecret">
+                    Is it a secret?
+                </mat-checkbox>
+
                 <span class="empty-space">
                 </span>
 
@@ -169,7 +173,12 @@
             *ngIf="requiredVarsData.length">
                 <ng-container matColumnDef="name">
                     <th mat-header-cell *matHeaderCellDef>Name</th>
-                    <td mat-cell *matCellDef="let env">{{env.name}}</td>
+                    <td mat-cell *matCellDef="let env">
+                        <span class="env-names">
+                            {{env.name}}
+                            <mat-icon *ngIf="env.is_secret" matTooltip="Secret">lock</mat-icon>
+                        </span>
+                    </td>
                 </ng-container>
 
                 <ng-container matColumnDef="description">
@@ -208,6 +217,10 @@
                     <input matInput placeholder="Description" formControlName="description">
                 </mat-form-field>
 
+                <mat-checkbox formControlName="isSecret">
+                    Is it a secret?
+                </mat-checkbox>
+
                 <span class="empty-space"></span>
 
                 <button mat-raised-button type="submit" [disabled]="!newOptionalEnvForm.get('name')?.value || !editableEnvironment"
@@ -220,7 +233,12 @@
                 *ngIf="optionalVarsData.length">
                 <ng-container matColumnDef="name">
                     <th mat-header-cell *matHeaderCellDef>Name</th>
-                    <td mat-cell *matCellDef="let env">{{env.name}}</td>
+                    <td mat-cell *matCellDef="let env">
+                        <span class="env-names">
+                            {{env.name}}
+                            <mat-icon *ngIf="env.is_secret" matTooltip="Secret">lock</mat-icon>
+                        </span>
+                    </td>
                 </ng-container>
 
                 <ng-container matColumnDef="description">
