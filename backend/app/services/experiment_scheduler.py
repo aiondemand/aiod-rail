@@ -244,27 +244,21 @@ class ExperimentScheduler:
 
     async def _build_image_multiple_attempts(self, experiment_template: ExperimentTemplate) -> bool:
         while True:
-            await experiment_template.update_state_in_db(TemplateState.IN_PROGRESS)
+            await experiment_template.update_state_in_db(
+                state=TemplateState.IN_PROGRESS, retry_count=experiment_template.retry_count + 1
+            )
 
             image_build_state = await self.container_platform.build_image(experiment_template)
             should_retry = (
-                experiment_template.retry_count < settings.MAX_IMAGE_BUILDS_ATTEMPTS - 1
+                experiment_template.retry_count < settings.MAX_IMAGE_BUILDS_ATTEMPTS
                 and image_build_state is False
-            )
-
-            if image_build_state:
-                new_state = TemplateState.FINISHED
-            elif should_retry:
-                new_state = TemplateState.IN_PROGRESS
-            else:
-                new_state = TemplateState.CRASHED
-
-            await experiment_template.update_state_in_db(
-                new_state,
-                retry_count=experiment_template.retry_count + int(should_retry),
             )
             if should_retry:
                 continue
+
+            await experiment_template.update_state_in_db(
+                state=TemplateState.FINISHED if image_build_state else TemplateState.CRASHED
+            )
             return image_build_state
 
     @staticmethod

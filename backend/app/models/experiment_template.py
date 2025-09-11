@@ -45,6 +45,7 @@ class ExperimentTemplate(Document):
     updated_at: datetime = Field(default_factory=partial(datetime.now, tz=timezone.utc))
     retry_count: int = 0
     state: TemplateState = TemplateState.CREATED
+    image_version: int = 0
     is_public: bool = True
     is_archived: bool = False
     is_approved: bool = False
@@ -100,7 +101,7 @@ class ExperimentTemplate(Document):
 
     @property
     def image_name(self) -> str:
-        image_tag = f"{EXPERIMENT_TEMPLATE_DIR_PREFIX}{self.id}"
+        image_tag = f"{EXPERIMENT_TEMPLATE_DIR_PREFIX}{self.id}-{self.image_version}"
         return f"{settings.DOCKER_REGISTRY_URL}/{REPOSITORY_NAME}:{image_tag}"
 
     @property
@@ -182,7 +183,9 @@ class ExperimentTemplate(Document):
             return False
 
     async def update_state_in_db(
-        self, state: TemplateState, retry_count: int | None = None
+        self,
+        state: TemplateState,
+        retry_count: int | None = None,
     ) -> None:
         self.state = state
         self.updated_at = datetime.now(tz=timezone.utc)
@@ -270,6 +273,7 @@ class ExperimentTemplate(Document):
             # we can modify everything
             new_template.created_at = original_template.created_at
             new_template.id = original_template.id
+            new_template.image_version = original_template.image_version + 1
 
             new_template.initialize_files(
                 base_image=experiment_template_req.base_image,
