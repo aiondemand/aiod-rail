@@ -78,8 +78,6 @@ class DockerService(ContainerPlatformBase):
                 "\tPushing docker image to a remote repository "
                 + f"for ExperimentTemplate id={template_id}"
             )
-            # TODO perhaps we need to remove the already existing image first
-
             await asyncio.to_thread(self.docker_client.images.push, repository=image_name)
             await asyncio.to_thread(self.docker_client.images.remove, image=image_name)
         except Exception as e:
