@@ -37,12 +37,10 @@ def get_current_user_or_raise(
     ) -> dict:
         user = await _get_user(from_token, from_api_key, token, api_key)
         if user is None:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="This endpoint requires authorization. You need to be logged in or provide an API key.",
-                headers={"WWW-Authenticate": "Bearer"},
+            raise_requires_auth(
+                "This endpoint requires authorization. You need to be logged in or provide an API key."
             )
-        return user
+        return user  # type: ignore[return-value]
 
     return _get_current_user_or_raise
 
@@ -60,7 +58,10 @@ def get_current_user_if_exists(
 
 
 async def _get_user(
-    from_token: bool = True, from_api_key: bool = False, token: str | None = None, api_key: str | None = None
+    from_token: bool = True,
+    from_api_key: bool = False,
+    token: str | None = None,
+    api_key: str | None = None,
 ) -> dict | None:
     if not from_token and not from_api_key:
         raise ValueError("Either from_token or from_api_key must be set to True")
@@ -71,11 +72,7 @@ async def _get_user(
         if user_obj is not None:
             return user_obj.to_dict()
         else:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid API key",
-                headers={"WWW-Authenticate": "Bearer"},
-            )
+            raise_requires_auth("Invalid API key")
     return None
 
 
@@ -83,11 +80,7 @@ async def is_admin(token: str | None = Security(oidc)) -> None:
     user_info = await _get_userinfo(token)
 
     if not has_admin_role(user_info):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="You don't have enough privileges",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+        raise_requires_auth("You don't have enough privileges")
 
 
 def has_admin_role(user_info: dict) -> bool:
@@ -113,10 +106,12 @@ async def _get_userinfo(token: str | None) -> dict:
     return user_info
 
 
-def raise_requires_auth() -> None:
+def raise_requires_auth(detail: str | None = None) -> None:
+    if detail is None:
+        detail = "This endpoint requires authorization. You need to be logged in."
     raise HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="This endpoint requires authorization. You need to be logged in.",
+        detail=detail,
         headers={"WWW-Authenticate": "Bearer"},
     )
 

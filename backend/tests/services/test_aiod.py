@@ -19,7 +19,7 @@ example_id2 = "data_ceREqVzRDnJAtw4VMGENCsFF"
 example_id3 = "data_ceREqVzRDnJAtw4VMGENCs56"
 
 
-async def mock_current_user(token):
+def mock_current_user():
     return {
         "sub": "user-id",
         "name": "John Doe",
@@ -147,8 +147,8 @@ async def test_get_my_asset_ids_happy_path(
     }
     async_client_mock.get.return_value = mock_response
     mocker.patch(
-        "app.services.aiod.get_current_user",
-        return_value=mock_current_user,
+        "app.services.aiod._get_user",
+        return_value=mock_current_user(),
     )
 
     my_asset_ids = await get_my_asset_ids(
@@ -198,8 +198,8 @@ async def test_get_my_asset_ids_no_library(
     mock_response.json.return_value = my_library_response
     async_client_mock.get.return_value = mock_response
     mocker.patch(
-        "app.services.aiod.get_current_user",
-        return_value=mock_current_user,
+        "app.services.aiod._get_user",
+        return_value=mock_current_user(),
     )
 
     with pytest.raises(HTTPException):

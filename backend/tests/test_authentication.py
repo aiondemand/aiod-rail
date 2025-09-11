@@ -3,13 +3,13 @@ from unittest.mock import AsyncMock, Mock, patch
 import pytest
 from fastapi import HTTPException, status
 
-from app.auth import get_current_user_or_raise, _get_user
+from app.auth import get_current_user_or_raise
 
 
 @pytest.mark.asyncio
 async def test_unauthenticated():
     with pytest.raises(HTTPException) as exception_info:
-        await _get_user(token=None)
+        await get_current_user_or_raise()(token=None)
     assert exception_info.value.status_code == status.HTTP_401_UNAUTHORIZED
     assert (
         exception_info.value.detail

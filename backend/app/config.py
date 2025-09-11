@@ -37,7 +37,7 @@ class AIODKeycloakConfig(BaseModel):
     OIDC_URL: AnyHttpUrl
 
 
-class Settings(BaseSettings):
+class Settings(BaseSettings):  # type: ignore
     MONGODB_URI: str
     MONGODB_DBNAME: str
 
