@@ -25,6 +25,9 @@ keywords = ["SDK", "AIoD", "RAIL", "Machine Learning", "ML Experiments"]
 
 [project.urls]
 repository = "https://github.com/aiondemand/aiod-rail/tree/feature/outer-sdk/sdk-py"
+issues  = "https://github.com/aiondemand/aiod-rail/issues"
+aIoD-platform = "https://www.ai4europe.eu"
+RAIL-platform = "https://rail.aiod.i3a.es/docs/about>"
 
 [tool.poetry.dev-dependencies]
 pytest = ">=7.2.1"

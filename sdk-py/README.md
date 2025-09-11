@@ -1,6 +1,11 @@
 # OuterRail
 
-An SDK for AIoD - RAIL tool.
+An SDK for AI on Demand RAIL platform.
+
+[![PyPI version](https://badge.fury.io/py/OuterRail.svg)](https://badge.fury.io/py/OuterRail)
+[![Python Version](https://img.shields.io/pypi/pyversions/OuterRail.svg)](https://pypi.org/project/OuterRail/)
+[![Downloads](https://pepy.tech/badge/OuterRail)](https://pepy.tech/project/OuterRail)
+![License](https://img.shields.io/pypi/l/OuterRail.svg)
 
 ## What is RAIL
 
@@ -11,11 +16,19 @@ directly in the AI on Demand platform (AIoD). RAIL is developed within the
 [AI4Europe project](https://www.ai4europe.eu) as one of the core services 
 of the [AI on Demand platform](https://aiod.eu).
 
-## Requirements
+## OuterRail organization
 
-Python 3.9+
+SDK provides two types of interfaces:
+
+- __Instances__ - are classes that provide a way to work with individual instances of different parts of RAIL, e. g. individual templates, experiments, runs, datasets
+- __Managers__ - contain operations that function on multiple instances, such as querying, counting,...
+Special case that is also handled by managers is creation of new Instances.
 
 ## Installation 
+
+### Requirements
+Python 3.9+
+
 ### pip install
 The OuterRail package can simply be installed with pip via command:
 ```sh
@@ -31,160 +44,48 @@ You can import the SDK with:
 ```python
 import OuterRail
 ```
-### Configuration
-For the SDK to work with underlying RAIL backend, you need to 
-specify the URL of the RAIL as well as your API key.
+
+## In code setup
+
+### Importing the package
+You can the entire SDK with:
+
+```python
+import OuterRail
+```
+
+Alternatively, you can import only needed parts with:
+
+```python
+from OuterRail import what_you_need
+```
+
+### Config and Logging in
+
+For the SDK to work with underlying RAIL backend, you need to
+specify the URL of the RAIL service. Additionally, most of the functionality
+requires authentication, and therefore you need to be logged in to use this functionality.
+
 The code for this would look something like:
 
 ```python
 import os
 from OuterRail import Configuration
 
-os.environ["AIOD_RAIL_API_KEY"] = "your_api_key"
-config = Configuration(host="http://localhost:8000")
+config = Configuration(host="https://rail.aiod.eu/api/docs") # 1. Specify URL
+config.login(username="username", password="password") # 2. Log in
+# ... your logic here ...
+config.logout() # 3. After your code, logout
 ```
+> **_Note_**: It is at the moment only possible to register via google account or similar identity provider method.
+As such, you will need to get access to username and password from personal request to support of the authentication
+providers. Unfortunately, the proper channels for this are not yet in place.
 
-### Examples:
-
-#### Experiment Template Manager
-```python
-### EXPERIMENT TEMPLATE MANAGER TESTING
-from OuterRail import ExperimentTemplateManager
-
-template_manager = ExperimentTemplateManager(config)
-
-# Get the count of available templates
-template_manager.count()
-# Get the list of Template instances
-template_manager.get()
-# Get a single template by its identifier
-template_manager.get_by_id("identifier_here")
-
-# Create new template
-script_path = "script.py" # Adjust this
-requirements_path = "requirements.txt" # Adjust this
-base_image = "python:3.9"
-template_config = {
-    "name": "Example Template",
-    "description": "Description of example template",
-    "task": "TEXT_CLASSIFICATION",
-    "datasets_schema": { "cardinality": "1-1" },
-    "models_schema": { "cardinality": "1-1" },
-    "envs_required": [ { "name": "SPLIT_NAME", "description": "name of a subset" }
-    ],
-    "envs_optional": [], "available_metrics": [ "accuracy" ],
-    "is_public": True
-}
-new_template = template_manager.create((script_path, requirements_path, base_image, template_config))
-```
-
-#### Experiment Template class
-
-```python
-from OuterRail import ExperimentTemplateManager
-
-# Get some experiment
-template_manager = ExperimentTemplateManager(config)
-template = template_manager.get()[0]
-
-# Check if template is archived
-print(template.is_archived)
-
-# Archive template
-template.archive(True)
-
-# Update template (uses same params as create)
-template.update((script_path, requirements_path, base_image, template_config)).name
-
-# Delete template
-template.delete()
-```
-
-### Experiment Manager
-```python
-from OuterRail import ExperimentManager
-
-# Initialize
-exp_manager = ExperimentManager(config)
-
-# Get the count of experiments
-exp_manager.count()
-# Fetch only experiments that belong to you
-experiments = exp_manager.get(mine=True)
-
-# Create an example experiment
-experiment_dict = {
-    "name": "test123",
-    "description": "321test",
-    "is_public": True,
-    "experiment_template_id": "685151f2d08da970a3a5d6ce",
-    "dataset_ids": [ "data_000002AhzqHqOQwQLP0qCRds" ],
-    "model_ids": [ "mdl_003Csk8QjNfE80c7g6Rt8yVb" ],
-    "publication_ids": [],
-    "env_vars": [ { "key": "SPLIT_NAME", "value": "Test"
-        }
-    ]
-}
-new_experiment = exp_manager.create(experiment_dict)
-```
-
-#### Experiment class
-
-```python
-
-from OuterRail import ExperimentManager
-
-# Initialize
-exp_manager = ExperimentManager(config)
-# Get a single experiment that belongs to you
-new_experiment = exp_manager.get(mine=True)[0]
-
-# Check archivation
-new_experiment.is_archived
-
-# Archive experiment
-new_experiment.archive(archive=False)
-
-# Update experiment
-update_dict = {
-    "name": "NewAndImprovedName",
-    "description": "321test",
-    "is_public": True,
-    "experiment_template_id": "685151f2d08da970a3a5d6ce",
-    "dataset_ids": [ "data_000002AhzqHqOQwQLP0qCRds" ],
-    "model_ids": [ "mdl_003Csk8QjNfE80c7g6Rt8yVb" ],
-    "publication_ids": [],
-    "env_vars": [ { "key": "SPLIT_NAME", "value": "Test"
-                    }
-                  ]
-}
-new_experiment.update(update_dict)
-
-# Delete
-new_experiment.delete()
-
-# Count the runs of some an experiment
-new_experiment.count_runs()
-
-# Get list of runs
-new_experiment.get_runs()
-```
-
-#### Experiment run class
-
-```python
-# Create an instance by running the experiment
-exp_run = new_experiment.run()
-
-# Check the state
-print(exp_run.state)
-
-# Check the logs of the run
-print(f"exp run logs: {exp_run.logs()}")
-
-# Delete a run
-exp_run.delete()
-```
+### Examples
+For more examples, you can check out the following sources:
+- [RAIL](https://rail.aiod.eu) - with example code for using the SDK
+- [Official documentation](https://aiondemand.github.io/aiod-rail/)
+- Docstrings in the SDK itself
 
 ## Author
 
