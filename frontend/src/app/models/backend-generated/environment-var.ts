@@ -10,12 +10,7 @@
 
 
 export interface EnvironmentVar {
-<<<<<<< HEAD
-    key: string;
-    value: string;
-=======
   key: string;
   value: string;
   is_secret: boolean;
->>>>>>> develop
 }
