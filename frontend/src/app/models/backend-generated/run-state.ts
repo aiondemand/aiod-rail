@@ -14,7 +14,6 @@
  */
 export const RunState = {
     Created: 'CREATED',
-    InProgress: 'IN_PROGRESS', // TODO get rid off
     Preprocessing: "PREPROCESSING",
     Running: "RUNNING",
     Postprocessing: "POSTPROCESSING",
