@@ -48,9 +48,6 @@ export class ExperimentRunListComponent implements OnInit {
   }
 
   stopRun(id: string): void {
-    // TODO for now we disable the ability to stop a run
-    // TODO later on we can enable this functionality again once we can
-    // stop the experiment run whenever during the experiment run execution pipeline
     let popupInput: ConfirmPopupInput = {
       message: "Do you wish to STOP this run?",
       acceptBtnMessage: "Yes",
@@ -72,8 +69,6 @@ export class ExperimentRunListComponent implements OnInit {
   }
 
   deleteRun(id: string): void {
-    // TODO for now we can delete run only when its finished/crashed
-    // TODO later on also allow the option to delete it mid execution
     let popupInput: ConfirmPopupInput = {
       message: "Do you wish to DELETE this run?",
       acceptBtnMessage: "Yes",
