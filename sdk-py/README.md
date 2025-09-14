@@ -5,7 +5,7 @@ An SDK for AI on Demand RAIL platform.
 [![PyPI version](https://badge.fury.io/py/OuterRail.svg)](https://badge.fury.io/py/OuterRail)
 [![Python Version](https://img.shields.io/pypi/pyversions/OuterRail.svg)](https://pypi.org/project/OuterRail/)
 [![Downloads](https://pepy.tech/badge/OuterRail)](https://pepy.tech/project/OuterRail)
-![License](https://img.shields.io/pypi/l/OuterRail.svg)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## What is RAIL
 

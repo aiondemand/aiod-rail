@@ -36,6 +36,29 @@ class ExperimentRun(BaseModel):
     ]
     model_config = ConfigDict(populate_by_name=True, validate_assignment=True, protected_namespaces=())
 
+    def stop(self) -> None:
+        """
+         Stop the experiment run if it is currently executing.
+
+         Returns:
+             None.
+
+         Raises:
+             ApiException: In case of a failed HTTP request.
+
+         Examples:
+             >>> self.stop()
+             >>> self.state
+             FINISHED
+         """
+
+        with ApiClient(self._config) as api_client:
+            api_instance = ExperimentRunsApi(api_client)
+            try:
+                api_instance.stop_run(self.id)
+            except Exception as e:
+                raise e
+
     def delete(self) -> None:
         """
          Deletes specific experiment run. Afterward, operations on deleted instance will result in HTTP exception.
@@ -66,7 +89,7 @@ class ExperimentRun(BaseModel):
 
         Args:
             filepath (str): File to be downloaded.
-            to_dir (Path): Local directory path to which run will be downloaded.
+            to_dir (Path): Path to local directory where the run file will be downloaded.
 
         Returns:
             None.

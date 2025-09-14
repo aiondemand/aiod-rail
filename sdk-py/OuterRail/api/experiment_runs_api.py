@@ -20,6 +20,22 @@ class ExperimentRunsApi:
             api_client = ApiClient.get_default()
         self.api_client = api_client
 
+    def stop_run(self, id: StrictStr) -> None:
+        _param = self.api_client.param_serialize(
+                method="GET",
+                resource_path="/v1/experiment-runs/{id}/stop",
+                path_params={"id": id},
+                header_params={"Accept": self.api_client.select_header_accept(["application/json"])},
+                auth_settings=["AccessToken", "OpenIdConnect"]
+            )
+
+        response_data = self.api_client.call_api(*_param)
+        response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map={"200": "object","422": "HTTPValidationError"}
+        ).data
+
     @validate_call
     def delete_experiment_run_v1_experiment_runs_id_delete(
         self,
