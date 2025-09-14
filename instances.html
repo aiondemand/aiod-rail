@@ -73,6 +73,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#OuterRail.instances.experiment_run.ExperimentRun.delete"><code class="docutils literal notranslate"><span class="pre">ExperimentRun.delete()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#OuterRail.instances.experiment_run.ExperimentRun.download_file"><code class="docutils literal notranslate"><span class="pre">ExperimentRun.download_file()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#OuterRail.instances.experiment_run.ExperimentRun.logs"><code class="docutils literal notranslate"><span class="pre">ExperimentRun.logs()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#OuterRail.instances.experiment_run.ExperimentRun.stop"><code class="docutils literal notranslate"><span class="pre">ExperimentRun.stop()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#OuterRail.instances.experiment_run.ExperimentRun.model_config"><code class="docutils literal notranslate"><span class="pre">ExperimentRun.model_config</span></code></a></li>
 </ul>
 </li>
@@ -556,7 +557,7 @@ ExperimentRun: In successful conversion from dict.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>filepath</strong> (<em>str</em>) – File to be downloaded.</p></li>
-<li><p><strong>to_dir</strong> (<em>Path</em>) – Local directory path to which run will be downloaded.</p></li>
+<li><p><strong>to_dir</strong> (<em>Path</em>) – Path to local directory where the run file will be downloaded.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -593,6 +594,26 @@ ExperimentRun: In successful conversion from dict.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="bp">self</span><span class="o">.</span><span class="n">logs</span><span class="p">()</span>
 <span class="go">str # string dump of logs produced by the experiment run.</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="OuterRail.instances.experiment_run.ExperimentRun.stop">
+<span class="sig-name descname"><span class="pre">stop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/OuterRail/instances/experiment_run.html#ExperimentRun.stop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OuterRail.instances.experiment_run.ExperimentRun.stop" title="Link to this definition"></a></dt>
+<dd><p>Stop the experiment run if it is currently executing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ApiException</strong> – In case of a failed HTTP request.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="bp">self</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="bp">self</span><span class="o">.</span><span class="n">state</span>
+<span class="go">FINISHED</span>
 </pre></div>
 </div>
 </dd></dl>

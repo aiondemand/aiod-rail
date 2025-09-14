@@ -111,6 +111,32 @@
     <span class="p">]</span>
     <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">populate_by_name</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">validate_assignment</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">protected_namespaces</span><span class="o">=</span><span class="p">())</span>
 
+<div class="viewcode-block" id="ExperimentRun.stop">
+<a class="viewcode-back" href="../../../instances.html#OuterRail.instances.experiment_run.ExperimentRun.stop">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">         Stop the experiment run if it is currently executing.</span>
+
+<span class="sd">         Returns:</span>
+<span class="sd">             None.</span>
+
+<span class="sd">         Raises:</span>
+<span class="sd">             ApiException: In case of a failed HTTP request.</span>
+
+<span class="sd">         Examples:</span>
+<span class="sd">             &gt;&gt;&gt; self.stop()</span>
+<span class="sd">             &gt;&gt;&gt; self.state</span>
+<span class="sd">             FINISHED</span>
+<span class="sd">         &quot;&quot;&quot;</span>
+
+        <span class="k">with</span> <span class="n">ApiClient</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="p">)</span> <span class="k">as</span> <span class="n">api_client</span><span class="p">:</span>
+            <span class="n">api_instance</span> <span class="o">=</span> <span class="n">ExperimentRunsApi</span><span class="p">(</span><span class="n">api_client</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">api_instance</span><span class="o">.</span><span class="n">stop_run</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">e</span></div>
+
+
 <div class="viewcode-block" id="ExperimentRun.delete">
 <a class="viewcode-back" href="../../../instances.html#OuterRail.instances.experiment_run.ExperimentRun.delete">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -146,7 +172,7 @@
 
 <span class="sd">        Args:</span>
 <span class="sd">            filepath (str): File to be downloaded.</span>
-<span class="sd">            to_dir (Path): Local directory path to which run will be downloaded.</span>
+<span class="sd">            to_dir (Path): Path to local directory where the run file will be downloaded.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            None.</span>
