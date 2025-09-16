@@ -160,13 +160,15 @@ Special case that is also handled by managers is creation of new Instances.</p><
 <h3><a class="toc-backref" href="#id10" role="doc-backlink">Config and Logging in</a><a class="headerlink" href="#config-and-logging-in" title="Link to this heading"></a></h3>
 <p>For the SDK to work with underlying RAIL backend, you need to
 specify the URL of the RAIL service. Additionally, most of the functionality
-requires authentication and therefore you need to be logged in to use this functionality.</p>
+requires authentication, and therefore you need to be logged in to use this functionality.</p>
+<p>Logging in will require entering a device code on the provided URL, where afterwards you will be log in to the service
+and give consent to resources needed by the SDK.</p>
 <p>The code for this would look something like:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="linenos">2</span><span class="kn">from</span><span class="w"> </span><span class="nn">OuterRail</span><span class="w"> </span><span class="kn">import</span> <span class="n">Configuration</span>
 <span class="linenos">3</span>
 <span class="linenos">4</span><span class="n">config</span> <span class="o">=</span> <span class="n">Configuration</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s2">&quot;https://rail.aiod.eu/api/docs&quot;</span><span class="p">)</span> <span class="c1"># 1. Specify URL</span>
-<span class="linenos">5</span><span class="n">config</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="s2">&quot;username&quot;</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s2">&quot;password&quot;</span><span class="p">)</span> <span class="c1"># 2. Log in</span>
+<span class="linenos">5</span><span class="n">config</span><span class="o">.</span><span class="n">login</span><span class="p">()</span> <span class="c1"># 2. Blocking function until log in or timeout</span>
 <span class="linenos">6</span><span class="o">...</span> <span class="n">your</span> <span class="n">logic</span> <span class="n">here</span> <span class="o">...</span>
 <span class="linenos">7</span><span class="n">config</span><span class="o">.</span><span class="n">logout</span><span class="p">()</span> <span class="c1"># 3. After your code, logout</span>
 </pre></div>
@@ -176,9 +178,9 @@ requires authentication and therefore you need to be logged in to use this funct
 <h3><a class="toc-backref" href="#id11" role="doc-backlink">Important considerations</a><a class="headerlink" href="#important-considerations" title="Link to this heading"></a></h3>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>It is at the moment only possible to register via google account or similar identity provider method.
-As such, you will need to get access to username and password from personal request to support of the authentication
-providers. Unfortunately, the proper channels for this are not yet in place.</p>
+<p>Calling <code class="docutils literal notranslate"><span class="pre">login()</span></code> will block the execution of your code until you either successfully log in or the default
+5 minute timeout is reached. After the call you will be provided with url and code, which you need to use to
+log in to the service and give consent to the resources needed by the SDK.</p>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
