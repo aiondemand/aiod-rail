@@ -19,7 +19,8 @@ dependencies = [
     "pydantic>=2",
     "typing-extensions>=4.7.1",
     "python-keycloak",
-    "pyjwt"
+    "pyjwt",
+    "tomlkit"
 ]
 keywords = ["SDK", "AIoD", "RAIL", "Machine Learning", "ML Experiments"]
 
