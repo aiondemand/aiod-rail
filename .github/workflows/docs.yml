@@ -2,9 +2,8 @@ name: docs - build, deploy
 
 on:
   push:
-    # TODO: update after merge to dev / main
     branches:
-      - feature/outer-sdk
+      - develop
 
 jobs:
   build:
@@ -16,7 +15,6 @@ jobs:
       with:
         persist-credentials: false
 
-    # TODO: move docs to root instead of them being in sdk-py directory
     - name: Build HTML
       uses: ammaraskar/sphinx-action@8.2.3
       with:

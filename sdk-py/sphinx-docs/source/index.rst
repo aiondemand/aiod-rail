@@ -78,7 +78,7 @@ Alternatively you can import only needed parts with:
    from OuterRail import what_you_need
 
 Config and Logging in
-^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^
 
 For the SDK to work with underlying RAIL backend, you need to
 specify the URL of the RAIL service. Additionally, most of the functionality
