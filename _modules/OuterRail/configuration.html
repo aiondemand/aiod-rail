@@ -1,0 +1,382 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OuterRail.configuration &mdash; Outer RAIL documentation 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Outer RAIL documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Intro</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../managers.html">Managers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../instances.html">Instances</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Outer RAIL documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">OuterRail.configuration</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for OuterRail.configuration</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">jwt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tomlkit</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Self</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">http</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTTPStatus</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">keycloak</span><span class="w"> </span><span class="kn">import</span> <span class="n">KeycloakOpenID</span><span class="p">,</span> <span class="n">KeycloakPostError</span><span class="p">,</span> <span class="n">KeycloakConnectionError</span>
+
+<span class="n">_user_token_file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;~/.aiod-rail/token.toml&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">expanduser</span><span class="p">()</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_datetime_utc_in</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">seconds</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">:</span>
+    <span class="n">span</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="n">seconds</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">UTC</span><span class="p">)</span> <span class="o">+</span> <span class="n">span</span>
+
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Token</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Ensures active access tokens provided through one dedicated refresh token.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">refresh_token</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="n">access_token</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">expires_in</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">_</span>
+    <span class="p">):</span>
+        <span class="k">if</span> <span class="n">expires_in</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">access_token</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;If `expires_in_seconds` is set, `access_token` must be set to a valid access_token&quot;</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">refresh_token</span> <span class="o">=</span> <span class="n">refresh_token</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">access_token</span> <span class="o">=</span> <span class="n">access_token</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span>
+        <span class="c1"># Because of the minuscule time difference between the server sending the</span>
+        <span class="c1"># response and us processing it, the `expires_in` may not be used directly</span>
+        <span class="c1"># when calculating expiration time, therefore - 2 seconds.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_expiration_date</span> <span class="o">=</span> <span class="n">_datetime_utc_in</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="n">expires_in</span> <span class="o">-</span> <span class="mi">300</span> <span class="o">+</span> <span class="mi">20</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">has_expired</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">UTC</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_expiration_date</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">user_info</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">jwt</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">access_token</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;verify_signature&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">})</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">refresh_token</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_file</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">_user_token_file</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="n">_user_token_file</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">_user_token_file</span><span class="o">.</span><span class="n">touch</span><span class="p">()</span>
+
+        <span class="n">doc</span> <span class="o">=</span> <span class="n">tomlkit</span><span class="o">.</span><span class="n">document</span><span class="p">()</span>
+        <span class="n">doc</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;refresh_token&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">refresh_token</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_expired</span><span class="p">:</span>
+            <span class="n">doc</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;access_token&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">access_token</span><span class="p">)</span>
+            <span class="n">doc</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;expiration_date&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_expiration_date</span><span class="o">.</span><span class="n">isoformat</span><span class="p">())</span>
+        <span class="n">_user_token_file</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">tomlkit</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">doc</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">invalidate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">_user_token_file</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">and</span> <span class="n">_user_token_file</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+            <span class="nb">open</span><span class="p">(</span><span class="n">_user_token_file</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">refresh_token</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">access_token</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_expiration_date</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_file</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">file</span> <span class="o">=</span> <span class="n">_user_token_file</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">file</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">file</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span> <span class="ow">or</span> <span class="n">file</span><span class="o">.</span><span class="n">stat</span><span class="p">()</span><span class="o">.</span><span class="n">st_size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">doc</span> <span class="o">=</span> <span class="n">tomlkit</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">_user_token_file</span><span class="o">.</span><span class="n">read_text</span><span class="p">())</span>
+        <span class="n">kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;refresh_token&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s2">&quot;refresh_token&quot;</span><span class="p">])}</span>
+        <span class="k">if</span> <span class="s2">&quot;expiration_date&quot;</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
+            <span class="n">expiration_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromisoformat</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s2">&quot;expiration_date&quot;</span><span class="p">])</span>
+            <span class="n">expires_in</span> <span class="o">=</span> <span class="n">expiration_date</span> <span class="o">-</span> <span class="n">_datetime_utc_in</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">expires_in</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;access_token&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s2">&quot;access_token&quot;</span><span class="p">]),</span>
+                        <span class="s2">&quot;expires_in_seconds&quot;</span><span class="p">:</span> <span class="n">expires_in</span><span class="o">.</span><span class="n">seconds</span><span class="p">,</span>
+                    <span class="p">}</span>
+                <span class="p">)</span>
+        <span class="k">return</span> <span class="n">Token</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>  <span class="c1"># type: ignore[arg-type]</span>
+
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">AuthenticationError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised when an authentication error occurred.&quot;&quot;&quot;</span>
+
+
+
+<div class="viewcode-block" id="Configuration">
+<a class="viewcode-back" href="../../configuration.html#OuterRail.configuration.Configuration">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Configuration</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Configuration class for the OuterRail SDK. Provides methods for specifying the host and handling authentication.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Configuration.__init__">
+<a class="viewcode-back" href="../../configuration.html#OuterRail.configuration.Configuration.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">host</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="n">auth_host</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;https://auth.aiod.eu/aiod-auth/&quot;</span><span class="p">,</span>
+                 <span class="n">auth_realm</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;aiod&quot;</span><span class="p">,</span>
+                 <span class="n">auth_client_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;outer-rail-sdk&quot;</span><span class="p">,</span>
+                 <span class="n">login_timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">300</span>
+                 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes a new Configuration instance.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            host: (str): The url address that the SDK should connect to.</span>
+<span class="sd">            auth_host: (str): Url of the keycloak server providing auth logic of the SDK.</span>
+<span class="sd">            auth_realm: (str): The realm of the SSO for login.</span>
+<span class="sd">            auth_client_id: (str): The client id of the SDK.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Configuration: Initialized SDK configuration.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; Configuration(host=&quot;https://rail.aiod.eu/api&quot;)</span>
+<span class="sd">            Configuration</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="n">host</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">login_timeout</span> <span class="o">=</span> <span class="n">login_timeout</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">auth_client</span> <span class="o">=</span> <span class="n">KeycloakOpenID</span><span class="p">(</span><span class="n">server_url</span><span class="o">=</span><span class="n">auth_host</span><span class="p">,</span> <span class="n">client_id</span><span class="o">=</span><span class="n">auth_client_id</span><span class="p">,</span> <span class="n">realm_name</span><span class="o">=</span><span class="n">auth_realm</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Configuration.login">
+<a class="viewcode-back" href="../../configuration.html#OuterRail.configuration.Configuration.login">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">login</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">persist</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get an API Key by prompting the user to log in through a browser.</span>
+
+<span class="sd">        IMPORTANT: This is a blocking function, and will poll the authentication server until</span>
+<span class="sd">        authentication is completed or `timeout_seconds` have passed.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            persist (bool, optional): If set to true, the login session will persist between multiple executions of code</span>
+<span class="sd">            in which case, login() doesn&#39;t need to be called every execution.</span>
+<span class="sd">            In the background, the new api key (refresh token) will automatically be saved to the user</span>
+<span class="sd">            configuration file (~/.aiod-rial/config.toml). Defaults to True.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            AuthenticationError: if authentication is unsuccessful in any way.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; config = Configuration(host=&quot;https://rail.aiod.eu/api/docs&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; config.login(persist=True)</span>
+<span class="sd">            # User is logged in and token is persisted to file.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            Implementations based on authentication in AIoD SDK:</span>
+<span class="sd">            https://github.com/aiondemand/aiondemand/blob/develop/src/aiod/authentication/authentication.py</span>
+<span class="sd">         &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">token_persist</span> <span class="o">=</span> <span class="n">persist</span>
+        <span class="n">persisted_token</span> <span class="o">=</span> <span class="n">Token</span><span class="o">.</span><span class="n">from_file</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">persisted_token</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">token</span> <span class="o">=</span> <span class="n">persisted_token</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Using persisted token from file.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">token</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_login_sequence</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">token_persist</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">token</span><span class="o">.</span><span class="n">to_file</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Successfully logged in as: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">token</span><span class="o">.</span><span class="n">user_info</span><span class="p">[</span><span class="s1">&#39;email&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Configuration.logout">
+<a class="viewcode-back" href="../../configuration.html#OuterRail.configuration.Configuration.logout">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">logout</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Logouts the current user by invalidating the current token. Logout also erases the token persisted</span>
+<span class="sd">        in a file created by login(persist=True).</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            KeycloakPostError: if logout was unsuccessful.</span>
+<span class="sd">            KeycloakConnectionError: if connection to auth server failed.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; config.logout()</span>
+<span class="sd">            # User is logged out and the file containing the token is erased.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">auth_client</span><span class="o">.</span><span class="n">logout</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">token</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">token</span><span class="o">.</span><span class="n">invalidate</span><span class="p">()</span>
+        <span class="k">except</span> <span class="p">(</span><span class="n">KeycloakPostError</span><span class="p">,</span> <span class="n">KeycloakConnectionError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">e</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">token</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_login_sequence</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Token</span><span class="p">:</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">auth_client</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s2">&quot;openid profile email&quot;</span><span class="p">)</span>
+        <span class="n">poll_interval</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s2">&quot;interval&quot;</span><span class="p">]</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Please authenticate using one of two methods:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  1. Navigate to </span><span class="si">{</span><span class="n">response</span><span class="p">[</span><span class="s1">&#39;verification_uri_complete&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  2. Navigate to </span><span class="si">{</span><span class="n">response</span><span class="p">[</span><span class="s1">&#39;verification_uri&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> and enter code </span><span class="si">{</span><span class="n">response</span><span class="p">[</span><span class="s1">&#39;user_code&#39;</span><span class="p">]</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;This workflow will automatically abort after </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">login_timeout</span><span class="si">}</span><span class="s2"> seconds.&quot;</span><span class="p">)</span>
+
+        <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="n">token_endpoint</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">auth_client</span><span class="o">.</span><span class="n">well_known</span><span class="p">()[</span><span class="s2">&quot;token_endpoint&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">auth_client</span><span class="o">.</span><span class="n">device</span><span class="p">()</span>
+        <span class="n">token_data</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;grant_type&quot;</span><span class="p">:</span> <span class="s2">&quot;urn:ietf:params:oauth:grant-type:device_code&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;client_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">auth_client</span><span class="o">.</span><span class="n">client_id</span><span class="p">,</span>
+            <span class="s2">&quot;device_code&quot;</span><span class="p">:</span> <span class="n">response</span><span class="p">[</span><span class="s2">&quot;device_code&quot;</span><span class="p">],</span>
+        <span class="p">}</span>
+        <span class="c1"># Poll the token endpoint until we get a response or timeout</span>
+        <span class="k">while</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">login_timeout</span><span class="p">:</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">poll_interval</span><span class="p">)</span>
+            <span class="n">token_response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">token_endpoint</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">token_data</span><span class="p">)</span>
+            <span class="n">token_response_data</span> <span class="o">=</span> <span class="n">token_response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+            <span class="n">response</span> <span class="o">=</span> <span class="p">(</span><span class="n">token_response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="n">token_response_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;error&quot;</span><span class="p">))</span>
+            <span class="k">match</span> <span class="n">response</span><span class="p">:</span>
+                <span class="k">case</span><span class="w"> </span><span class="p">(</span><span class="n">HTTPStatus</span><span class="o">.</span><span class="n">OK</span><span class="p">,</span> <span class="k">_</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">auth_client</span><span class="o">.</span><span class="n">decode_token</span><span class="p">(</span><span class="n">token_response_data</span><span class="p">[</span><span class="s2">&quot;access_token&quot;</span><span class="p">],</span> <span class="n">validate</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">Token</span><span class="p">(</span><span class="o">**</span><span class="n">token_response_data</span><span class="p">)</span>
+                <span class="k">case</span> <span class="p">(</span><span class="n">HTTPStatus</span><span class="o">.</span><span class="n">BAD_REQUEST</span><span class="p">,</span> <span class="s2">&quot;authorization_pending&quot;</span><span class="p">):</span>
+                    <span class="k">continue</span>
+                <span class="k">case</span> <span class="p">(</span><span class="n">HTTPStatus</span><span class="o">.</span><span class="n">BAD_REQUEST</span><span class="p">,</span> <span class="s2">&quot;slow_down&quot;</span><span class="p">):</span>
+                    <span class="n">poll_interval</span> <span class="o">*=</span> <span class="mf">1.5</span>
+                    <span class="k">continue</span>
+                <span class="k">case</span> <span class="p">(</span><span class="n">HTTPStatus</span><span class="o">.</span><span class="n">BAD_REQUEST</span><span class="p">,</span> <span class="s2">&quot;access_denied&quot;</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="n">AuthenticationError</span><span class="p">(</span><span class="s2">&quot;Access denied by Keycloak server.&quot;</span><span class="p">)</span>
+                <span class="k">case</span> <span class="p">(</span><span class="n">HTTPStatus</span><span class="o">.</span><span class="n">BAD_REQUEST</span><span class="p">,</span> <span class="s2">&quot;expired_token&quot;</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="n">AuthenticationError</span><span class="p">(</span><span class="s2">&quot;Device code has expired, please try again.&quot;</span><span class="p">)</span>
+                <span class="k">case</span> <span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">error</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="n">AuthenticationError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Unexpected error, please contact the developers (</span><span class="si">{</span><span class="n">status</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">).&quot;</span>
+                    <span class="p">)</span>
+        <span class="k">raise</span> <span class="n">AuthenticationError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;No successful authentication within </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">login_timeout</span><span class="si">}</span><span class="s2"> seconds.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_refresh_token</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">token_response_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">auth_client</span><span class="o">.</span><span class="n">refresh_token</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">token</span><span class="o">.</span><span class="n">refresh_token</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">KeycloakPostError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">AuthenticationError</span><span class="p">(</span><span class="s2">&quot;Refresh token is not valid. Use `aiod.create_token` to get a new one.&quot;</span>
+            <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="kc">None</span>
+        <span class="k">except</span> <span class="n">KeycloakConnectionError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">e</span><span class="o">.</span><span class="n">add_note</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not connect auth server, try again later.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">auth_client</span><span class="o">.</span><span class="n">decode_token</span><span class="p">(</span><span class="n">token_response_data</span><span class="p">[</span><span class="s2">&quot;access_token&quot;</span><span class="p">],</span> <span class="n">validate</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Token</span><span class="p">(</span><span class="o">**</span><span class="n">token_response_data</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_auth_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">token</span><span class="o">.</span><span class="n">has_expired</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">token</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_refresh_token</span><span class="p">()</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Authentication token has expired, please log in again.&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">token</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_login_sequence</span><span class="p">()</span>
+
+        <span class="n">auth</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="nb">type</span> <span class="o">==</span> <span class="s2">&quot;AccessToken&quot;</span><span class="p">:</span>
+            <span class="n">auth</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;access_token&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;in&quot;</span><span class="p">:</span> <span class="s2">&quot;header&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;Authorization&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;Bearer </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">token</span><span class="o">.</span><span class="n">access_token</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">}</span>
+        <span class="k">return</span> <span class="n">auth</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, KInIT @ AIoD.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

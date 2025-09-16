@@ -44,7 +44,15 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="index.html">Intro</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Configuration</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Configuration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#OuterRail.configuration.Configuration"><code class="docutils literal notranslate"><span class="pre">Configuration</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#OuterRail.configuration.Configuration.__init__"><code class="docutils literal notranslate"><span class="pre">Configuration.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#OuterRail.configuration.Configuration.login"><code class="docutils literal notranslate"><span class="pre">Configuration.login()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#OuterRail.configuration.Configuration.logout"><code class="docutils literal notranslate"><span class="pre">Configuration.logout()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="managers.html">Managers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="instances.html">Instances</a></li>
 </ul>
@@ -73,8 +81,95 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="configuration">
-<h1>Configuration<a class="headerlink" href="#configuration" title="Link to this heading"></a></h1>
+  <section id="module-OuterRail.configuration">
+<span id="configuration"></span><h1>Configuration<a class="headerlink" href="#module-OuterRail.configuration" title="Link to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="OuterRail.configuration.Configuration">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Configuration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auth_host</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'https://auth.aiod.eu/aiod-auth/'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auth_realm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'aiod'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auth_client_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'outer-rail-sdk'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">login_timeout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">300</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OuterRail/configuration.html#Configuration"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OuterRail.configuration.Configuration" title="Link to this definition"></a></dt>
+<dd><p>Configuration class for the OuterRail SDK. Provides methods for specifying the host and handling authentication.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="OuterRail.configuration.Configuration.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auth_host</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'https://auth.aiod.eu/aiod-auth/'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auth_realm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'aiod'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auth_client_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'outer-rail-sdk'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">login_timeout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">300</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="reference internal" href="_modules/OuterRail/configuration.html#Configuration.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OuterRail.configuration.Configuration.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initializes a new Configuration instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>host</strong> – (str): The url address that the SDK should connect to.</p></li>
+<li><p><strong>auth_host</strong> – (str): Url of the keycloak server providing auth logic of the SDK.</p></li>
+<li><p><strong>auth_realm</strong> – (str): The realm of the SSO for login.</p></li>
+<li><p><strong>auth_client_id</strong> – (str): The client id of the SDK.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Initialized SDK configuration.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#OuterRail.configuration.Configuration" title="OuterRail.configuration.Configuration">Configuration</a></p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Configuration</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s2">&quot;https://rail.aiod.eu/api&quot;</span><span class="p">)</span>
+<span class="go">Configuration</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="OuterRail.configuration.Configuration.login">
+<span class="sig-name descname"><span class="pre">login</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">persist</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/OuterRail/configuration.html#Configuration.login"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OuterRail.configuration.Configuration.login" title="Link to this definition"></a></dt>
+<dd><p>Get an API Key by prompting the user to log in through a browser.</p>
+<p>IMPORTANT: This is a blocking function, and will poll the authentication server until
+authentication is completed or <cite>timeout_seconds</cite> have passed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>persist</strong> (<em>bool</em><em>, </em><em>optional</em>) – If set to true, the login session will persist between multiple executions of code</p></li>
+<li><p><strong>case</strong> (<em>in which</em>)</p></li>
+<li><p><strong>execution.</strong> (<em>login</em><em>(</em><em>) </em><em>doesn't need to be called every</em>)</p></li>
+<li><p><strong>background</strong> (<em>In the</em>)</p></li>
+<li><p><strong>key</strong> (<em>the new api</em>)</p></li>
+<li><p><strong>file</strong> (<em>configuration</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>AuthenticationError</strong> – if authentication is unsuccessful in any way.</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">config</span> <span class="o">=</span> <span class="n">Configuration</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s2">&quot;https://rail.aiod.eu/api/docs&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">config</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">persist</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go"># User is logged in and token is persisted to file.</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Implementations based on authentication in AIoD SDK:
+<a class="reference external" href="https://github.com/aiondemand/aiondemand/blob/develop/src/aiod/authentication/authentication.py">https://github.com/aiondemand/aiondemand/blob/develop/src/aiod/authentication/authentication.py</a></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="OuterRail.configuration.Configuration.logout">
+<span class="sig-name descname"><span class="pre">logout</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/OuterRail/configuration.html#Configuration.logout"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OuterRail.configuration.Configuration.logout" title="Link to this definition"></a></dt>
+<dd><p>Logouts the current user by invalidating the current token. Logout also erases the token persisted
+in a file created by login(persist=True).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>KeycloakPostError</strong> – if logout was unsuccessful.</p></li>
+<li><p><strong>KeycloakConnectionError</strong> – if connection to auth server failed.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">config</span><span class="o">.</span><span class="n">logout</span><span class="p">()</span>
+<span class="go"># User is logged out and the file containing the token is erased.</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
 
