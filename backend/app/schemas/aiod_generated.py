@@ -155,7 +155,7 @@ class Distribution(BaseModel):
         None, example="https://www.example.com/dataset/file.csv", title="Content Url"
     )
     content_size_kb: Optional[int] = Field(None, example=10000, title="Content Size Kb")
-    date_published: Optional[datetime] = Field(
+    date_published: Optional[str] = Field(
         None,
         description="The datetime (utc) on which this Distribution was first published on an external platform. ",
         example="2022-01-01T15:15:00.000",
@@ -184,7 +184,7 @@ class Distribution(BaseModel):
     )
 
 
-class EntryStatus(Enum):
+class EntryStatus(str, Enum):
     draft = "draft"
     published = "published"
     rejected = "rejected"
@@ -562,13 +562,13 @@ class AIoDEntryRead(BaseModel):
         description="Status of the entry ({', '.join(EntryStatus)}).",
         example="published",
     )
-    date_modified: Optional[datetime] = Field(
+    date_modified: Optional[str] = Field(
         None,
         description="The datetime on which the metadata was last updated in the AIoD platform,in UTC.  Note the difference between `.aiod_entry.date_created` and `.date_published`: the former is automatically set to the datetime the resource was created on AIoD, while the latter can optionally be set to an earlier datetime that the resource was published on an external platform.",
         example="2023-01-01T15:15:00.000",
         title="Date Modified",
     )
-    date_created: Optional[datetime] = Field(
+    date_created: Optional[str] = Field(
         None,
         description="The datetime on which the metadata was first published on the AIoD platform, in UTC.",
         example="2022-01-01T15:15:00.000",
@@ -1091,7 +1091,7 @@ class DatasetRead(BaseModel):
         title="Platform Resource Identifier",
     )
     name: constr(max_length=256) = Field(..., example="The name of this resource", title="Name")
-    date_published: Optional[datetime] = Field(
+    date_published: Optional[str] = Field(
         None,
         description="The datetime (utc) on which this resource was first published on an external platform. Note the difference between `.aiod_entry.date_created` and `.date_published`: the former is automatically set to the datetime the resource was created on AIoD, while the latter can optionally be set to an earlier datetime that the resource was published on an external platform.",
         example="2022-01-01T15:15:00.000",
@@ -1341,7 +1341,7 @@ class EducationalResourceCreate(BaseModel):
         title="Platform Resource Identifier",
     )
     name: constr(max_length=256) = Field(..., example="The name of this resource", title="Name")
-    date_published: Optional[datetime] = Field(
+    date_published: Optional[str] = Field(
         None,
         description="The datetime (utc) on which this resource was first published on an external platform. Note the difference between `.aiod_entry.date_created` and `.date_published`: the former is automatically set to the datetime the resource was created on AIoD, while the latter can optionally be set to an earlier datetime that the resource was published on an external platform.",
         example="2022-01-01T15:15:00.000",

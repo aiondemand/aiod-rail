@@ -6,7 +6,7 @@ from beanie import PydanticObjectId
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import PlainTextResponse, StreamingResponse
 
-from app.auth import get_current_user
+from app.auth import get_current_user_if_exists, get_current_user_or_raise
 from app.config import TEMP_DIRNAME
 from app.helpers import FileDetail
 from app.models.experiment_run import ExperimentRun
@@ -21,42 +21,33 @@ router = APIRouter()
 @router.get("/experiment-runs/{id}", response_model=ExperimentRunDetails | None)
 async def get_experiment_run(
     id: PydanticObjectId,
-    user: dict | None = Depends(get_current_user_if_exists()),
+    user: dict | None = Depends(get_current_user_if_exists),
 ) -> Any:
     experiment_run = await get_experiment_run_if_accessible_or_raise(id, user)
     return experiment_run.map_to_response(user, return_detailed_response=True)
 
 
-# TODO this function is commented out to prevent anyone from using for now
-# @router.get("/experiment-runs/{id}/stop", response_model=None)
-# async def stop_experiment_run(
-#     id: PydanticObjectId,
-#     user: dict = Depends(get_current_user(from_api_key=True)),
-#     workflow_engine: WorkflowEngineBase = Depends(ReanaService.get_service),
-# ) -> Any:
-#     # TODO this case needs to be properly addressed
-#     # TODO if this endpoint is executed even before the workflow has even started
-#     # (the code execution is in _general_workflow_preparation function for example),
-#     # it will not effectively stop the experiment run execution pipeline and
-#     # the workflow will be created later on
+@router.get("/experiment-runs/{id}/stop", response_model=None)
+async def stop_experiment_run(
+    id: PydanticObjectId,
+    user: dict = Depends(get_current_user_or_raise),
+    workflow_engine: WorkflowEngineBase = Depends(ReanaService.get_service),
+) -> Any:
+    experiment_run = await get_experiment_run_if_accessible_or_raise(id, user, write_access=True)
+    if experiment_run.is_archived or experiment_run.state != RunState.RUNNING:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="You cannot stop this experiment run.",
+        )
 
-#     experiment_run = await get_experiment_run_if_accessible_or_raise(
-#         id, user, write_access=True
-#     )
-#     if experiment_run.is_archived:
-#         raise HTTPException(
-#             status_code=status.HTTP_400_BAD_REQUEST,
-#             detail="You cannot stop this experiment run.",
-#         )
-
-#     await workflow_engine.stop_workflow(experiment_run)
-#     await experiment_run.update_state_in_db(RunState.CRASHED)
+    await workflow_engine.stop_workflow(experiment_run)
+    await experiment_run.update_state_in_db(RunState.CRASHED)
 
 
 @router.delete("/experiment-runs/{id}", response_model=None)
 async def delete_experiment_run(
     id: PydanticObjectId,
-    user: dict = Depends(get_current_user_or_raise()),
+    user: dict = Depends(get_current_user_or_raise),
     workflow_engine: WorkflowEngineBase = Depends(ReanaService.get_service),
 ) -> Any:
     experiment_run = await get_experiment_run_if_accessible_or_raise(id, user, write_access=True)
@@ -77,7 +68,7 @@ async def delete_experiment_run(
 @router.get("/experiment-runs/{id}/logs", response_class=PlainTextResponse)
 async def get_experiment_run_logs(
     id: PydanticObjectId,
-    user: dict | None = Depends(get_current_user_if_exists()),
+    user: dict | None = Depends(get_current_user_if_exists),
 ) -> str:
     experiment_run = await get_experiment_run_if_accessible_or_raise(id, user)
     return experiment_run.logs
@@ -88,7 +79,7 @@ async def download_file_from_experiment_run(
     id: PydanticObjectId,
     filepath: str,
     workflow_engine: WorkflowEngineBase = Depends(ReanaService.get_service),
-    user: dict | None = Depends(get_current_user_if_exists()),
+    user: dict | None = Depends(get_current_user_if_exists),
 ) -> bytes:
     experiment_run = await get_experiment_run_if_accessible_or_raise(id, user)
 
@@ -118,7 +109,7 @@ async def download_file_from_experiment_run(
 async def list_files_of_experiment_run(
     id: PydanticObjectId,
     workflow_engine: WorkflowEngineBase = Depends(ReanaService.get_service),
-    user: dict | None = Depends(get_current_user_if_exists()),
+    user: dict | None = Depends(get_current_user_if_exists),
 ) -> list[FileDetail]:
     experiment_run = await get_experiment_run_if_accessible_or_raise(id, user)
     return await workflow_engine.list_files(experiment_run)

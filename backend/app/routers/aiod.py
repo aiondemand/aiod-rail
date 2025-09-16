@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, Response, UploadFile, sta
 
 from app.auth import get_current_user_or_raise, get_current_user_token
 from app.helpers import Pagination
+from app.schemas.aiod_generated import DatasetCreate
 from app.schemas.asset_id import AssetIdPathArg
 from app.schemas.dataset import Dataset
 from app.schemas.ml_model import MLModel
@@ -110,7 +111,7 @@ async def get_my_datasets_count(
 
 @router.post(
     "/datasets",
-    dependencies=[Depends(get_current_user_or_raise())],
+    dependencies=[Depends(get_current_user_or_raise)],
     response_model=Dataset,
 )
 async def create_dataset(
@@ -119,7 +120,7 @@ async def create_dataset(
 ) -> Any:
     # Create a new dataset in AIoD (just metadata)
     res = await aiod_client_wrapper.client.post(
-        Path(AssetType.DATASETS.value),
+        str(Path(AssetType.DATASETS.value)),
         headers={"Authorization": f"{token}"},
         json=dataset.dict(exclude_unset=True),
     )

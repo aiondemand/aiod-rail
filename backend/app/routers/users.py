@@ -14,7 +14,7 @@ router = APIRouter()
 
 @router.get("/users/profile", response_model=RailUserResponse)
 async def get_user_profile(
-    user: dict = Depends(get_current_user_or_raise()),
+    user: dict = Depends(get_current_user_or_raise),
 ) -> Any:
     try:
         user_obj = await RailUser.find_one(RailUser.email == user["email"])
@@ -33,7 +33,7 @@ async def get_user_profile(
 
 @router.get("/users/api_key", response_model=str)
 async def get_user_api_key(
-    user: dict = Depends(get_current_user_or_raise()),
+    user: dict = Depends(get_current_user_or_raise),
 ) -> Any:
     user_obj = await RailUser.find_one(RailUser.email == user["email"])
 
@@ -47,7 +47,7 @@ async def get_user_api_key(
 
 @router.post("/users/api_key", response_model=str)
 async def create_or_change_user_api_key(
-    user: dict = Depends(get_current_user_or_raise()),
+    user: dict = Depends(get_current_user_or_raise),
 ) -> Any:
     user_obj = await RailUser.find_one(RailUser.email == user["email"])
 
