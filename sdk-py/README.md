@@ -64,7 +64,9 @@ from OuterRail import what_you_need
 
 For the SDK to work with underlying RAIL backend, you need to
 specify the URL of the RAIL service. Additionally, most of the functionality
-requires authentication, and therefore you need to be logged in to use this functionality.
+requires authentication, and therefore you need to be logged in to use this functionality. <br>
+Logging in will require entering a device code on the provided URL, where afterwards you will be log in to the service
+and give consent to resources needed by the SDK.
 
 The code for this would look something like:
 
@@ -73,13 +75,10 @@ import os
 from OuterRail import Configuration
 
 config = Configuration(host="https://rail.aiod.eu/api/docs") # 1. Specify URL
-config.login(username="username", password="password") # 2. Log in
+config.login() # 2. Blocking function until log in or timeout
 # ... your logic here ...
 config.logout() # 3. After your code, logout
 ```
-> **_Note_**: It is at the moment only possible to register via google account or similar identity provider method.
-As such, you will need to get access to username and password from personal request to support of the authentication
-providers. Unfortunately, the proper channels for this are not yet in place.
 
 ### Examples
 For more examples, you can check out the following sources:

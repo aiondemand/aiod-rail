@@ -98,6 +98,9 @@ class AuthenticationError(Exception):
 
 
 class Configuration:
+    """
+    Configuration class for the OuterRail SDK. Provides methods for specifying the host and handling authentication.
+    """
 
     def __init__(self,
                  host: str,
