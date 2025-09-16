@@ -28,3 +28,10 @@
 
 > **_Note_**: More detailed instructions can be found in the official 
 > [Python Packaging User Guide](https://packaging.python.org/en/latest/tutorials/packaging-projects/)
+
+### TLDR script:
+```sh
+   python3 -m pip install --upgrade build twine &&
+   python3 -m build &&
+   python3 -m twine upload  dist/*
+```
