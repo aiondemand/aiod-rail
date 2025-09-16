@@ -5,8 +5,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased] | DD-MM-YYYY
+
+## [1.2.0] | 16-09-2025
+
 ### Updated
-* Configuration now automatically fetches API_KEY from environmental variable.
+* Authentication method via a device code flow.
+  * Now supports persistent login sessions via a local file storing the refresh token.
+  * Login method now has a timeout parameter (default 300 seconds).
+  * Logout method to clear the current session and delete the local file if persistent login was used.
 
 ### Added
 * Asset Manager
@@ -16,7 +22,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Dataset Instance
   * New instance type for datasets
   * Contains a method for deletion of a specific dataset
-
+* Run Instance
+  * New method to stop a specific run
+   
+### Removed
+* API_KEY authentication method.
 
 ## [1.1.0] | 16-07-2025
 

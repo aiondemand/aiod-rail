@@ -104,7 +104,7 @@ class Configuration:
 
     def __init__(self,
                  host: str,
-                 auth_host: str = "http://ec2-63-179-32-80.eu-central-1.compute.amazonaws.com/aiod-auth/",
+                 auth_host: str = "https://auth.aiod.eu/aiod-auth/",
                  auth_realm: str = "aiod",
                  auth_client_id: str = "outer-rail-sdk",
                  login_timeout: int = 300
