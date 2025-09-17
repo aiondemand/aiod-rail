@@ -5,7 +5,6 @@ from fastapi import APIRouter, Depends, HTTPException, Response, UploadFile, sta
 
 from app.auth import get_current_user_or_raise, get_current_user_token
 from app.helpers import Pagination
-from app.schemas.aiod_generated import DatasetCreate
 from app.schemas.asset_id import AssetIdPathArg
 from app.schemas.dataset import Dataset
 from app.schemas.ml_model import MLModel

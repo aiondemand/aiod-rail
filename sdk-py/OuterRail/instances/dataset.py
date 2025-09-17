@@ -350,4 +350,3 @@ class Dataset(BaseModel):
         if config is not None:
             _obj._set_config(config)
         return _obj
-

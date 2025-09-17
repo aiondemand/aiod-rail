@@ -537,4 +537,3 @@ class AssetManager:
                 return [Platform.from_dict(sub_data) for sub_data in api_response]
             except Exception as e:
                 raise e
-

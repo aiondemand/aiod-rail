@@ -264,4 +264,3 @@ class Experiment(BaseModel):
         """
 
         self._config = config
-

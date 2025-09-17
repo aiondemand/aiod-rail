@@ -24,7 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   * Contains a method for deletion of a specific dataset
 * Run Instance
   * New method to stop a specific run
-   
+
 ### Removed
 * API_KEY authentication method.
 
@@ -32,12 +32,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Updated
 * Existing managers and instances docstrings to contain usage examples
- 
+
 ### Added
 * Experiment Run Manager
   * New manager for runs
   * Contains one method enabling getting of specific runs by their ID.
-   
+
 ## [1.0.1] | 09-07-2025
 
 ### Updated
@@ -46,13 +46,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] | 09-07-2025
 
 ### Updated
-* 
+*
 
 ### Added
 * First version of the SDK
 
 ### Deprecated
-* 
+*
 
 ### Removed
 *

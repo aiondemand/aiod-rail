@@ -1,5 +1,4 @@
 import logging
-from typing import Awaitable, Callable
 
 from fastapi import HTTPException, Security, status
 from fastapi.security import OpenIdConnect
@@ -35,11 +34,15 @@ async def get_current_user_if_exists(token: str | None = Security(oidc)) -> dict
     except KeycloakError as e:
         _raise_invalid_token(e)
 
+    return None
+
 
 async def get_current_user_or_raise(token: str | None = Security(oidc)) -> dict:
     user = await get_current_user_if_exists(token)
     if user is None:
-        raise_requires_auth("This endpoint requires authorization. You need to be logged in or provide an API key.")
+        raise_requires_auth(
+            "This endpoint requires authorization. You need to be logged in or provide an API key."
+        )
     return user  # type: ignore[return-value]
 
 

@@ -147,7 +147,7 @@ async def test_get_my_asset_ids_happy_path(
     }
     async_client_mock.get.return_value = mock_response
     mocker.patch(
-        "app.services.aiod._get_user",
+        "app.services.aiod.get_current_user_or_raise",
         return_value=mock_current_user(),
     )
 
@@ -198,7 +198,7 @@ async def test_get_my_asset_ids_no_library(
     mock_response.json.return_value = my_library_response
     async_client_mock.get.return_value = mock_response
     mocker.patch(
-        "app.services.aiod._get_user",
+        "app.services.aiod.get_current_user_or_raise",
         return_value=mock_current_user(),
     )
 

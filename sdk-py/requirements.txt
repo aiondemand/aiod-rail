@@ -9,4 +9,3 @@ twine
 sphinx
 pyjwt
 tomlkit
-
