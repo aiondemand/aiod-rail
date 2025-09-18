@@ -29,7 +29,7 @@ class AsyncClientWrapper:
 
     def start(self):
         """Instantiate the client. Call from the FastAPI startup hook."""
-        self.async_client = httpx.AsyncClient(base_url=self.base_url)
+        self.async_client = httpx.AsyncClient(base_url=self.base_url, timeout=60)
 
     async def stop(self):
         """Gracefully shutdown. Call from FastAPI shutdown hook."""
