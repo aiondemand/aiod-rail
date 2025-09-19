@@ -1,0 +1,153 @@
+<app-base-doc>
+  <!-- ==================================================== -->
+  <h1>What is RAIL?</h1>
+  <h2>Research and Innovation AI Lab</h2>
+
+  <p>
+    RAIL is a tool that allows AI practitioners to explore and use AI assets directly in the AI on
+    Demand platform (AIoD). RAIL is developed within the
+    <a href="https://ai4europe.eu" target="_blank">AI4Europe project</a> as one of the core services
+    of the <a href="https://aiod.eu" target="_blank">AI on Demand platform</a>.
+  </p>
+
+  <img
+    src="assets/docs/images/rail-overview.png"
+    alt="RAIL overview"
+    class="doc-illustration-figure"
+  />
+
+  <p>More extensively, RAIL:</p>
+  <ul>
+    <li>Is a web application</li>
+    <li>… that enables <b>AI practitioners</b></li>
+    <li>… to <b>work with AIoD AI Assets</b> (explore, search, compare, …)</li>
+    <li>… and <b>create experiments</b> that are reproducible and reusable</li>
+    <li>
+      … that are <b>executable directly in the AIoD platform</b> supported by its infrastructure
+    </li>
+    <li>… and that <b>make use of AIoD AI Assets</b>.</li>
+  </ul>
+
+  <p>
+    <b>Important note:</b> RAIL is currently in the beta version. It is likely that you will
+    encounter bugs and other issues. Please, report them to us using the feedback button on the
+    left.
+  </p>
+
+  <!-- ==================================================== -->
+  <h1>Example workflow</h1>
+  <p>
+    Before digging deeper, let's have a look at a specific workflow you are able to achieve with
+    RAIL.
+  </p>
+  <p>
+    Let's say you are a data scientist. You just developed a sentiment classification model and you
+    would like to test how well the model performs in different scenarios. Therefore, you want to
+    test your model on datasets available in AIoD, whereby you decided to use HuggingFace datasets
+    (metadata about all datasets available in HuggingFace are periodically synchronized to AIoD).
+  </p>
+
+  <p>RAIL supports two main ways how to achieve this workflow:</p>
+  <ul>
+    <li>
+      Using the
+      <a [routerLink]="['/docs', 'rail-sdks']">RAIL Python SDK</a>
+      that allow you to interact with RAIL from your Python code.
+    </li>
+    <li>
+      Using the RAIL web application that allows you to interact with RAIL through a web interface.
+    </li>
+  </ul>
+
+  <p>In RAIL, you can accomplish this quite complex task by performing these steps:</p>
+
+  <h2>1. Log in</h2>
+  <p>
+    As running Experiments requires you to be logged in, you need to log in first. RAIL uses AI on
+    Demand login mechanism based on OAuth2 and it supports multiple identity providers.
+  </p>
+
+  <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start">
+    <mat-tab label="Python SDK">
+      <markdown clipboard src="assets/docs/markdown/codes/login.md"></markdown>
+    </mat-tab>
+    <mat-tab label="Web page">
+      <!-- Coming soon -->
+      # Coming soon
+    </mat-tab>
+  </mat-tab-group>
+
+  <p>
+    You can get your API key in the Profile page. You need to be logged in to see this section.
+    <!-- (routerLink on /profile TODO) -->
+  </p>
+
+  <div># Coming soon: Video showing how to generate an API Key</div>
+
+  <h2>2. Find appropriate testing datasets</h2>
+  <p>
+    You can search for datasets in AIoD using the
+    <a [routerLink]="['/datasets']">Datasets</a>
+    page. You can search for datasets by using fulltext search. The datasets are described by
+    metadata available in the AIoD platform.
+  </p>
+
+  <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start">
+    <mat-tab label="Python SDK">
+      <markdown clipboard src="assets/docs/markdown/codes/list-datasets.md"></markdown>
+    </mat-tab>
+    <mat-tab label="Web page"># Coming soon</mat-tab>
+  </mat-tab-group>
+
+  <h2>3. Create an Experiment</h2>
+  <p>
+    <a [routerLink]="['/experiments', 'create-experiment']">Create an Experiment</a>
+    that links your dataset and a model you want to evaluate the data on.
+  </p>
+  <p>
+    An Experiment must be linked to a particular Experiment Template, that represents a definition
+    of <i>runtime environment</i>, <i>software dependencies</i> and <i>code</i> — in your case, you
+    need an Experiment template that takes HuggingFace dataset and model and perform a
+    classification task. If no such Experiment template is available in the
+    <a [routerLink]="['/experiments', 'templates']">list of all templates</a>, you can
+    <a [routerLink]="['/experiments', 'create-template']">create your own</a>
+    (and share it with others or reuse it on your own).
+  </p>
+  <p>
+    Note: After you create an Experiment template, it needs to be approved by an administrator
+    before you can use it.
+  </p>
+
+  <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start">
+    <mat-tab label="Python SDK">
+      <markdown clipboard src="assets/docs/markdown/codes/create-experiment.md"></markdown>
+    </mat-tab>
+    <mat-tab label="Web page"># Coming soon</mat-tab>
+  </mat-tab-group>
+
+  <h2>4. Execute the Experiment</h2>
+  <p>
+    The Experiment will be executed by creating an instance of your experiment called Experiment Run
+    that will be run in the AI on Demand platform and the results will be available in RAIL.
+  </p>
+
+  <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start">
+    <mat-tab label="Python SDK">
+      <markdown clipboard src="assets/docs/markdown/codes/run-experiment.md"></markdown>
+    </mat-tab>
+    <mat-tab label="Web page"># Coming soon</mat-tab>
+  </mat-tab-group>
+
+  <h2>5. Check and collect Experiment Run outputs</h2>
+  <p>
+    After the experiment is finished, you can check the results in the Experiment Run page. You can
+    find all the runs of the experiment in the Experiment page.
+  </p>
+
+  <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start">
+    <mat-tab label="Python SDK">
+      <markdown clipboard src="assets/docs/markdown/codes/check-run-results.md"></markdown>
+    </mat-tab>
+    <mat-tab label="Web page"># Coming soon</mat-tab>
+  </mat-tab-group>
+</app-base-doc>

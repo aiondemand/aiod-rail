@@ -1,0 +1,129 @@
+@use '../../../../styles/typography' as typo;
+@use '../../../../variables' as *;
+
+:host {
+  display: inline-block;
+}
+
+/* router link active */
+:host(.active) .btn--menu {
+  color: var(--text-active);
+
+  &:hover {
+    background: var(--primary);
+    color: $aiod-yellow;
+    border-color: transparent;
+    box-shadow: var(--shadow-1);
+    outline: none;
+  }
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: var(--radius-pill);
+  border: 1px solid transparent;
+  font-family: var(--font-body);
+  font-weight: var(--w-medium);
+  cursor: pointer;
+  transition: filter 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+  white-space: nowrap;
+
+  &--block {
+    width: 100%;
+  }
+
+  /* ===== sizes via typography ===== */
+
+  &--sm {
+    @include typo.fluid-type(--btn-sm-d, --btn-sm-m);
+    line-height: 1.2;
+    padding: 0.35rem 0.7rem;
+  }
+
+  &--md {
+    @include typo.fluid-type(--btn-md-d, --btn-md-m); /* 18/16 */
+    line-height: 1.2;
+    padding: 0.55rem 1.1rem;
+  }
+
+  &--lg {
+    @include typo.fluid-type(--btn-lg-d, --btn-lg-m); /* 20/18 */
+    line-height: 1.2;
+    padding: 0.7rem 1.25rem;
+  }
+
+  /* ===== variants ===== */
+  &--primary {
+    background: $aiod-blue;
+    color: $aiod-white;
+  }
+  &--primary:hover {
+    background: $aiod-yellow;
+    color: $aiod-blue;
+  }
+
+  &--ghost {
+    background: transparent;
+    color: var(--text);
+    border-color: color-mix(in oklab, var(--text) 28%, transparent);
+  }
+  &--ghost:hover {
+    border-color: color-mix(in oklab, var(--text) 55%, transparent);
+  }
+
+  &--outline {
+    background: transparent;
+    color: var(--primary);
+    border-color: var(--primary);
+  }
+  &--outline:hover {
+    background: color-mix(in oklab, var(--primary) 8%, transparent);
+  }
+
+  &--danger {
+    background: $color-error;
+    color: #fff;
+  }
+  &--danger:hover {
+    filter: brightness(0.95);
+  }
+
+  /* MENU – ghost -> hover/active primary */
+  &--menu {
+    background: transparent;
+    color: var(--text);
+    box-shadow: none;
+    transition: background-color 0.18s ease, color 0.18s ease, box-shadow 0.18s ease,
+      border-color 0.18s ease;
+
+    &:hover {
+      background: var(--primary);
+      color: $aiod-yellow;
+      border-color: transparent;
+      box-shadow: var(--shadow-1);
+      outline: none;
+    }
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .spinner {
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    border-top-color: currentColor;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

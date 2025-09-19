@@ -1,0 +1,12 @@
+:host {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* !!! from block to flex + min-height:0  */
+.app-main {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+}

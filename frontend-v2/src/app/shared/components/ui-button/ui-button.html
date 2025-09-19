@@ -1,0 +1,16 @@
+<button
+  class="btn"
+  [ngClass]="[
+    'btn--' + variant,
+    'btn--' + size,
+    fullWidth ? 'btn--block' : ''
+  ]"
+  [disabled]="disabled || loading"
+  [attr.type]="type"
+  [attr.aria-label]="ariaLabel || null"
+>
+  @if (loading) {
+    <span class="spinner" aria-hidden="true"></span>
+  }
+  <span class="btn__content"><ng-content></ng-content></span>
+</button>

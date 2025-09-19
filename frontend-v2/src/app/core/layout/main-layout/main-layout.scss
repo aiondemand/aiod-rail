@@ -1,0 +1,230 @@
+@use '../../../../styles/themes';
+@use '../../../../styles/typography' as typography;
+@use '../../../../variables' as *;
+
+/* host fills <main> */
+:host {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  width: 100%;
+}
+.container {
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  background: var(--background);
+}
+
+/* ===== Sidebar ===== */
+.sidebar {
+  width: auto;
+  background: var(--background);
+  color: var(--text);
+  border-radius: 0%;
+  border-right: 1px solid var(--border);
+  overflow: hidden;
+
+  /* when collapsing */
+  transition: width 0.18s ease;
+}
+
+.sidebar.collapsed {
+  width: 84px;
+}
+
+/* only home button */
+.sn-section.home {
+  cursor: pointer;
+  border-color: var(--background);
+}
+
+.sn-section-sep {
+  padding-top: 1px;
+  border-color: transparent;
+}
+
+/* inner – sticky bottom for button */
+.sn-inner {
+  display: flex;
+  flex-direction: column;
+}
+.sn-scroll {
+  margin-top: $margin-double;
+}
+
+.sn-bottom {
+  border-top: 1px solid var(--border);
+  padding: $margin-default;
+  display: flex;
+  justify-content: center;
+}
+
+/* button collapse */
+.collapse-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+.collapse-btn:hover {
+  background: color-mix(in oklab, var(--surface) 75%, var(--primary) 8%);
+}
+
+/* ===== Card section ===== */
+.sn-section {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: none;
+  padding: $margin-default $margin-double;
+  cursor: default;
+  color: var(--primary);
+}
+
+.sn-section .left {
+  display: flex;
+  align-items: center;
+  gap: $margin-default;
+}
+.sec-icon {
+  color: var(--primary);
+  font-size: 24px;
+  vertical-align: middle;
+}
+.sec-title {
+  font-family: var(--font-title);
+  font-size: 20px;
+}
+.sn-section.collapsible {
+  cursor: pointer;
+}
+.sn-section .chevron {
+  transition: transform 0.18s ease;
+  color: var(--primary);
+}
+.sn-section.expanded .chevron {
+  transform: rotate(180deg);
+}
+
+/* ===== Accordion panel  ===== */
+
+.sn-panel {
+  display: grid;
+  grid-template-rows: 0fr; /* zavreté */
+  transition: grid-template-rows 0.28s ease, opacity 0.28s ease;
+  opacity: 0;
+}
+.sn-panel.open {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
+.sn-panel > .sn-list {
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* ===== list of imputs ===== */
+.sn-list {
+  padding: 0;
+  padding-bottom: 2px;
+}
+
+.sn-item.mat-mdc-list-item {
+  padding-inline: $margin-double;
+  border-radius: 0;
+}
+.sn-icon {
+  font-size: 20px;
+  padding-right: $margin-default;
+  vertical-align: middle;
+  color: var(--primary);
+}
+.sn-label {
+  font-family: var(--font-title);
+  color: var(--text);
+}
+
+.sn-item:hover {
+  background: color-mix(in oklab, var(--surface) 75%, var(--primary) 8%);
+}
+.sn-item.active {
+  background: color-mix(in oklab, var(--surface) 65%, var(--primary) 14%);
+}
+.sn-item.active::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  background: var(--primary);
+}
+
+.sn-inner-divider {
+  margin: $margin-half $margin-double;
+  border-color: var(--border);
+}
+
+/* ===== MINI collapsed ===== */
+.sidebar.collapsed {
+  .sn-section {
+    padding: $margin-default;
+    justify-content: center;
+  }
+  .sn-section .left {
+    justify-content: center;
+  }
+  .sn-section .sec-title,
+  .sn-section .chevron {
+    display: none;
+  }
+
+  .sn-list {
+    display: none;
+  }
+  .sn-panel {
+    display: none;
+  }
+  .sn-item .sn-label {
+    display: none;
+  }
+}
+
+/* ===== Content ===== */
+.mat-drawer-container,
+.content {
+  overflow: visible; /* scroluje .content */
+  transform: none; /* NUTNÉ: transform by zabil sticky */
+  contain: none; /* pre istotu – nech nie je izolovaný layout/paint */
+  min-height: 0;
+  min-width: 0;
+  background: var(--background);
+  color: var(--text);
+}
+
+/* Prefer-reduced-motion  */
+@media (prefers-reduced-motion: reduce) {
+  .sn-panel,
+  .sidebar,
+  .sn-section .chevron {
+    transition: none !important;
+  }
+}
+
+/* Dark++ */
+:host-context([data-theme='dark']) {
+  .sn-section {
+    background: var(--surface-2);
+  }
+  .sn-item:hover {
+    background: color-mix(in oklab, var(--surface) 70%, var(--primary) 12%);
+  }
+  .sn-item.active {
+    background: color-mix(in oklab, var(--surface) 55%, var(--primary) 18%);
+  }
+}

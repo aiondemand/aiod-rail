@@ -1,0 +1,106 @@
+<mat-sidenav-container class="container">
+  <mat-sidenav
+    class="sidebar"
+    [class.collapsed]="isCollapsed()"
+    #drawer="matSidenav"
+    [mode]="mode()"
+    [opened]="opened()"
+    role="navigation"
+    aria-label="Section navigation"
+  >
+    <div class="sn-inner">
+      <div class="sn-scroll">
+        <!-- HOME quick link (looks like a section header, no expand) -->
+        <button
+          type="button"
+          class="sn-section home"
+          (click)="$event.preventDefault(); go('https://aiod.eu/')"
+          role="link"
+          aria-label="Home"
+        >
+          <div class="left">
+            <mat-icon class="material-symbols-rounded sec-icon">home</mat-icon>
+            <span class="sec-title">Home</span>
+          </div>
+        </button>
+
+        <mat-divider class="sn-section-sep"></mat-divider>
+        @for (sec of sections(); track sec; let i = $index) { @if (sec.title) {
+        <button
+          type="button"
+          class="sn-section"
+          [class.collapsible]="isCollapsible(sec)"
+          [class.expanded]="isExpanded(i, sec)"
+          (click)="onSectionHeaderClick(i, sec, drawer)"
+          [attr.aria-controls]="'sec-' + i"
+          [attr.aria-expanded]="isExpanded(i, sec)"
+        >
+          <div class="left">
+            @if (sec.icon) {
+            <mat-icon class="material-symbols-rounded sec-icon">{{ sec.icon }}</mat-icon> }
+            <span class="sec-title">{{ sec.title }}</span>
+          </div>
+          @if (isCollapsible(sec)) {
+          <mat-icon class="material-symbols-rounded chevron">expand_more</mat-icon> }
+        </button>
+        } @if (hasItems(sec)) {
+        <div class="sn-panel" [class.open]="isExpanded(i, sec)" [id]="'sec-' + i">
+          <mat-nav-list class="sn-list" role="list">
+            @for (it of sec.items; track it) { @if (isExternalUrl(it.slug)) {
+            <!-- EXTERNAL LINK -->
+            <a mat-list-item class="sn-item" [href]="it.slug" target="_blank" rel="noopener">
+              @if (it.icon) {
+              <mat-icon matListIcon class="material-symbols-rounded sn-icon">{{
+                it.icon
+              }}</mat-icon>
+              }
+              <span matLine class="sn-label">{{ it.label }}</span>
+            </a>
+
+            } @else {
+            <!-- INTERNAL LINK -->
+            <a
+              mat-list-item
+              class="sn-item"
+              [routerLink]="linkTo(it.slug)"
+              routerLinkActive="active"
+              (click)="onItemClick(i, drawer)"
+            >
+              @if (it.icon) {
+              <mat-icon matListIcon class="material-symbols-rounded sn-icon">{{
+                it.icon
+              }}</mat-icon>
+              }
+              <span matLine class="sn-label">{{ it.label }}</span>
+            </a>
+            } @if (it.dividerAfter) { <mat-divider class="sn-inner-divider" /> } }
+          </mat-nav-list>
+        </div>
+        }
+
+        <div class="sn-gap"></div>
+        }
+      </div>
+      <!--                               BUTTON TO COLLAPSE SIDEBAR
+      @if (!isNarrow()) {
+      <div class="sn-bottom">
+        <button
+          mat-icon-button
+          type="button"
+          class="collapse-btn"
+          (click)="toggleCollapsed()"
+          aria-label="Toggle sidebar"
+        >
+          <mat-icon class="material-symbols-rounded">{{
+            isCollapsed() ? 'chevron_right' : 'chevron_left'
+          }}</mat-icon>
+        </button>
+      </div>
+      } -->
+    </div>
+  </mat-sidenav>
+
+  <mat-sidenav-content class="content">
+    <router-outlet></router-outlet>
+  </mat-sidenav-content>
+</mat-sidenav-container>

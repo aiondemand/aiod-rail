@@ -1,0 +1,150 @@
+@use '../../../../styles/themes';
+@use '../../../../styles/typography' as typo;
+@use '../../../../variables' as *;
+
+.doc-layout {
+  width: 100%;
+  max-width: auto;
+  margin: 0 auto;
+  display: grid;
+  align-items: start;
+  overflow: visible;
+}
+
+/* content = 1. , TOC = 2.  */
+.doc-content {
+  grid-column: 1;
+  padding: $margin-double;
+}
+.doc-toc {
+  grid-column: 2;
+}
+
+@media (max-width: 1100px) {
+  .doc-layout {
+    max-width: none;
+    grid-template-columns: 1fr;
+  }
+  .doc-content,
+  .doc-toc {
+    grid-column: auto;
+  }
+}
+
+/* ========== Content ========== */
+
+.doc-content {
+  min-width: 0;
+  padding-top: 24px;
+
+  h1 {
+    @include typo.title(--h1-d, --h1-m, --h1-lh-d, --h1-lh-m, --h1-mb-d, --h1-mb-m, --w-light);
+    color: var(--text);
+  }
+  h2 {
+    @include typo.title(--h2-d, --h2-m, --h2-lh-d, --h2-lh-m, --h2-mb-d, --h2-mb-m, --w-medium);
+    color: var(--text);
+  }
+  h3 {
+    @include typo.title(--h3-d, --h3-m, --h3-lh-d, --h3-lh-m, --h3-mb-d, --h3-mb-m, --w-medium);
+    color: var(--text);
+  }
+
+  p,
+  li {
+    @include typo.body-text(--p-d, --p-m, --p-lh-d, --p-lh-m, --p-mb-d, --p-mb-m);
+    color: var(--text);
+  }
+
+  a {
+    color: var(--primary);
+    text-decoration: none;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  img {
+    display: block;
+    margin: $margin-double auto;
+    max-width: clamp(200px, 80%, 920px);
+    height: auto;
+  }
+
+  .doc-img--sm {
+    max-width: 100px;
+  }
+}
+
+/* ========== TOC ========== */
+
+.doc-toc {
+  position: sticky;
+  top: 0;
+  overflow: auto;
+}
+
+@media (max-width: 1100px) {
+  .doc-toc {
+    position: static;
+    order: -1;
+    max-height: none;
+  }
+}
+
+/* ========== mat tab========== */
+
+app-base-doc .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label {
+  color: var(--text);
+}
+
+app-base-doc .mat-mdc-tab .mdc-tab__ripple,
+app-base-doc .mat-mdc-tab .mdc-tab__ripple::before,
+app-base-doc .mat-mdc-tab .mdc-tab__ripple::after {
+  background: transparent !important;
+  border-radius: none !important;
+}
+
+/* tabs */
+// app-base-doc .mat-mdc-tab {
+//   border-radius: 0.5rem;
+// }
+
+/* (text tab) */
+app-base-doc .mat-mdc-tab .mdc-tab__text-label {
+  color: var(--text);
+}
+
+app-base-doc .mat-mdc-tab:hover {
+  background: color-mix(in oklab, var(--text) 10%, transparent);
+  color: var(--text);
+}
+app-base-doc .mat-mdc-tab:hover .mdc-tab__text-label {
+  color: var(--text);
+}
+
+/* ACTIVE  */
+app-base-doc .mat-mdc-tab.mdc-tab--active {
+  background: none;
+  color: var(--text);
+}
+
+/* Inkbar (underline) */
+app-base-doc .mat-mdc-tab .mdc-tab-indicator__content--underline {
+  border-color: var(--primary);
+}
+
+app-base-doc .mat-mdc-tab.mdc-tab--active:hover .mdc-tab__text-label {
+  color: var(--text);
+}
+
+/*turinng off the underline under mat tab group */
+app-base-doc .mat-mdc-tab-header .mat-mdc-tab-label-container,
+app-base-doc .mat-mdc-tab-header .mat-mdc-tab-header-pagination {
+  border: 0;
+}
+
+app-base-doc .mat-mdc-tab .mdc-tab__text-label,
+app-base-doc .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label {
+  color: var(--text) !important;
+}

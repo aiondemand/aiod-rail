@@ -16,7 +16,7 @@ repos:
     rev: v2.2.4
     hooks:
       - id: codespell
-        files: ^(backend|frontend)
+        files: ^(backend|frontend|frontend-v2)
         exclude: \.json$
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.9.7

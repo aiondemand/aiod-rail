@@ -1,0 +1,89 @@
+// Include theming for Angular Material with `mat.theme()`.
+// This Sass mixin will define CSS variables that are used for styling Angular Material
+// components according to the Material 3 design spec.
+// Learn more about theming and how to use it for your application's
+// custom components at https://material.angular.dev/guide/theming
+@use '@angular/material' as mat;
+@use './styles/_themes';
+@use './styles/_fonts';
+@use './styles/_typography';
+
+@import 'prismjs/themes/prism-okaidia.css';
+
+:root {
+  --mdc-typography-body1-font-family: var(--font-body);
+  --mdc-typography-body2-font-family: var(--font-body);
+  --mdc-typography-button-font-family: var(--font-body);
+  --mdc-typography-subtitle1-font-family: var(--font-body);
+  --mdc-typography-subtitle2-font-family: var(--font-body);
+  --mdc-typography-headline6-font-family: var(--font-title);
+}
+
+html {
+  @include mat.theme(
+    (
+      color: (
+        primary: mat.$azure-palette,
+        tertiary: mat.$blue-palette,
+      ),
+      typography: Roboto,
+      density: 0,
+    )
+  );
+}
+
+body {
+  // Default the application to a light color theme. This can be changed to
+  // `dark` to enable the dark color theme, or to `light dark` to defer to the
+  // user's system settings.
+  color-scheme: light;
+
+  // Set a default background, font and text colors for the application using
+  // Angular Material's system-level CSS variables. Learn more about these
+  // variables at https://material.angular.dev/guide/system-variables
+  background-color: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+  font: var(--mat-sys-body-medium);
+
+  // Reset the user agent margin.
+  margin: 0;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Montserrat', system-ui, -apple-system, Segoe UI, Roboto, 'Helvetica Neue', Arial,
+    sans-serif;
+  line-height: 1.5;
+}
+
+/* hyperlinks */
+a {
+  color: var(--text);
+  text-decoration: none;
+}
+a:hover {
+  color: var(--primary);
+}
+
+/* focus ring (a11y) */
+:where(button, [role='button'], a, input, textarea, select):focus-visible {
+  outline: none;
+  box-shadow: var(--focus);
+  border-radius: 8px;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+body {
+  margin: 0;
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
+}

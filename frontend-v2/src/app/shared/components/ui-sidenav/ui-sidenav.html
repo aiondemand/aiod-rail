@@ -1,0 +1,144 @@
+<aside class="sidenav" [class.is-collapsed]="collapsed" [style.--sticky-top]="cssTop()">
+  <div class="sn-header">
+    <ng-content select="[sn-logo]"></ng-content>
+    <ng-content select="[sn-header-action]"></ng-content>
+  </div>
+
+  @for (sec of sections; track $index) {
+  <div class="sn-section">
+    @if (sec.title) {
+    <div class="sn-title">
+      <!-- left side clickable -->
+      <div class="title-left">
+        @if (sec.icon) { <span class="material-symbols-rounded ico">{{ sec.icon }}</span> } @if
+        (sec.slug) {
+        <a
+          class="t"
+          [routerLink]="[baseLink, sec.slug]"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: !!sec.activeExact }"
+          (click)="onMainClick(sec, $event)"
+        >
+          {{ sec.title }}
+        </a>
+        } @else if (sec.href) {
+        <a
+          class="t"
+          [href]="sec.href"
+          target="_blank"
+          rel="noopener noreferrer"
+          (click)="onMainClick(sec, $event)"
+        >
+          {{ sec.title }}
+          <span class="material-symbols-rounded ext">open_in_new</span>
+        </a>
+        } @else {
+        <button type="button" class="t as-btn" (click)="onMainClick(sec, $event)">
+          {{ sec.title }}
+        </button>
+        }
+      </div>
+
+      <!-- right side toggle -->
+      @if (sec.collapsible !== false) {
+      <button type="button" class="caret-btn" (click)="sec.expanded = !sec.expanded">
+        <span class="material-symbols-rounded caret" [class.rot]="sec.expanded !== false"
+          >expand_more</span
+        >
+      </button>
+      }
+    </div>
+    } @if (sec.collapsible === false || sec.expanded !== false) {
+    <ul class="sn-list" [class.is-collapsed]="collapsed">
+      @for (it of sec.items; track it.slug ?? it.href ?? it.label ?? $index) {
+      <li class="sn-item" [class.disabled]="it.disabled">
+        <!-- router link -->
+        @if (!it.href && it.slug) {
+        <a
+          class="sn-link"
+          [routerLink]="[baseLink, it.slug]"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: !!it.activeExact }"
+          (click)="onMainClick(it, $event)"
+        >
+          @if (it.icon) { <span class="material-symbols-rounded ico">{{ it.icon }}</span> }
+          <span class="lbl">{{ it.label }}</span>
+
+          @if (it.suffixIcon) {
+          <button
+            type="button"
+            class="suf"
+            (click)="it.suffixCommand?.(); $event.stopPropagation()"
+          >
+            <span class="material-symbols-rounded">{{ it.suffixIcon }}</span>
+          </button>
+          }
+        </a>
+        }
+        <!-- external link -->
+        @else if (it.href) {
+        <a
+          class="sn-link"
+          [href]="it.href"
+          target="_blank"
+          rel="noopener noreferrer"
+          (click)="onMainClick(it, $event)"
+        >
+          @if (it.icon) { <span class="material-symbols-rounded ico">{{ it.icon }}</span> }
+          <span class="lbl">{{ it.label }}</span>
+          <span class="material-symbols-rounded ext">open_in_new</span>
+        </a>
+        }
+        <!-- command -->
+        @else {
+        <button type="button" class="sn-link as-btn" (click)="onMainClick(it, $event)">
+          @if (it.icon) { <span class="material-symbols-rounded ico">{{ it.icon }}</span> }
+          <span class="lbl">{{ it.label }}</span>
+        </button>
+        }
+
+        <!-- var nested clikables -->
+        @if (it.children?.length) {
+        <ul class="sn-sublist">
+          @for (ch of it.children; track ch.slug ?? ch.href ?? ch.label ?? $index) {
+          <li class="sn-subitem" [class.disabled]="ch.disabled">
+            @if (!ch.href && ch.slug) {
+            <a
+              class="sn-sublink"
+              [routerLink]="[baseLink, ch.slug]"
+              routerLinkActive="active"
+              [routerLinkActiveOptions]="{ exact: !!ch.activeExact }"
+              (click)="onMainClick(ch, $event)"
+            >
+              @if (ch.icon) { <span class="material-symbols-rounded ico">{{ ch.icon }}</span> }
+              <span class="lbl">{{ ch.label }}</span>
+            </a>
+            } @else if (ch.href) {
+            <a
+              class="sn-sublink"
+              [href]="ch.href"
+              target="_blank"
+              rel="noopener noreferrer"
+              (click)="onMainClick(ch, $event)"
+            >
+              @if (ch.icon) { <span class="material-symbols-rounded ico">{{ ch.icon }}</span> }
+              <span class="lbl">{{ ch.label }}</span>
+              <span class="material-symbols-rounded ext">open_in_new</span>
+            </a>
+            } @else {
+            <button type="button" class="sn-sublink as-btn" (click)="onMainClick(ch, $event)">
+              @if (ch.icon) { <span class="material-symbols-rounded ico">{{ ch.icon }}</span> }
+              <span class="lbl">{{ ch.label }}</span>
+            </button>
+            }
+          </li>
+          }
+        </ul>
+        }
+      </li>
+      }
+    </ul>
+    }
+  </div>
+  }
+</aside>
