@@ -1,3 +1,5 @@
+```properties
+
 name
 
 - Type: str
@@ -91,3 +93,5 @@ task
 - Type: Enum
 
 - In the future, this property will be used to restrict selection of models when creating an Experiment from an Experiment Template.
+
+```

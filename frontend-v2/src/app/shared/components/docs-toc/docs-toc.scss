@@ -4,10 +4,10 @@
 
 .toc {
   position: sticky;
-  top: 88px;
   padding: $margin-default;
   border-left: 1px solid var(--border);
   color: var(--text);
+  max-width: 280px;
 
   .toc-title {
     @include typo.title(--h4-d, --h4-m, --h4-lh-d, --h4-lh-m, --h4-mb-d, --h4-mb-m, --w-medium);

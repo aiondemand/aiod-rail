@@ -1,3 +1,6 @@
+```properties
+
+
 experiment\_template\_id (Experiment Template)
 
 - Type: str
@@ -45,3 +48,5 @@ public
 - Type: bool
 
 - Defines whether the Experiment should be available (and visible) to other users.
+
+```

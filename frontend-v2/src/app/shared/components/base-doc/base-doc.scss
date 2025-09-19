@@ -148,3 +148,18 @@ app-base-doc .mat-mdc-tab .mdc-tab__text-label,
 app-base-doc .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label {
   color: var(--text) !important;
 }
+
+/* properties */
+
+app-base-doc pre[class*='language-properties'],
+app-base-doc code[class*='language-properties'] {
+  white-space: pre-wrap !important;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  hyphens: none;
+}
+
+app-base-doc pre[class*='language-properties'] {
+  overflow-x: hidden;
+  max-width: 100%;
+}

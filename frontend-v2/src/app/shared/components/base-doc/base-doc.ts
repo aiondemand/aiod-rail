@@ -32,6 +32,8 @@ export class BaseDocComponent implements AfterViewInit {
     const prismMod = await import('prismjs');
     const Prism: any = (prismMod as any).default ?? prismMod;
     await import('prismjs/components/prism-python');
+    await import('prismjs/components/prism-properties');
+    await import('prismjs/components/prism-json');
 
     Prism.highlightAllUnder(this.host.nativeElement);
   }
