@@ -4,6 +4,7 @@ import {
   Component,
   ViewEncapsulation,
   AfterViewInit,
+  OnDestroy,
   ElementRef,
   Inject,
   PLATFORM_ID,
@@ -19,7 +20,10 @@ import { DocsTocComponent } from '../docs-toc/docs-toc';
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class BaseDocComponent implements AfterViewInit {
+export class BaseDocComponent implements AfterViewInit, OnDestroy {
+  private mo?: MutationObserver;
+  private Prism: any;
+
   constructor(
     private host: ElementRef<HTMLElement>,
     @Inject(PLATFORM_ID) private platformId: Object
@@ -28,13 +32,35 @@ export class BaseDocComponent implements AfterViewInit {
   async ngAfterViewInit() {
     if (!isPlatformBrowser(this.platformId)) return;
 
-    // Prism + jazyk(y) načítaj len v prehliadači
+    // načítaj Prism + jazyky len v prehliadači
     const prismMod = await import('prismjs');
-    const Prism: any = (prismMod as any).default ?? prismMod;
-    await import('prismjs/components/prism-python');
-    await import('prismjs/components/prism-properties');
-    await import('prismjs/components/prism-json');
+    this.Prism = (prismMod as any).default ?? prismMod;
+    await Promise.all([
+      import('prismjs/components/prism-python'),
+      import('prismjs/components/prism-properties'),
+      import('prismjs/components/prism-json'),
+    ]);
 
-    Prism.highlightAllUnder(this.host.nativeElement);
+    const root = this.host.nativeElement;
+    const highlight = () => this.Prism?.highlightAllUnder?.(root);
+
+    // 1) prvé zvýraznenie
+    highlight();
+
+    // 2) simple watcher, to avoid missing formatting
+    let scheduled = false;
+    this.mo = new MutationObserver(() => {
+      if (scheduled) return;
+      scheduled = true;
+      requestAnimationFrame(() => {
+        scheduled = false;
+        highlight();
+      });
+    });
+    this.mo.observe(root, { childList: true, subtree: true });
+  }
+
+  ngOnDestroy() {
+    this.mo?.disconnect();
   }
 }
