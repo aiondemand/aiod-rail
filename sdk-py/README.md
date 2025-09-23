@@ -27,7 +27,7 @@ Special case that is also handled by managers is creation of new Instances.
 ## Installation
 
 ### Requirements
-Python 3.9+
+Python 3.11+
 
 ### pip install
 The OuterRail package can simply be installed with pip via command:
