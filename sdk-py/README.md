@@ -74,7 +74,7 @@ The code for this would look something like:
 import os
 from OuterRail import Configuration
 
-config = Configuration(host="https://rail.aiod.eu/api/docs") # 1. Specify URL
+config = Configuration(host="https://rail.aiod.eu/api") # 1. Specify URL
 config.login() # 2. Blocking function until log in or timeout
 # ... your logic here ...
 config.logout() # 3. After your code, logout

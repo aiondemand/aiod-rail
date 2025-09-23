@@ -106,7 +106,7 @@ class Configuration:
                  host: str,
                  auth_host: str = "https://auth.aiod.eu/aiod-auth/",
                  auth_realm: str = "aiod",
-                 auth_client_id: str = "outer-rail-sdk",
+                 auth_client_id: str = "aiod-sdk",
                  login_timeout: int = 300
                  ) -> Self:
         """
@@ -147,7 +147,7 @@ class Configuration:
             AuthenticationError: if authentication is unsuccessful in any way.
 
         Example:
-            >>> config = Configuration(host="https://rail.aiod.eu/api/docs")
+            >>> config = Configuration(host="https://rail.aiod.eu/api")
             >>> config.login(persist=True)
             # User is logged in and token is persisted to file.
 
