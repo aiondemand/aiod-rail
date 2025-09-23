@@ -411,14 +411,6 @@ export class BackendApiService {
     return this.http.get<UserRailProfile>(`${environment.BACKEND_API_URL}/users/profile`);
   }
 
-  getUserApiKey(): Observable<string> {
-    return this.http.get<string>(`${environment.BACKEND_API_URL}/users/api_key`);
-  }
-
-  createOrUpdateUserApiKey(): Observable<string> {
-    return this.http.post<string>(`${environment.BACKEND_API_URL}/users/api_key`, {});
-  }
-
 
   _buildPageQueries(pageQueries?: PageQueries): string {
     if (pageQueries == undefined) {

@@ -20,7 +20,7 @@ async def test_unauthenticated():
 @pytest.mark.asyncio
 @patch("app.auth.get_current_user_if_exists", new_callable=AsyncMock)
 async def test_get_current_user_returns_userinfo_from_token(mock_verify_token):
-    mock_verify_token.return_value = {"email": "john@doe.com"}
+    mock_verify_token.return_value = {"email": "john@doe.com", "api_key": "1234"}
 
     result = await get_current_user_or_raise(token="token")
 
