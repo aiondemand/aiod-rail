@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] | DD-MM-YYYY
 
+### Updated
+* Added an enhanced search option for dataset searching.
+
 ## [1.2.2] | 23.09-2025
 
 ### Updated

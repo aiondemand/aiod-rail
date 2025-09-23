@@ -87,13 +87,15 @@ class AssetManager:
             except Exception as e:
                 raise e
 
-    def get_datasets(self, query: str = None, offset: int = 0, limit: int = 100) -> List[Dataset]:
+    def get_datasets(self, query: str = None, enhanced: bool = False, offset: int = 0, limit: int = 100
+                     ) -> List[Dataset]:
         """
         Retrieves a list of available datasets.
 
         Args:
             query (str, optional): Search string used to filter datasets. Defaults to empty string,
             which means that by default, it's not used.
+            enhanced (bool, optional): If true and the query arg is also specified, a semantic search is performed.
             offset (int, optional): Starting index of from which to retrieve. Defaults to 0.
             limit (int, optional): How many items to retrieve. Defaults to 100.
 
@@ -115,7 +117,8 @@ class AssetManager:
                 if query is None:
                     api_response = api_instance.get_datasets(offset=offset, limit=limit)
                 else:
-                    api_response = api_instance.query_get_datasets(query=query, offset=offset, limit=limit)
+                    api_response = api_instance.query_get_datasets(query=query, enhanced=enhanced,
+                                                                   offset=offset, limit=limit)
                 return [Dataset.from_dict(sub_data, self._config) for sub_data in api_response]
             except Exception as e:
                 raise e

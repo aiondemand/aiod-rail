@@ -2359,6 +2359,7 @@ class AssetsApi:
     def query_get_datasets(
         self,
         query: StrictStr,
+        enhanced: Optional[bool] = None,
         offset: Optional[StrictInt] = None,
         limit: Optional[StrictInt] = None,
         _request_timeout: Union[
@@ -2406,6 +2407,7 @@ class AssetsApi:
 
         _param = self._search_datasets_v1_assets_datasets_search_query_get_serialize(
             query=query,
+            enhanced=enhanced,
             offset=offset,
             limit=limit,
             _request_auth=_request_auth,
@@ -2430,6 +2432,7 @@ class AssetsApi:
     def _search_datasets_v1_assets_datasets_search_query_get_serialize(
         self,
         query,
+        enhanced,
         offset,
         limit,
         _request_auth,
@@ -2457,6 +2460,9 @@ class AssetsApi:
 
         if limit is not None:
             _query_params.append(("limit", limit))
+
+        if enhanced is not None:
+            _query_params.append(("enhanced", enhanced))
 
         # process the header parameters
         # process the form parameters
