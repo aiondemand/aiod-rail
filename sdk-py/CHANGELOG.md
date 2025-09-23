@@ -6,10 +6,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] | DD-MM-YYYY
 
+## [1.2.2] | 23.09-2025
+
+### Updated
+* Changed the default client ID for SSO to "aiod-sdk".
+
 ## [1.2.1] | 23.09-2025
 
 ### Updated
-* The minimum required python version is now 3.11
+* The minimum required python version is now 3.11.
 
 ## [1.2.0] | 16-09-2025
 
