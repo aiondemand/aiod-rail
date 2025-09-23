@@ -11,9 +11,9 @@ An SDK for AI on Demand RAIL platform.
 
 RAIL stands for: __Research and Innovation AI Lab__
 
-RAIL is a tool that allows AI practitioners to explore and use AI assets 
-directly in the AI on Demand platform (AIoD). RAIL is developed within the 
-[AI4Europe project](https://www.ai4europe.eu) as one of the core services 
+RAIL is a tool that allows AI practitioners to explore and use AI assets
+directly in the AI on Demand platform (AIoD). RAIL is developed within the
+[AI4Europe project](https://www.ai4europe.eu) as one of the core services
 of the [AI on Demand platform](https://aiod.eu).
 
 ## OuterRail organization
@@ -24,7 +24,7 @@ SDK provides two types of interfaces:
 - __Managers__ - contain operations that function on multiple instances, such as querying, counting,...
 Special case that is also handled by managers is creation of new Instances.
 
-## Installation 
+## Installation
 
 ### Requirements
 Python 3.9+

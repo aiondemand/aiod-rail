@@ -1,3 +1,3 @@
 ```python
-config.logout() 
+config.logout()
 ```
