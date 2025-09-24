@@ -117,8 +117,7 @@ class Configuration:
 
         self.host = host
         self.login_timeout = login_timeout
-        # Keep a copy of auth settings for token persistence/validation
-        self.auth_host = auth_host
+        self.auth_host = auth_host + "/" if not auth_host.endswith("/") else ""
         self.auth_realm = auth_realm
         self.auth_client_id = auth_client_id
         self.auth_client = KeycloakOpenID(server_url=auth_host, client_id=auth_client_id, realm_name=auth_realm)
