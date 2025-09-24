@@ -7,6 +7,7 @@ import datetime
 from typing import Self
 from pathlib import Path
 from http import HTTPStatus
+from dataclasses import dataclass
 
 from keycloak import KeycloakOpenID, KeycloakPostError, KeycloakConnectionError
 
@@ -18,31 +19,20 @@ def _datetime_utc_in(*, seconds: int) -> datetime.datetime:
     return datetime.datetime.now(datetime.UTC) + span
 
 
-
+@dataclass
 class Token:
     """Ensures active access tokens provided through one dedicated refresh token."""
 
-    def __init__(
-            self,
-            refresh_token: str,
-            access_token: str | None = None,
-            expires_in: int = -1,
-            **_
-    ):
-        if expires_in > 0 and access_token is None:
-            raise ValueError(
-                "If `expires_in_seconds` is set, `access_token` must be set to a valid access_token"
-            )
-        self.refresh_token = refresh_token
-        self.access_token = access_token or ""
-        # Because of the minuscule time difference between the server sending the
-        # response and us processing it, the `expires_in` may not be used directly
-        # when calculating expiration time, therefore - 2 seconds.
-        self._expiration_date = _datetime_utc_in(seconds=expires_in - 300 + 20)
+    refresh_token: str
+    auth_host: str
+    auth_realm: str
+    auth_client_id: str
+    access_token: str = ""
+    expiration_date: datetime = None
 
     @property
     def has_expired(self) -> bool:
-        return datetime.datetime.now(datetime.UTC) >= self._expiration_date
+        return datetime.datetime.now(datetime.UTC) >= self.expiration_date
 
     @property
     def user_info(self) -> dict:
@@ -57,38 +47,37 @@ class Token:
             _user_token_file.touch()
 
         doc = tomlkit.document()
-        doc.add("refresh_token", self.refresh_token)
-        if not self.has_expired:
-            doc.add("access_token", self.access_token)
-            doc.add("expiration_date", self._expiration_date.isoformat())
+        for key, value in self:
+            if key == "expiration_date":
+                value = value.isoformat()
+            doc.add(key, value)
         _user_token_file.write_text(tomlkit.dumps(doc))
 
     def invalidate(self) -> None:
         if _user_token_file.exists() and _user_token_file.is_file():
             open(_user_token_file, 'w').close()
-        self.refresh_token = None
-        self.access_token = None
-        self._expiration_date = None
+        for key, _ in self:
+            self.__setattr__(key, None)
 
     @classmethod
     def from_file(cls) -> Self | None:
         file = _user_token_file
-        if not file.exists() or not file.is_file() or file.stat().st_size == 0:
-            return None
-
+        if not file.exists() or not file.is_file() or file.stat().st_size == 0: return None
         doc = tomlkit.parse(_user_token_file.read_text())
-        kwargs: dict[str, str | int] = {"refresh_token": str(doc["refresh_token"])}
-        if "expiration_date" in doc:
-            expiration_date = datetime.datetime.fromisoformat(doc["expiration_date"])
-            expires_in = expiration_date - _datetime_utc_in(seconds=0)
-            if expires_in.total_seconds() > 0:
-                kwargs.update(
-                    {
-                        "access_token": str(doc["access_token"]),
-                        "expires_in_seconds": expires_in.seconds,
-                    }
-                )
+        kwargs = {
+            "refresh_token": str(doc["refresh_token"]),
+            "auth_host": str(doc["auth_host"]),
+            "auth_realm": str(doc["auth_realm"]),
+            "auth_client_id": str(doc["auth_client_id"]),
+            "access_token": str(doc["access_token"]),
+            "expiration_date": datetime.datetime.fromisoformat(doc["expiration_date"])
+        }
+
         return Token(**kwargs)  # type: ignore[arg-type]
+
+    def __iter__(self):
+        for key, value in self.__dict__.items():
+            yield key, value
 
 
 
@@ -128,6 +117,10 @@ class Configuration:
 
         self.host = host
         self.login_timeout = login_timeout
+        # Keep a copy of auth settings for token persistence/validation
+        self.auth_host = auth_host
+        self.auth_realm = auth_realm
+        self.auth_client_id = auth_client_id
         self.auth_client = KeycloakOpenID(server_url=auth_host, client_id=auth_client_id, realm_name=auth_realm)
 
     def login(self, persist: bool = False) -> None:
@@ -159,9 +152,17 @@ class Configuration:
         self.token_persist = persist
         persisted_token = Token.from_file()
         if persisted_token:
-            self.token = persisted_token
-            print("Using persisted token from file.")
-            return
+            # Validate persisted token belongs to current auth configuration
+            if (
+                persisted_token.auth_host == self.auth_host and
+                persisted_token.auth_realm == self.auth_realm and
+                persisted_token.auth_client_id == self.auth_client_id
+            ):
+                self.token = persisted_token
+                print("Using persisted token from file.")
+                return
+            else:
+                print("Ignoring persisted token due to Keycloak configuration mismatch.")
 
         self.token = self._login_sequence()
         if self.token_persist:
@@ -170,7 +171,7 @@ class Configuration:
 
     def logout(self) -> None:
         """
-        Logouts the current user by invalidating the current token. Logout also erases the token persisted
+        Logs out the current user by invalidating the current token. Logout also erases the token persisted
         in a file created by login(persist=True).
 
         Raises:
@@ -217,7 +218,7 @@ class Configuration:
             match response:
                 case (HTTPStatus.OK, _):
                     self.auth_client.decode_token(token_response_data["access_token"], validate=True)
-                    return Token(**token_response_data)
+                    return Token(**self._token_init_args(token_response_data))
                 case (HTTPStatus.BAD_REQUEST, "authorization_pending"):
                     continue
                 case (HTTPStatus.BAD_REQUEST, "slow_down"):
@@ -239,14 +240,14 @@ class Configuration:
         try:
             token_response_data = self.auth_client.refresh_token(self.token.refresh_token)
         except KeycloakPostError:
-            raise AuthenticationError("Refresh token is not valid. Use `aiod.create_token` to get a new one."
+            raise AuthenticationError("Refresh token is not valid. You need to login again."
             ) from None
         except KeycloakConnectionError as e:
             e.add_note(f"Could not connect auth server, try again later.")
             raise
 
         self.auth_client.decode_token(token_response_data["access_token"], validate=True)
-        return Token(**token_response_data)
+        return Token(**self._token_init_args(token_response_data))
 
     def _auth_settings(self, type: str) -> dict:
         if self.token.has_expired:
@@ -265,3 +266,17 @@ class Configuration:
                 "value": f"Bearer {self.token.access_token}"
             }
         return auth
+
+    def _token_init_args(self, response_data: dict) -> dict:
+        return {
+            "refresh_token": response_data["refresh_token"],
+            "access_token": response_data["access_token"] or "",
+            # Because of the minuscule time difference between the server sending the
+            # response and us processing it, the `expires_in` may not be used directly
+            # when calculating expiration time, therefore - 2 seconds.
+            "expiration_date": _datetime_utc_in(seconds=response_data["expires_in"] - 2),
+            "auth_host": self.auth_host,
+            "auth_realm": self.auth_realm,
+            "auth_client_id": self.auth_client_id,
+        }
+

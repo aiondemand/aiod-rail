@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Updated
 * Added an enhanced search option for dataset searching.
+* Saving token information to a file now includes auth settings (auth_host, auth_realm, client_id).
 
 ## [1.2.2] | 23.09-2025
 
