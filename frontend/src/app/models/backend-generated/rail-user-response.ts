@@ -11,5 +11,4 @@
 
 export interface RailUserResponse {
     email: string;
-    api_key?: string;
 }
