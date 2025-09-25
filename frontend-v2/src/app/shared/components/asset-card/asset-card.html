@@ -1,0 +1,32 @@
+<div class="card" role="article" aria-labelledby="title">
+  <div class="meta">
+    @if (source) {
+    <span class="badge" [ngClass]="sourceClass">{{ sourceLabel }}</span>
+    }
+
+    <!-- iba ikonka so stavom + tooltip -->
+    @if (visibility) {
+    <mat-icon class="vis-icon" [matTooltip]="visibilityLabel" [attr.aria-label]="visibilityLabel">
+      {{ visibilityIcon }}
+    </mat-icon>
+    } @if (date) {
+    <span class="date">{{ date | date : 'MMM d, y' }}</span>
+    }
+  </div>
+
+  <h3 id="title" class="title">
+    <a class="title-link" [routerLink]="link" aria-label="Open {{ title }}">
+      {{ title }}
+    </a>
+  </h3>
+
+  <p class="desc" [title]="description">{{ description }}</p>
+
+  <div class="actions">
+    <a class="btn-link" [routerLink]="link">
+      <ui-button variant="primary" ariaLabel="Go to detail"
+        >Go to detail <mat-icon class="btn-icon">arrow_forward</mat-icon></ui-button
+      >
+    </a>
+  </div>
+</div>
