@@ -1,0 +1,299 @@
+@use '../../../../../styles/themes';
+@use '../../../../../styles/typography' as typo;
+@use '../../../../../variables.scss' as *;
+
+:host ::ng-deep .keywords .chips .mdc-evolution-chip.mdc-evolution-chip--disabled,
+:host ::ng-deep .keywords .chips .mat-mdc-chip.mat-mdc-chip-disabled {
+  opacity: 1 !important;
+  background: color-mix(in oklab, var(--text) 14%, transparent) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text) !important;
+}
+:host ::ng-deep .keywords .chips .mdc-evolution-chip__text-label {
+  color: var(--text) !important;
+  opacity: 1 !important;
+}
+
+/* ================== Helpers ================== */
+$pill-h: 32px;
+$pill-r: 999px;
+
+@mixin pill {
+  height: $pill-h;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px;
+  border-radius: $pill-r;
+  border: 1px solid var(--border);
+  background: color-mix(in oklab, var(--text) 10%, transparent);
+  color: var(--text);
+  line-height: 1;
+}
+
+/* jednotné ikonky vnútri piluliek */
+.pill-icon,
+.msr,
+.meta .kv mat-icon,
+.meta .badge mat-icon {
+  width: 18px;
+  height: 18px;
+  font-size: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+/* ===== Card/Layout ===== */
+.detail.card {
+  margin: $margin-double;
+  background: var(--surface, var(--background));
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: $margin-double;
+  box-shadow: 0 1px 0 color-mix(in oklab, var(--text) 6%, transparent);
+}
+
+/* ===== Header ===== */
+.head {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 14px 18px;
+  align-items: start;
+  margin-bottom: $margin-default;
+  @media (max-width: 760px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* menší nadpis – h2 scale */
+.title {
+  @include typo.title(--h2-d, --h2-m, --h2-lh-d, --h2-lh-m, --h2-mb-d, --h2-mb-m, --w-bold);
+  margin: 0;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 12px;
+  letter-spacing: -0.01em;
+
+  .ver {
+    font-family: var(--font-body);
+    font-weight: var(--w-medium);
+    font-size: 0.6em;
+    color: var(--text-muted);
+    padding: 2px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: color-mix(in oklab, var(--text) 5%, transparent);
+  }
+}
+
+/* ===== Meta (štítky) ===== */
+.meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px 12px;
+  margin-top: 6px;
+  margin-bottom: $margin-default;
+
+  /* platform – vlastný riadok nad ostatnými */
+  .badge.platform {
+    @include pill;
+    background: color-mix(in oklab, var(--primary) 22%, transparent);
+    border-color: color-mix(in oklab, var(--primary) 45%, var(--border));
+    color: var(--text);
+
+    /* zruš oddelený riadok z predchádzajúcej verzie */
+    flex-basis: auto;
+    order: 0;
+    margin-bottom: 0;
+  }
+
+  /* key-value pilule (ID, date, license) */
+  .kv {
+    @include pill;
+
+    .k {
+      color: var(--text-muted);
+    }
+    .v {
+      color: var(--text);
+    }
+
+    .monospace {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
+        monospace;
+      letter-spacing: 0.01em;
+    }
+  }
+}
+
+.actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  .hide-sm {
+    @media (max-width: 760px) {
+      display: none;
+    }
+  }
+}
+
+/* ===== Keywords – jedna typológia piluliek, bez dvoch orámovaní ===== */
+.keywords {
+  display: grid;
+  grid-template-columns: $pill-h 1fr; /* ikonka fix, tagy pružné */
+  column-gap: 12px;
+  align-items: start;
+  padding-bottom: $margin-default;
+
+  /* ikonka/štítok */
+  .label {
+    @include pill;
+    width: $pill-h;
+    height: $pill-h;
+    padding: 0;
+    justify-content: center;
+    border-radius: 12px;
+    background: color-mix(in oklab, var(--text) 6%, transparent);
+  }
+
+  /* tagy vpravo */
+  .chips {
+    min-width: 0; /* dôležité pre zalamovanie v gride */
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+
+    /* vypni material outline/overlay – žiadne dvojité orámovanie */
+    --mdc-chip-outline-color: transparent;
+    --mdc-chip-elevated-container-color: transparent;
+    --mdc-chip-disabled-state-layer-color: transparent;
+    --mdc-chip-disabled-state-layer-opacity: 0;
+
+    .mat-mdc-chip,
+    .mdc-evolution-chip {
+      @include pill;
+      height: 28px;
+      padding: 0 12px;
+      box-shadow: none !important;
+      outline: none !important;
+      background: color-mix(in oklab, var(--text) 10%, transparent) !important;
+      border-color: var(--border) !important;
+      color: var(--text) !important;
+
+      /* ✨ kopírovateľný text */
+      user-select: text;
+      -webkit-user-select: text;
+      cursor: text;
+    }
+
+    .mdc-evolution-chip__container {
+      border: 0 !important;
+    }
+
+    .mdc-evolution-chip__text-label {
+      color: var(--text) !important;
+      opacity: 1 !important;
+      font-family: var(--font-body);
+      font-weight: var(--w-medium);
+      font-size: 12.5px;
+      line-height: 1;
+      letter-spacing: 0.01em;
+
+      user-select: text;
+      -webkit-user-select: text;
+    }
+
+    /* disabled – čitateľné a selektovateľné, no bez klik akcií */
+    .mdc-evolution-chip--disabled,
+    .mat-mdc-chip-disabled,
+    [aria-disabled='true'] {
+      opacity: 1 !important;
+      pointer-events: auto;
+    }
+
+    /* vypni ripple */
+    .mat-ripple,
+    .mat-ripple-element {
+      display: none !important;
+    }
+  }
+}
+
+/* ===== Description ===== */
+.desc {
+  margin-top: $margin-default;
+
+  .desc-head {
+    margin-bottom: $margin-default;
+  }
+  .desc-actions {
+    margin-top: $margin-default;
+  }
+
+  .desc-body {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: $margin-default;
+    background: color-mix(in oklab, var(--background) 96%, transparent);
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      font-family: var(--font-title);
+    }
+
+    a {
+      text-decoration: underline;
+    }
+
+    pre {
+      border: 1px solid color-mix(in oklab, var(--text) 18%, transparent);
+      background: color-mix(in oklab, var(--text) 12%, transparent);
+      overflow: auto;
+    }
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
+        monospace;
+      font-size: 0.9em;
+    }
+
+    &.is-clamped {
+      display: block;
+    }
+  }
+
+  .desc-actions {
+    margin-top: 10px;
+  }
+}
+
+/* ===== Loading / Error ===== */
+
+.loading {
+  margin: $margin-double;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 0;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: color-mix(in oklab, var(--background) 92%, transparent);
+}
+
+.error {
+  margin: $margin-double;
+  padding: 12px 14px;
+  border: 1px solid color-mix(in oklab, var(--primary) 40%, var(--border));
+  background: color-mix(in oklab, var(--primary) 12%, transparent);
+  color: color-mix(in oklab, var(--primary) 85%, var(--text));
+  border-radius: 12px;
+  font: var(--font-ui, 600 14px/1.35 system-ui, sans-serif);
+}

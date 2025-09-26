@@ -1,9 +1,12 @@
-import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy, OnChanges } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { UiButton } from '../ui-button/ui-button';
+import { Dataset } from '../../models/dataset';
+import { formatPlatformName } from '../../helpers/formatting-helper';
+import { Platform } from '../../models/platform';
 
 type Visibility = 'public' | 'private' | 'unlisted' | '';
 
@@ -15,21 +18,48 @@ type Visibility = 'public' | 'private' | 'unlisted' | '';
   styleUrls: ['./asset-card.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AssetCardComponent {
+export class AssetCardComponent implements OnChanges {
+  // manuálne vstupy – ostávajú
   @Input() source = '';
   @Input() title = '';
   @Input() date?: string | number | Date;
   @Input() description = '';
-  @Input({ required: true }) link!: string | any[];
+  @Input() link?: string | any[];
   @Input() visibility: Visibility = '';
 
-  get sourceLabel(): string {
-    return (this.source || '')
-      .replace(/[-_]/g, ' ')
-      .replace(/\w\S*/g, (s) => s[0].toUpperCase() + s.slice(1).toLowerCase());
+  // NOVÉ: priamo backendový model
+  @Input() resource?: Dataset;
+
+  ngOnChanges() {
+    if (this.resource) {
+      this.source = this.resource.platform ?? this.source;
+      this.title = this.resource.name ?? this.title;
+      this.date = this.resource.date_published ?? this.date;
+
+      const plain = this.resource.description?.plain?.trim();
+      const html = this.resource.description?.html ?? '';
+      const noTags = html
+        .replace(/<[^>]+>/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+      this.description = plain || noTags || this.description;
+
+      if (!this.link && this.resource.identifier) {
+        this.link = ['/datasets', this.resource.identifier];
+      }
+    }
   }
+
+  get sourceLabel(): string {
+    // použijeme prioritne resource.platform, inak .source z Inputu
+    const p: string | Platform = (this.resource?.platform as any) ?? this.source ?? '';
+    return formatPlatformName(p);
+  }
+
   get sourceClass(): string {
-    return `badge--${(this.source || '').toLowerCase()}`;
+    // CSS class nechaj radšej podľa „raw“ hodnoty (malé písmená, bez medzier)
+    const raw = (this.resource?.platform ?? this.source ?? '').toString();
+    return `badge--${raw.toLowerCase()}`;
   }
 
   get visibilityIcon(): string {
@@ -45,7 +75,6 @@ export class AssetCardComponent {
     }
   }
   get visibilityLabel(): string {
-    if (!this.visibility) return '';
-    return this.visibility[0].toUpperCase() + this.visibility.slice(1);
+    return this.visibility ? this.visibility[0].toUpperCase() + this.visibility.slice(1) : '';
   }
 }

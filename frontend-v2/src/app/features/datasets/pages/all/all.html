@@ -1,26 +1,95 @@
-<ui-asset-card
-  source="zenodo"
-  title="Dataset: Maxeon Solar Technologies, Ltd. (MAXN) Stock Performance"
-  date="2023-12-14"
-  description="This dataset provides historical stock market performance data for specific companies…"
-  [link]="['/datasets', 'maxn']"
->
-</ui-asset-card>
+<section class="toolbar">
+  <div class="search">
+    <input
+      #q
+      type="search"
+      class="input"
+      [value]="query()"
+      placeholder="Full-text search"
+      (keyup.enter)="onSearch(q.value)"
+      (blur)="onSearch(q.value)"
+      aria-label="Search datasets"
+    />
 
-<ui-asset-card
-  source="zenodo"
-  title="Dataset: Maxeon Solar Technologies, Ltd. (MAXN) Stock Performance"
-  date="2023-12-14"
-  description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore  asdad adsa dasdadasd  sadajdada jadwp jasdjoapjsdop jwo jdasodjwopjqdajodwj  wjodjawodjawopdj apowdjaowdj aopwdj et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
-  [link]="['/datasets', 'maxn']"
->
-</ui-asset-card>
+    <!-- ikonkový search (ui-button) -->
+    <ui-button variant="primary" size="sm" [ariaLabel]="'Search'" (click)="onSearch(q.value)">
+      <mat-icon class="material-symbols-rounded">search</mat-icon>
+    </ui-button>
 
-<ui-asset-card
-  source="zenodo"
-  title="Dataset: Maxeon Solar Technologies, Ltd. (MAXN) Stock Performance"
-  date="2023-12-14"
-  description=""
-  [link]="['/datasets', 'maxn']"
->
-</ui-asset-card>
+    <label class="chk">
+      <input
+        type="checkbox"
+        [checked]="enhanced()"
+        (change)="toggleEnhanced($any($event.target).checked)"
+      />
+      <span>Enhanced</span>
+    </label>
+  </div>
+
+  <div class="pager">
+    <label class="psize">
+      <span class="psize-label">Page size</span>
+      <mat-select
+        class="select select--slim"
+        [value]="pageSize()"
+        (selectionChange)="changePageSize($event.value)"
+        [panelClass]="'pager-select-panel'"
+        aria-label="Page size"
+      >
+        <mat-option [value]="10">10</mat-option>
+        <mat-option [value]="25">25</mat-option>
+        <mat-option [value]="50">50</mat-option>
+        <mat-option [value]="100">100</mat-option>
+      </mat-select>
+    </label>
+
+    <!-- prev -->
+    <ui-button
+      variant="ghost"
+      size="sm"
+      [disabled]="!canPrev() || loading()"
+      [ariaLabel]="'Previous page'"
+      (click)="prevPage()"
+      title="Previous page"
+    >
+      <mat-icon class="material-symbols-rounded">chevron_left</mat-icon>
+    </ui-button>
+
+    <span class="info"> {{ from() | number }}–{{ to() | number }} / {{ length() | number }} </span>
+
+    <!-- next -->
+    <ui-button
+      variant="ghost"
+      size="sm"
+      [disabled]="!canNext() || loading()"
+      [ariaLabel]="'Next page'"
+      (click)="nextPage()"
+      title="Next page"
+    >
+      <mat-icon class="material-symbols-rounded">chevron_right</mat-icon>
+    </ui-button>
+  </div>
+</section>
+
+<!-- error -->
+<p *ngIf="error() as e" class="error">{{ e }}</p>
+
+<!-- loading -->
+<div *ngIf="loading()" class="loading" aria-live="polite" aria-busy="true">
+  <mat-progress-spinner
+    mode="indeterminate"
+    diameter="42"
+    strokeWidth="4"
+    color="primary"
+    aria-label="Loading datasets"
+  ></mat-progress-spinner>
+</div>
+
+<!-- content -->
+<section class="grid" *ngIf="!loading() && !error()">
+  @for (item of items(); track item.identifier) {
+  <ui-asset-card [resource]="item"></ui-asset-card>
+  } @empty {
+  <p>Žiadne datasety.</p>
+  }
+</section>

@@ -1,0 +1,70 @@
+<section class="toolbar">
+  <div class="search">
+    <input
+      #q
+      type="search"
+      class="input"
+      [value]="query"
+      [placeholder]="placeholder"
+      (keyup.enter)="onSearch(q.value)"
+      (blur)="onSearch(q.value)"
+      aria-label="Search"
+    />
+
+    <ui-button variant="primary" size="sm" [ariaLabel]="'Search'" (click)="onSearch(q.value)">
+      <mat-icon class="material-symbols-rounded">search</mat-icon>
+    </ui-button>
+
+    <label class="chk" *ngIf="showEnhanced">
+      <input
+        type="checkbox"
+        [checked]="enhanced"
+        (change)="toggleEnhanced(($event.target as HTMLInputElement).checked)"
+      />
+      <span>Enhanced</span>
+    </label>
+  </div>
+
+  <div class="pager">
+    <label class="psize">
+      <span class="psize-label">Page size</span>
+
+      <!-- Ak používaš MatSelect -->
+      <mat-select
+        class="select select--slim"
+        [value]="pageSize"
+        (selectionChange)="changePageSize($event.value)"
+        [panelClass]="'pager-select-panel'"
+        aria-label="Page size"
+      >
+        <mat-option *ngFor="let opt of pageSizeOptions" [value]="opt">{{ opt }}</mat-option>
+      </mat-select>
+    </label>
+
+    <!-- prev -->
+    <ui-button
+      variant="ghost"
+      size="sm"
+      [disabled]="!canPrev || loading"
+      [ariaLabel]="'Previous page'"
+      title="Previous page"
+      (click)="prevPage()"
+    >
+      <mat-icon class="material-symbols-rounded">chevron_left</mat-icon>
+    </ui-button>
+
+    <span class="info">{{ from | number }}–{{ to | number }} / {{ length | number }}</span>
+
+    <!-- next -->
+    <ui-button
+      variant="ghost"
+      size="sm"
+      [disabled]="!canNext || loading"
+      [ariaLabel]="'Next page'"
+      title="Next page"
+      (click)="nextPage()"
+    >
+      <mat-icon class="material-symbols-rounded">chevron_right</mat-icon>
+    </ui-button>
+  </div>
+</section>

@@ -1,0 +1,100 @@
+<!-- error -->
+<p *ngIf="error() as e" class="error">{{ e }}</p>
+
+<!-- loading -->
+<div *ngIf="loading()" class="loading" aria-live="polite" aria-busy="true">
+  <mat-progress-spinner
+    mode="indeterminate"
+    diameter="36"
+    strokeWidth="4"
+    color="primary"
+    aria-label="Loading datasets"
+  ></mat-progress-spinner>
+</div>
+
+<!-- content -->
+<section *ngIf="!loading() && !error() && dataset()" class="detail card">
+  <header class="head">
+    <div class="left">
+      <h1 class="title">
+        {{ title() }}
+        <span *ngIf="version()" class="ver">v{{ version() }}</span>
+      </h1>
+
+      <div class="meta">
+        <span class="badge platform" *ngIf="platform()" [matTooltip]="'Platform'">
+          {{ platform() }}
+        </span>
+
+        <span class="kv" [matTooltip]="'Identifier'">
+          <mat-icon class="msr">badge</mat-icon>
+          <span class="k">ID:</span>
+          <span class="v monospace">{{ identifier() }}</span>
+        </span>
+
+        <span class="kv" *ngIf="datePublished()" [matTooltip]="'Published date'">
+          <mat-icon class="msr">schedule</mat-icon>
+          <span class="v">{{ datePublished() | date : 'MMM d, y' }}</span>
+        </span>
+
+        <span class="kv" [matTooltip]="'License'">
+          <mat-icon class="msr">description</mat-icon>
+          <span class="v">{{ license() }}</span>
+        </span>
+
+        <a
+          *ngIf="sameAs()"
+          class="ext"
+          [href]="sameAs()"
+          target="_blank"
+          rel="noopener"
+          [attr.aria-label]="'Open source page'"
+          [matTooltip]="'Open source page'"
+        >
+          <mat-icon class="msr">open_in_new</mat-icon>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- keywords -->
+  <section class="keywords" *ngIf="keywords()?.length">
+    <span class="label" [matTooltip]="'Keywords'">
+      <mat-icon class="msr">label</mat-icon>
+    </span>
+
+    <mat-chip-listbox class="chips" aria-label="Keywords">
+      <mat-chip *ngFor="let kw of keywords()" [disabled]="true">{{ kw }}</mat-chip>
+    </mat-chip-listbox>
+  </section>
+
+  <mat-divider></mat-divider>
+
+  <!-- description -->
+  <section class="desc">
+    <div class="desc-head">Description</div>
+
+    <div
+      #shortDescription
+      class="desc-body"
+      [class.is-clamped]="!showFull()"
+      [class.is-full]="showFull()"
+    >
+      <markdown [data]="descriptionMd()"></markdown>
+    </div>
+
+    <div class="desc-actions" *ngIf="canExpand()">
+      <ui-button
+        variant="ghost"
+        size="sm"
+        (click)="toggleDescription(!showFull())"
+        [ariaLabel]="showFull() ? 'Show less' : 'Show more'"
+      >
+        <mat-icon class="material-symbols-rounded">
+          {{ showFull() ? 'expand_less' : 'expand_more' }}
+        </mat-icon>
+        <span>{{ showFull() ? 'Show less' : 'Show more' }}</span>
+      </ui-button>
+    </div>
+  </section>
+</section>

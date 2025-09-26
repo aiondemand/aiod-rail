@@ -67,11 +67,27 @@ export const routes: Routes = [
     data: { sidenav: DATASETS_NAV, baseLink: '/datasets' },
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'all' },
+
+      // /datasets/all  (list)  +  /datasets/all/:id  (detail)
       {
         path: 'all',
-        loadComponent: () =>
-          import('./features/datasets/pages/all/all').then((m) => m.AllDatasetsPage),
+        data: { sidenav: DATASETS_NAV, baseLink: '/datasets' }, // kvôli sidebaru
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./features/datasets/pages/all/all').then((m) => m.DatasetsAllComponent),
+          },
+          {
+            path: ':id',
+            loadComponent: () =>
+              import('./features/datasets/pages/dataset-detail/dataset-detail').then(
+                (m) => m.DatasetDetailComponent
+              ),
+          },
+        ],
       },
+
       {
         path: 'create-dataset',
         loadComponent: () =>
@@ -84,6 +100,9 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/datasets/pages/my-datasets/my-datasets').then((m) => m.MyDatasets),
       },
+
+      // MUSÍ BYŤ POSLEDNÉ, inak zhltne 'my-datasets'
+      { path: ':id', pathMatch: 'full', redirectTo: 'all/:id' },
     ],
   },
 
