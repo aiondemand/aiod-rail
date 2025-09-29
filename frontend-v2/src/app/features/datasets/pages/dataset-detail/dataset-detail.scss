@@ -31,7 +31,6 @@ $pill-r: 999px;
   line-height: 1;
 }
 
-/* jednotné ikonky vnútri piluliek */
 .pill-icon,
 .msr,
 .meta .kv mat-icon,
@@ -68,7 +67,6 @@ $pill-r: 999px;
   }
 }
 
-/* menší nadpis – h2 scale */
 .title {
   @include typo.title(--h2-d, --h2-m, --h2-lh-d, --h2-lh-m, --h2-mb-d, --h2-mb-m, --w-bold);
   margin: 0;
@@ -89,7 +87,7 @@ $pill-r: 999px;
   }
 }
 
-/* ===== Meta (štítky) ===== */
+/* ===== Meta  ===== */
 .meta {
   display: flex;
   align-items: center;
@@ -98,20 +96,18 @@ $pill-r: 999px;
   margin-top: 6px;
   margin-bottom: $margin-default;
 
-  /* platform – vlastný riadok nad ostatnými */
   .badge.platform {
     @include pill;
     background: color-mix(in oklab, var(--primary) 22%, transparent);
     border-color: color-mix(in oklab, var(--primary) 45%, var(--border));
     color: var(--text);
 
-    /* zruš oddelený riadok z predchádzajúcej verzie */
     flex-basis: auto;
     order: 0;
     margin-bottom: 0;
   }
 
-  /* key-value pilule (ID, date, license) */
+  /* key-value pill (ID, date, license) */
   .kv {
     @include pill;
 
@@ -142,15 +138,15 @@ $pill-r: 999px;
   }
 }
 
-/* ===== Keywords – jedna typológia piluliek, bez dvoch orámovaní ===== */
+/* ===== Keywords  ===== */
 .keywords {
   display: grid;
-  grid-template-columns: $pill-h 1fr; /* ikonka fix, tagy pružné */
+  grid-template-columns: $pill-h 1fr;
   column-gap: 12px;
   align-items: start;
   padding-bottom: $margin-default;
 
-  /* ikonka/štítok */
+  /* ico/label */
   .label {
     @include pill;
     width: $pill-h;
@@ -161,14 +157,13 @@ $pill-r: 999px;
     background: color-mix(in oklab, var(--text) 6%, transparent);
   }
 
-  /* tagy vpravo */
+  /* tags on right */
   .chips {
-    min-width: 0; /* dôležité pre zalamovanie v gride */
+    min-width: 0;
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
 
-    /* vypni material outline/overlay – žiadne dvojité orámovanie */
     --mdc-chip-outline-color: transparent;
     --mdc-chip-elevated-container-color: transparent;
     --mdc-chip-disabled-state-layer-color: transparent;
@@ -185,7 +180,6 @@ $pill-r: 999px;
       border-color: var(--border) !important;
       color: var(--text) !important;
 
-      /* ✨ kopírovateľný text */
       user-select: text;
       -webkit-user-select: text;
       cursor: text;
@@ -208,7 +202,7 @@ $pill-r: 999px;
       -webkit-user-select: text;
     }
 
-    /* disabled – čitateľné a selektovateľné, no bez klik akcií */
+    /* disabled */
     .mdc-evolution-chip--disabled,
     .mat-mdc-chip-disabled,
     [aria-disabled='true'] {
@@ -216,7 +210,6 @@ $pill-r: 999px;
       pointer-events: auto;
     }
 
-    /* vypni ripple */
     .mat-ripple,
     .mat-ripple-element {
       display: none !important;
@@ -276,17 +269,6 @@ $pill-r: 999px;
 }
 
 /* ===== Loading / Error ===== */
-
-.loading {
-  margin: $margin-double;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px 0;
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  background: color-mix(in oklab, var(--background) 92%, transparent);
-}
 
 .error {
   margin: $margin-double;

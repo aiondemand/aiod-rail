@@ -16,7 +16,7 @@ export class SearchToolbarComponent {
   @Input() query = '';
   @Input() placeholder = 'Full-text search';
 
-  /** Zobrazí/nezobrazí Enhanced checkbox */
+  /** Enhanced checkbox */
   @Input() showEnhanced = false;
   @Input() enhanced = false;
 
@@ -25,7 +25,7 @@ export class SearchToolbarComponent {
   @Input() length = 0;
   @Input() loading = false;
 
-  /** Možnosti pre page size */
+  /** pagesize options */
   @Input() pageSizeOptions: number[] = [10, 25, 50, 100];
 
   /* ---- Outputs ---- */

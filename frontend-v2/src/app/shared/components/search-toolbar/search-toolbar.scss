@@ -1,6 +1,6 @@
-@use '../../../../../styles/themes';
-@use '../../../../../styles/typography' as typo;
-@use '../../../../../variables.scss' as *;
+@use '../../../../styles/themes';
+@use '../../../../styles/typography' as typo;
+@use '../../../../variables.scss' as *;
 
 /* ===== Root / host ===== */
 :host {
@@ -13,7 +13,7 @@
 .toolbar {
   margin: $margin-double;
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   gap: 12px 16px;
   align-items: center;
 
@@ -33,6 +33,7 @@
   align-items: center;
   gap: 8px;
   min-width: 0;
+  flex: 1 1 auto;
 
   .input {
     flex: 1 1 auto;
@@ -75,6 +76,7 @@
 
     span {
       font: var(--font-ui, 500 14px/1.2 system-ui, sans-serif);
+      white-space: nowrap;
     }
   }
 }
@@ -85,11 +87,13 @@
   align-items: center;
   gap: 10px;
   justify-self: end;
+  flex-wrap: wrap;
+  row-gap: 8px;
+  min-width: 0;
 
   @media (max-width: 900px) {
     justify-self: stretch;
     justify-content: space-between;
-    flex-wrap: wrap;
   }
 
   label {
@@ -98,6 +102,7 @@
     gap: 8px;
     font: var(--font-ui, 500 14px/1.2 system-ui, sans-serif);
     color: color-mix(in oklab, var(--text) 85%, transparent);
+    min-width: 0;
   }
 
   .psize {
@@ -111,11 +116,10 @@
     font: var(--font-ui, 500 14px/1.2 system-ui, sans-serif);
   }
 
-  /* mat-select trigger – kompaktný */
   .select.mat-mdc-select {
     height: 36px;
     min-width: 64px;
-    width: 72px;
+    width: 75px;
     padding: 0 8px;
     border-radius: 10px;
     border: 1px solid var(--border);
@@ -137,6 +141,8 @@
       justify-content: center;
     }
     .mat-mdc-select-value {
+      width: 100%;
+      text-align: center;
       font: var(--font-ui, 600 14px/1.2 system-ui, sans-serif);
     }
 
@@ -159,14 +165,13 @@
     }
   }
 
-  /* fallback pre natívny <select> */
   .select:not(.mat-mdc-select) {
     appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
     height: 36px;
     min-width: 64px;
-    width: 72px;
+    width: 75px;
     padding: 0 28px 0 10px;
     border-radius: 10px;
     border: 1px solid var(--border);
@@ -175,7 +180,7 @@
     font: var(--font-ui, 600 14px/1.2 system-ui, sans-serif);
     cursor: pointer;
     outline: none;
-    background-image: url("data:image/svg+xml;utf8,<svg fill='none' stroke='%23a8b3c2' stroke-width='2' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'><path d='M6 9l6 6 6-6'/></svg>");
+
     background-repeat: no-repeat;
     background-position: right 8px center;
     background-size: 14px;
@@ -197,10 +202,11 @@
     padding: 6px 10px;
     border-radius: 10px;
     background: color-mix(in oklab, var(--text) 3%, transparent);
+    flex: 0 1 auto;
   }
 }
 
-/* ===== Overlay panel pre mat-select ===== */
+/* ===== Overlay  ===== */
 :host ::ng-deep .pager-select-panel {
   background: color-mix(in oklab, var(--background) 96%, transparent);
   border: 1px solid var(--border);
@@ -254,6 +260,39 @@
 
   .mat-mdc-option .mat-ripple-element {
     opacity: 0.08;
+  }
+}
+
+/* ===== responsive  ===== */
+@media (max-width: 1100px) {
+  .pager {
+    justify-content: space-between;
+
+    .psize-label {
+      display: none;
+    }
+    .select.mat-mdc-select,
+    .select:not(.mat-mdc-select) {
+      width: 75px;
+    }
+
+    .info {
+      order: 3;
+      flex: 1 1 100%;
+    }
+  }
+}
+
+@media (min-width: 900px) and (max-width: 1150px) {
+  .toolbar {
+    grid-template-columns: 1fr;
+  }
+  .pager {
+    justify-self: stretch;
+    justify-content: space-between;
+    margin-top: 4px;
+    flex-wrap: wrap;
+    row-gap: 8px;
   }
 }
 

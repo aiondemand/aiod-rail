@@ -26,6 +26,9 @@ import { UiButton } from '../../../../shared/components/ui-button/ui-button';
 import { Dataset } from '../../../../shared/models/dataset';
 import { BackendApiService } from '../../../../shared/services/backend-api.service';
 
+import { UiLoadingComponent } from '../../../../shared/components/ui-loading/ui-loading';
+import { UiErrorComponent } from '../../../../shared/components/ui-error/ui-error';
+
 @Component({
   selector: 'app-dataset-detail',
   standalone: true,
@@ -38,6 +41,8 @@ import { BackendApiService } from '../../../../shared/services/backend-api.servi
     MarkdownModule,
     UiButton,
     MatProgressSpinnerModule,
+    UiLoadingComponent,
+    UiErrorComponent,
   ],
   templateUrl: './dataset-detail.html',
   styleUrls: ['./dataset-detail.scss'],
@@ -134,5 +139,10 @@ export class DatasetDetailComponent implements OnInit {
 
   toggleDescription(full: boolean) {
     this.showFull.set(full);
+  }
+
+  onRetryError() {
+    const id = this._id();
+    if (id) this.fetch(id);
   }
 }

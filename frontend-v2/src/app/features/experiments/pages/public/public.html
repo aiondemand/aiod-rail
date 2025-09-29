@@ -1,29 +1,40 @@
-<ui-asset-card
-  source="rail"
-  title="Experiment: Stable Diffusion XL – Fine-tune on Logos"
-  date="2025-08-20"
-  description="Fine-tuning SDXL on a curated logo dataset; compares LoRA vs. full fine-tune."
-  [link]="['/experiments', 'sdxl-logos']"
-  visibility="public"
->
-</ui-asset-card>
+<ui-search-toolbar
+  [query]="query()"
+  [showEnhanced]="false"
+  [pageSize]="pageSize()"
+  [pageIndex]="pageIndex()"
+  [length]="length()"
+  [loading]="loading()"
+  [pageSizeOptions]="[10, 25, 50, 100]"
+  placeholder="Full-text search"
+  (search)="onSearch($event)"
+  (pageSizeChange)="onPageSize($event)"
+  (pageIndexChange)="onPageIndex($event)"
+></ui-search-toolbar>
 
-<ui-asset-card
-  source="rail"
-  title="Experiment: BERT QA – Domain Adaptation"
-  date="2025-06-02"
-  description="Domain adaptation of a QA model on legal corpora; tracks F1/EM across checkpoints."
-  [link]="['/experiments', 'bert-qa-legal']"
-  visibility="private"
->
-</ui-asset-card>
+<!-- Error panel -->
+<ui-error
+  [show]="!!error()"
+  [message]="error() || 'There are no public experiments.'"
+  [retryable]="true"
+  retryLabel="Try again"
+  [closable]="true"
+  (retry)="onRetryError()"
+  (close)="onDismissError()"
+></ui-error>
 
-<ui-asset-card
-  source="rail"
-  title="Experiment: RL PPO – CARLA Intersection"
-  date="2025-05-11"
-  description="PPO agent trained to handle unprotected left turns in CARLA under varying weather."
-  [link]="['/experiments', 'ppo-carla-left-turn']"
-  visibility="unlisted"
->
-</ui-asset-card>
+<!-- Zoznam kariet -->
+<section class="grid" aria-live="polite">
+  @for (exp of items(); track trackExp(exp)) {
+  <ui-asset-card
+    [source]="platformOf(exp)"
+    [title]="titleOf(exp)"
+    [date]="dateOf(exp)"
+    [description]="descOf(exp)"
+    [link]="linkOf(exp)"
+    [visibility]="visibilityOf(exp)"
+  />
+  } @empty { @if (!loading() && !error()) {
+  <p class="empty">There are no public experiments.</p>
+  } }
+</section>

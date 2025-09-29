@@ -1,16 +1,14 @@
 <!-- error -->
-<p *ngIf="error() as e" class="error">{{ e }}</p>
+<ui-error
+  [show]="!!error()"
+  [message]="error() || 'Failed to load :/'"
+  [retryable]="true"
+  retryLabel="Try Again"
+  (retry)="onRetryError()"
+></ui-error>
 
 <!-- loading -->
-<div *ngIf="loading()" class="loading" aria-live="polite" aria-busy="true">
-  <mat-progress-spinner
-    mode="indeterminate"
-    diameter="36"
-    strokeWidth="4"
-    color="primary"
-    aria-label="Loading datasets"
-  ></mat-progress-spinner>
-</div>
+<ui-loading [show]="loading()" [diameter]="32" ariaLabel="Loading"></ui-loading>
 
 <!-- content -->
 <section *ngIf="!loading() && !error() && dataset()" class="detail card">

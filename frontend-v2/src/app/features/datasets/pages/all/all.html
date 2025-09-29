@@ -1,89 +1,30 @@
-<section class="toolbar">
-  <div class="search">
-    <input
-      #q
-      type="search"
-      class="input"
-      [value]="query()"
-      placeholder="Full-text search"
-      (keyup.enter)="onSearch(q.value)"
-      (blur)="onSearch(q.value)"
-      aria-label="Search datasets"
-    />
-
-    <!-- ikonkový search (ui-button) -->
-    <ui-button variant="primary" size="sm" [ariaLabel]="'Search'" (click)="onSearch(q.value)">
-      <mat-icon class="material-symbols-rounded">search</mat-icon>
-    </ui-button>
-
-    <label class="chk">
-      <input
-        type="checkbox"
-        [checked]="enhanced()"
-        (change)="toggleEnhanced($any($event.target).checked)"
-      />
-      <span>Enhanced</span>
-    </label>
-  </div>
-
-  <div class="pager">
-    <label class="psize">
-      <span class="psize-label">Page size</span>
-      <mat-select
-        class="select select--slim"
-        [value]="pageSize()"
-        (selectionChange)="changePageSize($event.value)"
-        [panelClass]="'pager-select-panel'"
-        aria-label="Page size"
-      >
-        <mat-option [value]="10">10</mat-option>
-        <mat-option [value]="25">25</mat-option>
-        <mat-option [value]="50">50</mat-option>
-        <mat-option [value]="100">100</mat-option>
-      </mat-select>
-    </label>
-
-    <!-- prev -->
-    <ui-button
-      variant="ghost"
-      size="sm"
-      [disabled]="!canPrev() || loading()"
-      [ariaLabel]="'Previous page'"
-      (click)="prevPage()"
-      title="Previous page"
-    >
-      <mat-icon class="material-symbols-rounded">chevron_left</mat-icon>
-    </ui-button>
-
-    <span class="info"> {{ from() | number }}–{{ to() | number }} / {{ length() | number }} </span>
-
-    <!-- next -->
-    <ui-button
-      variant="ghost"
-      size="sm"
-      [disabled]="!canNext() || loading()"
-      [ariaLabel]="'Next page'"
-      (click)="nextPage()"
-      title="Next page"
-    >
-      <mat-icon class="material-symbols-rounded">chevron_right</mat-icon>
-    </ui-button>
-  </div>
-</section>
+<ui-search-toolbar
+  [query]="query()"
+  [showEnhanced]="true"
+  [enhanced]="enhanced()"
+  [pageSize]="pageSize()"
+  [pageIndex]="pageIndex()"
+  [length]="length()"
+  [loading]="loading()"
+  [pageSizeOptions]="[10, 25, 50, 100]"
+  placeholder="Full-text search"
+  (search)="onSearch($event)"
+  (enhancedChange)="toggleEnhanced($event)"
+  (pageSizeChange)="changePageSize($event)"
+  (pageIndexChange)="onPageIndexChange($event)"
+></ui-search-toolbar>
 
 <!-- error -->
-<p *ngIf="error() as e" class="error">{{ e }}</p>
+<ui-error
+  [show]="!!error()"
+  [message]="error() || 'Failed to load :/'"
+  [retryable]="true"
+  retryLabel="Try Again"
+  (retry)="onRetryError()"
+></ui-error>
 
 <!-- loading -->
-<div *ngIf="loading()" class="loading" aria-live="polite" aria-busy="true">
-  <mat-progress-spinner
-    mode="indeterminate"
-    diameter="42"
-    strokeWidth="4"
-    color="primary"
-    aria-label="Loading datasets"
-  ></mat-progress-spinner>
-</div>
+<ui-loading [show]="loading()" [diameter]="32" ariaLabel="Loading"></ui-loading>
 
 <!-- content -->
 <section class="grid" *ngIf="!loading() && !error()">

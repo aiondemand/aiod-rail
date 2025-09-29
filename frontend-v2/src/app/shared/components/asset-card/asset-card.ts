@@ -19,15 +19,12 @@ type Visibility = 'public' | 'private' | 'unlisted' | '';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AssetCardComponent implements OnChanges {
-  // manuálne vstupy – ostávajú
   @Input() source = '';
   @Input() title = '';
   @Input() date?: string | number | Date;
   @Input() description = '';
   @Input() link?: string | any[];
   @Input() visibility: Visibility = '';
-
-  // NOVÉ: priamo backendový model
   @Input() resource?: Dataset;
 
   ngOnChanges() {

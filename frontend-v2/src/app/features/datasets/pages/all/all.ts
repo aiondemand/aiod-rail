@@ -5,14 +5,16 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { tap } from 'rxjs/operators';
 
 import { AssetCardComponent } from '../../../../shared/components/asset-card/asset-card';
-import { UiButton } from '../../../../shared/components/ui-button/ui-button';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 
 import { Dataset } from '../../../../shared/models/dataset';
 import { BackendApiService } from '../../../../shared/services/backend-api.service';
 
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { SearchToolbarComponent } from '../../../../shared/components/search-toolbar/search-toolbar';
+
+import { UiLoadingComponent } from '../../../../shared/components/ui-loading/ui-loading';
+import { UiErrorComponent } from '../../../../shared/components/ui-error/ui-error';
 
 @Component({
   selector: 'app-datasets-all',
@@ -20,10 +22,11 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
   imports: [
     CommonModule,
     AssetCardComponent,
-    UiButton,
     MatSelectModule,
     MatIconModule,
-    MatProgressSpinnerModule,
+    SearchToolbarComponent,
+    UiLoadingComponent,
+    UiErrorComponent,
   ],
   templateUrl: './all.html',
   styleUrls: ['./all.scss'],
@@ -103,7 +106,7 @@ export class DatasetsAllComponent implements OnInit {
         },
         error: (err) => {
           console.error(err);
-          this.error.set(err?.error?.message || err?.message || 'Nepodarilo sa načítať datasety.');
+          this.error.set(err?.error?.message || err?.message || 'failed to load datasets.');
           this.loading.set(false);
         },
       });
@@ -117,17 +120,25 @@ export class DatasetsAllComponent implements OnInit {
       });
   }
 
-  // UI handlers – upravia URL
+  // === Handlery z toolbaru (verejné) ===
   onSearch(v: string) {
     const q = v?.trim() ?? '';
     this.navigateWith({ q, pageIndex: 0 });
   }
+
   toggleEnhanced(on: boolean) {
     this.navigateWith({ enhanced: on, pageIndex: 0 });
   }
+
   changePageSize(ps: number) {
     this.navigateWith({ pageSize: ps, pageIndex: 0 });
   }
+
+  onPageIndexChange(i: number) {
+    this.navigateWith({ pageIndex: i });
+  }
+
+  // voliteľné pri vlastných tlačidlách (ak by si ich ešte používal v tejto page)
   nextPage() {
     if (!this.canNext()) return;
     this.navigateWith({ pageIndex: this.pageIndex() + 1 });
@@ -137,18 +148,24 @@ export class DatasetsAllComponent implements OnInit {
     this.navigateWith({ pageIndex: this.pageIndex() - 1 });
   }
 
+  // === Interné ===
   private navigateWith(
     patch: Partial<{ q: string; pageSize: number; pageIndex: number; enhanced: boolean }>
   ) {
+    const enhancedFlag = patch.enhanced ?? this.enhanced() ? 'true' : 'false';
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: {
         q: patch.q ?? this.query(),
         pageSize: patch.pageSize ?? this.pageSize(),
         pageIndex: patch.pageIndex ?? this.pageIndex(),
-        enhanced: patch.enhanced ?? this.enhanced() ? 'true' : 'false',
+        enhanced: enhancedFlag,
       },
       queryParamsHandling: 'merge',
     });
+  }
+
+  onRetryError() {
+    this.load();
   }
 }

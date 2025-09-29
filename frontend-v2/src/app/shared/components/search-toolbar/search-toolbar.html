@@ -19,7 +19,7 @@
       <input
         type="checkbox"
         [checked]="enhanced"
-        (change)="toggleEnhanced(($event.target as HTMLInputElement).checked)"
+        (change)="toggleEnhanced($any($event.target).checked)"
       />
       <span>Enhanced</span>
     </label>

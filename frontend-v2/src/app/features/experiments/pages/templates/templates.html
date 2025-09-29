@@ -1,1 +1,41 @@
-<p>templates works!</p>
+<!-- toolbar: bez Enhanced, loading zobrazí priamo toolbar -->
+<ui-search-toolbar
+  [query]="query()"
+  [showEnhanced]="false"
+  [pageSize]="pageSize()"
+  [pageIndex]="pageIndex()"
+  [length]="length()"
+  [loading]="loading()"
+  [pageSizeOptions]="[10, 25, 50, 100]"
+  placeholder="Full-text search"
+  (search)="onSearch($event)"
+  (pageSizeChange)="onPageSize($event)"
+  (pageIndexChange)="onPageIndex($event)"
+></ui-search-toolbar>
+
+<!-- error panel -->
+<ui-error
+  [show]="!!error()"
+  [message]="error() || 'Nepodarilo sa načítať šablóny.'"
+  [retryable]="true"
+  retryLabel="Try again"
+  [closable]="true"
+  (retry)="onRetryError()"
+  (close)="onDismissError()"
+></ui-error>
+
+<!-- zoznam kariet -->
+<section class="grid" aria-live="polite">
+  @for (t of items(); track trackT(t)) {
+  <ui-asset-card
+    [source]="trackT(t)"
+    [title]="titleOf(t)"
+    [date]="dateOf(t)"
+    [description]="descOf(t)"
+    [link]="linkOf(t)"
+    [visibility]="visibilityOf(t)"
+  />
+  } @empty { @if (!loading() && !error()) {
+  <p class="empty">Žiadne šablóny.</p>
+  } }
+</section>
