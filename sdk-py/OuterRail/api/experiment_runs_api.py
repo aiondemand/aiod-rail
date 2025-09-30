@@ -340,7 +340,7 @@ class ExperimentRunsApi:
         return self.api_client.response_deserialize(
             response_data=response_data,
             response_types_map=_response_types_map,
-        ).data
+        )
 
     @validate_call
     def download_file_from_experiment_run_v1_experiment_runs_id_files_download_get_with_http_info(

@@ -87,9 +87,14 @@ class ExperimentRun(BaseModel):
         """
         Downloads a specific file contained in outputs for the run.
 
+        Note:
+            Based on the compute backend, it is quite possible that files from the experiment run will be
+            stored under a directory named "output". Therefore, if the download is failing, it is advised to try
+            to prefix the desired path with "output", e.g.: "output/path/to/remote.txt"
+
         Args:
             filepath (str): File to be downloaded.
-            to_dir (Path): Path to local directory where the run file will be downloaded.
+            to_dir (Path): Path to the local directory where the run file will be downloaded.
 
         Returns:
             None.
@@ -98,8 +103,8 @@ class ExperimentRun(BaseModel):
              ApiException: In case of a failed HTTP request.
 
          Examples:
-            >>> self.download_file("path/to/remote.txt", "path/to/local/dir/")
-            None # Specified file will be downloaded from remote computing resource where the run is being executed.
+            >>> self.download_file("output/path/to/remote.txt", "path/to/local/dir/")
+            None # a Specified file will be downloaded from the remote computing resource where the run is being executed.
         """
 
         with ApiClient(self._config) as api_client:
@@ -112,7 +117,7 @@ class ExperimentRun(BaseModel):
                 raise e
         local_file_path = Path(to_dir) / Path(filepath)
         local_file_path.parent.mkdir(parents=True, exist_ok=True)
-        with local_file_path.open("w") as f:
+        with local_file_path.open("wb") as f:
             f.write(data)
 
     def logs(self) -> str:

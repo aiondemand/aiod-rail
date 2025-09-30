@@ -253,6 +253,7 @@ class Configuration:
             try:
                 self.token = self._refresh_token()
             except:
+                self.token.invalidate()
                 print("Authentication token has expired, please log in again.")
                 self.token = self._login_sequence()
 

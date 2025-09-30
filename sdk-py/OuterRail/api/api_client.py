@@ -283,6 +283,8 @@ class ApiClient:
             elif response_type is not None:
                 match = None
                 content_type = response_data.getheader("content-type")
+                if content_type == "application/octet-stream":
+                    return response_data.data
                 if content_type is not None:
                     match = re.search(r"charset=([a-zA-Z\-\d]+)[\s;]?", content_type)
                 encoding = match.group(1) if match else "utf-8"
