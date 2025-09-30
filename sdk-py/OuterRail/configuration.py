@@ -161,6 +161,7 @@ class Configuration:
                 print("Using persisted token from file.")
                 return
             else:
+                self.token.invalidate()
                 print("Ignoring persisted token due to Keycloak configuration mismatch.")
 
         self.token = self._login_sequence()
