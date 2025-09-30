@@ -176,73 +176,74 @@ class AssetManager:
             except Exception as e:
                 raise e
 
-    def create_dataset(self, dataset: Dict) -> Dataset:
-        """
-        Creates dataset from a given dictionary.
-
-        Args:
-            dataset (dict): dataset described in a dictionary.
-
-        Returns:
-            Dataset: Instance of the created dataset.
-
-        Raises:
-            ApiException: In case of a failed HTTP request.
-
-        Examples:
-            >>> EXAMPLE DATASET DICT
-            >>> dataset_dict = {
-            >>> 'ai_asset_identifier': 'string', 'ai_resource_identifier': 'string',
-            >>> 'aiod_entry': {'date_created': '2022-01-01T15:15:00.000', 'date_modified': '2023-01-01T15:15:00.000',
-            >>>                'editor': [], 'status': 'published'},
-            >>> 'alternate_name': ['alias 1', 'alias 2'],
-            >>> 'application_area': ['Fraud Prevention', 'Voice Assistance', 'Disease Classification'],
-            >>> 'citation': [],
-            >>> 'contact': [],
-            >>> 'creator': [],
-            >>> 'date_published': '2022-01-01T15:15:00.000',
-            >>> 'description': {'html': '<p>Text with <strong>html formatting</strong>.</p>',
-            >>>                 'plain': 'Plain text.'},
-            >>> 'distribution': [],
-            >>> 'funder': [],
-            >>> 'has_part': [],
-            >>> 'identifier': 'string',
-            >>> 'industrial_sector': ['Finance', 'eCommerce', 'Healthcare'],
-            >>> 'is_accessible_for_free': True,
-            >>> 'is_part_of': [],
-            >>> 'issn': '20493630',
-            >>> 'keyword': ['keyword1', 'keyword2'],
-            >>> 'license': 'https://creativecommons.org/share-your-work/public-domain/cc0/',
-            >>> 'measurement_technique': 'mass spectrometry',
-            >>> 'media': [],
-            >>> 'name': 'The name of this resource',
-            >>> 'note': [],
-            >>> 'platform': 'example',
-            >>> 'platform_resource_identifier': '1',
-            >>> 'relevant_link': ['https://www.example.com/a_relevant_link', 'https://www.example.com/another_relevant_link'],
-            >>> 'relevant_resource': [],
-            >>> 'relevant_to': [],
-            >>> 'research_area': ['Explainable AI', 'Physical AI'],
-            >>> 'same_as': 'https://www.example.com/resource/this_resource',
-            >>> 'scientific_domain': ['Anomaly Detection', 'Voice Recognition', 'Computer Vision.'],
-            >>> 'size': {'unit': 'Rows', 'value': 100},
-            >>> 'spatial_coverage': {'address': {'address': 'Wetstraat 170, 1040 Brussel', 'country': 'BEL', 'locality': 'Paris',
-            >>>                               'postal_code': '1040 AA', 'region': 'California', 'street': 'Wetstraat 170'},
-            >>>                      'geo': {'elevation_millimeters': 0, 'latitude': 37.42242, 'longitude': -122.08585}},
-            >>> 'temporal_coverage': '2011/2012',
-            >>> 'version': '1.1.0'}
-            >>> asset_manager = AssetManager(...)
-            >>> asset_manager.create_dataset(dataset_dict)
-            Dataset # Newly created dataset.
-        """
-
-        with ApiClient(self._config) as api_client:
-            api_instance = AssetsApi(api_client)
-            try:
-                api_response = api_instance.create_dataset(dataset)
-                return Dataset.from_dict(api_response, self._config)
-            except Exception as e:
-                raise e
+    # NOT supported on the frontend either, so for now, we comment it out. Needs to run smoothly first.
+    # def create_dataset(self, dataset: Dict) -> Dataset:
+    #     """
+    #     Creates dataset from a given dictionary.
+    #
+    #     Args:
+    #         dataset (dict): dataset described in a dictionary.
+    #
+    #     Returns:
+    #         Dataset: Instance of the created dataset.
+    #
+    #     Raises:
+    #         ApiException: In case of a failed HTTP request.
+    #
+    #     Examples:
+    #         >>> EXAMPLE DATASET DICT
+    #         >>> dataset_dict = {
+    #         >>> 'ai_asset_identifier': 'string', 'ai_resource_identifier': 'string',
+    #         >>> 'aiod_entry': {'date_created': '2022-01-01T15:15:00.000', 'date_modified': '2023-01-01T15:15:00.000',
+    #         >>>                'editor': [], 'status': 'published'},
+    #         >>> 'alternate_name': ['alias 1', 'alias 2'],
+    #         >>> 'application_area': ['Fraud Prevention', 'Voice Assistance', 'Disease Classification'],
+    #         >>> 'citation': [],
+    #         >>> 'contact': [],
+    #         >>> 'creator': [],
+    #         >>> 'date_published': '2022-01-01T15:15:00.000',
+    #         >>> 'description': {'html': '<p>Text with <strong>html formatting</strong>.</p>',
+    #         >>>                 'plain': 'Plain text.'},
+    #         >>> 'distribution': [],
+    #         >>> 'funder': [],
+    #         >>> 'has_part': [],
+    #         >>> 'identifier': 'string',
+    #         >>> 'industrial_sector': ['Finance', 'eCommerce', 'Healthcare'],
+    #         >>> 'is_accessible_for_free': True,
+    #         >>> 'is_part_of': [],
+    #         >>> 'issn': '20493630',
+    #         >>> 'keyword': ['keyword1', 'keyword2'],
+    #         >>> 'license': 'https://creativecommons.org/share-your-work/public-domain/cc0/',
+    #         >>> 'measurement_technique': 'mass spectrometry',
+    #         >>> 'media': [],
+    #         >>> 'name': 'The name of this resource',
+    #         >>> 'note': [],
+    #         >>> 'platform': 'example',
+    #         >>> 'platform_resource_identifier': '1',
+    #         >>> 'relevant_link': ['https://www.example.com/a_relevant_link', 'https://www.example.com/another_relevant_link'],
+    #         >>> 'relevant_resource': [],
+    #         >>> 'relevant_to': [],
+    #         >>> 'research_area': ['Explainable AI', 'Physical AI'],
+    #         >>> 'same_as': 'https://www.example.com/resource/this_resource',
+    #         >>> 'scientific_domain': ['Anomaly Detection', 'Voice Recognition', 'Computer Vision.'],
+    #         >>> 'size': {'unit': 'Rows', 'value': 100},
+    #         >>> 'spatial_coverage': {'address': {'address': 'Wetstraat 170, 1040 Brussel', 'country': 'BEL', 'locality': 'Paris',
+    #         >>>                               'postal_code': '1040 AA', 'region': 'California', 'street': 'Wetstraat 170'},
+    #         >>>                      'geo': {'elevation_millimeters': 0, 'latitude': 37.42242, 'longitude': -122.08585}},
+    #         >>> 'temporal_coverage': '2011/2012',
+    #         >>> 'version': '1.1.0'}
+    #         >>> asset_manager = AssetManager(...)
+    #         >>> asset_manager.create_dataset(dataset_dict)
+    #         Dataset # Newly created dataset.
+    #     """
+    #
+    #     with ApiClient(self._config) as api_client:
+    #         api_instance = AssetsApi(api_client)
+    #         try:
+    #             api_response = api_instance.create_dataset(dataset)
+    #             return Dataset.from_dict(api_response, self._config)
+    #         except Exception as e:
+    #             raise e
 
     def upload_file_to_huggingface(self, id: str, name: str, huggingface_token: str, file_path : str) -> Dataset:
         """
