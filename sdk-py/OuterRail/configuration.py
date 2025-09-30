@@ -279,4 +279,3 @@ class Configuration:
             "auth_realm": self.auth_realm,
             "auth_client_id": self.auth_client_id,
         }
-
