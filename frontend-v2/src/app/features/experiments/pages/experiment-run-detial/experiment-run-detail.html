@@ -1,0 +1,163 @@
+<!-- UI Loading & Error -->
+<ui-loading [show]="loading()" label="Loading experiment run…"></ui-loading>
+
+<ui-error
+  [show]="!!error()"
+  [message]="error() || 'Failed to load experiment run.'"
+  [retryable]="true"
+  retryLabel="Try again"
+  [closable]="true"
+  (retry)="reload()"
+  (close)="error.set(null)"
+></ui-error>
+
+@if (!loading() && !error()) {
+
+<div class="detail card">
+  <div class="header">
+    <h1>Experiment run – {{ run()?.id }}</h1>
+
+    <div class="header-menu">
+      @if (isMine() && !isArchived() && state()==='RUNNING') {
+      <button mat-icon-button matTooltip="Stop run" (click)="stopRun()">
+        <mat-icon>stop</mat-icon>
+      </button>
+      } @if (isMine() && !isArchived() && (state()==='FINISHED' || state()==='CRASHED')) {
+      <button mat-icon-button matTooltip="Delete run" (click)="deleteRun()">
+        <mat-icon>delete</mat-icon>
+      </button>
+      }
+    </div>
+  </div>
+
+  <section class="experiment-run-details card">
+    <h2>Details</h2>
+    <table>
+      <tr>
+        <th>Created at</th>
+        <td>{{ run()?.created_at | date : 'medium' }}</td>
+      </tr>
+      <tr>
+        <th>Updated at</th>
+        <td>{{ run()?.updated_at | date : 'medium' }}</td>
+      </tr>
+      <tr>
+        <th>State</th>
+        <td class="state">
+          {{ state() }}
+
+          @if (state()==='CREATED') {
+          <span class="material-symbols-rounded icon">schedule</span>
+          } @if (state()==='PREPROCESSING' || state()==='RUNNING' || state()==='POSTPROCESSING') {
+          <span class="material-symbols-rounded">rotate_right</span>
+          } @if (state()==='FINISHED') {
+          <span class="material-symbols-rounded icon">check_circle</span>
+          } @if (state()==='CRASHED') {
+          <span class="material-symbols-rounded">error</span>
+          }
+        </td>
+      </tr>
+      <tr>
+        <th>Metrics</th>
+        <td>
+          @for (metric of (run()?.metrics | keyvalue); track metric.key) {
+          <div>{{ metric.key }}: {{ metric.value }}</div>
+          }
+        </td>
+      </tr>
+    </table>
+  </section>
+
+  <section>
+    <h2>Logs</h2>
+
+    @if (useVirtualScroll()) {
+    <cdk-virtual-scroll-viewport itemSize="20" class="logs-viewport" role="list">
+      <div
+        class="log-line"
+        *cdkVirtualFor="let line of logLines(); let idx = index; trackBy: trackByIndex"
+        role="listitem"
+      >
+        <span class="ln">{{ idx + 1 }}</span>
+        <span class="txt">{{ line }}</span>
+      </div>
+    </cdk-virtual-scroll-viewport>
+    } @else {
+    <pre class="logs"><code [innerText]="logs()"></code></pre>
+    }
+  </section>
+
+  @if (dataSource().length) {
+  <mat-divider></mat-divider>
+  <h2>File hierarchy</h2>
+
+  <mat-tree class="tree-view" [dataSource]="dataSource()" [treeControl]="treeControl">
+    <!-- DIRECTORIES (expandable) -->
+    <mat-nested-tree-node
+      *matTreeNodeDef="let node; when: hasChild"
+      class="tree-node tree-node-directory"
+    >
+      <div class="row" matTreeNodePadding>
+        <button mat-icon-button matTreeNodeToggle [attr.aria-label]="'toggle ' + node.name">
+          <mat-icon>{{ treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right' }}</mat-icon>
+        </button>
+
+        {{ node.name }}
+
+        <span class="growing-space"></span>
+
+        <span class="download-btn">
+          @if (!downloading().has(node.filepath)) {
+          <button
+            mat-icon-button
+            class="download-btn"
+            (click)="downloadFile($event, node.filepath)"
+          >
+            <mat-icon>download</mat-icon>
+          </button>
+          }
+        </span>
+
+        @if (downloading().has(node.filepath)) {
+        <mat-spinner class="download-circle" [diameter]="24"></mat-spinner>
+        }
+      </div>
+
+      <div class="children">
+        <ng-container matTreeNodeOutlet></ng-container>
+      </div>
+    </mat-nested-tree-node>
+
+    <!-- FILES (leaf) -->
+    <mat-tree-node *matTreeNodeDef="let node" class="tree-node">
+      <div class="row" matTreeNodePadding>
+        <button mat-icon-button disabled></button>
+
+        {{ node.name }}
+
+        <span class="growing-space"></span>
+
+        <span class="download-btn">
+          <span class="file-size">{{ formatFileSize(node.size) }}</span>
+
+          @if (!downloading().has(node.filepath)) {
+          <button
+            mat-icon-button
+            class="download-btn"
+            (click)="downloadFile($event, node.filepath)"
+          >
+            <mat-icon>download</mat-icon>
+          </button>
+          }
+        </span>
+
+        @if (downloading().has(node.filepath)) {
+        <mat-spinner class="download-circle" [diameter]="24"></mat-spinner>
+        }
+      </div>
+    </mat-tree-node>
+  </mat-tree>
+
+  }
+</div>
+}

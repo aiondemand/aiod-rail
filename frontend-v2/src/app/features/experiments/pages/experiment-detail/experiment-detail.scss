@@ -1,0 +1,317 @@
+@use '../../../../../styles/themes';
+@use '../../../../../styles/typography' as typo;
+@use '../../../../../variables.scss' as *;
+
+/* ============ Helpers ============ */
+$pill-h: 28px;
+
+@mixin pill {
+  height: $pill-h;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border);
+  background: color-mix(in oklab, var(--text) 10%, transparent);
+  color: var(--text);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
+  letter-spacing: 0.01em;
+  font-feature-settings: 'tnum' 1;
+}
+
+.ic,
+.msr,
+.vis,
+.head .title-wrap .material-symbols-rounded,
+.head .title-wrap .material-symbols-outlined,
+.head .title-wrap mat-icon {
+  width: 24px;
+  height: 24px;
+  font-size: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  color: var(--text-muted);
+}
+
+/* ============ Host & Card  ============ */
+:host {
+  display: block;
+}
+
+.detail.card {
+  margin: $margin-double;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: $margin-double;
+
+  @media (max-width: 760px) {
+    margin: $margin-default;
+    padding: $margin-default;
+  }
+}
+
+/* ============ Header ============ */
+.head {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px 16px;
+  align-items: start;
+  margin-bottom: $margin-default;
+
+  @media (max-width: 760px) {
+    grid-template-columns: 1fr;
+  }
+
+  .title-wrap {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    min-width: 0;
+
+    .title {
+      @include typo.title(--h2-d, --h2-m, --h2-lh-d, --h2-lh-m, --h2-mb-d, --h2-mb-m, --w-bold);
+      margin: 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text);
+      font-family: var(--font-title);
+    }
+
+    .vis {
+      align-self: flex-start;
+      line-height: 1;
+      font-size: clamp(24px, 0.6em + 0.8vw, 34px);
+      transform: translateY(1em);
+    }
+  }
+
+  .actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    justify-self: end;
+
+    @media (max-width: 760px) {
+      justify-self: start;
+    }
+
+    .pill--archived {
+      @include pill;
+      background: color-mix(in oklab, var(--accent) 18%, transparent);
+      border-color: color-mix(in oklab, var(--accent) 40%, var(--border));
+      color: color-mix(in oklab, var(--accent) 85%, var(--text));
+    }
+  }
+}
+
+/* ============ Meta (ID, dates, links) ============ */
+.meta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px 18px;
+  padding: 12px 0 $margin-default 0;
+  border-top: 1px dashed color-mix(in oklab, var(--text) 14%, transparent);
+  border-bottom: 1px dashed color-mix(in oklab, var(--text) 14%, transparent);
+
+  @media (max-width: 880px) {
+    grid-template-columns: 1fr;
+  }
+
+  .row {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 12px;
+    align-items: center;
+    min-width: 0;
+
+    @media (max-width: 640px) {
+      grid-template-columns: 160px 1fr;
+    }
+
+    .k {
+      color: var(--text-muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+
+      .ic {
+        color: var(--text-muted);
+      }
+    }
+
+    .v {
+      color: var(--text);
+      min-width: 0;
+      overflow-wrap: anywhere;
+
+      a {
+        color: var(--text-active);
+        text-decoration: underline;
+        text-underline-offset: 2px;
+
+        &:hover {
+          filter: brightness(1.08);
+        }
+      }
+
+      .muted {
+        color: var(--text-muted);
+      }
+    }
+  }
+}
+
+/* ============ Envs ============ */
+.envs {
+  margin-top: $margin-double;
+
+  h3 {
+    @include typo.title(--h4-d, --h4-m, --h4-lh-d, --h4-lh-m, --h4-mb-d, --h4-mb-m, --w-semibold);
+    margin: 0 0 12px 0;
+    color: var(--text);
+  }
+
+  .env-table {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--surface-2);
+
+    .env-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      border-bottom: 1px solid var(--border);
+
+      &:last-child {
+        border-bottom: 0;
+      }
+
+      &--head {
+        background: color-mix(in oklab, var(--text) 7%, transparent);
+
+        .c {
+          font-weight: var(--w-semibold);
+          color: var(--text);
+        }
+      }
+
+      .c {
+        padding: 12px 14px;
+        display: flex;
+        align-items: center;
+        min-width: 0;
+
+        &.k .env-name {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+
+          .secret {
+            font-size: 18px;
+            color: var(--text-muted);
+            opacity: 0.9;
+          }
+        }
+
+        &.v {
+          color: var(--text);
+        }
+      }
+    }
+  }
+
+  .note {
+    margin-top: 8px;
+    color: var(--text-muted);
+    font-size: 12.5px;
+    font-family: var(--font-body);
+  }
+}
+
+/* ============ Description ============ */
+.desc {
+  margin-top: $margin-double;
+
+  h3 {
+    @include typo.title(--h4-d, --h4-m, --h4-lh-d, --h4-lh-m, --h4-mb-d, --h4-mb-m, --w-semibold);
+    margin: 0 0 10px 0;
+  }
+
+  .pre {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: $margin-default;
+    background: var(--surface-2);
+    color: var(--text);
+    overflow: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-family: var(--font-body);
+  }
+}
+
+/* ============ Publications ============ */
+.pubs {
+  margin-top: $margin-double;
+
+  h3 {
+    @include typo.title(--h4-d, --h4-m, --h4-lh-d, --h4-lh-m, --h4-mb-d, --h4-mb-m, --w-semibold);
+    margin: 0 0 6px 0;
+  }
+
+  h4 {
+    @include typo.title(--h5-d, --h5-m, --h5-lh-d, --h5-lh-m, --h5-mb-d, --h5-mb-m, --w-medium);
+    margin: 0 0 10px 0;
+    color: var(--text-muted);
+  }
+
+  .pub-list {
+    display: grid;
+    gap: 8px;
+
+    .pub-item a {
+      color: var(--text-active);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+  }
+}
+
+/* ============ Runs ============ */
+.runs {
+  margin-top: $margin-double;
+  padding-top: $margin-default;
+  border-top: 1px dashed color-mix(in oklab, var(--text) 14%, transparent);
+
+  .runs-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 10px;
+
+    h2 {
+      @include typo.title(--h4-d, --h4-m, --h4-lh-d, --h4-lh-m, --h4-mb-d, --h4-mb-m, --w-semibold);
+      margin: 0;
+    }
+  }
+}
+
+/* ============ Loading / Error ============ */
+:host ::ng-deep ui-error,
+:host ::ng-deep ui-loading {
+  display: block;
+  margin: $margin-double;
+}

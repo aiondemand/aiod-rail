@@ -31,23 +31,12 @@ export class BaseDocComponent implements AfterViewInit, OnDestroy {
 
   async ngAfterViewInit() {
     if (!isPlatformBrowser(this.platformId)) return;
-
-    // načítaj Prism + jazyky len v prehliadači
-    const prismMod = await import('prismjs');
-    this.Prism = (prismMod as any).default ?? prismMod;
-    await Promise.all([
-      import('prismjs/components/prism-python'),
-      import('prismjs/components/prism-properties'),
-      import('prismjs/components/prism-json'),
-    ]);
-
+    const Prism = (window as any).Prism;
     const root = this.host.nativeElement;
-    const highlight = () => this.Prism?.highlightAllUnder?.(root);
+    const highlight = () => Prism?.highlightAllUnder?.(root);
 
-    // 1) prvé zvýraznenie
     highlight();
 
-    // 2) simple watcher, to avoid missing formatting
     let scheduled = false;
     this.mo = new MutationObserver(() => {
       if (scheduled) return;

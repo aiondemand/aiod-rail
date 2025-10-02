@@ -1,0 +1,157 @@
+@use '../../../../../styles/themes';
+@use '../../../../../styles/typography' as typo;
+@use '../../../../../variables.scss' as *;
+
+.detail.card {
+  margin: $margin-double;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: $margin-double;
+
+  @media (max-width: 760px) {
+    margin: $margin-default;
+    padding: $margin-default;
+  }
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .header-menu {
+    display: flex;
+    gap: 0.25rem;
+    color: var(--muted);
+    button:hover {
+      color: var(--text);
+    }
+  }
+}
+
+.card {
+  background: var(--background);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px 18px;
+}
+
+.experiment-run-details {
+  table {
+    width: 100%;
+    border-collapse: collapse;
+
+    th,
+    td {
+      text-align: left;
+      padding: 0.5rem 1rem 0.5rem 0;
+      vertical-align: top;
+    }
+
+    th {
+      width: 180px;
+      color: var(--text);
+      font-weight: 600;
+    }
+  }
+  .state {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem; // medzera medzi textom a ikonou
+    line-height: 1; // stabilnejšia výška riadku
+  }
+}
+
+.logs {
+  border: 1px solid var(--border);
+  display: block;
+  max-width: 100%;
+  max-height: 500px;
+  white-space: pre-wrap;
+  overflow-y: auto;
+  border-radius: 12px;
+  padding: 0.75rem;
+  background: color-mix(in oklab, var(--text) 3%, transparent);
+}
+
+.tree-view {
+  height: 500px;
+  width: 100%;
+  overflow: auto;
+
+  .tree-node {
+    display: flex;
+    align-items: center;
+    border: 1px solid color-mix(in oklab, var(--text) 8%, transparent);
+    border-width: 0 0 1px 0;
+    padding: 2px 4px;
+
+    .download-btn {
+      display: none;
+    }
+  }
+
+  .tree-node:hover {
+    .download-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+  }
+
+  .tree-node-directory:hover {
+    background-color: color-mix(in oklab, var(--text) 6%, transparent);
+    cursor: pointer;
+  }
+
+  .growing-space {
+    flex-grow: 1;
+  }
+  .download-circle {
+    padding-left: 0;
+    padding-right: 24px;
+  }
+  .file-size {
+    margin-right: 0.25rem;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* Virtual scroll logs */
+.logs-viewport {
+  height: 500px;
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: color-mix(in oklab, var(--text) 3%, transparent);
+  overflow: auto;
+}
+
+.log-line {
+  display: grid;
+  grid-template-columns: 3rem 1fr;
+  gap: 0.5rem;
+  padding: 2px 8px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
+    'Courier New', monospace;
+  white-space: pre;
+}
+
+.log-line:nth-child(2n) {
+  background: color-mix(in oklab, var(--text) 5%, transparent);
+}
+
+.ln {
+  color: var(--muted);
+  text-align: right;
+  padding-right: 0.5rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.txt {
+  overflow-wrap: anywhere;
+}

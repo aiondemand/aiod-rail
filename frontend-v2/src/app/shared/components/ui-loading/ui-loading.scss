@@ -3,7 +3,6 @@
 @use '../../../../variables.scss' as *;
 
 .ui-loading {
-  /* Vždy existuje v DOMe, viditeľnosť riadi trieda */
   display: none;
   align-items: center;
   justify-content: center;

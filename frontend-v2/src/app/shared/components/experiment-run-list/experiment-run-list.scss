@@ -1,0 +1,153 @@
+@use '../../../../styles/themes';
+@use '../../../../styles/typography' as typo;
+@use '../../../../variables.scss' as *;
+
+/* ===== container  ===== */
+.runs-table-container {
+  width: 100%;
+  margin-top: $margin-default;
+
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: color-mix(in oklab, var(--background) 96%, transparent);
+  overflow: hidden;
+
+  /* horizontal scroll  */
+  overflow-x: auto;
+
+  /* sticky header */
+  .runs-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: color-mix(in oklab, var(--text) 8%, transparent);
+  }
+}
+
+/* ===== table ===== */
+.runs-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+
+  th,
+  td {
+    padding: 12px 14px;
+    text-align: left;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    white-space: nowrap;
+  }
+
+  th {
+    font-weight: var(--w-semibold);
+    color: var(--text);
+  }
+
+  /* last line */
+  tbody tr:last-child td {
+    border-bottom: 0;
+  }
+
+  /*  hover */
+  tbody tr:nth-child(even) {
+    background: color-mix(in oklab, var(--text) 4%, transparent);
+  }
+  tbody tr:hover {
+    background: color-mix(in oklab, var(--text) 8%, transparent);
+  }
+
+  /* ID – monospace  */
+  td.mono,
+  td:first-child {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
+    letter-spacing: 0.01em;
+    max-width: 280px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* dates */
+  td:nth-child(2),
+  td:nth-child(3) {
+    min-width: 180px;
+  }
+
+  /* metrics chips */
+  td:nth-child(4) .metrics {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 10px;
+
+    > div {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 8px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: color-mix(in oklab, var(--text) 10%, transparent);
+      color: var(--text);
+      line-height: 1;
+      font-size: 12.5px;
+    }
+  }
+
+  /* State */
+  td:nth-child(5) {
+    position: relative;
+  }
+  td:nth-child(5)::before {
+    content: attr(data-state);
+
+    display: none;
+  }
+
+  td:nth-child(5) {
+    font-weight: var(--w-medium);
+    color: var(--text);
+  }
+
+  /* Actions */
+  td.actions {
+    min-width: 100px;
+    .actions {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+
+      a,
+      button {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--border);
+        background: var(--text);
+        cursor: pointer;
+        padding: 0;
+
+        .material-symbols-rounded,
+        mat-icon {
+          font-size: 18px;
+          line-height: 1;
+          color: var(--text);
+        }
+
+        &:hover {
+          background: color-mix(in oklab, var(--text) 12%, transparent);
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 760px) {
+  .runs-table th,
+  .runs-table td {
+    padding: 10px 12px;
+  }
+}

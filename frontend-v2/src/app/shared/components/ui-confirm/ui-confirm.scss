@@ -1,0 +1,25 @@
+@use '../../../../styles/typography' as typo;
+
+.ui-confirm {
+  display: grid;
+  gap: 14px;
+  min-width: 320px;
+  max-width: 640px;
+
+  .msg {
+    pre {
+      margin: 0;
+      white-space: pre-wrap;
+      font: var(--font-ui, 500 14px/1.45 system-ui, sans-serif);
+      color: var(--text);
+    }
+  }
+
+  .actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+}

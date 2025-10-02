@@ -23,11 +23,11 @@
   (close)="onDismissError()"
 ></ui-error>
 
-<!-- Zoznam kariet -->
+<!-- card list -->
 <section class="grid" aria-live="polite">
   @for (exp of items(); track trackExp(exp)) {
   <ui-asset-card
-    [source]="platformOf(exp)"
+    [source]="trackExp(exp)"
     [title]="titleOf(exp)"
     [date]="dateOf(exp)"
     [description]="descOf(exp)"

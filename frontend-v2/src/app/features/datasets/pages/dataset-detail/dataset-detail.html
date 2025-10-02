@@ -72,27 +72,8 @@
   <section class="desc">
     <div class="desc-head">Description</div>
 
-    <div
-      #shortDescription
-      class="desc-body"
-      [class.is-clamped]="!showFull()"
-      [class.is-full]="showFull()"
-    >
+    <div class="desc-body">
       <markdown [data]="descriptionMd()"></markdown>
-    </div>
-
-    <div class="desc-actions" *ngIf="canExpand()">
-      <ui-button
-        variant="ghost"
-        size="sm"
-        (click)="toggleDescription(!showFull())"
-        [ariaLabel]="showFull() ? 'Show less' : 'Show more'"
-      >
-        <mat-icon class="material-symbols-rounded">
-          {{ showFull() ? 'expand_less' : 'expand_more' }}
-        </mat-icon>
-        <span>{{ showFull() ? 'Show less' : 'Show more' }}</span>
-      </ui-button>
     </div>
   </section>
 </section>

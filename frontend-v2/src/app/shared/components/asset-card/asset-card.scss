@@ -113,11 +113,6 @@
 }
 
 .btn-icon {
-  font-size: 18px;
-  margin-left: 3px;
-  vertical-align: bottom;
-  margin-bottom: -3px;
-  margin-right: -5px;
   color: $aiod-yellow;
 }
 
@@ -126,7 +121,7 @@ ui-button:hover .btn-icon {
   color: $aiod-blue;
 }
 
-/* ===== mobil ===== */
+/* ===== repsonsivity ===== */
 @media (max-width: 680px) {
   .card {
     grid-template-columns: 1fr;

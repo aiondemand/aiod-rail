@@ -42,7 +42,7 @@ export class DatasetsAllComponent implements OnInit {
   loading = signal<boolean>(true);
   error = signal<string | null>(null);
 
-  // query/paging (sync s URL)
+  // query/paging (sync with URL)
   pageSize = signal<number>(10);
   pageIndex = signal<number>(0);
   query = signal<string>('');
@@ -50,12 +50,12 @@ export class DatasetsAllComponent implements OnInit {
 
   length = signal<number>(0); // total count
 
-  // odvodené
+  // computed
   offset = computed(() => this.pageIndex() * this.pageSize());
   canPrev = computed(() => this.pageIndex() > 0);
   canNext = computed(() => this.offset() + this.pageSize() < this.length());
 
-  // hodnoty do UI
+  //  UI
   from = computed(() => (this.length() === 0 ? 0 : this.offset() + 1));
   to = computed(() => Math.min(this.offset() + this.pageSize(), this.length()));
 
@@ -120,7 +120,7 @@ export class DatasetsAllComponent implements OnInit {
       });
   }
 
-  // === Handlery z toolbaru (verejné) ===
+  // === Handlers from toolbar ===
   onSearch(v: string) {
     const q = v?.trim() ?? '';
     this.navigateWith({ q, pageIndex: 0 });
@@ -138,7 +138,7 @@ export class DatasetsAllComponent implements OnInit {
     this.navigateWith({ pageIndex: i });
   }
 
-  // voliteľné pri vlastných tlačidlách (ak by si ich ešte používal v tejto page)
+  // variable buttons
   nextPage() {
     if (!this.canNext()) return;
     this.navigateWith({ pageIndex: this.pageIndex() + 1 });
@@ -148,7 +148,7 @@ export class DatasetsAllComponent implements OnInit {
     this.navigateWith({ pageIndex: this.pageIndex() - 1 });
   }
 
-  // === Interné ===
+  // === Intern ===
   private navigateWith(
     patch: Partial<{ q: string; pageSize: number; pageIndex: number; enhanced: boolean }>
   ) {

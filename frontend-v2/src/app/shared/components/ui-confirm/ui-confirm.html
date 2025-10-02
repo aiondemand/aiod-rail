@@ -1,0 +1,23 @@
+<div class="ui-confirm">
+  <div class="msg">
+    <pre>{{ data.message }}</pre>
+  </div>
+
+  <div class="actions">
+    <ui-button variant="primary" (click)="yes()">
+      {{ data.acceptBtnMessage || 'Confirm' }}
+    </ui-button>
+
+    <ui-button
+      *ngIf="data.thirdOptionBtnMessage && data.thirdOptionBtnMessage.length > 0"
+      variant="outline"
+      (click)="third()"
+    >
+      {{ data.thirdOptionBtnMessage }}
+    </ui-button>
+
+    <ui-button variant="ghost" (click)="no()">
+      {{ data.declineBtnMessage || 'Dismiss' }}
+    </ui-button>
+  </div>
+</div>

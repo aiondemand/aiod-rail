@@ -1,0 +1,68 @@
+<ui-loading [show]="loading()" label="Loading runs…"></ui-loading>
+
+<ui-error
+  [show]="!!error()"
+  [message]="error() || 'Failed to load runs.'"
+  [retryable]="true"
+  retryLabel="Try again"
+  [closable]="true"
+  (retry)="updateRuns()"
+  (close)="error.set(null)"
+></ui-error>
+
+@if (!loading() && !error()) {
+<div class="runs-table-container">
+  @if (runs().length > 0) {
+  <table class="runs-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Created</th>
+        <th>Updated</th>
+        <th>Metrics</th>
+        <th>State</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (run of runs(); track run.id) {
+      <tr>
+        <td class="mono">{{ run.id }}</td>
+        <td>{{ run.created_at | date : 'medium' }}</td>
+        <td>{{ run.updated_at | date : 'medium' }}</td>
+        <td>
+          <div class="metrics">
+            @for (m of run.metrics | keyvalue; track m.key) {
+            <div>{{ m.key }}: {{ m.value }}</div>
+            }
+          </div>
+        </td>
+        <td>{{ run.state }}</td>
+        <td class="actions">
+          <a [routerLink]="['/experiments', 'runs', run.id]" matTooltip="View run">
+            <mat-icon class="material-symbols-rounded">visibility</mat-icon>
+          </a>
+
+          @if (run.is_mine && !run.is_archived && run.state === 'RUNNING') {
+          <ui-button (click)="stopRun(run.id)" matTooltip="Stop run">
+            <mat-icon class="material-symbols-rounded">stop</mat-icon>
+          </ui-button>
+          } @if (run.is_mine && !run.is_archived && (run.state === 'FINISHED' || run.state ===
+          'CRASHED')) {
+          <ui-button (click)="deleteRun(run.id)" matTooltip="Delete run">
+            <mat-icon class="material-symbols-rounded">delete</mat-icon>
+          </ui-button>
+          }
+        </td>
+      </tr>
+      }
+    </tbody>
+  </table>
+  } @else {
+  <p>
+    No runs found for experiment <em>{{ experiment.name }}</em
+    >.
+  </p>
+  }
+</div>
+}

@@ -23,36 +23,42 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
+  box-sizing: border-box;
   border-radius: var(--radius-pill);
   border: 1px solid transparent;
+
   font-family: var(--font-body);
   font-weight: var(--w-medium);
+  line-height: 1;
+  white-space: nowrap;
+
   cursor: pointer;
   transition: filter 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
-  white-space: nowrap;
 
   &--block {
     width: 100%;
   }
 
-  /* ===== sizes via typography ===== */
-
+  /* ===== sizes ===== */
   &--sm {
     @include typo.fluid-type(--btn-sm-d, --btn-sm-m);
-    line-height: 1.2;
-    padding: 0.35rem 0.7rem;
+    --btn-h: 36px;
+    height: var(--btn-h);
+    padding: 0 0.9rem;
   }
 
   &--md {
     @include typo.fluid-type(--btn-md-d, --btn-md-m); /* 18/16 */
-    line-height: 1.2;
-    padding: 0.55rem 1.1rem;
+    --btn-h: 40px;
+    height: var(--btn-h);
+    padding: 0 1.1rem;
   }
 
   &--lg {
     @include typo.fluid-type(--btn-lg-d, --btn-lg-m); /* 20/18 */
-    line-height: 1.2;
-    padding: 0.7rem 1.25rem;
+    --btn-h: 48px;
+    height: var(--btn-h);
+    padding: 0 1.25rem;
   }
 
   /* ===== variants ===== */
@@ -122,6 +128,26 @@
     animation: spin 0.8s linear infinite;
   }
 }
+
+/* ===== mat-icon / material symbols) ===== */
+:host ::ng-deep .btn .material-symbols-rounded,
+:host ::ng-deep .btn .material-symbols-outlined,
+:host ::ng-deep .btn mat-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 1em;
+  width: 1em;
+  height: 1em;
+  line-height: 1;
+  vertical-align: middle;
+
+  /* optical center font difference vs material */
+  position: relative;
+  top: -0.1em;
+}
+
 @keyframes spin {
   to {
     transform: rotate(360deg);

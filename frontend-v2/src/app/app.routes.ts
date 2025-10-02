@@ -4,109 +4,156 @@ import { DATASETS_NAV } from './features/datasets/pages/datasets.nav';
 import { EXPERIMENTS_NAV } from './features/experiments/pages/experiments.nav';
 
 export const routes: Routes = [
-  // default redirect
+  // default
   { path: '', pathMatch: 'full', redirectTo: 'docs/about' },
 
-  // EXPERIMENTS
+  // ===== EXPERIMENTS =====
   {
     path: 'experiments',
     data: { sidenav: EXPERIMENTS_NAV, baseLink: '/experiments' },
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'public' },
+
+      // runs detail: /experiments/runs/:runId
+      {
+        path: 'runs/:runId',
+        data: { sidenav: EXPERIMENTS_NAV, baseLink: '/experiments' },
+        loadComponent: () =>
+          import('./features/experiments/pages/experiment-run-detial/experiment-run-detail').then(
+            (m) => m.ExperimentRunDetailComponent
+          ),
+      },
+
+      // list of public experiments
       {
         path: 'public',
+        data: { sidenav: EXPERIMENTS_NAV, baseLink: '/experiments' },
         loadComponent: () =>
           import('./features/experiments/pages/public/public').then((m) => m.PublicPage),
       },
+
+      // my experiments
       {
         path: 'my-experiments',
+        data: { sidenav: EXPERIMENTS_NAV, baseLink: '/experiments' },
         loadComponent: () =>
           import('./features/experiments/pages/my-experiments/my-experiments').then(
             (m) => m.MyExperiments
           ),
       },
+
+      // create experiment
       {
         path: 'create-experiment',
+        data: { sidenav: EXPERIMENTS_NAV, baseLink: '/experiments' },
         loadComponent: () =>
           import('./features/experiments/pages/create-experiment/create-experiment').then(
             (m) => m.CreateExperiment
           ),
       },
+
+      // ===== TEMPLATES  =====
       {
         path: 'templates',
-        loadComponent: () =>
-          import('./features/experiments/pages/templates/templates').then((m) => m.TemplatesPage),
+        data: { sidenav: EXPERIMENTS_NAV, baseLink: '/experiments' },
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./features/experiments/pages/templates/templates').then(
+                (m) => m.TemplatesPage
+              ),
+          },
+
+          // {
+          //   path: ':id',
+          //   loadComponent: () => import('./features/experiments/pages/template-detail/template-detail')
+          //     .then(m => m.TemplateDetailPage),
+          // },
+        ],
       },
+
+      // my templates (list)
       {
         path: 'my-templates',
+        data: { sidenav: EXPERIMENTS_NAV, baseLink: '/experiments' },
         loadComponent: () =>
           import('./features/experiments/pages/my-templates/my-templates').then(
             (m) => m.MyTemplates
           ),
       },
-      {
-        path: 'my-templates',
-        loadComponent: () =>
-          import('./features/experiments/pages/my-templates/my-templates').then(
-            (m) => m.MyTemplates
-          ),
-      },
+
+      // create template
       {
         path: 'create-template',
+        data: { sidenav: EXPERIMENTS_NAV, baseLink: '/experiments' },
         loadComponent: () =>
           import('./features/experiments/pages/create-template/create-template').then(
             (m) => m.CreateTemplate
           ),
       },
+
+      // ===== EXPERIMENT detail =====
+      {
+        path: ':id',
+        data: { sidenav: EXPERIMENTS_NAV, baseLink: '/experiments' },
+        loadComponent: () =>
+          import('./features/experiments/pages/experiment-detail/experiment-detail').then(
+            (m) => m.ExperimentDetailPage
+          ),
+      },
     ],
   },
 
-  // DATASETS
+  // ===== DATASETS =====
   {
     path: 'datasets',
     data: { sidenav: DATASETS_NAV, baseLink: '/datasets' },
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'all' },
 
-      // /datasets/all  (list)  +  /datasets/all/:id  (detail)
+      // listing
       {
         path: 'all',
-        data: { sidenav: DATASETS_NAV, baseLink: '/datasets' }, // kvôli sidebaru
-        children: [
-          {
-            path: '',
-            loadComponent: () =>
-              import('./features/datasets/pages/all/all').then((m) => m.DatasetsAllComponent),
-          },
-          {
-            path: ':id',
-            loadComponent: () =>
-              import('./features/datasets/pages/dataset-detail/dataset-detail').then(
-                (m) => m.DatasetDetailComponent
-              ),
-          },
-        ],
+        data: { sidenav: DATASETS_NAV, baseLink: '/datasets' },
+        loadComponent: () =>
+          import('./features/datasets/pages/all/all').then((m) => m.DatasetsAllComponent),
       },
 
+      // my datasets
+      {
+        path: 'my-datasets',
+        data: { sidenav: DATASETS_NAV, baseLink: '/datasets' },
+        loadComponent: () =>
+          import('./features/datasets/pages/my-datasets/my-datasets').then((m) => m.MyDatasets),
+      },
+
+      // create dataset
       {
         path: 'create-dataset',
+        data: { sidenav: DATASETS_NAV, baseLink: '/datasets' },
         loadComponent: () =>
           import('./features/datasets/pages/create-dataset/create-dataset').then(
             (m) => m.CreateDataset
           ),
       },
+
+      // --- DETAIL /datasets/:id ---
       {
-        path: 'my-datasets',
+        path: ':id',
+        data: { sidenav: DATASETS_NAV, baseLink: '/datasets' },
         loadComponent: () =>
-          import('./features/datasets/pages/my-datasets/my-datasets').then((m) => m.MyDatasets),
+          import('./features/datasets/pages/dataset-detail/dataset-detail').then(
+            (m) => m.DatasetDetailComponent
+          ),
       },
 
-      // MUSÍ BYŤ POSLEDNÉ, inak zhltne 'my-datasets'
-      { path: ':id', pathMatch: 'full', redirectTo: 'all/:id' },
+      // ---  /datasets/all/:id -> /datasets/:id ---
+      { path: 'all/:id', pathMatch: 'full', redirectTo: '/datasets/:id' },
     ],
   },
 
-  // DOCS
+  // ===== DOCS =====
   {
     path: 'docs',
     data: { sidenav: DOCS_NAV, baseLink: '/docs' },
@@ -137,13 +184,6 @@ export const routes: Routes = [
           import(
             './features/docs/pages/main-concepts-experiments-page/main-concepts-experiments-page'
           ).then((m) => m.MainConceptsExperimentsPage),
-      },
-      {
-        path: 'main-concepts-run',
-        loadComponent: () =>
-          import('./features/docs/pages/main-concepts-run-page/main-concepts-run-page').then(
-            (m) => m.MainConceptsRunPage
-          ),
       },
       {
         path: 'main-concepts-run',

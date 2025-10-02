@@ -2,21 +2,20 @@
 @use '../../../../../styles/typography' as typo;
 @use '../../../../../variables.scss' as *;
 
-:host ::ng-deep .keywords .chips .mdc-evolution-chip.mdc-evolution-chip--disabled,
-:host ::ng-deep .keywords .chips .mat-mdc-chip.mat-mdc-chip-disabled {
-  opacity: 1 !important;
-  background: color-mix(in oklab, var(--text) 14%, transparent) !important;
-  border: 1px solid var(--border) !important;
-  color: var(--text) !important;
-}
-:host ::ng-deep .keywords .chips .mdc-evolution-chip__text-label {
-  color: var(--text) !important;
-  opacity: 1 !important;
-}
-
 /* ================== Helpers ================== */
 $pill-h: 32px;
-$pill-r: 999px;
+
+/* description links – nech sú jasne linky */
+:host .detail.card .desc .desc-body a {
+  color: var(--text-active);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+:host .detail.card .desc .desc-body a:hover {
+  text-decoration: underline; /* prebijeme prípadné globálne :hover none */
+  filter: brightness(1.08);
+}
 
 @mixin pill {
   height: $pill-h;
@@ -24,11 +23,18 @@ $pill-r: 999px;
   align-items: center;
   gap: 8px;
   padding: 0 10px;
-  border-radius: $pill-r;
+  border-radius: var(--radius-pill);
   border: 1px solid var(--border);
   background: color-mix(in oklab, var(--text) 10%, transparent);
   color: var(--text);
   line-height: 1;
+  white-space: nowrap;
+}
+
+.mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
+  letter-spacing: 0.01em;
+  font-feature-settings: 'tnum' 1;
 }
 
 .pill-icon,
@@ -42,17 +48,22 @@ $pill-r: 999px;
   align-items: center;
   justify-content: center;
   line-height: 1;
+  color: var(--text-muted);
 }
 
 /* ===== Card/Layout ===== */
 .detail.card {
   margin: $margin-double;
-  background: var(--surface, var(--background));
+  background: var(--surface);
   color: var(--text);
   border: 1px solid var(--border);
-  border-radius: 16px;
+  border-radius: var(--radius);
   padding: $margin-double;
-  box-shadow: 0 1px 0 color-mix(in oklab, var(--text) 6%, transparent);
+
+  @media (max-width: 760px) {
+    margin: $margin-default;
+    padding: $margin-default;
+  }
 }
 
 /* ===== Header ===== */
@@ -62,6 +73,7 @@ $pill-r: 999px;
   gap: 14px 18px;
   align-items: start;
   margin-bottom: $margin-default;
+
   @media (max-width: 760px) {
     grid-template-columns: 1fr;
   }
@@ -74,6 +86,8 @@ $pill-r: 999px;
   align-items: baseline;
   gap: 12px;
   letter-spacing: -0.01em;
+  color: var(--text);
+  font-family: var(--font-title);
 
   .ver {
     font-family: var(--font-body);
@@ -81,13 +95,13 @@ $pill-r: 999px;
     font-size: 0.6em;
     color: var(--text-muted);
     padding: 2px 10px;
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     border: 1px solid var(--border);
     background: color-mix(in oklab, var(--text) 5%, transparent);
   }
 }
 
-/* ===== Meta  ===== */
+/* ===== Meta ===== */
 .meta {
   display: flex;
   align-items: center;
@@ -101,7 +115,6 @@ $pill-r: 999px;
     background: color-mix(in oklab, var(--primary) 22%, transparent);
     border-color: color-mix(in oklab, var(--primary) 45%, var(--border));
     color: var(--text);
-
     flex-basis: auto;
     order: 0;
     margin-bottom: 0;
@@ -113,15 +126,16 @@ $pill-r: 999px;
 
     .k {
       color: var(--text-muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
     }
     .v {
       color: var(--text);
     }
 
     .monospace {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
-        monospace;
-      letter-spacing: 0.01em;
+      @extend .mono;
     }
   }
 }
@@ -138,7 +152,7 @@ $pill-r: 999px;
   }
 }
 
-/* ===== Keywords  ===== */
+/* ===== Keywords ===== */
 .keywords {
   display: grid;
   grid-template-columns: $pill-h 1fr;
@@ -232,7 +246,7 @@ $pill-r: 999px;
     border: 1px solid var(--border);
     border-radius: 12px;
     padding: $margin-default;
-    background: color-mix(in oklab, var(--background) 96%, transparent);
+    background: var(--surface-2);
 
     h1,
     h2,
@@ -241,21 +255,27 @@ $pill-r: 999px;
     h5,
     h6 {
       font-family: var(--font-title);
+      color: var(--text);
     }
 
     a {
+      color: var(--text-active);
       text-decoration: underline;
+      text-underline-offset: 2px;
     }
 
     pre {
       border: 1px solid color-mix(in oklab, var(--text) 18%, transparent);
       background: color-mix(in oklab, var(--text) 12%, transparent);
       overflow: auto;
+      color: var(--text);
     }
+
     code {
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
         monospace;
       font-size: 0.9em;
+      color: var(--text);
     }
 
     &.is-clamped {
@@ -269,7 +289,6 @@ $pill-r: 999px;
 }
 
 /* ===== Loading / Error ===== */
-
 .error {
   margin: $margin-double;
   padding: 12px 14px;
@@ -278,4 +297,17 @@ $pill-r: 999px;
   color: color-mix(in oklab, var(--primary) 85%, var(--text));
   border-radius: 12px;
   font: var(--font-ui, 600 14px/1.35 system-ui, sans-serif);
+}
+
+/* ===== Keyword chip colors fix (keeps tokens) ===== */
+:host ::ng-deep .keywords .chips .mdc-evolution-chip.mdc-evolution-chip--disabled,
+:host ::ng-deep .keywords .chips .mat-mdc-chip.mat-mdc-chip-disabled {
+  opacity: 1 !important;
+  background: color-mix(in oklab, var(--text) 14%, transparent) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text) !important;
+}
+:host ::ng-deep .keywords .chips .mdc-evolution-chip__text-label {
+  color: var(--text) !important;
+  opacity: 1 !important;
 }

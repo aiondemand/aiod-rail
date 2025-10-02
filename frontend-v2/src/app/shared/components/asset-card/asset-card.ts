@@ -48,13 +48,11 @@ export class AssetCardComponent implements OnChanges {
   }
 
   get sourceLabel(): string {
-    // použijeme prioritne resource.platform, inak .source z Inputu
     const p: string | Platform = (this.resource?.platform as any) ?? this.source ?? '';
     return formatPlatformName(p);
   }
 
   get sourceClass(): string {
-    // CSS class nechaj radšej podľa „raw“ hodnoty (malé písmená, bez medzier)
     const raw = (this.resource?.platform ?? this.source ?? '').toString();
     return `badge--${raw.toLowerCase()}`;
   }
