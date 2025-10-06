@@ -1,0 +1,181 @@
+<!-- Loading + Error -->
+<ui-loading [show]="loading()" label="Loading template…"></ui-loading>
+<ui-error
+  [show]="!!error()"
+  [message]="error() || 'Failed to load experiment template.'"
+  [retryable]="true"
+  retryLabel="Try again"
+  [closable]="true"
+  (retry)="retry()"
+  (close)="error.set(null)"
+></ui-error>
+
+@if (!loading() && !error() && tpl()) {
+<div class="detail card">
+  <!-- ===== HEADER ===== -->
+  <section class="head">
+    <div class="title-wrap">
+      <h1 class="title">{{ tpl()?.name }}</h1>
+      <mat-icon class="vis" [matTooltip]="isPublic() ? 'Public template' : 'Private template'">{{
+        isPublic() ? 'public' : 'lock'
+      }}</mat-icon>
+    </div>
+
+    <div class="actions">
+      @if (isArchived()) {
+      <span class="pill pill--archived" title="New experiments cannot use this template">
+        <mat-icon class="material-symbols-rounded">delete</mat-icon>
+        Archived
+      </span>
+      @if (isMine()) {
+      <ui-button variant="outline" size="sm" (click)="unarchive()">
+        <mat-icon class="material-symbols-rounded">settings_backup_restore</mat-icon>
+        Unarchive
+      </ui-button>
+      } } @else { @if (!isApproved()) {
+      <span class="pill pill--pending" title="Waiting for manual approval">
+        <mat-icon class="material-symbols-rounded">hourglass_top</mat-icon>
+        Waiting for approval
+      </span>
+      <ui-button variant="ghost" size="sm" (click)="approve()" title="Approve">
+        <mat-icon class="material-symbols-rounded">approval</mat-icon>
+      </ui-button>
+      } @if (isMine()) {
+      <ui-button variant="ghost" size="sm" (click)="edit()" title="Edit">
+        <mat-icon class="material-symbols-rounded">edit</mat-icon>
+      </ui-button>
+
+      <ui-button variant="ghost" size="sm" (click)="deleteOrArchive()" title="Delete / Archive">
+        <mat-icon class="material-symbols-rounded">delete</mat-icon>
+      </ui-button>
+      } }
+    </div>
+  </section>
+
+  <!-- ===== DESCRIPTION ===== -->
+  @if (tpl()?.description) {
+  <section class="desc">
+    <h3>Description</h3>
+    <pre class="pre">{{ tpl()?.description }}</pre>
+  </section>
+  }
+
+  <!-- ===== DETAILS & RUNTIME ===== -->
+  <section class="runtime">
+    <h2>Template details and runtime</h2>
+
+    <div class="header-with-info">
+      <h4>Docker image (experiment execution environment)</h4>
+      <mat-icon matTooltip="The script will be executed within this Docker image.">info</mat-icon>
+    </div>
+
+    <div class="data-block">
+      <ui-code-block
+        [code]="file(tpl()?.dockerfile)"
+        lang="dockerfile"
+        filename="Dockerfile"
+        [maxHeight]="'360px'"
+      >
+      </ui-code-block>
+    </div>
+
+    <div class="header-with-info">
+      <h4>Dependencies (libraries)</h4>
+      <mat-icon
+        matTooltip="Libraries from requirements.txt are installed during the image build step."
+        >info</mat-icon
+      >
+    </div>
+    <div class="data-block">
+      <ui-code-block
+        [code]="file(tpl()?.pip_requirements)"
+        lang="plaintext"
+        filename="requirements.txt"
+        [maxHeight]="'480px'"
+      >
+      </ui-code-block>
+    </div>
+
+    <div class="header-with-info">
+      <h4>Executable (script)</h4>
+      <mat-icon
+        matTooltip="script.py runs inside the container. Saved outputs and metrics are shown in the Experiment Run detail."
+        >info</mat-icon
+      >
+    </div>
+    <div class="data-block">
+      <ui-code-block
+        [code]="file(tpl()?.script)"
+        lang="python"
+        filename="script.py"
+        [maxHeight]="'560px'"
+      >
+      </ui-code-block>
+    </div>
+  </section>
+
+  <!-- ===== ENVS ===== -->
+  <section class="envs" aria-labelledby="envs-title">
+    <h2 id="envs-title">Supported environment variables</h2>
+    <p class="envs-note">
+      Variables that can be provided by a user when creating an Experiment from this template. Their
+      meaning is defined by the template's script.
+    </p>
+
+    @if (hasNoEnvs()) {
+    <div class="muted">No environment variables were set in this Experiment Template.</div>
+    } @if (requiredEnvs().length) {
+    <h4>Required environment variables</h4>
+    <div class="env-table" role="table" aria-label="Required environment variables">
+      <div class="env-row env-row--head" role="row">
+        <div class="c k" role="columnheader">Name</div>
+        <div class="c v" role="columnheader">Description</div>
+      </div>
+
+      @for (env of requiredEnvs(); track env.name) {
+      <div class="env-row" role="row">
+        <div class="c k" role="cell">
+          <span class="env-name">
+            {{ env.name }}*
+            <mat-icon
+              *ngIf="env.is_secret"
+              class="material-symbols-rounded secret"
+              matTooltip="Secret"
+              >lock</mat-icon
+            >
+          </span>
+        </div>
+        <div class="c v" role="cell">{{ env.description || '—' }}</div>
+      </div>
+      }
+    </div>
+    <div class="note">* required</div>
+    } @if (optionalEnvs().length) {
+    <h4 class="upper-margin">Optional environment variables</h4>
+    <div class="env-table" role="table" aria-label="Optional environment variables">
+      <div class="env-row env-row--head" role="row">
+        <div class="c k" role="columnheader">Name</div>
+        <div class="c v" role="columnheader">Description</div>
+      </div>
+
+      @for (env of optionalEnvs(); track env.name) {
+      <div class="env-row" role="row">
+        <div class="c k" role="cell">
+          <span class="env-name">
+            {{ env.name }}
+            <mat-icon
+              *ngIf="env.is_secret"
+              class="material-symbols-rounded secret"
+              matTooltip="Secret"
+              >lock</mat-icon
+            >
+          </span>
+        </div>
+        <div class="c v" role="cell">{{ env.description || '—' }}</div>
+      </div>
+      }
+    </div>
+    }
+  </section>
+</div>
+}

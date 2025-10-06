@@ -1,8 +1,10 @@
+// shared/nav/app.nav.ts
 import { NavSection } from './nav.types';
 
 export const APP_NAV: NavSection[] = [
   {
     title: 'Docs',
+    titleSlug: '/docs',
     icon: 'article',
     expanded: true,
     items: [
@@ -18,11 +20,12 @@ export const APP_NAV: NavSection[] = [
       },
       { label: 'RAIL SDKs', slug: '/docs/rail-sdks', icon: 'integration_instructions' },
       { label: 'Outer SDK', slug: '/docs/outer-sdk', icon: 'device_hub' },
-      { label: 'Inner SDKs', slug: '/docs/inner-sdk', icon: 'memory' }, /// external https://www.google.com/
+      { label: 'Inner SDKs', slug: '/docs/inner-sdk', icon: 'memory' },
     ],
   },
   {
     title: 'Experiments',
+    titleSlug: '/experiments',
     icon: 'science',
     expanded: true,
     items: [
@@ -36,15 +39,12 @@ export const APP_NAV: NavSection[] = [
       },
       { label: 'Public templates', slug: '/experiments/templates', icon: 'public' },
       { label: 'My templates', slug: '/experiments/my-templates', icon: 'person' },
-      {
-        label: 'Create template',
-        slug: '/experiments/create-template',
-        icon: 'add',
-      },
+      { label: 'Create template', slug: '/experiments/create-template', icon: 'add' },
     ],
   },
   {
     title: 'Datasets',
+    titleSlug: '/datasets',
     icon: 'grid_view',
     expanded: true,
     items: [

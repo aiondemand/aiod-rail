@@ -12,6 +12,7 @@ import { provideHttpClient, withFetch } from '@angular/common/http';
 import { MarkdownModule, MARKED_OPTIONS } from 'ngx-markdown';
 import { MarkedOptions } from 'marked';
 import { routes } from './app.routes';
+import { provideHighlightOptions } from 'ngx-highlightjs';
 
 async function prismLoader() {
   if (typeof window === 'undefined') return;
@@ -32,6 +33,9 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideClientHydration(withEventReplay()),
     provideHttpClient(withFetch()),
+    provideHighlightOptions({
+      fullLibraryLoader: () => import('highlight.js'),
+    }),
 
     importProvidersFrom(
       MarkdownModule.forRoot({
