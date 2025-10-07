@@ -117,7 +117,7 @@ class Configuration:
 
         self.host = host
         self.login_timeout = login_timeout
-        self.auth_host = auth_host if auth_host.endswith("/") else auth_host + ""
+        self.auth_host = auth_host if auth_host.endswith("/") else auth_host + "/"
         self.auth_realm = auth_realm
         self.auth_client_id = auth_client_id
         self.auth_client = KeycloakOpenID(server_url=self.auth_host, client_id=self.auth_client_id,
