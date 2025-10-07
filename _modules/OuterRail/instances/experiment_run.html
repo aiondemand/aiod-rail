@@ -170,9 +170,14 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Downloads a specific file contained in outputs for the run.</span>
 
+<span class="sd">        Note:</span>
+<span class="sd">            Based on the compute backend, it is quite possible that files from the experiment run will be</span>
+<span class="sd">            stored under a directory named &quot;output&quot;. Therefore, if the download is failing, it is advised to try</span>
+<span class="sd">            to prefix the desired path with &quot;output&quot;, e.g.: &quot;output/path/to/remote.txt&quot;</span>
+
 <span class="sd">        Args:</span>
 <span class="sd">            filepath (str): File to be downloaded.</span>
-<span class="sd">            to_dir (Path): Path to local directory where the run file will be downloaded.</span>
+<span class="sd">            to_dir (Path): Path to the local directory where the run file will be downloaded.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            None.</span>
@@ -181,8 +186,8 @@
 <span class="sd">             ApiException: In case of a failed HTTP request.</span>
 
 <span class="sd">         Examples:</span>
-<span class="sd">            &gt;&gt;&gt; self.download_file(&quot;path/to/remote.txt&quot;, &quot;path/to/local/dir/&quot;)</span>
-<span class="sd">            None # Specified file will be downloaded from remote computing resource where the run is being executed.</span>
+<span class="sd">            &gt;&gt;&gt; self.download_file(&quot;output/path/to/remote.txt&quot;, &quot;path/to/local/dir/&quot;)</span>
+<span class="sd">            None # a Specified file will be downloaded from the remote computing resource where the run is being executed.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">with</span> <span class="n">ApiClient</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="p">)</span> <span class="k">as</span> <span class="n">api_client</span><span class="p">:</span>
@@ -195,7 +200,7 @@
                 <span class="k">raise</span> <span class="n">e</span>
         <span class="n">local_file_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">to_dir</span><span class="p">)</span> <span class="o">/</span> <span class="n">Path</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
         <span class="n">local_file_path</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="k">with</span> <span class="n">local_file_path</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">local_file_path</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
 
 

@@ -553,11 +553,17 @@ ExperimentRun: In successful conversion from dict.</p>
 <dt class="sig sig-object py" id="OuterRail.instances.experiment_run.ExperimentRun.download_file">
 <span class="sig-name descname"><span class="pre">download_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/OuterRail/instances/experiment_run.html#ExperimentRun.download_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#OuterRail.instances.experiment_run.ExperimentRun.download_file" title="Link to this definition"></a></dt>
 <dd><p>Downloads a specific file contained in outputs for the run.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Based on the compute backend, it is quite possible that files from the experiment run will be
+stored under a directory named “output”. Therefore, if the download is failing, it is advised to try
+to prefix the desired path with “output”, e.g.: “output/path/to/remote.txt”</p>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>filepath</strong> (<em>str</em>) – File to be downloaded.</p></li>
-<li><p><strong>to_dir</strong> (<em>Path</em>) – Path to local directory where the run file will be downloaded.</p></li>
+<li><p><strong>to_dir</strong> (<em>Path</em>) – Path to the local directory where the run file will be downloaded.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -565,8 +571,8 @@ ExperimentRun: In successful conversion from dict.</p>
 <dl>
 <dt>Raises:</dt><dd><p>ApiException: In case of a failed HTTP request.</p>
 </dd>
-<dt>Examples:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="bp">self</span><span class="o">.</span><span class="n">download_file</span><span class="p">(</span><span class="s2">&quot;path/to/remote.txt&quot;</span><span class="p">,</span> <span class="s2">&quot;path/to/local/dir/&quot;</span><span class="p">)</span>
-<span class="go">None # Specified file will be downloaded from remote computing resource where the run is being executed.</span>
+<dt>Examples:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="bp">self</span><span class="o">.</span><span class="n">download_file</span><span class="p">(</span><span class="s2">&quot;output/path/to/remote.txt&quot;</span><span class="p">,</span> <span class="s2">&quot;path/to/local/dir/&quot;</span><span class="p">)</span>
+<span class="go">None # a Specified file will be downloaded from the remote computing resource where the run is being executed.</span>
 </pre></div>
 </div>
 </dd>
