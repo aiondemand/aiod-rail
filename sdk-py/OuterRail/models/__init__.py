@@ -6,6 +6,7 @@ from OuterRail.models.platform import Platform
 from OuterRail.models.task_type import TaskType
 from OuterRail.models.run_state import RunState
 from OuterRail.models.dataset_size import DatasetSize
+from OuterRail.models.contact_read import ContactRead
 from OuterRail.models.distribution import Distribution
 from OuterRail.models.environment_var import EnvironmentVar
 from OuterRail.models.aio_d_entry_read import AIoDEntryRead
@@ -31,6 +32,7 @@ __all__ = [
     'Publication',
     'AssetSchema',
     'DatasetSize',
+    'ContactRead',
     'Distribution',
     'AIoDEntryRead',
     'EnvironmentVar',

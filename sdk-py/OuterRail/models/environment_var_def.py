@@ -2,7 +2,7 @@ import json
 import pprint
 from typing import Any, ClassVar, Dict, List, Optional, Set
 
-from pydantic import BaseModel, ConfigDict, StrictStr
+from pydantic import BaseModel, ConfigDict, StrictStr, StrictBool
 from typing_extensions import Self
 
 """
@@ -13,7 +13,8 @@ class EnvironmentVarDef(BaseModel):
 
     name: StrictStr
     description: StrictStr
-    __properties: ClassVar[List[str]] = ["name", "description"]
+    is_secret: StrictBool
+    __properties: ClassVar[List[str]] = ["name", "description", "is_secret"]
     model_config = ConfigDict(populate_by_name=True, validate_assignment=True, protected_namespaces=())
 
     def to_str(self) -> str:

@@ -1,26 +1,25 @@
 import json
 import pprint
 
-from datetime import datetime
 from typing_extensions import Self
 from typing import Any, ClassVar, Dict, List, Optional, Set
-from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr
+from pydantic import BaseModel, ConfigDict, Field, StrictStr
 
 
 class AIoDEntryRead(BaseModel):
 
-    editor: Optional[List[StrictInt]] = Field(
+    editor: Optional[List[StrictStr]] = Field(
         default=None,
         description="Links to identifiers of persons responsible for maintaining the entry.",
     )
     status: Optional[StrictStr] = Field(
         default="draft", description="Status of the entry (published, draft, rejected)"
     )
-    date_modified: Optional[datetime] = Field(
+    date_modified: Optional[StrictStr] = Field(
         default=None,
         description="The datetime on which the metadata was last updated in the AIoD platform,in UTC.  Note the difference between `.aiod_entry.date_created` and `.date_published`: the former is automatically set to the datetime the resource was created on AIoD, while the latter can optionally be set to an earlier datetime that the resource was published on an external platform.",
     )
-    date_created: Optional[datetime] = Field(
+    date_created: Optional[StrictStr] = Field(
         default=None,
         description="The datetime on which the metadata was first published on the AIoD platform, in UTC.",
     )

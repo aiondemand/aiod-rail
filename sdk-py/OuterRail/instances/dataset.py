@@ -1,13 +1,13 @@
 import json
 import pprint
 
-from datetime import datetime
 from typing_extensions import Annotated, Self
 from typing import Any, ClassVar, Dict, List, Optional, Set
-from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictInt, StrictStr
+from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictStr
 
 from OuterRail import ApiClient, AssetsApi
-from OuterRail import Note, AIoDEntryRead, DatasetSize, Distribution, Location, Text, Configuration
+from OuterRail import Note, AIoDEntryRead, DatasetSize, Distribution, Location, Text, Configuration, ContactRead
+
 
 
 class Dataset(BaseModel):
@@ -23,7 +23,7 @@ class Dataset(BaseModel):
         description="A unique identifier issued by the external platform that's specified in 'platform'. Leave empty if this item is not part of an external platform. For example, for HuggingFace, this should be the <namespace>/<dataset_name>, and for Openml, the OpenML identifier.",
     )
     name: Annotated[str, Field(strict=True, max_length=256)]
-    date_published: Optional[datetime] = Field(
+    date_published: Optional[StrictStr] = Field(
         default=None,
         description="The datetime (utc) on which this resource was first published on an external platform. Note the difference between `.aiod_entry.date_created` and `.date_published`: the former is automatically set to the datetime the resource was created on AIoD, while the latter can optionally be set to an earlier datetime that the resource was published on an external platform.",
     )
@@ -69,29 +69,33 @@ class Dataset(BaseModel):
     application_area: Optional[List[StrictStr]] = Field(
         default=None, description="The objective of this AI resource."
     )
-    citation: Optional[List[StrictInt]] = Field(
+    citation: Optional[List[StrictStr]] = Field(
         default=None, description="A bibliographic reference."
     )
-    contact: Optional[List[StrictInt]] = Field(
+    contact: Optional[List[StrictStr]] = Field(
         default=None,
         description="Contact information of persons/organisations that can be contacted about this resource.",
     )
-    creator: Optional[List[StrictInt]] = Field(
+    contacts: Optional[List[ContactRead]] = Field(
+        None,
+        description="Contact information corresponding to the identifiers found in `contact`.",
+    )
+    creator: Optional[List[StrictStr]] = Field(
         default=None,
         description="Contact information of persons/organisations that created this resource.",
     )
     description: Optional[Text] = None
     distribution: Optional[List[Distribution]] = None
-    funder: Optional[List[StrictInt]] = Field(
+    funder: Optional[List[StrictStr]] = Field(
         default=None,
         description="Links to identifiers of the agents (person or organization) that supports this dataset through some kind of financial contribution. ",
     )
-    has_part: Optional[List[StrictInt]] = None
+    has_part: Optional[List[StrictStr]] = None
     industrial_sector: Optional[List[StrictStr]] = Field(
         default=None,
         description="A business domain where a resource is or can be used.",
     )
-    is_part_of: Optional[List[StrictInt]] = None
+    is_part_of: Optional[List[StrictStr]] = None
     keyword: Optional[List[StrictStr]] = Field(
         default=None,
         description="Keywords or tags used to describe this resource, providing additional context.",
@@ -108,8 +112,8 @@ class Dataset(BaseModel):
         default=None,
         description="URLs of relevant resources. These resources should not be part of AIoD (use relevant_resource otherwise). This field should only be used if there is no more specific field.",
     )
-    relevant_resource: Optional[List[StrictInt]] = None
-    relevant_to: Optional[List[StrictInt]] = None
+    relevant_resource: Optional[List[StrictStr]] = None
+    relevant_to: Optional[List[StrictStr]] = None
     research_area: Optional[List[StrictStr]] = Field(
         default=None,
         description="The research area is similar to the scientific_domain, but more high-level.",
@@ -126,7 +130,7 @@ class Dataset(BaseModel):
         default=None,
         description="A location that describes the spatial aspect of this dataset. For example, a point where all the measurements were collected.",
     )
-    identifier: StrictStr
+    identifier: Annotated[str, Field(strict=True, max_length=30)]
     __properties: ClassVar[List[str]] = [
         "platform",
         "platform_resource_identifier",

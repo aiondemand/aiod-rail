@@ -1,10 +1,9 @@
 import json
 import pprint
 
-from datetime import datetime
 from typing_extensions import Annotated, Self
 from typing import Any, ClassVar, Dict, List, Optional, Set
-from pydantic import BaseModel, ConfigDict, Field, StrictInt
+from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr
 
 
 class Distribution(BaseModel):
@@ -27,9 +26,9 @@ class Distribution(BaseModel):
         Annotated[str, Field(strict=True, max_length=64)]
     ] = Field(default=None, description="The checksum algorithm.")
     copyright: Optional[Annotated[str, Field(strict=True, max_length=256)]] = None
-    content_url: Annotated[str | None, Field(strict=True, max_length=256)]
+    content_url: Optional[Annotated[str, Field(strict=True, max_length=1800)]] = None
     content_size_kb: Optional[StrictInt] = None
-    date_published: Optional[datetime] = Field(
+    date_published: Optional[StrictStr] = Field(
         default=None,
         description="The datetime (utc) on which this Distribution was first published on an external platform. ",
     )
@@ -41,6 +40,10 @@ class Distribution(BaseModel):
     technology_readiness_level: Optional[StrictInt] = Field(
         default=None,
         description="The technology readiness level (TRL) of the distribution. TRL 1 is the lowest and stands for 'Basic principles observed', TRL 9 is the highest and stands for 'actual system proven in operational environment'.",
+    )
+    binary_blob: Optional[bytes] = Field(
+        default=None,
+        description="Binary blob for storing image (or other type of media) data. You may not set this property directly, set it indirectly through dedicated endpoints such as /organisations/{identifier}/image instead.",
     )
     __properties: ClassVar[List[str]] = [
         "platform",
@@ -55,6 +58,7 @@ class Distribution(BaseModel):
         "encoding_format",
         "name",
         "technology_readiness_level",
+        "binary_blob",
     ]
 
     model_config = ConfigDict(

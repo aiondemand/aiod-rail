@@ -4,7 +4,7 @@ import pprint
 from datetime import datetime
 from typing_extensions import Annotated, Self
 from typing import Any, ClassVar, Dict, List, Optional, Set
-from pydantic import BaseModel, ConfigDict, Field, StrictInt
+from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictBytes
 
 
 
@@ -12,13 +12,13 @@ class RunnableDistribution(BaseModel):
 
     platform: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(
         default=None,
-        description="The external platform from which this resource originates. Leave empty if this item originates from AIoD. If platform is not None, the platform_resource_identifier should be set as well.",
+        description="The platform from which this resource originates. Defaults to `aiod` for assets registered directly on AI-on-Demand. This field should only be set by connectors, leave empty for users submitting assets. If platform is not None, `platform_resource_identifier` should also be set.",
     )
     platform_resource_identifier: Optional[
         Annotated[str, Field(strict=True, max_length=256)]
     ] = Field(
         default=None,
-        description="A unique identifier issued by the external platform that's specified in 'platform'. Leave empty if this item is not part of an external platform. For example, for HuggingFace, this should be the <namespace>/<dataset_name>, and for Openml, the OpenML identifier.",
+        description="The identifier by which the external platform (from `platform`) identifies the asset. Defaults to the asset identifier for assets registered directly on AIoD. This field should only be set by connectors, leave empty for users submitting assets. ",
     )
     checksum: Optional[Annotated[str, Field(strict=True, max_length=1800)]] = Field(
         default=None,
@@ -43,6 +43,10 @@ class RunnableDistribution(BaseModel):
         default=None,
         description="The technology readiness level (TRL) of the distribution. TRL 1 is the lowest and stands for 'Basic principles observed', TRL 9 is the highest and stands for 'actual system proven in operational environment'.",
     )
+    binary_blob: Optional[StrictBytes] = Field(
+        default=None,
+        description="Binary blob for storing image (or other type of media) data. You may not set this property directly, set it indirectly through dedicated endpoints such as /organisations/{identifier}/image instead.",
+    )
     installation_script: Optional[
         Annotated[str, Field(strict=True, max_length=256)]
     ] = Field(
@@ -53,7 +57,7 @@ class RunnableDistribution(BaseModel):
         default=None,
         description="A human readable explanation of the installation, primarily meant as alternative for when there is no installation script.",
     )
-    installation_time_milliseconds: Optional[StrictInt] = Field(
+    installation_time_milliseconds: Optional[int] = Field(
         default=None,
         description="An illustrative time that the installation might typically take.",
     )
@@ -67,7 +71,7 @@ class RunnableDistribution(BaseModel):
         default=None,
         description="A human readable explanation of the deployment, primarily meant as alternative for when there is no installation script.",
     )
-    deployment_time_milliseconds: Optional[StrictInt] = Field(
+    deployment_time_milliseconds: Optional[int] = Field(
         default=None,
         description="An illustrative time that the deployment might typically take.",
     )
@@ -100,6 +104,7 @@ class RunnableDistribution(BaseModel):
         "encoding_format",
         "name",
         "technology_readiness_level",
+        "binary_blob",
         "installation_script",
         "installation",
         "installation_time_milliseconds",

@@ -4,9 +4,9 @@ import pprint
 from datetime import datetime
 from typing_extensions import Annotated, Self
 from typing import Any, ClassVar, Dict, List, Optional, Set
-from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictInt, StrictStr
+from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictStr
 
-from OuterRail.models import AIoDEntryRead, Distribution, Note, RunnableDistribution, Text
+from OuterRail.models import AIoDEntryRead, Distribution, Note, RunnableDistribution, Text, ContactRead
 
 
 class Model(BaseModel):
@@ -54,25 +54,29 @@ class Model(BaseModel):
     application_area: Optional[List[StrictStr]] = Field(
         default=None, description="The objective of this AI resource."
     )
-    citation: Optional[List[StrictInt]] = Field(
+    citation: Optional[List[StrictStr]] = Field(
         default=None, description="A bibliographic reference."
     )
-    contact: Optional[List[StrictInt]] = Field(
+    contact: Optional[List[StrictStr]] = Field(
         default=None,
         description="Contact information of persons/organisations that can be contacted about this resource.",
     )
-    creator: Optional[List[StrictInt]] = Field(
+    contacts: Optional[List[ContactRead]] = Field(
+        None,
+        description="Contact information corresponding to the identifiers found in `contact`.",
+    )
+    creator: Optional[List[StrictStr]] = Field(
         default=None,
         description="Contact information of persons/organisations that created this resource.",
     )
     description: Optional[Text] = None
     distribution: Optional[List[RunnableDistribution]] = None
-    has_part: Optional[List[StrictInt]] = None
+    has_part: Optional[List[StrictStr]] = None
     industrial_sector: Optional[List[StrictStr]] = Field(
         default=None,
         description="A business domain where a resource is or can be used.",
     )
-    is_part_of: Optional[List[StrictInt]] = None
+    is_part_of: Optional[List[StrictStr]] = None
     keyword: Optional[List[StrictStr]] = Field(
         default=None,
         description="Keywords or tags used to describe this resource, providing additional context.",
@@ -85,15 +89,15 @@ class Model(BaseModel):
     note: Optional[List[Note]] = Field(
         default=None, description="Notes on this AI resource."
     )
-    related_experiment: Optional[List[StrictInt]] = Field(
+    related_experiment: Optional[List[StrictStr]] = Field(
         default=None, description="Related experiments."
     )
     relevant_link: Optional[List[StrictStr]] = Field(
         default=None,
         description="URLs of relevant resources. These resources should not be part of AIoD (use relevant_resource otherwise). This field should only be used if there is no more specific field.",
     )
-    relevant_resource: Optional[List[StrictInt]] = None
-    relevant_to: Optional[List[StrictInt]] = None
+    relevant_resource: Optional[List[StrictStr]] = None
+    relevant_to: Optional[List[StrictStr]] = None
     research_area: Optional[List[StrictStr]] = Field(
         default=None,
         description="The research area is similar to the scientific_domain, but more high-level.",
@@ -105,7 +109,7 @@ class Model(BaseModel):
     type: Optional[StrictStr] = Field(
         default=None, description="The type of machine learning model."
     )
-    identifier: StrictStr
+    identifier: Annotated[str, Field(strict=True, max_length=30)]
     __properties: ClassVar[List[str]] = [
         "platform",
         "platform_resource_identifier",

@@ -2,17 +2,17 @@ import json
 import pprint
 
 from typing_extensions import Self
-from typing import Any, ClassVar, Dict, List, Optional, Set, Union
+from typing import Any, ClassVar, Dict, List, Optional, Set
 from pydantic import BaseModel, ConfigDict, Field, StrictFloat, StrictInt
 
 
 
 class Geo(BaseModel):
 
-    latitude: Optional[Union[StrictFloat, StrictInt]] = Field(
+    latitude: Optional[StrictFloat] = Field(
         default=None, description="The latitude of a location in degrees (WGS84)"
     )
-    longitude: Optional[Union[StrictFloat, StrictInt]] = Field(
+    longitude: Optional[StrictFloat] = Field(
         default=None, description="The longitude of a location in degrees (WGS84)"
     )
     elevation_millimeters: Optional[StrictInt] = Field(

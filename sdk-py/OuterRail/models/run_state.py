@@ -11,10 +11,11 @@ from typing_extensions import Self
 
 class RunState(str, Enum):
     CREATED = "CREATED"
-    IN_PROGRESS = "IN_PROGRESS"
+    PREPROCESSING = "PREPROCESSING"
+    RUNNING = "RUNNING"
+    POSTPROCESSING = "POSTPROCESSING"
     FINISHED = "FINISHED"
     CRASHED = "CRASHED"
-    RUNNING = "RUNNING"
 
     @classmethod
     def from_json(cls, json_str: str) -> Self:

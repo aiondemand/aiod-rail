@@ -1,7 +1,7 @@
 import json
 import pprint
 
-from typing_extensions import Self
+from typing_extensions import Self, Annotated
 from typing import Any, ClassVar, Dict, List, Optional, Set
 from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr
 
@@ -11,7 +11,7 @@ class Platform(BaseModel):
     name: StrictStr = Field(
         description="The name of the platform, such as huggingface, openml or zenodo. Preferably using snake_case."
     )
-    identifier: StrictStr
+    identifier: Annotated[str, Field(strict=True, max_length=256)]
     __properties: ClassVar[List[str]] = ["name", "identifier"]
 
     model_config = ConfigDict(populate_by_name=True, validate_assignment=True, protected_namespaces=())
