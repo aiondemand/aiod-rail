@@ -117,10 +117,11 @@ class Configuration:
 
         self.host = host
         self.login_timeout = login_timeout
-        self.auth_host = auth_host + "/" if not auth_host.endswith("/") else ""
+        self.auth_host = auth_host if auth_host.endswith("/") else auth_host + ""
         self.auth_realm = auth_realm
         self.auth_client_id = auth_client_id
-        self.auth_client = KeycloakOpenID(server_url=auth_host, client_id=auth_client_id, realm_name=auth_realm)
+        self.auth_client = KeycloakOpenID(server_url=self.auth_host, client_id=self.auth_client_id,
+                                          realm_name=self.auth_realm)
 
     def login(self, persist: bool = False) -> None:
         """
@@ -161,7 +162,7 @@ class Configuration:
                 print("Using persisted token from file.")
                 return
             else:
-                self.token.invalidate()
+                persisted_token.invalidate()
                 print("Ignoring persisted token due to Keycloak configuration mismatch.")
 
         self.token = self._login_sequence()
