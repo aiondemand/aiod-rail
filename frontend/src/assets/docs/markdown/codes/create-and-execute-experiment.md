@@ -1,4 +1,11 @@
 ```python
+from OuterRail import Configuration, ExperimentManager
+
+# Login
+config = Configuration(host="http://rail/backend/url")
+config.login(username="username", password="password")
+
+# Specify experiment in a dictionary
 experiment = {
     "name": "My experiment",
     "description": "Super demo Experiment",
@@ -19,9 +26,10 @@ experiment = {
     "is_public": True
 }
 
-new_experiment = rail_client.experiments.create_experiment(experiment=experiment)
-
+# Create experiment
+exp_manager = ExperimentManager(config)
+new_experiment = exp_manager.create(experiment=experiment)
 
 # Execute experiment
-run = rail_client.experiments.run_experiment(id=new_experiment.id)
+run = new_experiment.run()
 ```

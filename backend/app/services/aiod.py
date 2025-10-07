@@ -7,7 +7,7 @@ import httpx
 from fastapi import HTTPException
 from pydantic import Json
 
-from app.auth import _get_user, raise_requires_auth
+from app.auth import get_current_user_or_raise
 from app.config import settings
 from app.helpers import Pagination
 from app.schemas.asset_id import AssetId
@@ -85,11 +85,8 @@ async def get_my_asset_ids(
     """
     assert asset_type in [AssetType.DATASETS, AssetType.ML_MODELS]
 
-    user = await _get_user(token=token)
-    if user is None:
-        raise_requires_auth()
-    else:
-        user_id = user.get("sub")
+    user = await get_current_user_or_raise(token=token)
+    user_id = user.get("sub")
 
     res = await aiod_library_client_wrapper.client.get(
         f"api/libraries/{user_id}/assets", headers={"Authorization": f"{token}"}

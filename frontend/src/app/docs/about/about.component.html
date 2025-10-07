@@ -74,13 +74,30 @@
         </mat-tab>
     </mat-tab-group>
 
-    You can get your API key in the <a [routerLink]="['/profile']">Profile</a> page. You need to be logged in to see this section.
+    As a part of logging in, you will be tasked to go on a provided URL and enter a device code which you need to use
+    to log in to the service and give consent to the resources needed by the SDK.
 
-    <div>
-        # Coming soon: Video showing how to generate an API Key`
-    </div>
 
-    <h2>2. Find appropriate testing datasets</h2>
+    <h2>2. Create an Experiment Template</h2>
+    <p>
+        You can create an Experiment Template either through <a [routerLink]="['/docs', 'rail-sdks']">RAIL Python SDK</a> or
+        through <a [routerLink]="['/experiments', 'create']">web UI</a>.
+    </p>
+    <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start">
+        <mat-tab label="Python SDK">
+            <markdown src="assets/docs/markdown/codes/create-experiment-template-about.md">
+            </markdown>
+        </mat-tab>
+        <mat-tab label="Python SDK (alternative)">
+            <markdown src="assets/docs/markdown/codes/create-experiment-template-v2-about.md">
+            </markdown>
+        </mat-tab>
+        <mat-tab label="Web page">
+            # Coming soon
+        </mat-tab>
+    </mat-tab-group>
+
+    <h2>3. Find appropriate testing datasets</h2>
     <p>
         You can search for datasets in AIoD using the <a [routerLink]="['/datasets']">Datasets</a> page. You can
         search for datasets by using fulltext search. The datasets are described by metadata available in the AIoD
@@ -96,7 +113,7 @@
         </mat-tab>
     </mat-tab-group>
 
-    <h2>3. Create an Experiment</h2>
+    <h2>4. Create an Experiment</h2>
     <p>
         <a [routerLink]="['/experiments', 'create']">Create an Experiment</a> that links your dataset and a model
         you want to evaluate the data on.
@@ -122,7 +139,7 @@
         </mat-tab>
     </mat-tab-group>
 
-    <h2>4. Execute the Experiment</h2>
+    <h2>5. Execute the Experiment</h2>
     <p>
         The Experiment will be executed by creating an instance of your experiment called Experiment Run that will
         be run in the AI on Demand platform and the results will be available in RAIL.
@@ -136,7 +153,7 @@
         </mat-tab>
     </mat-tab-group>
 
-    <h2>5. Check and collect Experiment Run outputs</h2>
+    <h2>6. Check and collect Experiment Run outputs</h2>
     <p>
         After the experiment is finished, you can check the results in the Experiment Run page. You can find all the
         runs of the experiment in the Experiment page.
@@ -149,4 +166,17 @@
             # Coming soon
         </mat-tab>
     </mat-tab-group>
+
+  <h2>7. Logout</h2>
+  <p>
+    After your code executes, don't forget to logout.
+  </p>
+  <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start">
+    <mat-tab label="Python SDK">
+      <markdown clipboard src="assets/docs/markdown/codes/logout.md"></markdown>
+    </mat-tab>
+    <mat-tab label="Web page">
+      # Coming soon
+    </mat-tab>
+  </mat-tab-group>
 </app-base-doc>

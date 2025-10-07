@@ -31,7 +31,7 @@ class ExperimentTemplateFilter(BaseModel):
 
 @router.get("/experiment-templates", response_model=list[ExperimentTemplateResponse])
 async def get_experiment_templates(
-    user: dict | None = Depends(get_current_user_if_exists(from_api_key=True)),
+    user: dict | None = Depends(get_current_user_if_exists),
     query: str = "",
     pagination: Pagination = Depends(),
     filters: ExperimentTemplateFilter = Depends(),
@@ -52,7 +52,7 @@ async def get_experiment_templates(
 @router.get("/experiment-templates/{id}", response_model=ExperimentTemplateResponse)
 async def get_experiment_template(
     id: PydanticObjectId,
-    user: dict | None = Depends(get_current_user_if_exists(from_api_key=True)),
+    user: dict | None = Depends(get_current_user_if_exists),
 ) -> Any:
     experiment_template = await get_experiment_template_if_accessible_or_raise(id, user)
     return experiment_template.map_to_response(user)
@@ -60,7 +60,7 @@ async def get_experiment_template(
 
 @router.get("/count/experiment-templates", response_model=int)
 async def get_experiment_templates_count(
-    user: dict | None = Depends(get_current_user_if_exists(from_api_key=True)),
+    user: dict | None = Depends(get_current_user_if_exists),
     query: str = "",
     filters: ExperimentTemplateFilter = Depends(),
 ) -> Any:
@@ -79,7 +79,7 @@ async def get_experiment_templates_count(
 )
 async def create_experiment_template(
     experiment_template: ExperimentTemplateCreate,
-    user: dict = Depends(get_current_user_or_raise(from_api_key=True)),
+    user: dict = Depends(get_current_user_or_raise),
 ) -> Any:
     experiment_template_obj = await ExperimentTemplate.create_template(
         experiment_template, user["email"]
@@ -104,7 +104,7 @@ async def create_experiment_template(
 async def update_experiment_template(
     id: PydanticObjectId,
     experiment_template: ExperimentTemplateCreate,
-    user: dict = Depends(get_current_user_or_raise(from_api_key=True)),
+    user: dict = Depends(get_current_user_or_raise),
 ) -> Any:
     original_template = await get_experiment_template_if_accessible_or_raise(
         id, user, write_access=True
@@ -137,7 +137,7 @@ async def update_experiment_template(
 @router.delete("/experiment-templates/{id}", response_model=None)
 async def remove_experiment_template(
     id: PydanticObjectId,
-    user: dict = Depends(get_current_user_or_raise(from_api_key=True)),
+    user: dict = Depends(get_current_user_or_raise),
 ) -> Any:
     await get_experiment_template_if_accessible_or_raise(id, user, write_access=True)
     exist_experiments = await Experiment.find(Experiment.experiment_template_id == id).count() > 0
@@ -154,7 +154,7 @@ async def remove_experiment_template(
 @router.patch("/experiment-templates/{id}/archive", response_model=None)
 async def archive_experiment_template(
     id: PydanticObjectId,
-    user: dict = Depends(get_current_user_or_raise(from_api_key=True)),
+    user: dict = Depends(get_current_user_or_raise),
     archive: bool = False,
 ) -> Any:
     experiment_template = await get_experiment_template_if_accessible_or_raise(
@@ -172,7 +172,7 @@ async def archive_experiment_template(
 async def get_experiments_of_template_count(
     id: PydanticObjectId,
     only_mine: bool = False,
-    user: dict | None = Depends(get_current_user_if_exists(from_api_key=True)),
+    user: dict | None = Depends(get_current_user_if_exists),
 ) -> Any:
     await get_experiment_template_if_accessible_or_raise(id, user)
 
