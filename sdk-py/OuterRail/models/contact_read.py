@@ -2,7 +2,9 @@ from typing_extensions import Annotated
 from typing import List, Optional
 from pydantic import BaseModel, Field, StrictStr
 
-from OuterRail.models import AIoDEntryRead, Location
+from OuterRail.models.aio_d_entry_read import AIoDEntryRead
+from OuterRail.models.location import Location
+
 
 class ContactRead(BaseModel):
     platform: Optional[Annotated[str, Field(strict=True, max_length=64)]] = Field(

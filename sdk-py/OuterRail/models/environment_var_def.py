@@ -13,7 +13,7 @@ class EnvironmentVarDef(BaseModel):
 
     name: StrictStr
     description: StrictStr
-    is_secret: StrictBool
+    is_secret: Optional[StrictBool] = None
     __properties: ClassVar[List[str]] = ["name", "description", "is_secret"]
     model_config = ConfigDict(populate_by_name=True, validate_assignment=True, protected_namespaces=())
 
