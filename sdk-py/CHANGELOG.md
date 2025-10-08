@@ -6,9 +6,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] | DD-MM-YYYY
 
+## [1.2.3] | 08.10-2025
+
 ### Updated
 * Added an enhanced search option for dataset searching.
-* Saving token information to a file now includes auth settings (auth_host, auth_realm, client_id).
+* Authentication
+  * Saving token information to a file now includes auth settings (auth_host, auth_realm, client_id).
+  * Persistent auth is invalidated if auth settings do not match those in the file.
+  * Handling of trailing / in auth_host URL.
+  * Improved logic for the handling of persistent login sessions.
+* Fixes for file download from experiment runs.
+* Models updated to mirror those on the RAIL backend.
 
 ## [1.2.2] | 23.09-2025
 
