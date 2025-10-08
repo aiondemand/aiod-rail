@@ -1,25 +1,152 @@
 @use '../../../../styles/typography' as typo;
+@use '../../../../variables.scss' as *;
 
+/* MatDialog surface */
+:host ::ng-deep .mat-mdc-dialog-surface {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-1);
+  overflow: hidden;
+}
+
+/* ==================== COMPONENT ==================== */
 .ui-confirm {
   display: grid;
-  gap: 14px;
-  min-width: 320px;
-  max-width: 640px;
+  color: var(--text);
+  padding: $margin-default;
 
-  .msg {
-    pre {
+  /* ============ Header ============ */
+  .head {
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    gap: 10px;
+    align-items: center;
+    padding: 6px 6px;
+
+    .ic {
+      width: 40px;
+      height: 40px;
+      font-size: 40px;
+      border-radius: 12px;
+      display: inline-grid;
+      place-items: center;
+    }
+
+    .title {
+      @include typo.title(--h5-d, --h5-m, --h5-lh-d, --h5-lh-m, --h5-mb-d, --h5-mb-m, --w-medium);
       margin: 0;
-      white-space: pre-wrap;
-      font: var(--font-ui, 500 14px/1.45 system-ui, sans-serif);
       color: var(--text);
     }
   }
 
+  /* ============ Message ============ */
+  .msg {
+    border-radius: 14px;
+    padding: 12px 14px;
+    min-width: 0;
+    pre {
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      font-family: var(--font-body);
+      line-height: 1.55;
+      color: var(--text);
+    }
+  }
+
+  /* ============ Actions wrapper ============ */
+  .actions-wrap {
+    border-radius: 14px;
+    padding-right: $margin-default;
+    min-width: 0;
+    width: 100%;
+  }
+
+  /* ============ Actions ============ */
   .actions {
     display: flex;
-    justify-content: center;
+    flex-wrap: wrap;
     align-items: center;
     gap: 12px;
-    flex-wrap: wrap;
+    padding: 2px 2px 0;
+    min-width: 0;
+    width: 100%;
+
+    /* --- Button base --- */
+    ui-button {
+      flex: 0 1 auto;
+      min-width: 0;
+      max-width: 100%;
+      text-align: center;
+    }
+
+    :host ::ng-deep ui-button .btn {
+      min-width: 0;
+      max-width: 100%;
+      white-space: normal;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+      text-align: center;
+    }
+
+    &:not(.has-third) {
+      ui-button.primary {
+        margin-left: auto;
+      }
+    }
+
+    &.has-third {
+      ui-button:not(.primary):not(.third) {
+        order: 1;
+      }
+      ui-button.third {
+        order: 2;
+        margin-left: auto;
+      }
+
+      ui-button.primary {
+        order: 3;
+        flex-basis: 100%;
+        margin-left: 0;
+        align-self: center;
+        text-align: center;
+        justify-content: center;
+      }
+    }
+  }
+}
+
+/* ==================== Focus ==================== */
+:host ::ng-deep button:focus-visible {
+  outline: none;
+  box-shadow: var(--focus);
+  border-radius: 10px;
+}
+
+/* ==================== Surface overrides ==================== */
+.mat-mdc-dialog-surface:has(> ui-confirm),
+.mdc-dialog__surface:has(> ui-confirm) {
+  --mdc-dialog-container-color: var(--border);
+  background: var(--border) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius) !important;
+  color: var(--text) !important;
+  overflow: hidden;
+  padding: 0 !important;
+}
+
+.mat-mdc-dialog-surface:has(> ui-confirm) .mat-mdc-dialog-content {
+  padding: 0 !important;
+  background: transparent !important;
+}
+
+/* ==================== MOBILE ==================== */
+@media (max-width: 480px) {
+  .actions {
+    ui-button {
+      flex-basis: 100%;
+      margin-left: 0;
+      text-align: center;
+    }
   }
 }

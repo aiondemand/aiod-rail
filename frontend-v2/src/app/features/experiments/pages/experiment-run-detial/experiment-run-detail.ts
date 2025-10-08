@@ -23,6 +23,7 @@ import { ExperimentRunDetails } from '../../../../shared/models/experiment-run';
 import { FileDetail } from '../../../../shared/models/file-detail';
 import { UiLoadingComponent } from '../../../../shared/components/ui-loading/ui-loading';
 import { UiErrorComponent } from '../../../../shared/components/ui-error/ui-error';
+import { UiButton } from '../../../../shared/components/ui-button/ui-button';
 
 type RunState = 'CREATED' | 'PREPROCESSING' | 'RUNNING' | 'POSTPROCESSING' | 'FINISHED' | 'CRASHED';
 
@@ -48,6 +49,7 @@ interface FileNode {
     ScrollingModule,
     UiLoadingComponent,
     UiErrorComponent,
+    UiButton,
   ],
   templateUrl: './experiment-run-detail.html',
   styleUrls: ['./experiment-run-detail.scss'],

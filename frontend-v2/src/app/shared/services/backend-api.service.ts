@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { catchError, combineLatest, map, Observable, of, switchMap, throwError } from 'rxjs';
 import { Dataset } from '../models/dataset';
-import { environment } from '../../environments/environment';
+import { environment } from '../../../environments/environment';
 import { Platform } from '../models/platform';
 import { Experiment, ExperimentCreate } from '../models/experiment';
 import { Model } from '../models/model';

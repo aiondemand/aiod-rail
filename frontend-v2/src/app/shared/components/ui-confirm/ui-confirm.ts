@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { UiButton } from '../ui-button/ui-button';
@@ -7,11 +7,8 @@ export type UiConfirmResult = 'yes' | 'no' | 'third';
 
 export interface UiConfirmData {
   message: string;
-
   acceptBtnMessage?: string; // default: "Confirm"
-
   declineBtnMessage?: string; // default: "Dismiss"
-
   thirdOptionBtnMessage?: string;
 }
 
@@ -21,6 +18,7 @@ export interface UiConfirmData {
   imports: [CommonModule, MatDialogModule, UiButton],
   templateUrl: './ui-confirm.html',
   styleUrls: ['./ui-confirm.scss'],
+  encapsulation: ViewEncapsulation.None,
 })
 export class UiConfirmComponent {
   constructor(

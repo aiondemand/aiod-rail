@@ -1,0 +1,35 @@
+@use '../../../../styles/typography' as typo;
+
+.login-container {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* profile */
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: inherit;
+  transition: color 0.2s ease;
+
+  .icon {
+    font-size: 3em;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text);
+    overflow: visible;
+    padding-right: 0.2em;
+  }
+}
+
+.username {
+  font-family: var(--font-body);
+  font-weight: var(--w-medium);
+  color: var(--text);
+  font-weight: var(--w-medium);
+}

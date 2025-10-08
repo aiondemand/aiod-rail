@@ -21,37 +21,61 @@
         <th>Updated</th>
         <th>Metrics</th>
         <th>State</th>
-        <th>Actions</th>
+        <th class="center">Actions</th>
       </tr>
     </thead>
+
     <tbody>
-      @for (run of runs(); track run.id) {
+      @for (run of runs(); track $any(run).id) {
       <tr>
-        <td class="mono">{{ run.id }}</td>
-        <td>{{ run.created_at | date : 'medium' }}</td>
-        <td>{{ run.updated_at | date : 'medium' }}</td>
+        <td class="mono">
+          <a [routerLink]="['/experiments', 'runs', $any(run).id]">
+            {{ $any(run).id }}
+          </a>
+        </td>
+
+        <td>{{ $any(run).created_at | date : 'medium' }}</td>
+        <td>{{ $any(run).updated_at | date : 'medium' }}</td>
+
         <td>
           <div class="metrics">
-            @for (m of run.metrics | keyvalue; track m.key) {
+            @for (m of ($any(run).metrics || {}) | keyvalue; track m.key) {
             <div>{{ m.key }}: {{ m.value }}</div>
             }
           </div>
         </td>
-        <td>{{ run.state }}</td>
-        <td class="actions">
-          <a [routerLink]="['/experiments', 'runs', run.id]" matTooltip="View run">
-            <mat-icon class="material-symbols-rounded">visibility</mat-icon>
-          </a>
 
-          @if (run.is_mine && !run.is_archived && run.state === 'RUNNING') {
-          <ui-button (click)="stopRun(run.id)" matTooltip="Stop run">
+        <td class="state">{{ $any(run).state }}</td>
+
+        <td class="actions">
+          <button
+            class="icon-btn ghost"
+            type="button"
+            [routerLink]="['/experiments', 'runs', $any(run).id]"
+            matTooltip="View run"
+          >
+            <mat-icon class="material-symbols-rounded">visibility</mat-icon>
+          </button>
+
+          @if ($any(run).is_mine && !$any(run).is_archived && $any(run).state === 'RUNNING') {
+          <button
+            class="icon-btn warn"
+            type="button"
+            (click)="stopRun($any(run).id)"
+            matTooltip="Stop run"
+          >
             <mat-icon class="material-symbols-rounded">stop</mat-icon>
-          </ui-button>
-          } @if (run.is_mine && !run.is_archived && (run.state === 'FINISHED' || run.state ===
-          'CRASHED')) {
-          <ui-button (click)="deleteRun(run.id)" matTooltip="Delete run">
+          </button>
+          } @if ($any(run).is_mine && !$any(run).is_archived && ($any(run).state === 'FINISHED' ||
+          $any(run).state === 'CRASHED')) {
+          <button
+            class="icon-btn danger"
+            type="button"
+            (click)="deleteRun($any(run).id)"
+            matTooltip="Delete run"
+          >
             <mat-icon class="material-symbols-rounded">delete</mat-icon>
-          </ui-button>
+          </button>
           }
         </td>
       </tr>
@@ -60,7 +84,7 @@
   </table>
   } @else {
   <p>
-    No runs found for experiment <em>{{ experiment.name }}</em
+    No runs found for experiment <em>{{ $any(experiment).name }}</em
     >.
   </p>
   }

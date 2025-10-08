@@ -1,10 +1,9 @@
 import { Routes } from '@angular/router';
+import { authMatchGuard, authGuard } from './core/auth/auth.guard';
 
 export const routes: Routes = [
-  // default
   { path: '', pathMatch: 'full', redirectTo: 'docs/about' },
 
-  // legacy bridge /templates/:id -> /experiments/templates/:id
   { path: 'templates/:id', pathMatch: 'full', redirectTo: 'experiments/templates/:id' },
 
   // ===== EXPERIMENTS =====
@@ -13,14 +12,16 @@ export const routes: Routes = [
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'public' },
 
-      // lists & create
       {
         path: 'public',
         loadComponent: () =>
           import('./features/experiments/pages/public/public').then((m) => m.PublicPage),
       },
+
+      // chránené moje zoznamy + create
       {
         path: 'my-experiments',
+        canMatch: [authMatchGuard],
         loadComponent: () =>
           import('./features/experiments/pages/my-experiments/my-experiments').then(
             (m) => m.MyExperiments
@@ -28,6 +29,7 @@ export const routes: Routes = [
       },
       {
         path: 'create-experiment',
+        canMatch: [authMatchGuard],
         loadComponent: () =>
           import('./features/experiments/pages/create-experiment/create-experiment').then(
             (m) => m.CreateExperiment
@@ -55,9 +57,10 @@ export const routes: Routes = [
         ],
       },
 
-      // my/create templates
+      // chránené „moje“ / create templates
       {
         path: 'my-templates',
+        canMatch: [authMatchGuard],
         loadComponent: () =>
           import('./features/experiments/pages/my-templates/my-templates').then(
             (m) => m.MyTemplates
@@ -65,11 +68,13 @@ export const routes: Routes = [
       },
       {
         path: 'create-template',
+        canMatch: [authMatchGuard],
         loadComponent: () =>
           import('./features/experiments/pages/create-template/create-template').then(
             (m) => m.CreateTemplate
           ),
       },
+
       {
         path: 'runs/:runId',
         loadComponent: () =>
@@ -100,17 +105,18 @@ export const routes: Routes = [
       },
       {
         path: 'my-datasets',
+        canMatch: [authMatchGuard],
         loadComponent: () =>
           import('./features/datasets/pages/my-datasets/my-datasets').then((m) => m.MyDatasets),
       },
       {
         path: 'create-dataset',
+        canMatch: [authMatchGuard],
         loadComponent: () =>
           import('./features/datasets/pages/create-dataset/create-dataset').then(
             (m) => m.CreateDataset
           ),
       },
-
       {
         path: ':id',
         loadComponent: () =>
@@ -119,6 +125,13 @@ export const routes: Routes = [
           ),
       },
     ],
+  },
+
+  // ===== PROFILE =====
+  {
+    path: 'profile',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/profile/profile').then((m) => m.ProfilePage),
   },
 
   // ===== DOCS =====
@@ -177,6 +190,5 @@ export const routes: Routes = [
     ],
   },
 
-  // fallback
   { path: '**', redirectTo: 'docs/about' },
 ];

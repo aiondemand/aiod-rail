@@ -10,7 +10,7 @@
   (close)="error.set(null)"
 ></ui-error>
 
-@if (!loading() && !error()) { @if (experiment(); as exp) {
+@if (!loading() && !error() && experiment(); as exp) {
 
 <div class="detail card">
   <section class="head">
@@ -28,15 +28,15 @@
       @if (isArchived()) {
       <span class="pill pill--archived" title="This experiment is archived">Archived</span>
       @if (isMine()) {
-      <ui-button variant="outline" size="sm" (click)="unarchive()">
+      <ui-button variant="outline" size="md" (click)="unarchive()">
         <mat-icon class="material-symbols-rounded">settings_backup_restore</mat-icon>
         Unarchive
       </ui-button>
       } } @else { @if (isMine()) {
-      <ui-button variant="ghost" size="sm" (click)="goEdit()" title="Edit">
+      <ui-button variant="ghost" size="md" (click)="goEdit()" title="Edit">
         <mat-icon class="material-symbols-rounded">edit</mat-icon>
       </ui-button>
-      <ui-button variant="ghost" size="sm" (click)="doDelete()" title="Delete">
+      <ui-button variant="ghost" size="md" (click)="doDelete()" title="Delete">
         <mat-icon class="material-symbols-rounded">delete</mat-icon>
       </ui-button>
       } }
@@ -161,4 +161,4 @@
     <app-experiment-run-list #runList [experiment]="exp"> </app-experiment-run-list>
   </section>
 </div>
-} }
+}

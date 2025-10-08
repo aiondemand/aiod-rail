@@ -1,21 +1,15 @@
-@use '../../../../styles/themes';
 @use '../../../../styles/typography' as typo;
 @use '../../../../variables.scss' as *;
 
 /* ===== container  ===== */
 .runs-table-container {
   width: 100%;
-  margin-top: $margin-default;
-
   border: 1px solid var(--border);
   border-radius: 12px;
   background: color-mix(in oklab, var(--background) 96%, transparent);
   overflow: hidden;
-
-  /* horizontal scroll  */
   overflow-x: auto;
 
-  /* sticky header */
   .runs-table thead th {
     position: sticky;
     top: 0;
@@ -44,13 +38,14 @@
     font-weight: var(--w-semibold);
     color: var(--text);
   }
+  th.center {
+    text-align: center;
+  }
 
-  /* last line */
   tbody tr:last-child td {
     border-bottom: 0;
   }
 
-  /*  hover */
   tbody tr:nth-child(even) {
     background: color-mix(in oklab, var(--text) 4%, transparent);
   }
@@ -66,6 +61,12 @@
     max-width: 280px;
     overflow: hidden;
     text-overflow: ellipsis;
+
+    a {
+      color: var(--text);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
   }
 
   /* dates */
@@ -79,7 +80,6 @@
     display: flex;
     flex-wrap: wrap;
     gap: 6px 10px;
-
     > div {
       display: inline-flex;
       align-items: center;
@@ -94,54 +94,42 @@
     }
   }
 
-  /* State */
-  td:nth-child(5) {
-    position: relative;
-  }
-  td:nth-child(5)::before {
-    content: attr(data-state);
-
-    display: none;
-  }
-
-  td:nth-child(5) {
+  /* state */
+  td.state {
     font-weight: var(--w-medium);
     color: var(--text);
   }
 
-  /* Actions */
+  /* actions */
   td.actions {
-    min-width: 100px;
-    .actions {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
+    min-width: 140px;
+    text-align: center;
+  }
+}
 
-      a,
-      button {
-        width: 32px;
-        height: 32px;
-        border-radius: 8px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        border: 1px solid var(--border);
-        background: var(--text);
-        cursor: pointer;
-        padding: 0;
+/* ===== icon buttons ===== */
+.icon-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-pill);
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid var(--border);
+  background: color-mix(in oklab, var(--text) 6%, transparent);
+  color: var(--text);
+  cursor: pointer;
+  margin-left: 7px;
 
-        .material-symbols-rounded,
-        mat-icon {
-          font-size: 18px;
-          line-height: 1;
-          color: var(--text);
-        }
+  &:hover {
+    background: color-mix(in oklab, var(--text) 12%, transparent);
+  }
 
-        &:hover {
-          background: color-mix(in oklab, var(--text) 12%, transparent);
-        }
-      }
-    }
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    line-height: 1;
+    color: var(--text);
   }
 }
 

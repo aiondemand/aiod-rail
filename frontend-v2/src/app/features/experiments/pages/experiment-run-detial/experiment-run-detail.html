@@ -19,13 +19,13 @@
 
     <div class="header-menu">
       @if (isMine() && !isArchived() && state()==='RUNNING') {
-      <button mat-icon-button matTooltip="Stop run" (click)="stopRun()">
-        <mat-icon>stop</mat-icon>
-      </button>
+      <ui-button variant="ghost" size="md" (click)="stopRun()" title="Stop">
+        <mat-icon class="material-symbols-rounded">stop</mat-icon>
+      </ui-button>
       } @if (isMine() && !isArchived() && (state()==='FINISHED' || state()==='CRASHED')) {
-      <button mat-icon-button matTooltip="Delete run" (click)="deleteRun()">
-        <mat-icon>delete</mat-icon>
-      </button>
+      <ui-button variant="ghost" size="md" (click)="deleteRun()" title="Delete">
+        <mat-icon class="material-symbols-rounded">delete</mat-icon>
+      </ui-button>
       }
     </div>
   </div>

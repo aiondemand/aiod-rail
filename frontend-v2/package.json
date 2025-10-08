@@ -3,11 +3,14 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
+    "start-local": "ng serve --watch --configuration local",
+    "build-prod": "ng build --configuration production --output-path=dist",
+    "build-dev": "ng build --configuration development --output-path=dist",
+    "build-local": "ng build --configuration local --output-path=dist",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test",
-    "serve:ssr:AiodRail-frontend-v2": "node dist/AiodRail-frontend-v2/server/server.mjs"
+    "test": "ng test"
+
+
   },
   "prettier": {
     "printWidth": 100,
@@ -32,9 +35,10 @@
     "@angular/platform-browser": "^20.2.0",
     "@angular/platform-server": "^20.2.0",
     "@angular/router": "^20.2.0",
-    "@angular/ssr": "^20.2.2",
+
     "@fontsource/jura": "^5.2.6",
     "@fontsource/montserrat": "^5.2.7",
+    "angular-oauth2-oidc": "^20.0.2",
     "express": "^5.1.0",
     "highlight.js": "^11.11.1",
     "highlightjs-line-numbers.js": "^2.9.0",
