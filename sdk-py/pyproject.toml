@@ -1,7 +1,7 @@
 # 2
 [project]
 name = "OuterRail"
-version = "1.2.2"
+version = "1.2.3"
 description = "AIoD - RAIL. SDK for the RAIL service of the AI on Demand platform."
 readme = "README.md"
 requires-python = ">=3.11"
