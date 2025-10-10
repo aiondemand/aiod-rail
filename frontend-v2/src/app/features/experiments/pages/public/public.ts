@@ -57,7 +57,17 @@ export class PublicPage implements OnInit {
     this.error.set(null);
 
     this.api
-      .getExperiments(this.query(), { offset: this.offset(), limit: this.pageSize() })
+      .getExperiments(
+        this.query(),
+        {
+          offset: this.offset(),
+          limit: this.pageSize(),
+        },
+        {
+          public: true,
+          archived: false,
+        }
+      )
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (xs: Experiment[]) => {
@@ -66,13 +76,18 @@ export class PublicPage implements OnInit {
         },
         error: (err: any) => {
           console.error(err);
-          this.error.set(err?.error?.message ?? err?.message ?? 'Could not load experiments.');
+          this.error.set(
+            err?.error?.message ?? err?.message ?? 'Could not load public experiments.'
+          );
           this.loading.set(false);
         },
       });
 
     this.api
-      .getExperimentsCount(this.query())
+      .getExperimentsCount(this.query(), {
+        public: true,
+        archived: false,
+      })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (cnt: number) => this.length.set(cnt ?? 0),

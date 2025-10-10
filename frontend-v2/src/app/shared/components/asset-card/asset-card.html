@@ -6,6 +6,22 @@
     <mat-icon class="vis-icon" [matTooltip]="visibilityLabel" [attr.aria-label]="visibilityLabel">
       {{ visibilityIcon }}
     </mat-icon>
+    } @if (showWaitingApproval) {
+    <mat-icon
+      class="flag-icon danger"
+      [matTooltip]="approvalTooltip"
+      aria-label="Waiting for approval"
+    >
+      hourglass_top
+    </mat-icon>
+    } @if (showArchived) {
+    <mat-icon
+      class="flag-icon danger"
+      [matTooltip]="archivedTooltip"
+      aria-label="Archived template"
+    >
+      inventory_2
+    </mat-icon>
     } @if (date) {
     <span class="date">{{ date | date : 'MMM d, y' }}</span>
     }

@@ -18,13 +18,12 @@ export const routes: Routes = [
           import('./features/experiments/pages/public/public').then((m) => m.PublicPage),
       },
 
-      // chránené moje zoznamy + create
       {
         path: 'my-experiments',
         canMatch: [authMatchGuard],
         loadComponent: () =>
           import('./features/experiments/pages/my-experiments/my-experiments').then(
-            (m) => m.MyExperiments
+            (m) => m.MyExperimentsPage
           ),
       },
       {
@@ -32,7 +31,7 @@ export const routes: Routes = [
         canMatch: [authMatchGuard],
         loadComponent: () =>
           import('./features/experiments/pages/create-experiment/create-experiment').then(
-            (m) => m.CreateExperiment
+            (m) => m.CreateExperimentPage
           ),
       },
 
@@ -57,13 +56,13 @@ export const routes: Routes = [
         ],
       },
 
-      // chránené „moje“ / create templates
+      // create templates
       {
         path: 'my-templates',
         canMatch: [authMatchGuard],
         loadComponent: () =>
           import('./features/experiments/pages/my-templates/my-templates').then(
-            (m) => m.MyTemplates
+            (m) => m.MyTemplatesPage
           ),
       },
       {
@@ -87,6 +86,14 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/experiments/pages/experiment-detail/experiment-detail').then(
             (m) => m.ExperimentDetailPage
+          ),
+      },
+      {
+        path: ':id/update',
+        canMatch: [authMatchGuard],
+        loadComponent: () =>
+          import('./features/experiments/pages/create-experiment/create-experiment').then(
+            (m) => m.CreateExperimentPage
           ),
       },
     ],

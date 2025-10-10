@@ -34,6 +34,9 @@
     [description]="descOf(t)"
     [link]="linkOf(t)"
     [visibility]="visibilityOf(t)"
+    [approved]="approvedOf(t)"
+    [archived]="archivedOf(t)"
+    [state]="stateOf(t)"
   />
   } @empty { @if (!loading() && !error()) {
   <p class="empty">Žiadne šablóny.</p>

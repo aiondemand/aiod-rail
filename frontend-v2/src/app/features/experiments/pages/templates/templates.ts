@@ -52,7 +52,6 @@ export class TemplatesPage implements OnInit {
     });
   }
 
-  // ---- data loaders
   private load() {
     this.loading.set(true);
     this.error.set(null);
@@ -60,25 +59,16 @@ export class TemplatesPage implements OnInit {
     this.api
       .getExperimentTemplates(
         this.query(),
-        { offset: this.offset(), limit: this.pageSize() } /*, filter */
+        { offset: this.offset(), limit: this.pageSize() },
+        { finalized: true, approved: true, public: true, archived: false }
       )
-      .pipe(
-        tap((xs: ExperimentTemplate[]) =>
-          console.log('[Templates] list', {
-            q: this.query(),
-            offset: this.offset(),
-            limit: this.pageSize(),
-            items: xs?.length,
-          })
-        ),
-        takeUntilDestroyed(this.destroyRef)
-      )
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (xs: ExperimentTemplate[]) => {
+        next: (xs) => {
           this.items.set(xs ?? []);
           this.loading.set(false);
         },
-        error: (err: any) => {
+        error: (err) => {
           console.error(err);
           this.error.set(err?.error?.message || err?.message || 'Could not load templates.');
           this.loading.set(false);
@@ -86,11 +76,16 @@ export class TemplatesPage implements OnInit {
       });
 
     this.api
-      .getExperimentTemplatesCount(this.query())
+      .getExperimentTemplatesCount(this.query(), {
+        finalized: true,
+        approved: true,
+        public: true,
+        archived: false,
+      })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (cnt: number) => this.length.set(cnt ?? 0),
-        error: (err: any) => console.warn('Count failed:', err),
+        next: (cnt) => this.length.set(cnt ?? 0),
+        error: (err) => console.warn('Count failed:', err),
       });
   }
 
@@ -156,5 +151,15 @@ export class TemplatesPage implements OnInit {
   }
   trackT(t: ExperimentTemplate): string {
     return (t as any).id ?? (t as any).identifier ?? JSON.stringify(t);
+  }
+
+  approvedOf(t: any): boolean | null {
+    return t?.is_approved ?? t?.approved ?? null;
+  }
+  archivedOf(t: any): boolean | null {
+    return t?.is_archived ?? t?.archived ?? null;
+  }
+  stateOf(t: any): string | null {
+    return t?.state ?? t?.status ?? null;
   }
 }

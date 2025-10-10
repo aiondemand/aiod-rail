@@ -16,9 +16,9 @@
   <section class="head">
     <div class="title-wrap">
       <h1 class="title">{{ tpl()?.name }}</h1>
-      <mat-icon class="vis" [matTooltip]="isPublic() ? 'Public template' : 'Private template'">{{
-        isPublic() ? 'public' : 'lock'
-      }}</mat-icon>
+      <mat-icon class="vis" [matTooltip]="isPublic() ? 'Public template' : 'Private template'">
+        {{ isPublic() ? 'public' : 'lock' }}
+      </mat-icon>
     </div>
 
     <div class="actions">
@@ -52,6 +52,28 @@
     </div>
   </section>
 
+  <!-- ===== BUILD STATE ===== -->
+  @if (!isArchived() && state() !== 'FINISHED') { @if (!isApproved()) { } @else {
+  <section class="state-line">
+    @if (isCreated()) {
+    <span class="pill pill--scheduled" title="Build is scheduled">
+      <mat-icon class="material-symbols-rounded">schedule</mat-icon>
+      Scheduled
+    </span>
+    } @if (isInProgress()) {
+    <span class="pill pill--progress" title="Building Docker image">
+      <mat-icon class="material-symbols-rounded">rotate_right</mat-icon>
+      Building image
+    </span>
+    } @if (isCrashed()) {
+    <span class="pill pill--crashed" title="Build failed">
+      <mat-icon class="material-symbols-rounded">error</mat-icon>
+      Crashed
+    </span>
+    }
+  </section>
+  } }
+
   <!-- ===== DESCRIPTION ===== -->
   @if (tpl()?.description) {
   <section class="desc">
@@ -75,16 +97,16 @@
         lang="dockerfile"
         filename="Dockerfile"
         [maxHeight]="'360px'"
-      >
-      </ui-code-block>
+      ></ui-code-block>
     </div>
 
     <div class="header-with-info">
       <h4>Dependencies (libraries)</h4>
       <mat-icon
         matTooltip="Libraries from requirements.txt are installed during the image build step."
-        >info</mat-icon
       >
+        info
+      </mat-icon>
     </div>
     <div class="data-block">
       <ui-code-block
@@ -92,16 +114,16 @@
         lang="plaintext"
         filename="requirements.txt"
         [maxHeight]="'480px'"
-      >
-      </ui-code-block>
+      ></ui-code-block>
     </div>
 
     <div class="header-with-info">
       <h4>Executable (script)</h4>
       <mat-icon
         matTooltip="script.py runs inside the container. Saved outputs and metrics are shown in the Experiment Run detail."
-        >info</mat-icon
       >
+        info
+      </mat-icon>
     </div>
     <div class="data-block">
       <ui-code-block
@@ -109,8 +131,7 @@
         lang="python"
         filename="script.py"
         [maxHeight]="'560px'"
-      >
-      </ui-code-block>
+      ></ui-code-block>
     </div>
   </section>
 

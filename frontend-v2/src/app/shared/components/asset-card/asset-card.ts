@@ -27,6 +27,10 @@ export class AssetCardComponent implements OnChanges {
   @Input() visibility: Visibility = '';
   @Input() resource?: Dataset;
 
+  @Input() approved?: boolean | null;
+  @Input() archived?: boolean | null;
+  @Input() state?: string | null;
+
   ngOnChanges() {
     if (this.resource) {
       this.source = this.resource.platform ?? this.source;
@@ -71,5 +75,23 @@ export class AssetCardComponent implements OnChanges {
   }
   get visibilityLabel(): string {
     return this.visibility ? this.visibility[0].toUpperCase() + this.visibility.slice(1) : '';
+  }
+
+  get showWaitingApproval(): boolean {
+    if (this.archived === true) return false;
+    if (this.approved === false) return true;
+    return false;
+  }
+
+  get approvalTooltip(): string {
+    return 'Waiting for approval — Experiment templates are manually reviewed before being approved for use';
+  }
+
+  get showArchived(): boolean {
+    return this.archived === true;
+  }
+
+  get archivedTooltip(): string {
+    return 'This template is archived — New experiments cannot use it';
   }
 }

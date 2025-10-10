@@ -2,7 +2,7 @@
 @use '../../../../../variables.scss' as *;
 
 /* ============ Helpers ============ */
-$pill-h: 28px;
+$pill-h: 40px;
 
 @mixin pill {
   height: $pill-h;
@@ -12,8 +12,6 @@ $pill-h: 28px;
   padding: 0 10px;
   border-radius: var(--radius-pill);
   border: 1px solid var(--border);
-  background: color-mix(in oklab, var(--text) 10%, transparent);
-  color: var(--text);
   line-height: 1;
   white-space: nowrap;
 }
@@ -37,6 +35,7 @@ $pill-h: 28px;
   justify-content: center;
   line-height: 1;
   color: var(--text-muted);
+  padding-inline: 10px;
 }
 
 /* ============ Host & Card ============ */
@@ -120,6 +119,35 @@ $pill-h: 28px;
   }
 }
 
+/* ============ State line ============ */
+.state-line {
+  margin: 6px 0 $margin-default 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pill--scheduled {
+  @include pill;
+  background: color-mix(in oklab, var(--text) 10%, transparent);
+  border-color: color-mix(in oklab, var(--text) 25%, var(--border));
+  color: color-mix(in oklab, var(--text) 90%, var(--text));
+}
+
+.pill--progress {
+  @include pill;
+  background: color-mix(in oklab, var(--info, #2196f3) 18%, transparent);
+  border-color: color-mix(in oklab, var(--info, #2196f3) 40%, var(--border));
+  color: color-mix(in oklab, var(--info, #2196f3) 85%, var(--text));
+}
+
+.pill--crashed {
+  @include pill;
+  background: color-mix(in oklab, var(--danger, #d32f2f) 18%, transparent);
+  border-color: color-mix(in oklab, var(--danger, #d32f2f) 40%, var(--border));
+  color: color-mix(in oklab, var(--danger, #d32f2f) 85%, var(--text));
+}
+
 /* ============ Description ============ */
 .desc {
   margin-top: $margin-double;
@@ -169,37 +197,6 @@ $pill-h: 28px;
   .data-block {
     padding-left: 0.25em;
     margin-bottom: $margin-default;
-  }
-
-  .kv {
-    display: grid;
-    gap: 8px;
-    margin: 6px 0 $margin-default 0;
-
-    .row {
-      display: grid;
-      grid-template-columns: 220px 1fr;
-      gap: 12px;
-      align-items: center;
-
-      .k {
-        color: var(--text-muted);
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-
-        .ic {
-          color: var(--text-muted);
-        }
-      }
-
-      .v {
-        color: var(--text);
-        .muted {
-          color: var(--text-muted);
-        }
-      }
-    }
   }
 }
 

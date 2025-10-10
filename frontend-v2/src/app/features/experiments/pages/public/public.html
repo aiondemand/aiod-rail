@@ -15,7 +15,7 @@
 <!-- Error panel -->
 <ui-error
   [show]="!!error()"
-  [message]="error() || 'There are no public experiments.'"
+  [message]="error() || 'There are no experiments.'"
   [retryable]="true"
   retryLabel="Try again"
   [closable]="true"
@@ -35,6 +35,6 @@
     [visibility]="visibilityOf(exp)"
   />
   } @empty { @if (!loading() && !error()) {
-  <p class="empty">There are no public experiments.</p>
+  <p class="empty">There are no experiments.</p>
   } }
 </section>

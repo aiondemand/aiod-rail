@@ -1,21 +1,34 @@
-import { Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {
+  Component,
+  DestroyRef,
+  OnInit,
+  computed,
+  inject,
+  signal,
+  Inject,
+  PLATFORM_ID,
+} from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { map } from 'rxjs/operators';
+import { map, switchMap, startWith, distinctUntilChanged, filter } from 'rxjs/operators';
+import { interval, fromEvent, merge, of } from 'rxjs';
 
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 
 import { BackendApiService } from '../../../../shared/services/backend-api.service';
-import { UiConfirmComponent } from '../../../../shared/components/ui-confirm/ui-confirm';
+import {
+  UiConfirmComponent,
+  UiConfirmData,
+  UiConfirmResult,
+} from '../../../../shared/components/ui-confirm/ui-confirm';
 import { UiLoadingComponent } from '../../../../shared/components/ui-loading/ui-loading';
 import { UiErrorComponent } from '../../../../shared/components/ui-error/ui-error';
 import { UiCodeBlock } from '../../../../shared/components/ui-code-block/ui-code-block';
 import { UiButton } from '../../../../shared/components/ui-button/ui-button';
 
-import { ConfirmPopupInput, ConfirmPopupResponse } from '../../../../shared/models/popup';
 import { ExperimentTemplate } from '../../../../shared/models/experiment-template';
 import { EnvironmentVarDef } from '../../../../shared/models/env-vars';
 
@@ -24,16 +37,13 @@ import { EnvironmentVarDef } from '../../../../shared/models/env-vars';
   standalone: true,
   imports: [
     CommonModule,
-
-    // UI
     UiLoadingComponent,
     UiErrorComponent,
     UiCodeBlock,
     UiButton,
-
-    // Material
     MatIconModule,
     MatTooltipModule,
+    MatDialogModule,
   ],
   templateUrl: './template-detail.html',
   styleUrls: ['./template-detail.scss'],
@@ -45,6 +55,17 @@ export class TemplateDetailPage implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private destroyRef = inject(DestroyRef);
+  constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
+
+  // SSR guard
+  private get isBrowser() {
+    return isPlatformBrowser(this.platformId);
+  }
+  private get isDocVisible(): boolean {
+    return this.isBrowser && typeof document !== 'undefined'
+      ? document.visibilityState === 'visible'
+      : false;
+  }
 
   // ----- state
   id = signal<string>('');
@@ -57,6 +78,12 @@ export class TemplateDetailPage implements OnInit {
   isArchived = computed(() => this.tpl()?.is_archived ?? false);
   isApproved = computed(() => this.tpl()?.is_approved ?? false);
   isPublic = computed(() => this.tpl()?.is_public ?? false);
+  state = computed(() => (this.tpl()?.state ?? '') as string);
+
+  isFinished = computed(() => this.state() === 'FINISHED');
+  isCreated = computed(() => this.state() === 'CREATED');
+  isInProgress = computed(() => this.state() === 'IN_PROGRESS');
+  isCrashed = computed(() => this.state() === 'CRASHED');
 
   requiredEnvs = computed<EnvironmentVarDef[]>(
     () => (this.tpl()?.envs_required ?? []) as EnvironmentVarDef[]
@@ -64,7 +91,6 @@ export class TemplateDetailPage implements OnInit {
   optionalEnvs = computed<EnvironmentVarDef[]>(
     () => (this.tpl()?.envs_optional ?? []) as EnvironmentVarDef[]
   );
-
   hasNoEnvs = computed(() => {
     const t = this.tpl();
     return !t || ((t.envs_required?.length ?? 0) === 0 && (t.envs_optional?.length ?? 0) === 0);
@@ -75,57 +101,130 @@ export class TemplateDetailPage implements OnInit {
     this.route.paramMap
       .pipe(
         map((pm) => pm.get('id') ?? ''),
+        distinctUntilChanged(),
         takeUntilDestroyed(this.destroyRef)
       )
       .subscribe((id) => {
+        console.log('[TemplateDetail] route id =', id);
         this.id.set(id);
-        this.load();
+        this.loadOnce();
       });
+
+    // LIVE UPDATE
+    if (this.isBrowser) {
+      const visibility$ = merge(fromEvent(document, 'visibilitychange'), of(null)).pipe(
+        map(() => this.isDocVisible),
+        startWith(this.isDocVisible),
+        distinctUntilChanged()
+      );
+
+      interval(5000)
+        .pipe(
+          startWith(0),
+          switchMap(() => visibility$),
+          filter((visible) => visible),
+          switchMap(() => {
+            const id = this.id();
+            const shouldPoll =
+              !!id && !this.isArchived() && (!this.isFinished() || !this.isApproved());
+
+            if (!shouldPoll) return of(null);
+            console.log('[TemplateDetail] polling… id=', id);
+            return this.api.getExperimentTemplate(id);
+          }),
+          takeUntilDestroyed(this.destroyRef)
+        )
+        .subscribe({
+          next: (t) => {
+            if (!t) return;
+            console.log(
+              '[TemplateDetail] poll result state=',
+              t?.state,
+              'approved=',
+              t?.is_approved
+            );
+            this.tpl.set(t);
+          },
+          error: (err) => console.error('[TemplateDetail] poll error', err),
+        });
+    }
   }
 
   // ----- data
-  private load() {
+  private loadOnce() {
     const id = this.id();
     if (!id) return;
 
     this.loading.set(true);
     this.error.set(null);
+    console.log('[TemplateDetail] loadOnce id=', id);
 
     this.api
       .getExperimentTemplate(id)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (t) => {
+          console.log('[TemplateDetail] loadOnce OK state=', t?.state, 'approved=', t?.is_approved);
           this.tpl.set(t);
-          this.loading.set(false);
+          // fix NG0100 pri SSR/hydration
+          queueMicrotask(() => this.loading.set(false));
         },
         error: (err) => {
-          console.error(err);
-          this.error.set(err?.error?.message || err?.message || 'Failed to load template detail.');
-          this.loading.set(false);
+          console.error('[TemplateDetail] loadOnce ERROR', err);
+          queueMicrotask(() =>
+            this.error.set(err?.error?.message || err?.message || 'Failed to load template detail.')
+          );
+          queueMicrotask(() => this.loading.set(false));
         },
       });
   }
 
   retry() {
-    this.load();
+    console.log('[TemplateDetail] retry clicked');
+    this.loadOnce();
   }
 
   // ----- actions
   approve() {
+    console.log('[TemplateDetail] approve clicked');
     const t = this.tpl();
-    if (!t) return;
+    if (!t) {
+      console.warn('[TemplateDetail] approve aborted: tpl null');
+      return;
+    }
 
-    this.api
-      .approveExperimentTemplate(t.id, true)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: () => this.tpl.update((x) => (x ? { ...x, is_approved: true } : x)),
-        error: (err) => console.error(err),
-      });
+    const data: UiConfirmData = {
+      message:
+        'Approve this template for use?\n\nApproved templates may be used to create experiments.',
+      acceptBtnMessage: 'Approve',
+      declineBtnMessage: 'Cancel',
+    };
+
+    const ref = this.dialog.open(UiConfirmComponent, {
+      maxWidth: '450px',
+      width: '100%',
+      data,
+    });
+
+    ref.afterClosed().subscribe((res: UiConfirmResult | undefined) => {
+      console.log('[TemplateDetail] approve dialog result =', res);
+      if (res !== 'yes') return;
+
+      this.api
+        .approveExperimentTemplate(t.id, true)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: () => {
+            console.log('[TemplateDetail] approve API OK');
+            this.tpl.update((x) => (x ? { ...x, is_approved: true } : x));
+          },
+          error: (err) => console.error('[TemplateDetail] approve API ERROR', err),
+        });
+    });
   }
 
   edit() {
+    console.log('[TemplateDetail] edit clicked');
     const id = this.id();
     if (!id) return;
 
@@ -135,23 +234,25 @@ export class TemplateDetailPage implements OnInit {
       .subscribe({
         next: (count) => {
           const exists = (count ?? 0) > 0;
+          console.log('[TemplateDetail] edit count=', count, 'exists=', exists);
 
           if (exists) {
-            const data: ConfirmPopupInput = {
+            const data: UiConfirmData = {
               message:
                 'This template is already used by at least one experiment. Editing parameters that change behavior is restricted.',
               acceptBtnMessage: 'Continue',
+              declineBtnMessage: 'Cancel',
             };
             this.dialog
               .open(UiConfirmComponent, {
                 maxWidth: '450px',
                 width: '100%',
-                autoFocus: false,
                 data,
               })
               .afterClosed()
-              .subscribe((res: ConfirmPopupResponse) => {
-                if (res === ConfirmPopupResponse.Yes) {
+              .subscribe((res: UiConfirmResult | undefined) => {
+                console.log('[TemplateDetail] edit dialog result=', res);
+                if (res === 'yes') {
                   this.router.navigate(['../', id, 'update'], { relativeTo: this.route });
                 }
               });
@@ -159,11 +260,12 @@ export class TemplateDetailPage implements OnInit {
             this.router.navigate(['../', id, 'update'], { relativeTo: this.route });
           }
         },
-        error: (err) => console.error(err),
+        error: (err) => console.error('[TemplateDetail] edit count ERROR', err),
       });
   }
 
   deleteOrArchive() {
+    console.log('[TemplateDetail] delete/archive clicked');
     const t = this.tpl();
     if (!t) return;
 
@@ -173,47 +275,56 @@ export class TemplateDetailPage implements OnInit {
       .subscribe({
         next: (count) => {
           const exists = (count ?? 0) > 0;
+          console.log('[TemplateDetail] delete/archive count=', count, 'exists=', exists);
 
           const msg = exists
             ? 'This template is already used by some experiment. You cannot delete it, but you can archive it to prevent creating new experiments from it.\n\nDo you wish to ARCHIVE this experiment template?'
             : 'Do you wish to DELETE this experiment template?';
 
-          const data: ConfirmPopupInput = {
+          const data: UiConfirmData = {
             message: msg,
             acceptBtnMessage: 'Yes',
             declineBtnMessage: 'No',
           };
 
           this.dialog
-            .open(UiConfirmComponent, { maxWidth: '450px', width: '100%', autoFocus: false, data })
+            .open(UiConfirmComponent, { maxWidth: '450px', width: '100%', data })
             .afterClosed()
-            .subscribe((res: ConfirmPopupResponse) => {
-              if (res !== ConfirmPopupResponse.Yes) return;
+            .subscribe((res: UiConfirmResult | undefined) => {
+              console.log('[TemplateDetail] delete/archive dialog result=', res);
+              if (res !== 'yes') return;
 
               if (exists) {
                 this.api
                   .archiveExperimentTemplate(t.id, true)
                   .pipe(takeUntilDestroyed(this.destroyRef))
                   .subscribe({
-                    next: () => this.router.navigate(['/experiments/templates']),
-                    error: (err) => console.error(err),
+                    next: () => {
+                      console.log('[TemplateDetail] archive API OK → navigate list');
+                      this.router.navigate(['/experiments/templates']);
+                    },
+                    error: (err) => console.error('[TemplateDetail] archive API ERROR', err),
                   });
               } else {
                 this.api
                   .deleteExperimentTemplate(t.id)
                   .pipe(takeUntilDestroyed(this.destroyRef))
                   .subscribe({
-                    next: () => this.router.navigate(['/experiments/templates']),
-                    error: (err) => console.error(err),
+                    next: () => {
+                      console.log('[TemplateDetail] delete API OK → navigate list');
+                      this.router.navigate(['/experiments/templates']);
+                    },
+                    error: (err) => console.error('[TemplateDetail] delete API ERROR', err),
                   });
               }
             });
         },
-        error: (err) => console.error(err),
+        error: (err) => console.error('[TemplateDetail] delete/archive count ERROR', err),
       });
   }
 
   unarchive() {
+    console.log('[TemplateDetail] unarchive clicked');
     const t = this.tpl();
     if (!t) return;
 
@@ -221,8 +332,11 @@ export class TemplateDetailPage implements OnInit {
       .archiveExperimentTemplate(t.id, false)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: () => this.tpl.update((x) => (x ? { ...x, is_archived: false, is_mine: true } : x)),
-        error: (err) => console.error(err),
+        next: () => {
+          console.log('[TemplateDetail] unarchive API OK');
+          this.tpl.update((x) => (x ? { ...x, is_archived: false, is_mine: true } : x));
+        },
+        error: (err) => console.error('[TemplateDetail] unarchive API ERROR', err),
       });
   }
 

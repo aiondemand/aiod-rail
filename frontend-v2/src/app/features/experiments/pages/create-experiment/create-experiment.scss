@@ -1,0 +1,313 @@
+@use '../../../../../styles/typography' as typo;
+@use '../../../../../variables.scss' as *;
+
+/* ===== card wrapper  ===== */
+.detail.card {
+  margin: $margin-double;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: $margin-double;
+
+  @media (max-width: 760px) {
+    margin: $margin-default;
+    padding: $margin-default;
+  }
+}
+
+/* ===== header */
+.head .title {
+  @include typo.title(--h2-d, --h2-m, --h2-lh-d, --h2-lh-m, --h2-mb-d, --h2-mb-m, --w-bold);
+  margin: 0;
+}
+
+/* ===== form blocks */
+.create-experiment-form {
+  display: grid;
+  gap: $margin-default;
+
+  .block {
+    display: grid;
+    gap: 16px;
+    padding-top: $margin-default;
+
+    border-top: 1px dashed color-mix(in oklab, var(--text) 14%, transparent);
+
+    h2 {
+      @include typo.title(--h4-d, --h4-m, --h4-lh-d, --h4-lh-m, --h4-mb-d, --h4-mb-m, --w-semibold);
+    }
+    h3 {
+      @include typo.title(--h5-d, --h5-m, --h5-lh-d, --h5-lh-m, --h5-mb-d, --h5-mb-m, --w-medium);
+    }
+  }
+
+  .cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+
+    /* ——— model/dataset ——— */
+    .col {
+      min-width: 0;
+    }
+    .col mat-form-field {
+      width: 100%;
+    }
+
+    @media (max-width: 900px) {
+      grid-template-columns: 1fr;
+    }
+
+    h3 {
+      padding-bottom: $margin-default;
+    }
+  }
+
+  .envs {
+    .env-grid {
+      padding-top: 10px;
+
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      @media (max-width: 900px) {
+        grid-template-columns: 1fr;
+      }
+    }
+    .env-name {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .lock {
+      font-size: 18px;
+      color: var(--text-muted);
+    }
+    .opt-sep {
+      margin-top: 10px;
+      display: block;
+    }
+    .muted {
+      color: var(--text-muted);
+    }
+
+    h3 {
+      padding-bottom: $margin-default;
+    }
+  }
+
+  .actions {
+    display: flex;
+    justify-content: flex-start;
+  }
+}
+
+/* ====== MATERIAL  ====== */
+
+:host ::ng-deep {
+  .mdc-text-field__input,
+  .mat-mdc-select-value,
+  .mat-mdc-floating-label,
+  .mat-mdc-chip-action-label,
+  .mat-mdc-optgroup-label,
+  .mat-mdc-option .mdc-list-item__primary-text {
+    color: var(--text) !important;
+  }
+  .mdc-text-field__input::placeholder {
+    color: color-mix(in oklab, var(--text) 55%, transparent) !important;
+  }
+  .mdc-text-field__input {
+    caret-color: var(--text-active) !important;
+  }
+
+  /* outline */
+  .mdc-notched-outline__leading,
+  .mdc-notched-outline__notch,
+  .mdc-notched-outline__trailing {
+    border-color: color-mix(in oklab, var(--text) 22%, var(--border)) !important;
+  }
+  .mdc-text-field--focused .mdc-notched-outline__leading,
+  .mdc-text-field--focused .mdc-notched-outline__notch,
+  .mdc-text-field--focused .mdc-notched-outline__trailing {
+    border-color: var(--text-active) !important;
+  }
+
+  /* Label colors */
+  .mdc-floating-label {
+    color: color-mix(in oklab, var(--text) 80%, transparent) !important;
+  }
+  .mdc-floating-label--float-above {
+    color: color-mix(in oklab, var(--text) 85%, transparent) !important;
+  }
+  .mdc-floating-label--required .mdc-floating-label__asterisk,
+  .mat-mdc-form-field-required-marker {
+    color: var(--text-muted) !important;
+  }
+
+  /* Subscript/hints/errors */
+  .mat-mdc-form-field-hint-wrapper,
+  .mat-mdc-form-field-error {
+    color: color-mix(in oklab, var(--text) 85%, transparent) !important;
+  }
+
+  /* Select  */
+  .mat-mdc-select-arrow svg path {
+    fill: var(--text) !important;
+  }
+
+  .cdk-overlay-pane .mat-mdc-select-panel,
+  .mat-mdc-autocomplete-panel,
+  .app-select-panel,
+  .app-autocomplete-panel {
+    background: var(--surface-2) !important;
+    color: var(--text) !important;
+    border: 1px solid var(--border) !important;
+    box-shadow: 0 14px 32px color-mix(in oklab, var(--shadow) 40%, transparent) !important;
+  }
+  .mat-mdc-option {
+    color: var(--text) !important;
+  }
+  .mat-mdc-option.mdc-list-item--selected:not(.mat-mdc-option-multiple),
+  .mat-mdc-option.mdc-list-item--selected.mdc-list-item--activated,
+  .mat-mdc-option.mdc-list-item:hover {
+    background: color-mix(in oklab, var(--text) 10%, transparent) !important;
+  }
+  .mat-mdc-optgroup-label {
+    color: var(--text-muted) !important;
+  }
+
+  /* Chips */
+  .mat-mdc-chip {
+    background: color-mix(in oklab, var(--text) 9%, transparent) !important;
+    color: var(--text) !important;
+    border: 1px solid var(--border) !important;
+  }
+  .mat-mdc-chip-remove.mat-mdc-chip-trailing-icon {
+    color: var(--text) !important;
+  }
+
+  /* Disabled  */
+  .mdc-text-field--disabled .mdc-text-field__input,
+  .mdc-text-field--disabled .mdc-floating-label,
+  .mat-mdc-option.mdc-list-item--disabled {
+    color: color-mix(in oklab, var(--text) 55%, transparent) !important;
+  }
+
+  .mat-mdc-form-field-focus-overlay {
+    background: transparent !important;
+  }
+  .mdc-text-field__input:focus,
+  textarea.mdc-text-field__input:focus {
+    outline: none !important;
+    box-shadow: none !important;
+  }
+}
+
+/* === MAT SELECT / AUTOCOMPLETE  === */
+::ng-deep .cdk-overlay-container .app-select-panel,
+::ng-deep .cdk-overlay-container .app-autocomplete-panel {
+  background: var(--surface-2) !important;
+  color: var(--text) !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: 0 14px 32px color-mix(in oklab, var(--shadow) 40%, transparent) !important;
+}
+
+::ng-deep .cdk-overlay-container .app-select-panel .mat-mdc-option,
+::ng-deep .cdk-overlay-container .app-autocomplete-panel .mat-mdc-option {
+  color: var(--text) !important;
+}
+::ng-deep .cdk-overlay-container .app-select-panel .mat-mdc-option .mdc-list-item__primary-text,
+::ng-deep
+  .cdk-overlay-container
+  .app-autocomplete-panel
+  .mat-mdc-option
+  .mdc-list-item__primary-text {
+  color: var(--text) !important;
+}
+
+/* hover / active */
+::ng-deep .cdk-overlay-container .app-select-panel .mat-mdc-option:hover,
+::ng-deep .cdk-overlay-container .app-select-panel .mat-mdc-option.mat-mdc-option-active,
+::ng-deep .cdk-overlay-container .app-autocomplete-panel .mat-mdc-option:hover,
+::ng-deep .cdk-overlay-container .app-autocomplete-panel .mat-mdc-option.mat-mdc-option-active {
+  background: color-mix(in oklab, var(--text) 12%, transparent) !important;
+  color: var(--text) !important;
+}
+
+/* selected  */
+::ng-deep
+  .cdk-overlay-container
+  .app-select-panel
+  .mat-mdc-option.mdc-list-item--selected:not(.mat-mdc-option-multiple) {
+  background: color-mix(in oklab, var(--text) 16%, transparent) !important;
+  color: var(--text) !important;
+  font-weight: var(--w-medium, 600);
+}
+
+/* disabled  */
+::ng-deep .cdk-overlay-container .app-select-panel .mat-mdc-option.mdc-list-item--disabled,
+::ng-deep .cdk-overlay-container .app-autocomplete-panel .mat-mdc-option.mdc-list-item--disabled {
+  color: color-mix(in oklab, var(--text) 45%, transparent) !important;
+  opacity: 1;
+}
+
+::ng-deep .cdk-overlay-container .app-select-panel .mat-pseudo-checkbox-minimal {
+  width: 18px;
+  height: 18px;
+  border: 0 !important;
+  background: transparent !important;
+  color: var(--text) !important;
+  position: relative;
+}
+::ng-deep
+  .cdk-overlay-container
+  .app-select-panel
+  .mat-pseudo-checkbox-checked.mat-pseudo-checkbox-minimal::after {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 2px;
+  width: 6px;
+  height: 10px;
+  border: 2px solid var(--text);
+  border-top: 0;
+  border-left: 0;
+  transform: rotate(45deg);
+  background: none !important;
+}
+
+/* ripple */
+::ng-deep .cdk-overlay-container .app-select-panel .mat-mdc-option-ripple .mat-ripple-element,
+::ng-deep
+  .cdk-overlay-container
+  .app-autocomplete-panel
+  .mat-mdc-option-ripple
+  .mat-ripple-element {
+  background-color: color-mix(in oklab, var(--text) 22%, transparent) !important;
+}
+
+/* scrollbar */
+::ng-deep .cdk-overlay-container .app-select-panel,
+::ng-deep .cdk-overlay-container .app-autocomplete-panel {
+  scrollbar-color: color-mix(in oklab, var(--text) 35%, transparent)
+    color-mix(in oklab, var(--surface-2) 100%, transparent);
+}
+
+::ng-deep .cdk-overlay-container .app-autocomplete-panel .mat-mdc-optgroup-label {
+  color: color-mix(in oklab, var(--text) 60%, transparent) !important;
+
+  text-transform: none;
+  opacity: 1 !important;
+}
+
+::ng-deep .cdk-overlay-container .app-autocomplete-panel .mat-mdc-optgroup {
+  border-top: 1px solid color-mix(in oklab, var(--text) 10%, transparent);
+}
+::ng-deep .cdk-overlay-container .app-autocomplete-panel .mat-mdc-optgroup:first-child {
+  border-top: 0;
+}
+
+:root {
+  --mat-option-label-text-color: var(--text);
+}

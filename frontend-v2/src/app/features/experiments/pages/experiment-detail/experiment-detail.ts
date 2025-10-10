@@ -261,7 +261,7 @@ export class ExperimentDetailPage implements OnInit {
                   .deleteExperiment(expId)
                   .pipe(takeUntilDestroyed(this.destroyRef))
                   .subscribe({
-                    next: () => this.router.navigate(['/experiments', 'my']),
+                    next: () => this.router.navigate(['/experiments', 'public']),
                     error: (err) => console.error(err),
                   });
               } else if (res === 'third' && existRuns) {
@@ -269,7 +269,16 @@ export class ExperimentDetailPage implements OnInit {
                   .archiveExperiment(expId, true)
                   .pipe(takeUntilDestroyed(this.destroyRef))
                   .subscribe({
-                    next: () => this.router.navigate(['/experiments', 'my']),
+                    next: () => {
+                      const e = this.experiment();
+                      if (e) {
+                        this.experiment.set({
+                          ...(e as any),
+                          is_archived: true,
+                          is_mine: true,
+                        });
+                      }
+                    },
                     error: (err) => console.error(err),
                   });
               }

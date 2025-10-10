@@ -65,6 +65,25 @@
   opacity: 1;
 }
 
+/* ===== archived or approved ===== */
+.flag-icon {
+  font-size: 18px;
+  line-height: 1;
+  vertical-align: middle;
+  opacity: 0.95;
+  padding-top: 7px;
+  transition: opacity 0.15s ease;
+  cursor: default;
+
+  &.danger {
+    color: color-mix(in oklab, var(--warning, #ff9800) 85%, var(--text));
+  }
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
 /* ===== name  ===== */
 .title {
   grid-column: 1;
