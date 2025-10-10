@@ -1,21 +1,15 @@
 ```python
-from aiod_rail_sdk import Configuration
-from aiod_rail_sdk.clients import RailClient
+from OuterRail import Configuration, ExperimentTemplateManager
 
-
-RAIL_API_URI = "https://rail.aiod.eu/api"
-os.environ["AIOD_RAIL_API_KEY"] = "YOUR_RAIL_API_KEY"
-
-config = Configuration(host=RAIL_API_URI)
-rail_client = RailClient(config)
+# Login
+config = Configuration(host="http://localhost:8000")
+config.login(username="username", password="password")
 
 
 # Use existing Python script as Experiment script
 script_path = "./script.py"
-
 # Load requirements (libs) from file
 requirements_path = "./requirements.txt"
-
 # Experiment Template base Docker image
 base_image = "python:3.9"
 
@@ -43,7 +37,6 @@ template_config = {
 }
 
 # Create template
-rail_client.experiments_templates.create_experiment_template(
-    template=(script_path, requirements_path, base_image, template_config)
-)
+template_manager = ExperimentTemplateManager(config)
+template_manager.create(template=(script_path, requirements_path, base_image, template_config))
 ```

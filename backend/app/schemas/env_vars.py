@@ -6,7 +6,7 @@ from pydantic import BaseModel
 class EnvironmentVarDef(BaseModel):
     name: str
     description: str
-    is_secret: bool
+    is_secret: bool = False
 
 
 class EnvironmentVarBase(BaseModel):
@@ -19,7 +19,7 @@ class EnvironmentVarCreate(EnvironmentVarBase):
 
 
 class EnvironmentVar(EnvironmentVarBase):
-    is_secret: bool
+    is_secret: bool = False
 
     @classmethod
     def create_variable(

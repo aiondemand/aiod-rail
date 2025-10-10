@@ -1,3 +1,4 @@
 ```python
-run = rail_client.experiments.run_experiment(id=new_experiment.id)
+# Run the experiment
+run = new_experiment.run()
 ```
