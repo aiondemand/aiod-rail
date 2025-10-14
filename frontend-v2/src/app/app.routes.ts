@@ -53,6 +53,14 @@ export const routes: Routes = [
                 (m) => m.TemplateDetailPage
               ),
           },
+          {
+            path: ':id/update',
+            canMatch: [authMatchGuard],
+            loadComponent: () =>
+              import('./features/experiments/pages/create-template/create-template').then(
+                (m) => m.CreateTemplatePage
+              ),
+          },
         ],
       },
 
@@ -70,7 +78,7 @@ export const routes: Routes = [
         canMatch: [authMatchGuard],
         loadComponent: () =>
           import('./features/experiments/pages/create-template/create-template').then(
-            (m) => m.CreateTemplate
+            (m) => m.CreateTemplatePage
           ),
       },
 

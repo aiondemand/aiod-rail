@@ -20,7 +20,15 @@
             "browser": "src/main.ts",
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
-            "assets": [{ "glob": "**/*", "input": "public" }, "src/assets"],
+            "assets": [
+              { "glob": "**/*", "input": "public" },
+              "src/assets",
+              {
+                "glob": "**/*",
+                "input": "node_modules/monaco-editor/min",
+                "output": "assets/monaco"
+              }
+            ],
             "styles": [
               "src/styles.scss",
               "node_modules/prismjs/themes/prism-tomorrow.css",
@@ -121,7 +129,15 @@
           "options": {
             "tsConfig": "tsconfig.spec.json",
             "inlineStyleLanguage": "scss",
-            "assets": [{ "glob": "**/*", "input": "public" }, "src/assets"],
+            "assets": [
+              { "glob": "**/*", "input": "public" },
+              "src/assets",
+              {
+                "glob": "**/*",
+                "input": "node_modules/monaco-editor/min",
+                "output": "assets/monaco"
+              }
+            ],
             "styles": ["src/styles.scss", "node_modules/prismjs/themes/prism-tomorrow.css"]
           }
         }

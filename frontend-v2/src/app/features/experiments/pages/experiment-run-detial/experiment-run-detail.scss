@@ -25,6 +25,7 @@
     display: flex;
     gap: 0.25rem;
     color: var(--muted);
+
     button:hover {
       color: var(--text);
     }
@@ -57,11 +58,12 @@
       font-weight: 600;
     }
   }
+
   .state {
     display: inline-flex;
     align-items: center;
-    gap: 0.4rem; // medzera medzi textom a ikonou
-    line-height: 1; // stabilnejšia výška riadku
+    gap: 0.4rem;
+    line-height: 1;
   }
 }
 
@@ -75,50 +77,6 @@
   border-radius: 12px;
   padding: 0.75rem;
   background: color-mix(in oklab, var(--text) 3%, transparent);
-}
-
-.tree-view {
-  height: 500px;
-  width: 100%;
-  overflow: auto;
-
-  .tree-node {
-    display: flex;
-    align-items: center;
-    border: 1px solid color-mix(in oklab, var(--text) 8%, transparent);
-    border-width: 0 0 1px 0;
-    padding: 2px 4px;
-
-    .download-btn {
-      display: none;
-    }
-  }
-
-  .tree-node:hover {
-    .download-btn {
-      display: flex;
-      align-items: center;
-      gap: 0.25rem;
-    }
-  }
-
-  .tree-node-directory:hover {
-    background-color: color-mix(in oklab, var(--text) 6%, transparent);
-    cursor: pointer;
-  }
-
-  .growing-space {
-    flex-grow: 1;
-  }
-  .download-circle {
-    padding-left: 0;
-    padding-right: 24px;
-  }
-  .file-size {
-    margin-right: 0.25rem;
-    color: var(--muted);
-    font-variant-numeric: tabular-nums;
-  }
 }
 
 /* Virtual scroll logs */
@@ -154,4 +112,122 @@
 
 .txt {
   overflow-wrap: anywhere;
+}
+
+/* ====== MATERIAL  ====== */
+:host ::ng-deep {
+  /* Ikony, tlačidlá, divider */
+  .mat-icon {
+    color: var(--text) !important;
+  }
+
+  .mat-divider {
+    border-top-color: color-mix(in oklab, var(--text) 14%, transparent) !important;
+    opacity: 1 !important;
+  }
+
+  .mat-mdc-button-ripple .mat-ripple-element,
+  .mdc-icon-button .mat-ripple-element {
+    background-color: color-mix(in oklab, var(--background) 22%, transparent) !important;
+  }
+
+  /* Spinner v dark režime */
+  .mat-mdc-progress-spinner circle,
+  .mat-mdc-progress-spinner .mdc-circular-progress__indeterminate-circle-graphic {
+    stroke: var(--text) !important;
+  }
+
+  /* ===== MatTree (tree-view) ===== */
+  .tree-view {
+    --tree-row-h: 30px;
+
+    /* panel background */
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    opacity: 1;
+
+    .cdk-tree-node,
+    .cdk-nested-tree-node {
+      color: var(--text) !important;
+    }
+
+    /* riadok uzla */
+    .row {
+      display: flex;
+      align-items: center;
+      min-height: var(--tree-row-h);
+      gap: 8px;
+      padding: 4px 8px;
+      border-radius: 10px;
+
+      &:hover {
+        background: color-mix(in oklab, var(--background) 8%, transparent) !important;
+      }
+
+      /* vypni growing-space, posúvame ikonku bližšie */
+      .growing-space {
+        display: none;
+      }
+
+      /* názvy */
+      .dir-name,
+      .file-name {
+        flex-shrink: 0;
+        font-weight: 600;
+      }
+
+      .tree-node-directory .dir-name {
+        font-weight: 400;
+      }
+
+      /* ikonka sťahovania hneď za názvom */
+      .download-btn {
+        margin-left: 4px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+
+        .file-size {
+          color: var(--muted) !important;
+          font-variant-numeric: tabular-nums;
+        }
+
+        .mat-icon {
+          margin-top: 6px;
+          font-size: 20px;
+          color: var(--text);
+        }
+      }
+    }
+
+    /* odsadenie levelov */
+    .mat-tree-node[matTreeNodePadding],
+    .mat-nested-tree-node .row[matTreeNodePadding] {
+      --mat-tree-node-level-padding: 20px;
+    }
+
+    /* ✨ kolaps/expand bez zásahu do TS */
+    .mat-nested-tree-node:not(.expanded) > .children {
+      display: none !important;
+    }
+
+    /* ikona chevron/expand */
+    .mdc-icon-button.mat-mdc-icon-button {
+      color: var(--text) !important;
+    }
+  }
+
+  /* Scrollbar (logs + tree) – konzistentný so zvyškom appky */
+  .logs,
+  .tree-view {
+    scrollbar-color: color-mix(in oklab, var(--text) 35%, transparent)
+      color-mix(in oklab, var(--surface-2) 100%, transparent);
+  }
+
+  /* Focus/overlay drobnosti */
+  .mat-mdc-form-field-focus-overlay {
+    background: transparent !important;
+  }
 }

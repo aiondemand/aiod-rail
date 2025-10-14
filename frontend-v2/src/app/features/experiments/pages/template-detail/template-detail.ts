@@ -236,6 +236,7 @@ export class TemplateDetailPage implements OnInit {
           const exists = (count ?? 0) > 0;
           console.log('[TemplateDetail] edit count=', count, 'exists=', exists);
 
+          // v edit()
           if (exists) {
             const data: UiConfirmData = {
               message:
@@ -251,13 +252,12 @@ export class TemplateDetailPage implements OnInit {
               })
               .afterClosed()
               .subscribe((res: UiConfirmResult | undefined) => {
-                console.log('[TemplateDetail] edit dialog result=', res);
                 if (res === 'yes') {
-                  this.router.navigate(['../', id, 'update'], { relativeTo: this.route });
+                  this.router.navigate(['update'], { relativeTo: this.route });
                 }
               });
           } else {
-            this.router.navigate(['../', id, 'update'], { relativeTo: this.route });
+            this.router.navigate(['update'], { relativeTo: this.route });
           }
         },
         error: (err) => console.error('[TemplateDetail] edit count ERROR', err),

@@ -252,29 +252,11 @@
   opacity: 1;
 }
 
-::ng-deep .cdk-overlay-container .app-select-panel .mat-pseudo-checkbox-minimal {
-  width: 18px;
-  height: 18px;
-  border: 0 !important;
-  background: transparent !important;
-  color: var(--text) !important;
-  position: relative;
-}
 ::ng-deep
   .cdk-overlay-container
   .app-select-panel
   .mat-pseudo-checkbox-checked.mat-pseudo-checkbox-minimal::after {
-  content: '';
-  position: absolute;
-  left: 4px;
-  top: 2px;
-  width: 6px;
-  height: 10px;
-  border: 2px solid var(--text);
-  border-top: 0;
-  border-left: 0;
-  transform: rotate(45deg);
-  background: none !important;
+  color: var(--text);
 }
 
 /* ripple */

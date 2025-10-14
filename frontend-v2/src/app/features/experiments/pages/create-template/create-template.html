@@ -1,1 +1,317 @@
-<p>create-template works!</p>
+<ui-loading [show]="loading()" label="Preparing form…"></ui-loading>
+
+<ui-error
+  [show]="!!error()"
+  [message]="error() || 'Failed to load data.'"
+  [retryable]="false"
+  [closable]="true"
+  (close)="error.set(null)"
+></ui-error>
+
+@if (!loading()) {
+<div class="detail card">
+  <form class="create-template-form" [formGroup]="form" (ngSubmit)="submit()">
+    <section class="head">
+      <h1 class="title">
+        {{ action() === 'create' ? 'Create Experiment template' : 'Edit Experiment template' }}
+      </h1>
+    </section>
+
+    <!-- ===== BASIC ===== -->
+    <section class="block">
+      <h2>Basic information</h2>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Name</mat-label>
+        <input matInput formControlName="name" placeholder="Template name" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Description</mat-label>
+        <textarea
+          matInput
+          rows="8"
+          formControlName="description"
+          placeholder="Describe purpose, setup, etc."
+        ></textarea>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Experiment Template visibility</mat-label>
+        <mat-select formControlName="visibility" [panelClass]="'app-select-panel'">
+          @for (v of visibilityStrings; track v) {
+          <mat-option [value]="v">{{ v }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </section>
+
+    <!-- ===== RUNTIME ===== -->
+    <section class="block">
+      <h2>Template details and runtime</h2>
+
+      <div class="header-with-info">
+        <h4>Base Docker image (experiment execution environment)</h4>
+        <mat-icon matTooltip="The script will be executed within this base Docker image."
+          >info</mat-icon
+        >
+      </div>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Base Docker image</mat-label>
+        <mat-select formControlName="baseImage" [panelClass]="'app-select-panel'">
+          @for (img of baseImageStrings; track img) {
+          <mat-option [value]="img">{{ img }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <div class="header-with-info">
+        <h4>Dependencies (libraries)</h4>
+        <mat-icon
+          matTooltip="Libraries from requirements.txt are installed during the image build step."
+          >info</mat-icon
+        >
+      </div>
+
+      <p class="italic-editor-name"><i>requirements.txt</i></p>
+      <mat-form-field appearance="outline">
+        <mat-label>Pip dependencies</mat-label>
+        <textarea
+          matInput
+          rows="10"
+          placeholder="Python libraries necessary for the experiment execution"
+          formControlName="pipRequirements"
+        ></textarea>
+      </mat-form-field>
+
+      <div class="header-with-info">
+        <h4>Executable (script)</h4>
+        <mat-icon
+          matTooltip="script.py runs inside the container. Saved outputs and metrics are shown in the Experiment Run detail."
+          >info</mat-icon
+        >
+      </div>
+
+      <p>
+        It's your responsibility to create a Python script that will be fully functional in your
+        specified virtual environment. You're also responsible for integrating the following
+        automatically created
+        <a [routerLink]="['.']" fragment="env-href-link"><b>RESERVED ENVIRONMENT VARIABLES</b></a>
+        into your code such that it will work properly and load the model and the data successfully.
+      </p>
+      <p>
+        If you're not interested in using aforementioned
+        <a [routerLink]="['.']" fragment="env-href-link"><b>RESERVED ENVIRONMENT VARIABLES</b></a
+        >, you may omit them, but in such a case injection of Experiment parameters will not be
+        achieved and the template will not be easily modifiable.
+      </p>
+      <p>
+        If you would like to output the results of executed experiments of this template explicitly,
+        you need to save these results within the environment on the following path:
+        <b>output-temp/metrics.json</b>. After having run an experiment run, this file is read and
+        the results are printed out. For now, only a flat object with numerical values is supported.
+      </p>
+
+      <p class="italic-editor-name"><i>script.py</i></p>
+      <div class="code-editor-wrapper" dir="ltr">
+        <ngs-code-editor
+          theme="vs-dark"
+          [codeModel]="editorModel"
+          [options]="editorOptions"
+          [readOnly]="!editableEnvironment()"
+          (valueChanged)="onEditorChange($event)"
+        >
+        </ngs-code-editor>
+      </div>
+    </section>
+
+    <!-- ===== ENVs ===== -->
+    <section class="block envs" aria-labelledby="envs-title" id="env-href-link">
+      <h2 id="envs-title">Supported environment variables</h2>
+      <p class="envs-note">
+        Variables that can be provided by a user when creating an Experiment from this template.
+        Their meaning is defined by the template's script.
+      </p>
+
+      <p>
+        There exist some <b>RESERVED ENVIRONMENT VARIABLES</b> that you are not allowed to use.
+        These predefined variables are used to inject specific models, datasets and metrics that you
+        want to use in your script:
+      </p>
+      <ul>
+        <li><b>MODEL_NAMES</b></li>
+        <li><b>DATASET_NAMES</b></li>
+        <li><b>MODEL_IDS</b></li>
+        <li><b>DATASET_IDS</b></li>
+      </ul>
+
+      <!-- REQUIRED -->
+      <div class="required-envs">
+        <h4>Required environment variables</h4>
+
+        <form
+          class="add-env-controls"
+          [formGroup]="newRequiredEnvForm"
+          (ngSubmit)="addVariableReq()"
+        >
+          <mat-form-field appearance="outline">
+            <mat-label>Name</mat-label>
+            <input matInput placeholder="Name" formControlName="name" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Description</mat-label>
+            <input matInput placeholder="Description" formControlName="description" />
+          </mat-form-field>
+
+          <mat-checkbox formControlName="isSecret">Is it a secret?</mat-checkbox>
+
+          <span class="empty-space"></span>
+
+          <ui-button
+            variant="primary"
+            size="md"
+            type="submit"
+            [disabled]="!newRequiredEnvForm.get('name')?.value || !editableEnvironment()"
+            >Add variable</ui-button
+          >
+        </form>
+
+        @if (requiredVars().length) {
+        <div
+          class="env-table env-table--editable"
+          role="table"
+          aria-label="Required environment variables"
+        >
+          <div class="env-row env-row--head" role="row">
+            <div class="c k" role="columnheader">Name</div>
+            <div class="c v" role="columnheader">Description</div>
+            <div class="c act" role="columnheader"></div>
+          </div>
+
+          @for (env of requiredVars(); track env.name; let i = $index) {
+          <div class="env-row" role="row">
+            <div class="c k" role="cell">
+              <span class="env-name">
+                {{ env.name }}*
+                <mat-icon
+                  *ngIf="env.is_secret"
+                  class="material-symbols-rounded secret"
+                  matTooltip="Secret"
+                  >lock</mat-icon
+                >
+              </span>
+            </div>
+            <div class="c v" role="cell">{{ env.description || '—' }}</div>
+            <div class="c act" role="cell">
+              @if (editableEnvironment()) {
+              <button
+                type="button"
+                class="icon-btn"
+                (click)="removeVariable(requiredVars, i)"
+                title="Remove"
+              >
+                <mat-icon class="material-symbols-rounded">close</mat-icon>
+              </button>
+              }
+            </div>
+          </div>
+          }
+        </div>
+        }
+
+        <div class="note">* required</div>
+      </div>
+
+      <!-- OPTIONAL -->
+      <div class="optional-envs upper-margin">
+        <h4>Optional environment variables</h4>
+
+        <form
+          class="add-env-controls"
+          [formGroup]="newOptionalEnvForm"
+          (ngSubmit)="addVariableOpt()"
+        >
+          <mat-form-field appearance="outline">
+            <mat-label>Name</mat-label>
+            <input matInput placeholder="Name" formControlName="name" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Description</mat-label>
+            <input matInput placeholder="Description" formControlName="description" />
+          </mat-form-field>
+
+          <mat-checkbox formControlName="isSecret">Is it a secret?</mat-checkbox>
+
+          <span class="empty-space"></span>
+
+          <ui-button
+            variant="primary"
+            size="md"
+            type="submit"
+            [disabled]="!newOptionalEnvForm.get('name')?.value || !editableEnvironment()"
+            >Add variable</ui-button
+          >
+        </form>
+
+        @if (optionalVars().length) {
+        <div
+          class="env-table env-table--editable"
+          role="table"
+          aria-label="Optional environment variables"
+        >
+          <div class="env-row env-row--head" role="row">
+            <div class="c k" role="columnheader">Name</div>
+            <div class="c v" role="columnheader">Description</div>
+            <div class="c act" role="columnheader"></div>
+          </div>
+
+          @for (env of optionalVars(); track env.name; let i = $index) {
+          <div class="env-row" role="row">
+            <div class="c k" role="cell">
+              <span class="env-name">
+                {{ env.name }}
+                <mat-icon
+                  *ngIf="env.is_secret"
+                  class="material-symbols-rounded secret"
+                  matTooltip="Secret"
+                  >lock</mat-icon
+                >
+              </span>
+            </div>
+            <div class="c v" role="cell">{{ env.description || '—' }}</div>
+            <div class="c act" role="cell">
+              @if (editableEnvironment()) {
+              <button
+                type="button"
+                class="icon-btn"
+                (click)="removeVariable(optionalVars, i)"
+                title="Remove"
+              >
+                <mat-icon class="material-symbols-rounded">close</mat-icon>
+              </button>
+              }
+            </div>
+          </div>
+          }
+        </div>
+        }
+      </div>
+    </section>
+
+    <!-- Actions -->
+    <div class="actions">
+      <ui-button
+        variant="primary"
+        size="md"
+        type="submit"
+        [disabled]="form.invalid || !editorModel.value.trim()"
+      >
+        {{ action() === 'create' ? 'Create template' : 'Update template' }}
+      </ui-button>
+    </div>
+  </form>
+</div>
+}

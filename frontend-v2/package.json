@@ -9,8 +9,6 @@
     "build-local": "ng build --configuration local --output-path=dist",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
-
-
   },
   "prettier": {
     "printWidth": 100,
@@ -35,14 +33,16 @@
     "@angular/platform-browser": "^20.2.0",
     "@angular/platform-server": "^20.2.0",
     "@angular/router": "^20.2.0",
-
+    "@angular/ssr": "^20.3.5",
     "@fontsource/jura": "^5.2.6",
     "@fontsource/montserrat": "^5.2.7",
+    "@ngstack/code-editor": "^9.0.0",
     "angular-oauth2-oidc": "^20.0.2",
     "express": "^5.1.0",
     "highlight.js": "^11.11.1",
     "highlightjs-line-numbers.js": "^2.9.0",
     "marked": "^16.3.0",
+    "monaco-editor": "^0.54.0",
     "ngx-highlightjs": "^14.0.1",
     "ngx-markdown": "^20.1.0",
     "prismjs": "^1.30.0",

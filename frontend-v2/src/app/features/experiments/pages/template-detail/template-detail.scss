@@ -275,3 +275,22 @@ $pill-h: 40px;
 .upper-margin {
   margin-top: 1.1rem;
 }
+
+/* ========= Custom MDC Checkbox (scoped via ::ng-deep) ========= */
+:host ::ng-deep .mat-mdc-checkbox {
+  /* vyrovnanie labelu a checkboxu */
+  .mdc-form-field {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    .mdc-label {
+      color: var(--text);
+      transition: color 0.15s ease;
+    }
+
+    &:hover .mdc-label {
+      color: color-mix(in oklab, var(--text) 95%, var(--text-muted));
+    }
+  }
+}
