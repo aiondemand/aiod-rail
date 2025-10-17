@@ -27,7 +27,7 @@
   border-radius: var(--radius-pill);
   border: 1px solid transparent;
 
-  font-family: var(--font-body);
+  font-family: var(--font-title);
   font-weight: var(--w-medium);
   line-height: 1;
   white-space: nowrap;
@@ -42,39 +42,64 @@
   /* ===== sizes ===== */
   &--sm {
     @include typo.fluid-type(--btn-sm-d, --btn-sm-m);
-    --btn-h: 36px;
+    --btn-h: 30px;
     height: var(--btn-h);
     padding: 0 0.9rem;
   }
 
   &--md {
     @include typo.fluid-type(--btn-md-d, --btn-md-m); /* 18/16 */
-    --btn-h: 40px;
+    --btn-h: 36px;
     height: var(--btn-h);
     padding: 0 1.1rem;
   }
 
   &--lg {
     @include typo.fluid-type(--btn-lg-d, --btn-lg-m); /* 20/18 */
-    --btn-h: 48px;
+    --btn-h: 44px;
     height: var(--btn-h);
     padding: 0 1.25rem;
   }
 
   /* ===== variants ===== */
   &--primary {
+    position: relative;
     background: $aiod-blue;
     color: $aiod-white;
-  }
-  &--primary:hover {
-    background: $aiod-yellow;
-    color: $aiod-blue;
+    transition: all 0.25s ease;
+    border-radius: var(--radius-pill);
+    isolation: isolate;
+
+    /* gradientový outline */
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      padding: 2px; /* hrúbka outline */
+      background: linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0.5) 0%,
+        rgba(255, 255, 255, 0.1) 30%,
+        rgba(255, 255, 255, 0) 100%
+      );
+      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+    }
+
+    &:hover {
+      background: $aiod-yellow;
+      color: $aiod-blue;
+    }
   }
 
   &--ghost {
     background: transparent;
     color: var(--text);
-    border-color: color-mix(in oklab, var(--text) 28%, transparent);
+    border-color: 2px solid var(--text);
   }
   &--ghost:hover {
     border-color: color-mix(in oklab, var(--text) 55%, transparent);
@@ -152,4 +177,19 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+// ICON BUTTON
+
+.btn--icon {
+  font-size: 20px;
+  font-weight: 200;
+
+  padding: 0;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+}
+
+.btn--primary.btn--icon::before {
+  display: none;
 }

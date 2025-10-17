@@ -20,4 +20,6 @@ export class UiButton {
   @Input() loading = false;
   @Input() fullWidth = false;
   @Input() ariaLabel?: string;
+
+  @Input() icon = false;
 }

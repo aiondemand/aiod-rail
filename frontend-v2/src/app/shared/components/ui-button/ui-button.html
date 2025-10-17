@@ -3,14 +3,17 @@
   [ngClass]="[
     'btn--' + variant,
     'btn--' + size,
-    fullWidth ? 'btn--block' : ''
+    fullWidth ? 'btn--block' : '',
+    icon ? 'btn--icon' : ''
   ]"
   [disabled]="disabled || loading"
   [attr.type]="type"
   [attr.aria-label]="ariaLabel || null"
+  [attr.aria-busy]="loading || null"
 >
   @if (loading) {
-    <span class="spinner" aria-hidden="true"></span>
-  }
+  <span class="spinner" aria-hidden="true"></span>
+  } @else {
   <span class="btn__content"><ng-content></ng-content></span>
+  }
 </button>

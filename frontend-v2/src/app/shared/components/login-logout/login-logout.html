@@ -1,6 +1,4 @@
 <div class="login-container" [class.logged-in]="isLoggedIn()">
-  <!-- avatar je vždy klikateľný: ak nie je prihlásený, spustí login -->
-
   @if (isLoggedIn()) {
   <a
     class="avatar"
@@ -9,13 +7,15 @@
     matTooltip="{{ isLoggedIn() ? 'Open profile' : 'Sign in' }}"
     aria-label="User profile"
   >
-    <mat-icon class="material-symbols-rounded icon">account_circle</mat-icon>
+    <mat-icon class="material-symbols-outlined icon">account_circle</mat-icon>
     <span class="username">{{ userName() }}</span>
   </a>
 
-  <ui-button size="md" variant="ghost" (click)="logout()" matTooltip="Sign out"> Logout </ui-button>
+  <ui-button size="lg" variant="ghost" (click)="logout()" matTooltip="Sign out">
+    Log out
+  </ui-button>
   } @else {
 
-  <ui-button size="md" variant="primary" (click)="login()" matTooltip="Sign in"> Login </ui-button>
+  <ui-button size="lg" variant="ghost" (click)="login()" matTooltip="Log in"> Log in </ui-button>
   }
 </div>

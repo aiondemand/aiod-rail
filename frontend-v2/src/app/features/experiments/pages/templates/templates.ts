@@ -2,7 +2,6 @@ import { Component, OnInit, DestroyRef, inject, signal, computed } from '@angula
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { tap } from 'rxjs/operators';
 
 import { BackendApiService } from '../../../../shared/services/backend-api.service';
 import { SearchToolbarComponent } from '../../../../shared/components/search-toolbar/search-toolbar';

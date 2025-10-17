@@ -1,9 +1,11 @@
 @use '../../../../styles/typography' as typo;
+@use '../../../../variables' as *;
 
 .login-container {
+  margin-inline: $margin-default;
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
 }
 
 /* profile */
@@ -31,5 +33,4 @@
   font-family: var(--font-body);
   font-weight: var(--w-medium);
   color: var(--text);
-  font-weight: var(--w-medium);
 }

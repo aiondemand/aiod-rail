@@ -34,13 +34,14 @@
       </ui-button>
       } } @else { @if (!isApproved()) {
       <span class="pill pill--pending" title="Waiting for manual approval">
-        <mat-icon class="material-symbols-rounded">hourglass_top</mat-icon>
+        <mat-icon class="material-symbols-rounded">lock_clock</mat-icon>
         Waiting for approval
       </span>
+      @if (isAdminUser()) {
       <ui-button variant="ghost" size="md" (click)="approve()" title="Approve">
         <mat-icon class="material-symbols-rounded">approval</mat-icon>
       </ui-button>
-      } @if (isMine()) {
+      } } @if (isMine()) {
       <ui-button variant="ghost" size="md" (click)="edit()" title="Edit">
         <mat-icon class="material-symbols-rounded">edit</mat-icon>
       </ui-button>

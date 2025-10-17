@@ -6,7 +6,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { catchError, firstValueFrom, of } from 'rxjs';
 
-import { UiButton } from '../../shared/components/ui-button/ui-button';
+//import { UiButton } from '../../shared/components/ui-button/ui-button';
 import { UiLoadingComponent } from '../../shared/components/ui-loading/ui-loading';
 import { UiErrorComponent } from '../../shared/components/ui-error/ui-error';
 
@@ -25,7 +25,7 @@ type UserRailProfile = { email: string; api_key?: string | null };
     MatTooltipModule,
     MatFormFieldModule,
     MatInputModule,
-    UiButton,
+    //UiButton,
     UiLoadingComponent,
     UiErrorComponent,
   ],
@@ -43,7 +43,7 @@ export class ProfilePage {
 
   readonly profile = signal<UserRailProfile | null>(null);
   readonly loading = signal(true);
-  readonly showKey = signal(false);
+  // readonly showKey = signal(false);
 
   constructor() {
     effect(
@@ -77,7 +77,7 @@ export class ProfilePage {
       this.loading.set(false);
     }
   }
-
+  /*
   async createOrUpdateApiKey() {
     const key = await firstValueFrom(
       this.backend.createOrUpdateUserApiKey().pipe(
@@ -106,4 +106,5 @@ export class ProfilePage {
       () => this.snack.showError('Failed to copy API key to clipboard')
     );
   }
+    */
 }

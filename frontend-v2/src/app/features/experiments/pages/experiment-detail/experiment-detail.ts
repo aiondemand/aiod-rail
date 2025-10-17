@@ -171,7 +171,6 @@ export class ExperimentDetailPage implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (run) => {
-          console.log('Created run', run?.id);
           this.runListComponent?.updateRuns?.();
         },
         error: (err) => {

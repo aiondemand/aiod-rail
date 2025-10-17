@@ -21,7 +21,6 @@ function ensureLoginOrBlock(): boolean | UrlTree {
 }
 
 export const authGuard: CanActivateFn = () => ensureLoginOrBlock();
-export const authMatchGuard: CanMatchFn = () => ensureLoginOrBlock();
 
 function isAdmin(): boolean | UrlTree {
   const auth = inject(AuthService);
@@ -32,4 +31,3 @@ function isAdmin(): boolean | UrlTree {
 }
 
 export const adminGuard: CanActivateFn = () => isAdmin();
-export const adminMatchGuard: CanMatchFn = () => isAdmin();

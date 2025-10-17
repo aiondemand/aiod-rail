@@ -51,12 +51,12 @@
   --p-mb-m: 1rem;
 
   /* (desktop/mobile)  */
-  --btn-sm-d: 14;
-  --btn-sm-m: 14;
+  --btn-sm-d: 10;
+  --btn-sm-m: 10;
   --btn-md-d: var(--p-d);
   --btn-md-m: var(--p-m);
-  --btn-lg-d: 20;
-  --btn-lg-m: 18;
+  --btn-lg-d: 13;
+  --btn-lg-m: 12;
 }
 
 @mixin fluid-type($var-d, $var-m) {

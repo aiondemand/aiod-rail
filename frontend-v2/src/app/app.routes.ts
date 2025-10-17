@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { authMatchGuard, authGuard } from './core/auth/auth.guard';
+import { adminGuard, authGuard } from './core/auth/auth.guard';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'docs/about' },
@@ -20,7 +20,7 @@ export const routes: Routes = [
 
       {
         path: 'my-experiments',
-        canMatch: [authMatchGuard],
+        canMatch: [authGuard],
         loadComponent: () =>
           import('./features/experiments/pages/my-experiments/my-experiments').then(
             (m) => m.MyExperimentsPage
@@ -28,7 +28,7 @@ export const routes: Routes = [
       },
       {
         path: 'create-experiment',
-        canMatch: [authMatchGuard],
+        canMatch: [authGuard],
         loadComponent: () =>
           import('./features/experiments/pages/create-experiment/create-experiment').then(
             (m) => m.CreateExperimentPage
@@ -55,7 +55,7 @@ export const routes: Routes = [
           },
           {
             path: ':id/update',
-            canMatch: [authMatchGuard],
+            canMatch: [authGuard],
             loadComponent: () =>
               import('./features/experiments/pages/create-template/create-template').then(
                 (m) => m.CreateTemplatePage
@@ -67,7 +67,7 @@ export const routes: Routes = [
       // create templates
       {
         path: 'my-templates',
-        canMatch: [authMatchGuard],
+        canMatch: [authGuard],
         loadComponent: () =>
           import('./features/experiments/pages/my-templates/my-templates').then(
             (m) => m.MyTemplatesPage
@@ -75,7 +75,7 @@ export const routes: Routes = [
       },
       {
         path: 'create-template',
-        canMatch: [authMatchGuard],
+        canMatch: [authGuard],
         loadComponent: () =>
           import('./features/experiments/pages/create-template/create-template').then(
             (m) => m.CreateTemplatePage
@@ -98,7 +98,7 @@ export const routes: Routes = [
       },
       {
         path: ':id/update',
-        canMatch: [authMatchGuard],
+        canMatch: [authGuard],
         loadComponent: () =>
           import('./features/experiments/pages/create-experiment/create-experiment').then(
             (m) => m.CreateExperimentPage
@@ -120,13 +120,13 @@ export const routes: Routes = [
       },
       {
         path: 'my-datasets',
-        canMatch: [authMatchGuard],
+        canMatch: [authGuard],
         loadComponent: () =>
           import('./features/datasets/pages/my-datasets/my-datasets').then((m) => m.MyDatasets),
       },
       {
         path: 'create-dataset',
-        canMatch: [authMatchGuard],
+        canMatch: [authGuard],
         loadComponent: () =>
           import('./features/datasets/pages/create-dataset/create-dataset').then(
             (m) => m.CreateDataset
@@ -201,6 +201,30 @@ export const routes: Routes = [
         path: 'inner-sdk',
         loadComponent: () =>
           import('./features/docs/pages/inner-sdk/inner-sdk').then((m) => m.InnerSDK),
+      },
+    ],
+  },
+
+  // ------------------- ADMIN ------------------------
+
+  {
+    path: 'admin',
+    canMatch: [adminGuard, authGuard],
+    children: [
+      { path: '', pathMatch: 'full', redirectTo: 'experiments' },
+      {
+        path: 'experiments',
+        loadComponent: () =>
+          import('./features/admin/experiments').then((m) => m.AllExperimentsPage),
+      },
+      {
+        path: 'templates',
+        loadComponent: () => import('./features/admin/templates').then((m) => m.AllTemplatesPage),
+      },
+      {
+        path: 'pending',
+        loadComponent: () =>
+          import('./features/admin/templates-pending').then((m) => m.PendingTemplatesPage),
       },
     ],
   },

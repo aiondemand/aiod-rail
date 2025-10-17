@@ -87,18 +87,7 @@ export class DatasetsAllComponent implements OnInit {
 
     this.api
       .getDatasets(this.query(), { offset: this.offset(), limit: this.pageSize() }, this.enhanced())
-      .pipe(
-        tap((ds) =>
-          console.log('[DatasetsAll] list', {
-            q: this.query(),
-            offset: this.offset(),
-            limit: this.pageSize(),
-            enhanced: this.enhanced(),
-            items: ds?.length,
-          })
-        ),
-        takeUntilDestroyed(this.destroyRef)
-      )
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (ds) => {
           this.items.set(ds ?? []);

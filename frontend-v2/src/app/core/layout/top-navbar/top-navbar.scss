@@ -1,0 +1,456 @@
+@use '../../../../styles/themes';
+@use '../../../../styles/typography' as typo;
+@use '../../../../variables' as *;
+
+/* ==========================================================
+   LOGO (swap image by theme)
+   ========================================================== */
+.logo img {
+  height: 56px;
+  margin-inline: $margin-default;
+}
+.logo-dark {
+  display: none;
+}
+:host-context([data-theme='dark']) .logo-light {
+  display: none;
+}
+:host-context([data-theme='dark']) .logo-dark {
+  display: block;
+}
+
+/* ==========================================================
+   TOPBAR
+   ========================================================== */
+.topbar {
+  --header-h: 64px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  transition: all 300ms ease-out;
+  background-color: transparent;
+  border-bottom: 1px solid var(--border);
+  font-family: var(--font-body);
+  font-weight: var(--w-regular);
+  @include typo.fluid-type(--p-d, --p-m);
+
+  @media (max-width: 1500px) {
+    padding: 0 2%;
+  }
+  @media (max-width: 992px) {
+    --header-h: 120px;
+    z-index: 999;
+    padding: 0;
+  }
+
+  &.mobile-opened {
+    min-height: 100vh;
+    height: 100%;
+    overflow-y: auto;
+    z-index: 999;
+
+    .nav .main {
+      display: flex !important;
+      flex-direction: column;
+      align-items: flex-start;
+      width: 100%;
+      background-color: var(--primary);
+      margin: 0;
+      padding: $margin-default;
+      border-radius: 0 0 16px 16px;
+    }
+
+    .actions .btn-circle {
+      background-color: var(--accent);
+      color: var(--surface);
+    }
+  }
+}
+
+/* ==========================================================
+   WRAP
+   ========================================================== */
+.wrap {
+  min-height: var(--header-h);
+  padding-block: $margin-double;
+  padding-inline: $margin-double;
+  display: flex;
+  align-items: center;
+
+  @media (max-width: 992px) {
+    height: var(--header-h);
+    display: block;
+    padding: 0;
+    position: relative;
+  }
+}
+
+.left,
+.nav {
+  margin-left: 8%;
+}
+
+/* ==========================================================
+   LEFT (burger + logo)
+   ========================================================== */
+.left {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-left: -20px;
+
+  @media (max-width: 992px) {
+    margin-left: 0;
+    height: 120px;
+    padding: 30px 5px;
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .burger {
+    display: none;
+    background: transparent;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+
+    @media (max-width: 992px) {
+      display: inline-grid;
+      place-items: center;
+    }
+
+    .mat-icon {
+      font-size: 28px;
+      line-height: 1;
+      width: 28px;
+      height: 28px;
+      color: var(--text);
+      opacity: 0.85;
+    }
+  }
+}
+
+/* ==========================================================
+   NAV
+   ========================================================== */
+.nav {
+  min-width: 0;
+}
+
+.main {
+  list-style: none;
+  display: flex;
+  padding-left: 0;
+  margin: 0;
+  align-items: flex-start;
+
+  @media (max-width: 992px) {
+    display: none;
+  }
+}
+
+.menu {
+  position: relative;
+  margin-right: 20px;
+
+  @media (max-width: 1200px) {
+    margin-right: 5px;
+  }
+  @media (max-width: 992px) {
+    width: 100%;
+    text-align: center;
+    margin: 30px 0;
+  }
+
+  &:last-of-type {
+    margin-right: 0;
+  }
+
+  &:hover .menu-link {
+    @media (min-width: 993px) {
+      background-color: #0047bb;
+      color: var(--accent);
+    }
+  }
+  &:hover > .mega {
+    @media (min-width: 993px) {
+      visibility: visible;
+      opacity: 1;
+    }
+  }
+}
+
+/* Top-level link */
+.menu-link {
+  font-family: var(--font-body);
+  font-weight: var(--w-medium);
+  @include typo.fluid-type(--p-d, --p-m);
+  color: var(--text);
+  line-height: 1;
+  text-decoration: none;
+  display: block;
+  padding: 15px 18px;
+  border-radius: 100px;
+  background-color: transparent;
+  transition: all 250ms ease;
+
+  @media (max-width: 992px) {
+    padding: 0 20px;
+    font-size: 20px;
+    line-height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    color: #fff;
+  }
+}
+
+/* ==========================================================
+   DESKTOP MEGA
+   ========================================================== */
+.mega {
+  visibility: hidden;
+  opacity: 0;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 30px;
+  background-color: #0047bb;
+  border-radius: 20px;
+  padding: 20px;
+  min-width: 160px;
+  width: max-content;
+  max-width: 90vw;
+  z-index: 1000;
+  transition: opacity 250ms ease, visibility 250ms ease;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  top: calc(100% + 12px);
+
+  .cards {
+    display: flex;
+    flex-wrap: nowrap;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    @media (max-width: 992px) {
+      flex-direction: column;
+    }
+
+    li {
+      position: relative;
+      background-color: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      margin-right: 8px;
+      max-width: 270px;
+      width: 100%;
+      transition: background-color 300ms ease, color 300ms ease, border-color 300ms ease;
+
+      &:last-child {
+        margin-right: 0;
+      }
+
+      @media (max-width: 992px) {
+        max-width: 100%;
+        background-color: rgba(255, 255, 255, 0.1);
+        margin-right: 0;
+        margin-bottom: 10px;
+      }
+
+      /* default hover for non-highlight */
+      &:hover {
+        background-color: color-mix(in oklab, #0047bb 80%, white);
+      }
+
+      a {
+        display: block;
+        padding: 20px;
+        height: 100%;
+        text-decoration: none;
+        color: var(--text);
+        position: relative;
+
+        @media (max-width: 992px) {
+          text-align: left;
+        }
+
+        .card-title {
+          font-family: var(--font-title);
+          font-weight: var(--w-regular);
+          @include typo.fluid-type(--h6-d, --h6-m);
+          display: block;
+          margin-bottom: 8px;
+          color: var(--accent);
+        }
+
+        .card-desc {
+          font-family: var(--font-title);
+          margin: 0;
+          color: $aiod-white;
+        }
+
+        /* yellow arrow bubble (for highlight cards only) */
+        .card-arrow {
+          position: absolute;
+          top: 10px;
+          right: 10px;
+          width: 34px;
+          height: 34px;
+          border-radius: 999px;
+          display: grid;
+          place-items: center;
+          background: $aiod-yellow; /* yellow */
+          color: $aiod-blue; /* blue icon */
+
+          .mat-icon {
+            font-size: 20px;
+            width: 20px;
+            height: 20px;
+          }
+        }
+      }
+
+      /* ===== special style for highlighted cards (SDKs and APIs, All Tools) ===== */
+      &.highlight {
+        border-color: rgba(255, 255, 255, 0.18);
+
+        /* hover -> whole card yellow, texts + arrow invert to blue */
+        &:hover {
+          background: $aiod-yellow;
+          border-color: color-mix(in oklab, var(--accent) 70%, #ffffff 0%);
+
+          a .card-title {
+            color: $aiod-blue;
+          }
+          a .card-desc {
+            color: $aiod-blue;
+          }
+          a .card-arrow {
+            background: $aiod-blue;
+            color: #ffed00;
+          }
+        }
+      }
+    }
+  }
+
+  .mega-footer {
+    display: flex;
+    padding: 6px 4px 2px;
+  }
+}
+
+/* align variants */
+.menu.align-left > .mega {
+  left: 0;
+  transform: none;
+  max-width: 57vw;
+}
+.menu.align-center > .mega {
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: min(90vw, 1300px);
+}
+.menu.align-right > .mega {
+  left: 75%;
+  transform: translateX(-75%);
+}
+
+/* ==========================================================
+   MOBILE SUBMENU
+   ========================================================== */
+.sub {
+  display: none;
+  padding: 10px 0 0;
+
+  &.open {
+    display: block;
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 10px;
+  }
+
+  li {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    background-color: rgba(255, 255, 255, 0.08);
+
+    a {
+      display: block;
+      padding: 12px;
+      color: #fff;
+      text-decoration: none;
+
+      span {
+        font-family: var(--font-title);
+        font-weight: var(--w-bold);
+        @include typo.fluid-type(--h5-d, --h5-m);
+        display: block;
+        margin-bottom: 6px;
+        color: var(--accent);
+      }
+
+      p {
+        @include typo.body-text(--p-d, --p-m, --p-lh-d, --p-lh-m, --p-mb-d, --p-mb-m, --w-medium);
+        margin: 0;
+        color: rgba(255, 255, 255, 0.8);
+      }
+    }
+  }
+}
+
+/* ==========================================================
+   RIGHT ACTIONS
+   ========================================================== */
+.actions {
+  margin-right: 0;
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: $margin-default;
+
+  .mat-icon {
+    color: yellow;
+  } /* search icon v btn-e */
+  ui-button:hover .mat-icon {
+    color: $aiod-blue;
+  }
+}
+
+/* CTA hide on small screens */
+@media (max-width: 992px) {
+  ui-button.get-started {
+    display: none;
+  }
+}
+
+/* --- Technical Support button colors inside mega menu --- */
+.mega .mega-footer ui-button.tech-support {
+  --btn-bg: #41b6e6;
+  --btn-text: $aiod-blue;
+  --btn-border: transparent;
+}
+
+:host ::ng-deep ui-button.tech-support button,
+:host ::ng-deep ui-button.tech-support .btn {
+  background: #41b6e6 !important;
+  color: #0a3d91 !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+}
+
+:host ::ng-deep ui-button.tech-support button:hover,
+:host ::ng-deep ui-button.tech-support .btn:hover {
+  background: $aiod-white !important;
+  color: $aiod-blue !important;
+  border-color: #ffffff !important;
+}

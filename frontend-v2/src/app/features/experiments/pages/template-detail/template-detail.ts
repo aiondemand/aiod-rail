@@ -32,6 +32,8 @@ import { UiButton } from '../../../../shared/components/ui-button/ui-button';
 import { ExperimentTemplate } from '../../../../shared/models/experiment-template';
 import { EnvironmentVarDef } from '../../../../shared/models/env-vars';
 
+import { AuthService } from '../../../../core/auth/auth.service';
+
 @Component({
   selector: 'app-template-detail',
   standalone: true,
@@ -54,6 +56,7 @@ export class TemplateDetailPage implements OnInit {
   private dialog = inject(MatDialog);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
+  private auth = inject(AuthService);
   private destroyRef = inject(DestroyRef);
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
 
@@ -78,6 +81,7 @@ export class TemplateDetailPage implements OnInit {
   isArchived = computed(() => this.tpl()?.is_archived ?? false);
   isApproved = computed(() => this.tpl()?.is_approved ?? false);
   isPublic = computed(() => this.tpl()?.is_public ?? false);
+  isAdminUser = computed(() => this.auth.isLoggedIn() && this.auth.hasAdminRole());
   state = computed(() => (this.tpl()?.state ?? '') as string);
 
   isFinished = computed(() => this.state() === 'FINISHED');
@@ -105,7 +109,6 @@ export class TemplateDetailPage implements OnInit {
         takeUntilDestroyed(this.destroyRef)
       )
       .subscribe((id) => {
-        console.log('[TemplateDetail] route id =', id);
         this.id.set(id);
         this.loadOnce();
       });
@@ -129,7 +132,6 @@ export class TemplateDetailPage implements OnInit {
               !!id && !this.isArchived() && (!this.isFinished() || !this.isApproved());
 
             if (!shouldPoll) return of(null);
-            console.log('[TemplateDetail] polling… id=', id);
             return this.api.getExperimentTemplate(id);
           }),
           takeUntilDestroyed(this.destroyRef)
@@ -137,12 +139,7 @@ export class TemplateDetailPage implements OnInit {
         .subscribe({
           next: (t) => {
             if (!t) return;
-            console.log(
-              '[TemplateDetail] poll result state=',
-              t?.state,
-              'approved=',
-              t?.is_approved
-            );
+
             this.tpl.set(t);
           },
           error: (err) => console.error('[TemplateDetail] poll error', err),
@@ -157,14 +154,12 @@ export class TemplateDetailPage implements OnInit {
 
     this.loading.set(true);
     this.error.set(null);
-    console.log('[TemplateDetail] loadOnce id=', id);
 
     this.api
       .getExperimentTemplate(id)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (t) => {
-          console.log('[TemplateDetail] loadOnce OK state=', t?.state, 'approved=', t?.is_approved);
           this.tpl.set(t);
           // fix NG0100 pri SSR/hydration
           queueMicrotask(() => this.loading.set(false));
@@ -180,13 +175,16 @@ export class TemplateDetailPage implements OnInit {
   }
 
   retry() {
-    console.log('[TemplateDetail] retry clicked');
     this.loadOnce();
   }
 
   // ----- actions
   approve() {
-    console.log('[TemplateDetail] approve clicked');
+    if (!this.isAdminUser()) {
+      console.warn('[TemplateDetail] approve aborted: not admin');
+      return;
+    }
+
     const t = this.tpl();
     if (!t) {
       console.warn('[TemplateDetail] approve aborted: tpl null');
@@ -207,7 +205,6 @@ export class TemplateDetailPage implements OnInit {
     });
 
     ref.afterClosed().subscribe((res: UiConfirmResult | undefined) => {
-      console.log('[TemplateDetail] approve dialog result =', res);
       if (res !== 'yes') return;
 
       this.api
@@ -215,7 +212,6 @@ export class TemplateDetailPage implements OnInit {
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: () => {
-            console.log('[TemplateDetail] approve API OK');
             this.tpl.update((x) => (x ? { ...x, is_approved: true } : x));
           },
           error: (err) => console.error('[TemplateDetail] approve API ERROR', err),
@@ -224,7 +220,6 @@ export class TemplateDetailPage implements OnInit {
   }
 
   edit() {
-    console.log('[TemplateDetail] edit clicked');
     const id = this.id();
     if (!id) return;
 
@@ -234,7 +229,6 @@ export class TemplateDetailPage implements OnInit {
       .subscribe({
         next: (count) => {
           const exists = (count ?? 0) > 0;
-          console.log('[TemplateDetail] edit count=', count, 'exists=', exists);
 
           // v edit()
           if (exists) {
@@ -265,7 +259,6 @@ export class TemplateDetailPage implements OnInit {
   }
 
   deleteOrArchive() {
-    console.log('[TemplateDetail] delete/archive clicked');
     const t = this.tpl();
     if (!t) return;
 
@@ -275,7 +268,6 @@ export class TemplateDetailPage implements OnInit {
       .subscribe({
         next: (count) => {
           const exists = (count ?? 0) > 0;
-          console.log('[TemplateDetail] delete/archive count=', count, 'exists=', exists);
 
           const msg = exists
             ? 'This template is already used by some experiment. You cannot delete it, but you can archive it to prevent creating new experiments from it.\n\nDo you wish to ARCHIVE this experiment template?'
@@ -291,7 +283,6 @@ export class TemplateDetailPage implements OnInit {
             .open(UiConfirmComponent, { maxWidth: '450px', width: '100%', data })
             .afterClosed()
             .subscribe((res: UiConfirmResult | undefined) => {
-              console.log('[TemplateDetail] delete/archive dialog result=', res);
               if (res !== 'yes') return;
 
               if (exists) {
@@ -300,7 +291,6 @@ export class TemplateDetailPage implements OnInit {
                   .pipe(takeUntilDestroyed(this.destroyRef))
                   .subscribe({
                     next: () => {
-                      console.log('[TemplateDetail] archive API OK → navigate list');
                       this.router.navigate(['/experiments/templates']);
                     },
                     error: (err) => console.error('[TemplateDetail] archive API ERROR', err),
@@ -311,7 +301,6 @@ export class TemplateDetailPage implements OnInit {
                   .pipe(takeUntilDestroyed(this.destroyRef))
                   .subscribe({
                     next: () => {
-                      console.log('[TemplateDetail] delete API OK → navigate list');
                       this.router.navigate(['/experiments/templates']);
                     },
                     error: (err) => console.error('[TemplateDetail] delete API ERROR', err),
@@ -324,7 +313,6 @@ export class TemplateDetailPage implements OnInit {
   }
 
   unarchive() {
-    console.log('[TemplateDetail] unarchive clicked');
     const t = this.tpl();
     if (!t) return;
 
@@ -333,7 +321,6 @@ export class TemplateDetailPage implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
-          console.log('[TemplateDetail] unarchive API OK');
           this.tpl.update((x) => (x ? { ...x, is_archived: false, is_mine: true } : x));
         },
         error: (err) => console.error('[TemplateDetail] unarchive API ERROR', err),

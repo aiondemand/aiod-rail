@@ -11,7 +11,13 @@
       aria-label="Search"
     />
 
-    <ui-button variant="primary" size="sm" [ariaLabel]="'Search'" (click)="onSearch(q.value)">
+    <ui-button
+      variant="primary"
+      [icon]="true"
+      size="sm"
+      [ariaLabel]="'Search'"
+      (click)="onSearch(q.value)"
+    >
       <mat-icon class="material-symbols-rounded">search</mat-icon>
     </ui-button>
 
@@ -46,6 +52,7 @@
       size="sm"
       [disabled]="!canPrev || loading"
       [ariaLabel]="'Previous page'"
+      [icon]="true"
       title="Previous page"
       (click)="prevPage()"
     >
@@ -61,6 +68,7 @@
       [disabled]="!canNext || loading"
       [ariaLabel]="'Next page'"
       title="Next page"
+      [icon]="true"
       (click)="nextPage()"
     >
       <mat-icon class="material-symbols-rounded">chevron_right</mat-icon>

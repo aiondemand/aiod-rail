@@ -3,7 +3,8 @@
 @use 'sass:math';
 
 :host {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
 }
 
 /*  btn (pill) */
@@ -18,7 +19,7 @@
   --k: 20px;
 }
 .switch--lg {
-  --h: 40px;
+  --h: 44px;
   --w: 68px;
   --k: 22px;
 }
@@ -30,11 +31,11 @@
 
 .switch {
   appearance: none;
-  border: 1px solid color-mix(in oklab, var(--text) 28%, transparent); /* ghost border */
+  border: 1.5px solid var(--text); /* ghost border */
   background: transparent;
   border-radius: var(--radius-pill);
-  width: calc(var(--w) + 8px);
-  height: calc(var(--h) + 8px);
+  width: calc(var(--w));
+  height: calc(var(--h));
   padding: 0;
   display: inline-flex;
   align-items: center;
@@ -62,13 +63,22 @@
   align-items: center;
   justify-content: space-between;
   pointer-events: none;
-  padding-inline: 10px;
-  color: color-mix(in oklab, var(--text) 80%, transparent);
+  padding-inline: 12px;
+  color: color-mix(in oklab, var(--text) 90%, transparent);
+  z-index: 2;
 
   .material-symbols-rounded {
     font-size: 18px;
     line-height: 1;
   }
+}
+
+:host-context([data-theme='light']) .icons .material-symbols-rounded:first-child {
+  color: $aiod-white;
+}
+
+:host-context([data-theme='dark']) .icons .material-symbols-rounded:last-child {
+  color: $aiod-white;
 }
 
 /* knob */
@@ -80,12 +90,11 @@
   height: var(--k);
   border-radius: 50%;
   background: $aiod-blue;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
   transition: transform 160ms ease, background-color 160ms ease;
 }
 
 /* dark: var(--primary) */
 :host-context([data-theme='dark']) .knob {
   transform: translateX(calc(var(--w) - var(--h)));
-  background: var(--primary);
+  background: $aiod-blue;
 }

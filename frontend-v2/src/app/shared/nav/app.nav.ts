@@ -19,7 +19,7 @@ export const APP_NAV: NavSection[] = [
         dividerAfter: true,
       },
       { label: 'RAIL SDKs', slug: '/docs/rail-sdks', icon: 'integration_instructions' },
-      { label: 'Outer SDK', slug: '/docs/outer-sdk', icon: 'device_hub' },
+      { label: 'Outer SDK', slug: 'https://aiondemand.github.io/aiod-rail/', icon: 'device_hub' },
       { label: 'Inner SDKs', slug: '/docs/inner-sdk', icon: 'memory' },
     ],
   },
@@ -51,6 +51,20 @@ export const APP_NAV: NavSection[] = [
       { label: 'All datasets', slug: '/datasets/all', icon: 'dataset' },
       { label: 'My datasets', slug: '/datasets/my-datasets', icon: 'folder_shared' },
       { label: 'Create', slug: '/datasets/create-dataset', icon: 'add' },
+    ],
+  },
+];
+
+export const ADMIN_NAV: NavSection[] = [
+  {
+    title: 'Admin',
+    titleSlug: '/admin',
+    icon: 'admin_panel_settings',
+    expanded: true,
+    items: [
+      { label: 'All experiments', slug: '/admin/experiments', icon: 'science', dividerAfter: true },
+      { label: 'All templates', slug: '/admin/templates', icon: 'document_scanner' },
+      { label: 'Pending templates', slug: '/admin/pending', icon: 'lock_clock' },
     ],
   },
 ];
