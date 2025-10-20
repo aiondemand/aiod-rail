@@ -5,7 +5,7 @@
 /* ================== Helpers ================== */
 $pill-h: 32px;
 
-/* description links – nech sú jasne linky */
+/* description links  */
 :host .detail.card .desc .desc-body a {
   color: var(--text-active);
   text-decoration: underline;
@@ -13,7 +13,7 @@ $pill-h: 32px;
 }
 
 :host .detail.card .desc .desc-body a:hover {
-  text-decoration: underline; /* prebijeme prípadné globálne :hover none */
+  text-decoration: underline;
   filter: brightness(1.08);
 }
 

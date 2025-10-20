@@ -15,67 +15,58 @@
   min-height: 0;
   min-width: 0;
   background: var(--background);
+  position: relative;
 }
 
 /* ===== Sidebar ===== */
 .sidebar {
-  width: auto;
   background: var(--background);
   color: var(--text);
-  border-radius: 0%;
   border-right: 1px solid var(--border);
   overflow: hidden;
-
-  /* when collapsing */
   transition: width 0.18s ease;
+  border-radius: 0;
 }
 
-.sidebar.collapsed {
-  width: 84px;
-}
-
-/* only home button */
-.sn-section.home {
-  cursor: pointer;
-  border-color: var(--background);
-}
-
-.sn-section-sep {
-  padding-top: 1px;
-  border-color: transparent;
-}
-
-/* inner – sticky bottom for button */
+/* inner */
 .sn-inner {
   display: flex;
   flex-direction: column;
+  min-height: 100%;
 }
 .sn-scroll {
   margin-top: $margin-double;
+  overflow: auto;
+}
+
+.sn-gap {
+  height: 16px;
 }
 
 .sn-bottom {
+  margin-top: $margin-default;
+  position: sticky;
+  bottom: 0;
   border-top: 1px solid var(--border);
   padding: $margin-default;
   display: flex;
   justify-content: center;
+  background: var(--background);
 }
 
-/* button collapse */
+/* collapse button */
 .collapse-btn {
   width: 40px;
   height: 40px;
-  border-radius: var(--radius-pill);
   background: var(--surface);
   border: 1px solid var(--border);
   color: var(--text);
 }
-
 .collapse-btn:hover {
   background: color-mix(in oklab, var(--surface) 75%, var(--primary) 8%);
 }
 
-/* ===== Card section ===== */
+/* ===== Section header ===== */
 .sn-section {
   width: 100%;
   display: flex;
@@ -85,6 +76,14 @@
   padding: $margin-default $margin-double;
   cursor: default;
   color: var(--primary);
+}
+.sn-section.home {
+  cursor: pointer;
+  border-color: var(--background);
+}
+.sn-section-sep {
+  padding-top: 1px;
+  border-color: transparent;
 }
 
 .sn-section .left {
@@ -112,11 +111,10 @@
   transform: rotate(180deg);
 }
 
-/* ===== Accordion panel  ===== */
-
+/* ===== Accordion panel ===== */
 .sn-panel {
   display: grid;
-  grid-template-rows: 0fr; /* zavreté */
+  grid-template-rows: 0fr;
   transition: grid-template-rows 0.28s ease, opacity 0.28s ease;
   opacity: 0;
 }
@@ -124,18 +122,16 @@
   grid-template-rows: 1fr;
   opacity: 1;
 }
-
 .sn-panel > .sn-list {
   overflow: hidden;
   min-height: 0;
 }
 
-/* ===== list of imputs ===== */
+/* ===== Item list ===== */
 .sn-list {
   padding: 0;
   padding-bottom: 2px;
 }
-
 .sn-item.mat-mdc-list-item {
   padding-inline: $margin-double;
   border-radius: 0;
@@ -164,13 +160,12 @@
   width: 3px;
   background: var(--primary);
 }
-
 .sn-inner-divider {
   margin: $margin-half $margin-double;
   border-color: var(--border);
 }
 
-/* ===== MINI collapsed ===== */
+/* ===== Collapsed  ===== */
 .sidebar.collapsed {
   .sn-section {
     padding: $margin-default;
@@ -198,16 +193,25 @@
 /* ===== Content ===== */
 .mat-drawer-container,
 .content {
-  overflow: visible; /* scroluje .content */
-  transform: none; /* NUTNÉ: transform by zabil sticky */
-  contain: none; /* pre istotu – nech nie je izolovaný layout/paint */
+  overflow: visible;
+  transform: none;
+  contain: none;
   min-height: 0;
   min-width: 0;
   background: var(--background);
   color: var(--text);
 }
 
-/* Prefer-reduced-motion  */
+/* ====== (<560 px) ======
+
+*/
+@media (max-width: 560px) {
+  .content.content-hidden {
+    display: none !important;
+  }
+}
+
+/* Prefer-reduced-motion */
 @media (prefers-reduced-motion: reduce) {
   .sn-panel,
   .sidebar,
@@ -227,4 +231,9 @@
   .sn-item.active {
     background: color-mix(in oklab, var(--surface) 55%, var(--primary) 18%);
   }
+}
+
+.sidebar .sn-scroll::-webkit-scrollbar-track {
+  border-left: none;
+  box-shadow: inset 1px 0 0 color-mix(in oklab, var(--border) 60%, transparent);
 }

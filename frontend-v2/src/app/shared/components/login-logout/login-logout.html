@@ -7,7 +7,10 @@
     matTooltip="{{ isLoggedIn() ? 'Open profile' : 'Sign in' }}"
     aria-label="User profile"
   >
-    <mat-icon class="material-symbols-outlined icon">account_circle</mat-icon>
+    <ui-button class="icon" variant="ghost" size="lg" [icon]="true" ariaLabel="user">
+      <mat-icon fontIcon="person"></mat-icon>
+    </ui-button>
+
     <span class="username">{{ userName() }}</span>
   </a>
 

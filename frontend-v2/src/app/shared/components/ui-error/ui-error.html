@@ -14,11 +14,11 @@
 
     <div class="actions">
       @if (retryable) {
-      <ui-button variant="primary" size="sm" (click)="onRetry()">
+      <ui-button variant="primary" size="md" (click)="onRetry()">
         {{ retryLabel }}
       </ui-button>
       } @if (closable) {
-      <ui-button variant="ghost" size="sm" (click)="onClose()"> Dismiss </ui-button>
+      <ui-button variant="ghost" size="md" (click)="onClose()"> Dismiss </ui-button>
       }
     </div>
   </div>

@@ -8,9 +8,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { filter, map, startWith } from 'rxjs';
+
 import { NavSection } from '../../../shared/nav/nav.types';
 import { APP_NAV, ADMIN_NAV } from '../../../shared/nav/app.nav';
-
 import { AuthService } from '../../auth/auth.service';
 
 @Component({
@@ -34,7 +34,7 @@ export class MainLayout {
   private bp = inject(BreakpointObserver);
   private auth = inject(AuthService);
 
-  /** URL as signal */
+  /** ===== URL  ===== */
   url = toSignal(
     this.router.events.pipe(
       filter((e) => e instanceof NavigationEnd),
@@ -44,6 +44,7 @@ export class MainLayout {
     { initialValue: this.router.url }
   );
 
+  /** ===== Admin  ===== */
   private wantsAdminFromUrl = computed(() => (this.url() || '').startsWith('/admin'));
   isAdmin = computed(() => this.auth.isLoggedIn() && this.auth.hasAdminRole());
   showAdminSection = computed(() => this.isAdmin() || this.wantsAdminFromUrl());
@@ -52,17 +53,39 @@ export class MainLayout {
     this.showAdminSection() ? [...APP_NAV, ...ADMIN_NAV] : APP_NAV
   );
 
-  /** Desktop breakpoint */
-  isNarrow = toSignal(this.bp.observe(['(max-width: 956px)']).pipe(map((r) => r.matches)), {
+  /** ===== Breakpoints ===== */
+  isNarrow = toSignal(this.bp.observe(['(max-width: 960px)']).pipe(map((r) => r.matches)), {
     initialValue: false,
   });
-  mode = computed<'over' | 'side'>(() => (this.isNarrow() ? 'over' : 'side'));
-  opened = computed<boolean>(() => !this.isNarrow());
+  isVeryNarrow = toSignal(this.bp.observe(['(max-width: 560px)']).pipe(map((r) => r.matches)), {
+    initialValue: false,
+  });
 
-  /** Mini (collapse) – only desktop */
-  isCollapsed = signal(false);
+  /** Sidebar */
+  mode = computed<'over' | 'side'>(() => 'side');
+  opened = computed<boolean>(() => true);
+
+  /* ===== Collapse =====   */
+  private collapsedManual = signal(false);
+
+  private _autoCollapse = effect(() => {
+    if (this.isNarrow()) {
+      this.collapsedManual.set(true);
+    }
+  });
+
+  collapsed = computed<boolean>(() => this.collapsedManual());
   toggleCollapsed() {
-    if (!this.isNarrow()) this.isCollapsed.update((v) => !v);
+    this.collapsedManual.update((v) => !v);
+  }
+
+  /** <560 px */
+  hideContent = computed<boolean>(() => this.isVeryNarrow() && !this.collapsed());
+
+  private closeForMobile() {
+    if (this.isVeryNarrow()) {
+      this.collapsedManual.set(true);
+    }
   }
 
   /** ===== Accordion ===== */
@@ -85,29 +108,38 @@ export class MainLayout {
     return this.expandedIndex() === i;
   }
 
-  onSectionHeaderClick(i: number, s: NavSection, drawer: any) {
+  onSectionHeaderClick(i: number, s: NavSection) {
     this.expandedIndex.set(i);
-    const target = s.items?.[0]?.slug ?? s.titleSlug ?? null;
+    const target = (s as any).items?.[0]?.slug ?? (s as any).titleSlug ?? null;
     if (target) {
-      this.router.navigateByUrl(target).then(() => {
-        if (this.isNarrow()) drawer.close();
-      });
+      this.router.navigateByUrl(target).then(() => this.closeForMobile());
+    } else {
+      this.closeForMobile();
     }
   }
 
-  onItemClick(sectionIndex: number, drawer: any) {
+  onItemClick(sectionIndex: number) {
     if (this.expandedIndex() !== sectionIndex) this.expandedIndex.set(sectionIndex);
-    if (this.isNarrow()) drawer.close();
+    this.closeForMobile();
   }
 
   linkTo(slug?: string) {
     return slug || '/';
   }
 
+  /** ===== Helpers ===== */
+  isExternalUrl(url?: string): boolean {
+    return !!url && /^(https?:)?\/\//i.test(url);
+  }
+
+  go(url: string) {
+    window.location.href = url;
+  }
+
   private indexForUrl(u: string): number | null {
     const secs = this.sections();
     for (let i = 0; i < secs.length; i++) {
-      const s = secs[i];
+      const s = secs[i] as any;
       if (s.titleSlug && u.startsWith(s.titleSlug)) return i;
       if (s.items) {
         for (const it of s.items) {
@@ -116,13 +148,5 @@ export class MainLayout {
       }
     }
     return null;
-  }
-
-  isExternalUrl(url?: string): boolean {
-    return !!url && /^(https?:)?\/\//i.test(url);
-  }
-
-  go(url: string) {
-    window.location.href = url;
   }
 }

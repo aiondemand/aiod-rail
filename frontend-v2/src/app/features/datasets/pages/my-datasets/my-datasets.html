@@ -1,1 +1,33 @@
-<p>my-datasets works!</p>
+<ui-search-toolbar
+  [pageSize]="pageSize()"
+  [pageIndex]="pageIndex()"
+  [length]="length()"
+  [loading]="loading()"
+  [pageSizeOptions]="[10, 25, 50, 100]"
+  [showEnhanced]="false"
+  [showSearch]="false"
+  placeholder=""
+  (pageSizeChange)="changePageSize($event)"
+  (pageIndexChange)="onPageIndexChange($event)"
+></ui-search-toolbar>
+
+@if (error()) {
+<ui-error
+  [show]="!!error()"
+  [message]="error() || 'Failed to load your datasets :/'"
+  [retryable]="true"
+  retryLabel="Try Again"
+  (retry)="onRetryError()"
+></ui-error>
+
+} @if (loading()) {
+<ui-loading [show]="loading()" [diameter]="32" ariaLabel="Loading"></ui-loading>
+} @if (!loading() && !error()) {
+<section class="grid">
+  @for (item of items(); track item.identifier) {
+  <ui-asset-card [resource]="item"></ui-asset-card>
+  } @empty {
+  <p>You do not have any bookmarked datasets.</p>
+  }
+</section>
+}

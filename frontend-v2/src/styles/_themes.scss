@@ -28,6 +28,8 @@
     #{color.mix($aiod-blue, $aiod-light-blue, 10%)} 0%,
     #{$aiod-light-blue} 100%
   );
+
+  --card: #{$default-card};
 }
 
 /* ===== DARK ===== */
@@ -36,6 +38,8 @@
   --surface: #0b1220;
   --surface-2: #0d1425;
   --border: #1c2740;
+
+  --card: #{$dark-card};
 
   --text: #{color.mix($aiod-white, $aiod-black, 90%)};
   --text-muted: #{color.mix($aiod-white, $aiod-black, 65%)};

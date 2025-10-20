@@ -1,4 +1,5 @@
 <section class="toolbar">
+  @if (showSearch) {
   <div class="search">
     <input
       #q
@@ -14,14 +15,15 @@
     <ui-button
       variant="primary"
       [icon]="true"
-      size="sm"
+      size="md"
       [ariaLabel]="'Search'"
       (click)="onSearch(q.value)"
     >
       <mat-icon class="material-symbols-rounded">search</mat-icon>
     </ui-button>
 
-    <label class="chk" *ngIf="showEnhanced">
+    @if (showEnhanced) {
+    <label class="chk">
       <input
         type="checkbox"
         [checked]="enhanced"
@@ -29,7 +31,9 @@
       />
       <span>Enhanced</span>
     </label>
+    }
   </div>
+  }
 
   <div class="pager">
     <label class="psize">
@@ -42,14 +46,16 @@
         [panelClass]="'pager-select-panel'"
         aria-label="Page size"
       >
-        <mat-option *ngFor="let opt of pageSizeOptions" [value]="opt">{{ opt }}</mat-option>
+        @for (opt of pageSizeOptions; track opt) {
+        <mat-option [value]="opt">{{ opt }}</mat-option>
+        }
       </mat-select>
     </label>
 
     <!-- prev -->
     <ui-button
       variant="ghost"
-      size="sm"
+      size="md"
       [disabled]="!canPrev || loading"
       [ariaLabel]="'Previous page'"
       [icon]="true"
@@ -64,7 +70,7 @@
     <!-- next -->
     <ui-button
       variant="ghost"
-      size="sm"
+      size="md"
       [disabled]="!canNext || loading"
       [ariaLabel]="'Next page'"
       title="Next page"

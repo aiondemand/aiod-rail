@@ -122,6 +122,21 @@
     grid-template-columns: 1fr 1fr;
   }
 }
+
+/* Collapse: hide the top row entirely and keep only the lower bar */
+
+@media (max-width: 550px) {
+  .wrap {
+    display: none;
+  }
+  .lower .container {
+    padding-top: calc($margin-double + 2px);
+    padding-bottom: calc($margin-double + 2px);
+    flex-wrap: wrap;
+    gap: 10px 16px;
+  }
+}
+
 @media (max-width: 640px) {
   .wrap {
     grid-template-columns: 1fr;

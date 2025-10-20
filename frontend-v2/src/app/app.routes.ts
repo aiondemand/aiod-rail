@@ -122,7 +122,9 @@ export const routes: Routes = [
         path: 'my-datasets',
         canMatch: [authGuard],
         loadComponent: () =>
-          import('./features/datasets/pages/my-datasets/my-datasets').then((m) => m.MyDatasets),
+          import('./features/datasets/pages/my-datasets/my-datasets').then(
+            (m) => m.MyDatasetsComponent
+          ),
       },
       {
         path: 'create-dataset',

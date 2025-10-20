@@ -8,8 +8,9 @@
         (click)="openMobileMenu()"
         aria-label="Open menu"
         [attr.aria-expanded]="mobileOpened()"
+        aria-controls="mainNav"
       >
-        <mat-icon fontIcon="menu" aria-hidden="true"></mat-icon>
+        <mat-icon [fontIcon]="mobileOpened() ? 'close' : 'menu'" aria-hidden="true"></mat-icon>
       </button>
 
       <a class="logo" href="https://aiod.eu/" aria-label="AiodRail Home">
@@ -19,11 +20,11 @@
     </div>
 
     <!-- CENTER: navigation -->
-    <nav class="nav">
+    <nav class="nav" id="mainNav">
       <ul class="main" [class.open]="mobileOpened()">
+        @for (top of menu(); track top.id; let i = $index) {
         <li
           class="menu"
-          *ngFor="let top of menu(); let i = index"
           [class.align-left]="i === 0 || i === 1"
           [class.align-center]="i === 2 || i === 3"
           [class.align-right]="i === 4 || i === 5"
@@ -38,23 +39,28 @@
           </a>
 
           <!-- Desktop hover mega menu -->
-          <div class="mega" *ngIf="top.children?.length">
+          @if (top.children?.length) {
+          <div class="mega">
             <ul class="cards">
-              <li *ngFor="let c of top.children" [class.highlight]="c.isHighlighted">
+              @for (c of top.children; track c.id) {
+              <li [class.highlight]="c.isHighlighted">
                 <a [href]="c.url || '#'" [attr.target]="targetFor(c.url)">
                   <span class="card-title">{{ c.title }}</span>
-                  <p class="card-desc" *ngIf="c.description">{{ c.description }}</p>
-
-                  <!-- yellow arrow bubble only for highlighted cards -->
-                  <span class="card-arrow" *ngIf="c.isHighlighted" aria-hidden="true">
+                  @if (c.description) {
+                  <p class="card-desc">{{ c.description }}</p>
+                  } @if (c.isHighlighted) {
+                  <span class="card-arrow" aria-hidden="true">
                     <mat-icon fontIcon="arrow_forward"></mat-icon>
                   </span>
+                  }
                 </a>
               </li>
+              }
             </ul>
 
-            <!-- Tools footer: Technical Support button -->
-            <div class="mega-footer" *ngIf="isTools(top.title)">
+            <!-- Tools footer: Technical Support -->
+            @if (isTools(top.title)) {
+            <div class="mega-footer">
               <ui-button
                 class="tech-support"
                 size="lg"
@@ -65,24 +71,62 @@
                 Technical Support
               </ui-button>
             </div>
+            }
           </div>
+          }
 
           <!-- Mobile accordion -->
-          <div class="sub" *ngIf="top.children?.length" [class.open]="top.open">
+          @if (top.children?.length) {
+          <div class="sub" [class.open]="top.open">
             <ul>
-              <li *ngFor="let c of top.children" [class.highlight]="c.isHighlighted">
+              @for (c of top.children; track c.id) {
+              <li [class.highlight]="c.isHighlighted">
                 <a [href]="c.url || '#'" [attr.target]="targetFor(c.url)">
                   <span>{{ c.title }}</span>
-                  <p *ngIf="c.description">{{ c.description }}</p>
+                  @if (c.description) {
+                  <p>{{ c.description }}</p>
+                  }
                 </a>
               </li>
+              }
             </ul>
           </div>
+          }
         </li>
+        }
       </ul>
+
+      <!-- MOBILE ACTIONS (visible only when menu is open) -->
+      @if (mobileOpened()) {
+      <div class="mobile-actions">
+        <ui-button
+          class="mobile-search"
+          variant="primary"
+          size="lg"
+          [icon]="true"
+          ariaLabel="Search"
+          (click)="openExternal(external.MY_LIBRARY)"
+        >
+          <mat-icon fontIcon="search"></mat-icon>
+        </ui-button>
+
+        <ui-button
+          class="mobile-get-started"
+          size="lg"
+          ariaLabel="Get Started"
+          (click)="openExternal(external.GET_STARTED)"
+        >
+          Get Started
+        </ui-button>
+
+        <app-login-logout class="mobile-auth"></app-login-logout>
+
+        <theme-switch class="mobile-theme" size="lg" (click)="toggleTheme()"></theme-switch>
+      </div>
+      }
     </nav>
 
-    <!-- RIGHT: actions -->
+    <!-- RIGHT: actions (desktop only) -->
     <div class="actions">
       <ui-button
         class="search"

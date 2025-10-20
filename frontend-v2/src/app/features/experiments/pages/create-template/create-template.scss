@@ -379,7 +379,6 @@
 }
 
 :host ::ng-deep .mat-mdc-checkbox {
-  /* základné telo checkboxu */
   .mdc-checkbox__background {
     border: 2px solid color-mix(in oklab, var(--text) 45%, transparent) !important;
     box-shadow: none !important;

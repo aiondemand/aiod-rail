@@ -16,6 +16,9 @@ export class SearchToolbarComponent {
   @Input() query = '';
   @Input() placeholder = 'Full-text search';
 
+  /** toggle visibility of search bar */
+  @Input() showSearch = true;
+
   /** Enhanced checkbox */
   @Input() showEnhanced = false;
   @Input() enhanced = false;

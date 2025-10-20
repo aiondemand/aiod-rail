@@ -76,9 +76,6 @@ export class AuthService {
         ) {
           this.updateLoggedInFlag('event');
         }
-        if (e.type === 'user_profile_loaded' && this._loggedIn()) {
-          this.refreshClaims().catch(() => void 0);
-        }
       });
 
     // 1) Discovery & login code flow
@@ -113,7 +110,7 @@ export class AuthService {
   }
 
   // ===== PUBLIC DEBUG HELPERS =====
-  /** Access token alebo null. */
+
   getAccessToken(): string | null {
     try {
       return this.oauth.getAccessToken() || null;
@@ -122,7 +119,7 @@ export class AuthService {
     }
   }
 
-  /** Vracia Authorization header ak je token k dispozícii. */
+  /**  Authorization header  */
   getAuthHeaders(): Record<string, string> | undefined {
     const t = this.getAccessToken();
     return t ? { Authorization: `Bearer ${t}` } : undefined;

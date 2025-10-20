@@ -278,7 +278,6 @@ $pill-h: 40px;
 
 /* ========= Custom MDC Checkbox (scoped via ::ng-deep) ========= */
 :host ::ng-deep .mat-mdc-checkbox {
-  /* vyrovnanie labelu a checkboxu */
   .mdc-form-field {
     display: inline-flex;
     align-items: center;

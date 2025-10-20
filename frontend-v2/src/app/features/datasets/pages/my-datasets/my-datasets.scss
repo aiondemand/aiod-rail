@@ -1,0 +1,21 @@
+@use '../../../../../styles/themes';
+@use '../../../../../styles/typography' as typo;
+@use '../../../../../variables.scss' as *;
+
+:host {
+  display: block;
+  color: var(--text);
+  background: transparent;
+}
+
+/* zjednotený layout s “All datasets” */
+.grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: $margin-double;
+
+  & > ui-asset-card {
+    width: 100%;
+  }
+}
