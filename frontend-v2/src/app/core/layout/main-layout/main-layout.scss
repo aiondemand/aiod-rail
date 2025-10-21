@@ -237,3 +237,69 @@
   border-left: none;
   box-shadow: inset 1px 0 0 color-mix(in oklab, var(--border) 60%, transparent);
 }
+
+/* =========================
+   FEEDBACK BUTTON (floating)
+   ========================= */
+.aiod-feedback-button {
+  position: fixed;
+  top: 50%;
+  right: -160px;
+  transform: translateY(-50%);
+  z-index: 2000;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+
+  padding: 18px 22px;
+  border-radius: 100px;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+
+  font-weight: 700;
+  font-size: 13px;
+  line-height: 1.1;
+  text-decoration: none;
+  color: #fff;
+
+  background: radial-gradient(43.6% 43.6% at 49.98% 100.45%, #41b6e6 0%, #0047bb 55%, #003399 100%);
+
+  box-shadow: none;
+  transition: right 220ms ease, opacity 220ms ease, transform 220ms ease;
+
+  pointer-events: auto;
+}
+
+.aiod-feedback-button:hover,
+.aiod-feedback-button:focus {
+  right: -10px;
+  text-decoration: none;
+}
+
+.aiod-feedback-icon {
+  font-size: 22px;
+
+  /* color: #fff; */
+}
+
+.aiod-feedback-text {
+  position: relative;
+  bottom: 1px;
+  white-space: nowrap;
+}
+
+@media (max-width: 520px) {
+  .aiod-feedback-button {
+    top: auto;
+    bottom: 16px;
+    right: 12px;
+    transform: none;
+
+    padding: 10px 12px;
+    border-radius: 10px;
+  }
+  .aiod-feedback-text {
+    display: none;
+  }
+}
