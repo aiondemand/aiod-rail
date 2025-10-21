@@ -1,5 +1,5 @@
 ```python
-from OuterRail import Configuration, ExperimentTemplateManager
+from OuterRail import ExperimentTemplateManager
 
 # Login
 config = Configuration(host="http://localhost:8000")

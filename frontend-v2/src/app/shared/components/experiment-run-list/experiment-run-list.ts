@@ -1,4 +1,13 @@
-import { Component, Input, OnInit, OnDestroy, inject, signal } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnInit,
+  OnDestroy,
+  inject,
+  signal,
+  Output,
+  EventEmitter,
+} from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -10,7 +19,6 @@ import {
   of,
   interval,
   fromEvent,
-  merge,
   switchMap,
   startWith,
   map,
@@ -55,15 +63,17 @@ export class ExperimentRunListComponent implements OnInit, OnDestroy {
 
   @Input({ required: true }) experiment!: Experiment;
 
+  @Output() changed = new EventEmitter<void>();
+
   runs = signal<ExperimentRun[]>([]);
   loading = signal<boolean>(true);
   error = signal<string | null>(null);
 
   private destroy$ = new Subject<void>();
-  private lastSnapshot = ''; // na zníženie zbytočných renderov
+  private lastSnapshot = '';
 
   ngOnInit(): void {
-    // auto-refresh: každých 10s, ale len keď je tab viditeľný
+    // auto-refresh
     const visible$ =
       typeof document !== 'undefined'
         ? fromEvent(document, 'visibilitychange').pipe(
@@ -88,7 +98,7 @@ export class ExperimentRunListComponent implements OnInit, OnDestroy {
   async updateRuns() {
     if (!this.experiment) return;
 
-    // loading len pri prvom fetchi, aby to neblikalo pri auto-refreshoch
+    // first loading
     const firstLoad = this.runs().length === 0;
     if (firstLoad) this.loading.set(true);
     this.error.set(null);
@@ -108,7 +118,7 @@ export class ExperimentRunListComponent implements OnInit, OnDestroy {
         .slice()
         .sort((a: any, b: any) => Date.parse(b?.created_at ?? 0) - Date.parse(a?.created_at ?? 0));
 
-      // snapshot len kľúčových polí (mení sa len keď sa reálne zmenia dáta)
+      // snapshot
       const snapshot = JSON.stringify(
         sorted.map((r: any) => ({
           id: r.id,
@@ -121,6 +131,7 @@ export class ExperimentRunListComponent implements OnInit, OnDestroy {
       if (snapshot !== this.lastSnapshot) {
         this.runs.set(sorted);
         this.lastSnapshot = snapshot;
+        this.changed.emit();
       }
     } finally {
       if (firstLoad) this.loading.set(false);

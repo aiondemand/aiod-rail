@@ -7,13 +7,12 @@ import {
   inject,
   signal,
   computed,
-  effect,
 } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { combineLatest, of } from 'rxjs';
-import { switchMap, retry } from 'rxjs/operators';
+import { combineLatest, of, fromEvent, interval, EMPTY } from 'rxjs';
+import { switchMap, retry, first, map, catchError, startWith } from 'rxjs/operators';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
@@ -36,6 +35,8 @@ import {
 } from '../../../../shared/components/ui-confirm/ui-confirm';
 
 import { ExperimentRunListComponent } from '../../../../shared/components/experiment-run-list/experiment-run-list';
+
+const MAX_TOTAL_RUNS = 10; // <— limit na CELKOVÝ POČET runov (nezáleží na stave)
 
 @Component({
   selector: 'app-experiment-detail',
@@ -61,7 +62,6 @@ export class ExperimentDetailPage implements OnInit {
   private router = inject(Router);
   private destroyRef = inject(DestroyRef);
   private injector = inject(Injector);
-
   private dialog = inject(MatDialog);
 
   @ViewChild('runList') runListComponent?: any;
@@ -86,7 +86,12 @@ export class ExperimentDetailPage implements OnInit {
   updatedAt = computed(() => (this.experiment() as any)?.updated_at ?? null);
   id = computed(() => (this.experiment() as any)?.id ?? '');
 
-  // table ENV
+  totalRunCount = signal<number>(0);
+  maxTotal = MAX_TOTAL_RUNS;
+  canCreateRun = computed(
+    () => this.isMine() && !this.isArchived() && this.totalRunCount() < this.maxTotal
+  );
+
   envRows = computed(() => {
     const e = this.experiment();
     const t = this.tpl();
@@ -129,7 +134,6 @@ export class ExperimentDetailPage implements OnInit {
             switchMap((exp) =>
               combineLatest([
                 of(exp),
-                // dataset
                 exp?.dataset_ids?.length ? this.api.getDataset(exp.dataset_ids[0]) : of(null),
                 exp?.model_ids?.length ? this.api.getModel(exp.model_ids[0]) : of(null),
                 this.api.getExperimentPublications(exp),
@@ -152,6 +156,9 @@ export class ExperimentDetailPage implements OnInit {
           this.publications.set(pubs ?? []);
           this.tpl.set(tpl ?? null);
           this.loading.set(false);
+
+          this.refreshTotalRunCount();
+          this.startAutoCountRefresh();
         },
         error: (err: any) => {
           console.error(err);
@@ -161,29 +168,123 @@ export class ExperimentDetailPage implements OnInit {
       });
   }
 
-  // actions
-  createRun() {
+  onRunsChanged() {
+    this.refreshTotalRunCount();
+  }
+
+  private refreshTotalRunCount(): void {
+    const exp = this.experiment();
+    if (!exp) return;
+
+    const hasCount = !!this.api.getExperimentRunsCount;
+    if (hasCount) {
+      this.api
+        .getExperimentRunsCount((exp as any).id)
+        .pipe(
+          first(),
+          catchError(() => of(0))
+        )
+        .subscribe((cnt: number) => this.totalRunCount.set(cnt || 0));
+      return;
+    }
+
+    // fallback
+    this.api
+      .getExperimentRuns((exp as any).id)
+      .pipe(
+        first(),
+        map((list: any[]) => (list ?? []).length),
+        catchError(() => of(0))
+      )
+      .subscribe((cnt) => this.totalRunCount.set(cnt));
+  }
+
+  /** refresh every 10 sec if (count > 0). */
+  private startAutoCountRefresh(): void {
+    const visible$ =
+      typeof document !== 'undefined'
+        ? fromEvent(document, 'visibilitychange').pipe(
+            startWith(0),
+            map(() => !document.hidden)
+          )
+        : of(true);
+
+    visible$
+      .pipe(
+        switchMap((isVisible) => (isVisible ? interval(10000).pipe(startWith(0)) : EMPTY)),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe(() => {
+        if (this.totalRunCount() === 0) return;
+        this.refreshTotalRunCount();
+      });
+  }
+
+  /**new run */
+  createRun(): void {
     const expId = this.id();
     if (!expId) return;
 
-    this.api
-      .executeExperimentRun(expId)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (run) => {
-          this.runListComponent?.updateRuns?.();
-        },
-        error: (err) => {
-          console.error(err);
-        },
-      });
+    const count$ = this.api.getExperimentRunsCount
+      ? this.api.getExperimentRunsCount(expId).pipe(
+          first(),
+          catchError(() => of(this.totalRunCount()))
+        )
+      : this.api.getExperimentRuns(expId).pipe(
+          first(),
+          map((list: any[]) => (list ?? []).length),
+          catchError(() => of(this.totalRunCount()))
+        );
+
+    count$.subscribe((count) => {
+      this.totalRunCount.set(count);
+
+      if (count >= this.maxTotal) {
+        const data: UiConfirmData = {
+          message:
+            `You have reached the maximum number of runs (${this.maxTotal}) for this experiment.\n` +
+            `If you want to start a new run, please delete another run first.`,
+          acceptBtnMessage: 'Manage runs',
+          declineBtnMessage: 'Close',
+        };
+        this.dialog
+          .open(UiConfirmComponent, { width: '100%', maxWidth: '520px', data })
+          .afterClosed()
+          .subscribe((res: UiConfirmResult) => {
+            if (res === 'yes') {
+              document.querySelector('.runs')?.scrollIntoView({ behavior: 'smooth' });
+            }
+          });
+        return;
+      }
+
+      this.api
+        .executeExperimentRun(expId)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: () => {
+            this.runListComponent?.updateRuns?.();
+
+            this.refreshTotalRunCount();
+          },
+          error: (err) => {
+            const data: UiConfirmData = {
+              message:
+                (err?.error?.message || 'Failed to start run.') +
+                `\nIf the limit is reached, please delete another run first.`,
+              acceptBtnMessage: 'Manage runs',
+              declineBtnMessage: 'Close',
+            };
+            this.dialog.open(UiConfirmComponent, { width: '100%', maxWidth: '520px', data });
+          },
+        });
+    });
   }
 
   goEdit() {
     const exp = this.experiment();
     if (!exp) return;
 
-    // get run count
     this.api
       .getExperimentRunsCount((exp as any).id)
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -271,11 +372,7 @@ export class ExperimentDetailPage implements OnInit {
                     next: () => {
                       const e = this.experiment();
                       if (e) {
-                        this.experiment.set({
-                          ...(e as any),
-                          is_archived: true,
-                          is_mine: true,
-                        });
+                        this.experiment.set({ ...(e as any), is_archived: true, is_mine: true });
                       }
                     },
                     error: (err) => console.error(err),
@@ -295,13 +392,13 @@ export class ExperimentDetailPage implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
-          // refresh locally
           const e = this.experiment();
           if (e) {
             (e as any).is_mine = true;
             (e as any).is_archived = false;
             this.experiment.set({ ...(e as any) });
           }
+          this.refreshTotalRunCount();
         },
         error: (err) => console.error(err),
       });

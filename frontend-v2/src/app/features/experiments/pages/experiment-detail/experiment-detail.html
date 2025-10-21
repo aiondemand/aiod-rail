@@ -146,19 +146,28 @@
   <section class="runs">
     <div class="runs-head">
       <h2>Runs</h2>
+
       <ui-button
         variant="primary"
         size="md"
         (click)="createRun()"
-        [disabled]="!isMine() || isArchived()"
+        [disabled]="!canCreateRun()"
+        [title]="!canCreateRun() ? 'Maximum number of runs reached' : ''"
       >
         <mat-icon class="material-symbols-rounded">add_circle</mat-icon>
         Create new experiment run
       </ui-button>
     </div>
 
-    <!-- run list -->
-    <app-experiment-run-list #runList [experiment]="exp"> </app-experiment-run-list>
+    @if (!canCreateRun()) {
+    <p class="runs-limit-note">
+      You have {{ totalRunCount() }} runs. Maximum is {{ maxTotal }}. Delete an existing run to
+      start a new one.
+    </p>
+    }
+
+    <app-experiment-run-list #runList [experiment]="exp" (changed)="onRunsChanged()">
+    </app-experiment-run-list>
   </section>
 </div>
 }

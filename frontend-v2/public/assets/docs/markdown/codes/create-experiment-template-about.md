@@ -1,11 +1,18 @@
 ```python
-from OuterRail import Configuration, ExperimentTemplateManager
+from OuterRail import ExperimentTemplateManager
 
 # Login
 config = Configuration(host="http://localhost:8000")
 config.login(username="username", password="password")
 
-# Define all properties, script, base image and requirements.txt in your dictionary
+
+# Use existing Python script as Experiment script
+script_path = "./script.py"
+# Load requirements (libs) from file
+requirements_path = "./requirements.txt"
+# Experiment Template base Docker image
+base_image = "python:3.9"
+
 template_config = {
     "name": "Cobra Experiment Template",
     "description": "Simple demo experiment template",
@@ -26,13 +33,10 @@ template_config = {
     "available_metrics": [
         "accuracy"
     ],
-    "is_public": True,
-    "pip_requirements": "numpy==1.25.0\nscikit-learn==1.2.2",
-    "script": "import os\n\nprint(os.getenv('SPLIT_NAME'))",
-    "base_image": "python:3.9"
+    "is_public": True
 }
 
 # Create template
 template_manager = ExperimentTemplateManager(config)
-template_manager.create(template=template_config)
+template_manager.create(template=(script_path, requirements_path, base_image, template_config))
 ```

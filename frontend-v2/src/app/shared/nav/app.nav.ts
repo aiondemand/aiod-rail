@@ -18,7 +18,7 @@ export const APP_NAV: NavSection[] = [
         icon: 'play_circle',
         dividerAfter: true,
       },
-      { label: 'RAIL SDKs', slug: '/docs/rail-sdks', icon: 'integration_instructions' },
+      //    { label: 'RAIL SDKs', slug: '/docs/rail-sdks', icon: 'integration_instructions' },
       { label: 'Outer SDK', slug: 'https://aiondemand.github.io/aiod-rail/', icon: 'device_hub' },
       { label: 'Inner SDKs', slug: '/docs/inner-sdk', icon: 'memory' },
     ],

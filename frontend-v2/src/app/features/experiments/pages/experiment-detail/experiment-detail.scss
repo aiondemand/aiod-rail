@@ -116,7 +116,7 @@ $pill-h: 28px;
   }
 }
 
-/* ============ Meta (ID, dates, links) ============ */
+/* ============ Meta ============ */
 .meta {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -308,6 +308,12 @@ $pill-h: 28px;
       @include typo.title(--h4-d, --h4-m, --h4-lh-d, --h4-lh-m, --h4-mb-d, --h4-mb-m, --w-semibold);
       margin: 0;
     }
+  }
+
+  .runs-limit-note {
+    margin: 0 0 10px 0;
+    font-size: 13px;
+    color: var(--text-muted);
   }
 }
 
