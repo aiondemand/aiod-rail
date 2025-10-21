@@ -2,14 +2,18 @@
 @use '../../../../styles/typography' as typo;
 @use '../../../../variables.scss' as *;
 
-/* ===== Root / host ===== */
+/* =========================
+   ROOT / HOST
+   ========================= */
 :host {
   display: block;
   color: var(--text);
   background: transparent;
 }
 
-/* ===== Toolbar ===== */
+/* =========================
+   TOOLBAR WRAPPER
+   ========================= */
 .toolbar {
   margin: $margin-double;
   display: grid;
@@ -17,7 +21,7 @@
   gap: 12px 16px;
   align-items: center;
 
-  background: color-mix(in oklab, var(--background) 92%, transparent);
+  background: var(--card);
   border: 1px solid var(--border);
   border-radius: 14px;
   padding: 12px;
@@ -27,7 +31,9 @@
   }
 }
 
-/* --- left: search & filters --- */
+/* =========================
+   LEFT: SEARCH + FILTERS
+   ========================= */
 .search {
   display: flex;
   align-items: center;
@@ -81,7 +87,9 @@
   }
 }
 
-/* ===== Pager ===== */
+/* =========================
+   PAGER
+   ========================= */
 .pager {
   display: inline-flex;
   align-items: center;
@@ -116,6 +124,7 @@
     font: var(--font-ui, 500 14px/1.2 system-ui, sans-serif);
   }
 
+  /* Mat select (trigger) */
   .select.mat-mdc-select {
     height: 36px;
     min-width: 64px;
@@ -165,6 +174,7 @@
     }
   }
 
+  /* Fallback pre natívny <select> */
   .select:not(.mat-mdc-select) {
     appearance: none;
     -webkit-appearance: none;
@@ -206,64 +216,9 @@
   }
 }
 
-/* ===== Overlay  ===== */
-:host ::ng-deep .pager-select-panel {
-  background: color-mix(in oklab, var(--background) 96%, transparent);
-  border: 1px solid var(--border);
-  border-radius: 12px !important;
-  box-shadow: 0 8px 24px color-mix(in oklab, var(--text) 14%, transparent),
-    0 1px 0 color-mix(in oklab, var(--text) 8%, transparent);
-  padding: 6px 0;
-  max-height: 320px;
-  overflow: auto;
-  backdrop-filter: saturate(1.2);
-
-  &::-webkit-scrollbar {
-    width: 10px;
-  }
-  &::-webkit-scrollbar-thumb {
-    background: color-mix(in oklab, var(--text) 18%, transparent);
-    border-radius: 10px;
-  }
-  &::-webkit-scrollbar-track {
-    background: color-mix(in oklab, var(--background) 85%, transparent);
-    border-radius: 10px;
-  }
-
-  .mat-mdc-option,
-  .mdc-list-item {
-    height: 36px;
-    padding: 0 12px;
-    font: var(--font-ui, 600 14px/1.2 system-ui, sans-serif);
-    color: var(--text);
-    border-radius: 8px;
-    margin: 2px 6px;
-
-    &:hover,
-    &.mdc-list-item--hover {
-      background: color-mix(in oklab, var(--text) 8%, transparent);
-    }
-
-    &.mdc-list-item--selected,
-    &.mdc-list-item--activated,
-    &.mat-mdc-option-active {
-      background: color-mix(in oklab, var(--primary) 20%, transparent);
-      color: color-mix(in oklab, var(--on-primary, #fff) 95%, var(--text));
-    }
-
-    &.mat-mdc-option-disabled,
-    &[aria-disabled='true'] {
-      color: color-mix(in oklab, var(--text) 40%, transparent);
-      opacity: 0.7;
-    }
-  }
-
-  .mat-mdc-option .mat-ripple-element {
-    opacity: 0.08;
-  }
-}
-
-/* ===== responsive  ===== */
+/* =========================
+   RESPONSIVE
+   ========================= */
 @media (max-width: 1100px) {
   .pager {
     justify-content: space-between;
@@ -282,7 +237,6 @@
     }
   }
 }
-
 @media (min-width: 900px) and (max-width: 1150px) {
   .toolbar {
     grid-template-columns: 1fr;
@@ -296,8 +250,133 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  :host ::ng-deep .pager-select-panel {
-    backdrop-filter: none;
+/* =========================
+   MATERIAL OVERRIDES (1:1)
+   ========================= */
+:host ::ng-deep {
+  /* Texty vo fieldoch a option texty */
+  .mdc-text-field__input,
+  .mat-mdc-select-value,
+  .mat-mdc-floating-label,
+  .mat-mdc-option .mdc-list-item__primary-text {
+    color: var(--text) !important;
   }
+  .mdc-text-field__input::placeholder {
+    color: color-mix(in oklab, var(--text) 55%, transparent) !important;
+  }
+  .mdc-text-field__input {
+    caret-color: var(--text-active) !important;
+  }
+
+  .mat-mdc-select-arrow svg path {
+    fill: var(--text) !important;
+  }
+}
+
+/* =========================
+   MAT SELECT OVERLAY – GLOBAL (app-select-panel)
+   ========================= */
+::ng-deep .cdk-overlay-container .app-select-panel {
+  background: var(--card) !important;
+  color: var(--text) !important;
+  border: 1px solid var(--border) !important;
+}
+::ng-deep .cdk-overlay-container .app-select-panel .mat-mdc-option,
+::ng-deep .cdk-overlay-container .app-select-panel .mat-mdc-option .mdc-list-item__primary-text {
+  color: var(--text) !important;
+}
+::ng-deep .cdk-overlay-container .app-select-panel .mat-mdc-option:hover,
+::ng-deep .cdk-overlay-container .app-select-panel .mat-mdc-option.mat-mdc-option-active {
+  background: color-mix(in oklab, var(--text) 12%, transparent) !important;
+  color: var(--text) !important;
+}
+::ng-deep
+  .cdk-overlay-container
+  .app-select-panel
+  .mat-mdc-option.mdc-list-item--selected:not(.mat-mdc-option-multiple) {
+  background: color-mix(in oklab, var(--text) 16%, transparent) !important;
+  color: var(--text) !important;
+  font-weight: var(--w-medium, 600);
+}
+::ng-deep .cdk-overlay-container .app-select-panel .mat-mdc-option.mdc-list-item--disabled {
+  color: color-mix(in oklab, var(--text) 45%, transparent) !important;
+  opacity: 1;
+}
+::ng-deep .cdk-overlay-container .app-select-panel .mat-mdc-option-ripple .mat-ripple-element {
+  background-color: color-mix(in oklab, var(--text) 22%, transparent) !important;
+}
+::ng-deep .cdk-overlay-container .app-select-panel {
+  scrollbar-color: color-mix(in oklab, var(--text) 35%, transparent)
+    color-mix(in oklab, var(--surface-2) 100%, transparent);
+}
+
+/* ======================================
+   FIX: MAT-SELECT panel
+   ====================================== */
+::ng-deep .cdk-overlay-container .pager-select-panel,
+::ng-deep .cdk-overlay-container .pager-select-panel.mdc-menu-surface,
+::ng-deep .cdk-overlay-container .pager-select-panel.mat-mdc-select-panel {
+  background: var(--card) !important;
+  color: var(--text) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.45) !important;
+  opacity: 1 !important; /* Kľúčové – odstráni MDC fade */
+  backdrop-filter: none !important;
+
+  --mdc-theme-surface: var(--card) !important;
+  --mdc-theme-on-surface: var(--text) !important;
+  --mdc-theme-text-primary-on-background: var(--text) !important;
+  --mat-select-panel-background-color: var(--card) !important;
+  --mdc-menu-container-color: var(--card) !important;
+
+  padding: 6px 0 !important;
+  max-height: 320px !important;
+  overflow: auto !important;
+  z-index: 9999 !important;
+}
+
+::ng-deep .cdk-overlay-container .pager-select-panel .mat-mdc-option,
+::ng-deep .cdk-overlay-container .pager-select-panel .mat-mdc-option .mdc-list-item__primary-text {
+  color: var(--text) !important;
+  background: transparent !important;
+}
+
+::ng-deep .cdk-overlay-container .pager-select-panel .mat-mdc-option {
+  height: 36px !important;
+  padding: 0 12px !important;
+  margin: 2px 6px !important;
+  border-radius: 8px !important;
+  font: var(--font-ui, 600 14px/1.2 system-ui, sans-serif) !important;
+
+  &:hover,
+  &.mdc-list-item--hover {
+    background: color-mix(in oklab, var(--text) 10%, transparent) !important;
+  }
+
+  &.mdc-list-item--selected,
+  &.mat-mdc-option-active {
+    background: color-mix(in oklab, var(--primary) 20%, transparent) !important;
+    color: color-mix(in oklab, var(--on-primary, #fff) 95%, var(--text)) !important;
+  }
+
+  &.mat-mdc-option-disabled {
+    color: color-mix(in oklab, var(--text) 45%, transparent) !important;
+    opacity: 0.7 !important;
+  }
+}
+
+/* Checkmark */
+::ng-deep
+  .cdk-overlay-container
+  .pager-select-panel
+  .mat-pseudo-checkbox-checked.mat-pseudo-checkbox-minimal::after {
+  color: var(--text) !important;
+}
+
+::ng-deep .cdk-overlay-container .mdc-menu-surface--open {
+  opacity: 1 !important;
+  transition: none !important;
+  animation: none !important;
+  background-color: var(--card) !important;
 }

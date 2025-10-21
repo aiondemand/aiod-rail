@@ -3,7 +3,7 @@
 
 /* MatDialog surface */
 :host ::ng-deep .mat-mdc-dialog-surface {
-  background: var(--surface);
+  background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   box-shadow: var(--shadow-1);

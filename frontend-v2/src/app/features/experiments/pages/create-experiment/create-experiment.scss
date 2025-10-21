@@ -4,7 +4,7 @@
 /* ===== card wrapper  ===== */
 .detail.card {
   margin: $margin-double;
-  background: var(--surface);
+  background: var(--card);
   color: var(--text);
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -160,7 +160,7 @@
   .mat-mdc-autocomplete-panel,
   .app-select-panel,
   .app-autocomplete-panel {
-    background: var(--surface-2) !important;
+    background: var(--card) !important;
     color: var(--text) !important;
     border: 1px solid var(--border) !important;
     box-shadow: 0 14px 32px color-mix(in oklab, var(--shadow) 40%, transparent) !important;
@@ -207,7 +207,7 @@
 /* === MAT SELECT / AUTOCOMPLETE  === */
 ::ng-deep .cdk-overlay-container .app-select-panel,
 ::ng-deep .cdk-overlay-container .app-autocomplete-panel {
-  background: var(--surface-2) !important;
+  background: var(--card) !important;
   color: var(--text) !important;
   border: 1px solid var(--border) !important;
   box-shadow: 0 14px 32px color-mix(in oklab, var(--shadow) 40%, transparent) !important;

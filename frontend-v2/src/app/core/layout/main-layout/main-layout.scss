@@ -58,12 +58,12 @@
 .collapse-btn {
   width: 40px;
   height: 40px;
-  background: var(--surface);
+  background: var(--card);
   border: 1px solid var(--border);
   color: var(--text);
 }
 .collapse-btn:hover {
-  background: color-mix(in oklab, var(--surface) 75%, var(--primary) 8%);
+  background: var(--card);
 }
 
 /* ===== Section header ===== */
@@ -148,10 +148,10 @@
 }
 
 .sn-item:hover {
-  background: color-mix(in oklab, var(--surface) 75%, var(--primary) 8%);
+  background: color-mix(in oklab, var(--card) 75%, var(--primary) 8%);
 }
 .sn-item.active {
-  background: color-mix(in oklab, var(--surface) 65%, var(--primary) 14%);
+  background: color-mix(in oklab, var(--card) 65%, var(--primary) 14%);
 }
 .sn-item.active::before {
   content: '';
@@ -226,10 +226,10 @@
     background: var(--surface-2);
   }
   .sn-item:hover {
-    background: color-mix(in oklab, var(--surface) 70%, var(--primary) 12%);
+    background: color-mix(in oklab, var(--card) 70%, var(--primary) 12%);
   }
   .sn-item.active {
-    background: color-mix(in oklab, var(--surface) 55%, var(--primary) 18%);
+    background: color-mix(in oklab, var(--card) 55%, var(--primary) 18%);
   }
 }
 

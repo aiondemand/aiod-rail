@@ -54,7 +54,7 @@ $pill-h: 32px;
 /* ===== Card/Layout ===== */
 .detail.card {
   margin: $margin-double;
-  background: var(--surface);
+  background: var(--card);
   color: var(--text);
   border: 1px solid var(--border);
   border-radius: var(--radius);
