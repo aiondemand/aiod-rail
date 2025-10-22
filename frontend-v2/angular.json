@@ -34,9 +34,7 @@
               "node_modules/prismjs/themes/prism-tomorrow.css",
               "node_modules/prismjs/themes/prism-okaidia.css"
             ],
-            "server": "src/main.server.ts",
-            "outputMode": "server",
-            "ssr": { "entry": "src/server.ts" }
+            "outputMode": "static"
           },
           "configurations": {
             "production": {
@@ -50,7 +48,8 @@
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.prod.ts"
                 }
-              ]
+              ],
+              "outputMode": "static"
             },
             "development": {
               "optimization": false,
@@ -61,7 +60,8 @@
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.development.ts"
                 }
-              ]
+              ],
+              "outputMode": "static"
             },
             "local": {
               "optimization": false,
@@ -73,7 +73,8 @@
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.local.ts"
                 }
-              ]
+              ],
+              "outputMode": "static"
             },
             "local-docker": {
               "optimization": false,
@@ -85,12 +86,12 @@
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.local-docker.ts"
                 }
-              ]
+              ],
+              "outputMode": "static"
             }
           },
           "defaultConfiguration": "production"
         },
-
         "serve": {
           "builder": "@angular/build:dev-server",
           "options": {
@@ -119,11 +120,9 @@
           },
           "defaultConfiguration": "development"
         },
-
         "extract-i18n": {
           "builder": "@angular/build:extract-i18n"
         },
-
         "test": {
           "builder": "@angular/build:karma",
           "options": {

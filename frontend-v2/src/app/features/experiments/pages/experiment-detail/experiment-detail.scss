@@ -201,7 +201,7 @@ $pill-h: 28px;
       }
 
       &--head {
-        background: color-mix(in oklab, var(--text) 7%, transparent);
+        background: color-mix(in oklab, var(--text) 10%, transparent);
 
         .c {
           font-weight: var(--w-semibold);
