@@ -152,19 +152,14 @@
         size="md"
         (click)="createRun()"
         [disabled]="!canCreateRun()"
-        [title]="!canCreateRun() ? 'Maximum number of runs reached' : ''"
+        [title]="
+          !canCreateRun() ? 'You must be the owner and the experiment must not be archived' : ''
+        "
       >
         <mat-icon class="material-symbols-rounded">add_circle</mat-icon>
         Create new experiment run
       </ui-button>
     </div>
-
-    @if (!canCreateRun()) {
-    <p class="runs-limit-note">
-      You have {{ totalRunCount() }} runs. Maximum is {{ maxTotal }}. Delete an existing run to
-      start a new one.
-    </p>
-    }
 
     <app-experiment-run-list #runList [experiment]="exp" (changed)="onRunsChanged()">
     </app-experiment-run-list>

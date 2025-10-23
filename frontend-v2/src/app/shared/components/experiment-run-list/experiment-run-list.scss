@@ -6,15 +6,24 @@
   width: 100%;
   border: 1px solid var(--border);
   border-radius: 12px;
-  background: color-mix(in oklab, var(--background) 96%, transparent);
+  background: var(--surface-2);
   overflow: hidden;
   overflow-x: auto;
 
+  /* Sticky head */
   .runs-table thead th {
     position: sticky;
     top: 0;
-    z-index: 1;
-    background: color-mix(in oklab, var(--text) 8%, transparent);
+    z-index: 2;
+    background: var(--surface-3);
+    color: var(--text);
+    font-weight: var(--w-semibold);
+    box-shadow: inset 0 -2px 0 var(--border);
+  }
+
+  &.scrollable {
+    max-height: 580px;
+    overflow: auto;
   }
 }
 
@@ -38,6 +47,7 @@
     font-weight: var(--w-semibold);
     color: var(--text);
   }
+
   th.center {
     text-align: center;
   }
@@ -49,11 +59,12 @@
   tbody tr:nth-child(even) {
     background: color-mix(in oklab, var(--text) 4%, transparent);
   }
+
   tbody tr:hover {
-    background: color-mix(in oklab, var(--text) 8%, transparent);
+    background: color-mix(in oklab, var(--text) 6%, transparent);
   }
 
-  /* ID – monospace  */
+  /* ID – monospace */
   td.mono,
   td:first-child {
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
@@ -80,6 +91,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: 6px 10px;
+
     > div {
       display: inline-flex;
       align-items: center;

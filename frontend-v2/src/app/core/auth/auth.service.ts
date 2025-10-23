@@ -44,7 +44,6 @@ export class AuthService {
   });
 
   hasAdminRole = computed<boolean>(() => {
-    return true;
     return this.clientRoles().includes('admin_access') || this.userRoles().includes('admin');
   });
 

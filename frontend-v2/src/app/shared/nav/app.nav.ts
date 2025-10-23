@@ -20,7 +20,7 @@ export const APP_NAV: NavSection[] = [
       },
       //    { label: 'RAIL SDKs', slug: '/docs/rail-sdks', icon: 'integration_instructions' },
       { label: 'Outer SDK', slug: 'https://aiondemand.github.io/aiod-rail/', icon: 'device_hub' },
-      { label: 'Inner SDKs', slug: '/docs/inner-sdk', icon: 'memory' },
+      //{ label: 'Inner SDKs', slug: '/docs/inner-sdk', icon: 'memory' },
     ],
   },
   {
@@ -50,7 +50,7 @@ export const APP_NAV: NavSection[] = [
     items: [
       { label: 'All datasets', slug: '/datasets/all', icon: 'dataset' },
       { label: 'My datasets', slug: '/datasets/my-datasets', icon: 'folder_shared' },
-      { label: 'Create', slug: '/datasets/create-dataset', icon: 'add' },
+      //{ label: 'Create', slug: '/datasets/create-dataset', icon: 'add' },
     ],
   },
 ];

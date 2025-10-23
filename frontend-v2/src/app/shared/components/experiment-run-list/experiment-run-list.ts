@@ -62,7 +62,6 @@ export class ExperimentRunListComponent implements OnInit, OnDestroy {
   private dialog = inject(MatDialog);
 
   @Input({ required: true }) experiment!: Experiment;
-
   @Output() changed = new EventEmitter<void>();
 
   runs = signal<ExperimentRun[]>([]);
@@ -73,7 +72,7 @@ export class ExperimentRunListComponent implements OnInit, OnDestroy {
   private lastSnapshot = '';
 
   ngOnInit(): void {
-    // auto-refresh
+    // auto-refresh every 10s
     const visible$ =
       typeof document !== 'undefined'
         ? fromEvent(document, 'visibilitychange').pipe(
@@ -98,14 +97,29 @@ export class ExperimentRunListComponent implements OnInit, OnDestroy {
   async updateRuns() {
     if (!this.experiment) return;
 
-    // first loading
     const firstLoad = this.runs().length === 0;
     if (firstLoad) this.loading.set(true);
     this.error.set(null);
 
     try {
+      const expId = (this.experiment as any).id;
+
+      const DEFAULT_IF_NO_COUNT = 10;
+      let count = DEFAULT_IF_NO_COUNT;
+      try {
+        count = await firstValueFrom(
+          this.api.getExperimentRunsCount(expId).pipe(catchError(() => of(DEFAULT_IF_NO_COUNT)))
+        );
+      } catch {
+        count = DEFAULT_IF_NO_COUNT;
+      }
+
+      const MAX_FETCH = 200;
+      const limit = Math.min(Math.max(count, 10), MAX_FETCH);
+      const pageQueries = { offset: 0, limit };
+
       const list = await firstValueFrom(
-        this.api.getExperimentRuns((this.experiment as any).id).pipe(
+        this.api.getExperimentRuns(expId, pageQueries).pipe(
           catchError((err) => {
             console.error(err);
             this.error.set("Couldn't load experiment runs.");
@@ -118,7 +132,6 @@ export class ExperimentRunListComponent implements OnInit, OnDestroy {
         .slice()
         .sort((a: any, b: any) => Date.parse(b?.created_at ?? 0) - Date.parse(a?.created_at ?? 0));
 
-      // snapshot
       const snapshot = JSON.stringify(
         sorted.map((r: any) => ({
           id: r.id,

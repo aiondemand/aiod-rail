@@ -36,8 +36,6 @@ import {
 
 import { ExperimentRunListComponent } from '../../../../shared/components/experiment-run-list/experiment-run-list';
 
-const MAX_TOTAL_RUNS = 10; // <— limit na CELKOVÝ POČET runov (nezáleží na stave)
-
 @Component({
   selector: 'app-experiment-detail',
   standalone: true,
@@ -87,10 +85,8 @@ export class ExperimentDetailPage implements OnInit {
   id = computed(() => (this.experiment() as any)?.id ?? '');
 
   totalRunCount = signal<number>(0);
-  maxTotal = MAX_TOTAL_RUNS;
-  canCreateRun = computed(
-    () => this.isMine() && !this.isArchived() && this.totalRunCount() < this.maxTotal
-  );
+
+  canCreateRun = computed(() => this.isMine() && !this.isArchived());
 
   envRows = computed(() => {
     const e = this.experiment();
@@ -220,65 +216,30 @@ export class ExperimentDetailPage implements OnInit {
       });
   }
 
-  /**new run */
+  /** create new run  */
   createRun(): void {
     const expId = this.id();
     if (!expId) return;
 
-    const count$ = this.api.getExperimentRunsCount
-      ? this.api.getExperimentRunsCount(expId).pipe(
-          first(),
-          catchError(() => of(this.totalRunCount()))
-        )
-      : this.api.getExperimentRuns(expId).pipe(
-          first(),
-          map((list: any[]) => (list ?? []).length),
-          catchError(() => of(this.totalRunCount()))
-        );
+    if (!this.canCreateRun()) return;
 
-    count$.subscribe((count) => {
-      this.totalRunCount.set(count);
-
-      if (count >= this.maxTotal) {
-        const data: UiConfirmData = {
-          message:
-            `You have reached the maximum number of runs (${this.maxTotal}) for this experiment.\n` +
-            `If you want to start a new run, please delete another run first.`,
-          acceptBtnMessage: 'Manage runs',
-          declineBtnMessage: 'Close',
-        };
-        this.dialog
-          .open(UiConfirmComponent, { width: '100%', maxWidth: '520px', data })
-          .afterClosed()
-          .subscribe((res: UiConfirmResult) => {
-            if (res === 'yes') {
-              document.querySelector('.runs')?.scrollIntoView({ behavior: 'smooth' });
-            }
-          });
-        return;
-      }
-
-      this.api
-        .executeExperimentRun(expId)
-        .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe({
-          next: () => {
-            this.runListComponent?.updateRuns?.();
-
-            this.refreshTotalRunCount();
-          },
-          error: (err) => {
-            const data: UiConfirmData = {
-              message:
-                (err?.error?.message || 'Failed to start run.') +
-                `\nIf the limit is reached, please delete another run first.`,
-              acceptBtnMessage: 'Manage runs',
-              declineBtnMessage: 'Close',
-            };
-            this.dialog.open(UiConfirmComponent, { width: '100%', maxWidth: '520px', data });
-          },
-        });
-    });
+    this.api
+      .executeExperimentRun(expId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.runListComponent?.updateRuns?.();
+          this.refreshTotalRunCount();
+        },
+        error: (err) => {
+          const data: UiConfirmData = {
+            message: err?.error?.message || 'Failed to start run.',
+            acceptBtnMessage: 'OK',
+            declineBtnMessage: 'Close',
+          };
+          this.dialog.open(UiConfirmComponent, { width: '100%', maxWidth: '520px', data });
+        },
+      });
   }
 
   goEdit() {

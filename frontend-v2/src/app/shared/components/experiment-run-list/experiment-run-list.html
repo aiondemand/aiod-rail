@@ -11,7 +11,7 @@
 ></ui-error>
 
 @if (!loading() && !error()) {
-<div class="runs-table-container">
+<div class="runs-table-container" [class.scrollable]="runs().length > 10">
   @if (runs().length > 0) {
   <table class="runs-table">
     <thead>

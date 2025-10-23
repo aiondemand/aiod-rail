@@ -6,6 +6,7 @@
   --bg: #{$background-light}; /* #FFFFFF */
   --surface: #{$aiod-white};
   --surface-2: #{color.mix($aiod-black, $aiod-white, 5%)};
+  --surface-3: #dbddde;
   --border: #{color.mix($aiod-black, $aiod-white, 12%)};
 
   --text: #{color.mix($aiod-black, $aiod-white, 92%)};
@@ -37,6 +38,7 @@
   --bg: #{$background-dark}; /* #010714 */
   --surface: #0b1220;
   --surface-2: #0d1425;
+  --surface-3: #232938;
   --border: #1c2740;
 
   --card: #{$dark-card};

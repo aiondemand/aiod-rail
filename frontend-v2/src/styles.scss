@@ -88,3 +88,32 @@ body {
   margin: 0;
   font-family: Roboto, 'Helvetica Neue', sans-serif;
 }
+
+/* ----- Global scrollbar styling ----- */
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in oklab, var(--text) 28%, transparent) transparent;
+}
+
+/* WebKit (Chrome, Edge, Safari) */
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background-clip: padding-box;
+  border: 3px solid transparent;
+  border-radius: 12px;
+  background: color-mix(in oklab, var(--text) 28%, transparent);
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in oklab, var(--text) 45%, transparent);
+}
+
+:root[data-theme='dark'] * {
+  scrollbar-color: color-mix(in oklab, var(--text) 40%, transparent) transparent;
+}

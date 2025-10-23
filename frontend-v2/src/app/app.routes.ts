@@ -126,14 +126,7 @@ export const routes: Routes = [
             (m) => m.MyDatasetsComponent
           ),
       },
-      {
-        path: 'create-dataset',
-        canMatch: [authGuard],
-        loadComponent: () =>
-          import('./features/datasets/pages/create-dataset/create-dataset').then(
-            (m) => m.CreateDataset
-          ),
-      },
+
       {
         path: ':id',
         loadComponent: () =>
@@ -190,19 +183,9 @@ export const routes: Routes = [
           ),
       },
       {
-        path: 'rail-sdks',
-        loadComponent: () =>
-          import('./features/docs/pages/rail-sdks/rail-sdks').then((m) => m.RailSDKs),
-      },
-      {
         path: 'outer-sdk',
         loadComponent: () =>
           import('./features/docs/pages/outer-sdk/outer-sdk').then((m) => m.OuterSDK),
-      },
-      {
-        path: 'inner-sdk',
-        loadComponent: () =>
-          import('./features/docs/pages/inner-sdk/inner-sdk').then((m) => m.InnerSDK),
       },
     ],
   },
