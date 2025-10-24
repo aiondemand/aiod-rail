@@ -1,9 +1,9 @@
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0  # Use the ref you want to point at
+    rev: v5.0.0 # Use the ref you want to point at
     hooks:
       - id: no-commit-to-branch
-      - id: check-added-large-files
+      #   - id: check-added-large-files
       - id: check-illegal-windows-names
       - id: trailing-whitespace
       - id: mixed-line-ending

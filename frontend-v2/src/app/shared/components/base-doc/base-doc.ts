@@ -1,13 +1,11 @@
-import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import {
+  AfterViewInit,
   ChangeDetectionStrategy,
   Component,
-  ViewEncapsulation,
-  AfterViewInit,
-  OnDestroy,
   ElementRef,
-  Inject,
-  PLATFORM_ID,
+  OnDestroy,
+  ViewEncapsulation,
 } from '@angular/core';
 import { DocsTocComponent } from '../docs-toc/docs-toc';
 
@@ -22,20 +20,29 @@ import { DocsTocComponent } from '../docs-toc/docs-toc';
 })
 export class BaseDocComponent implements AfterViewInit, OnDestroy {
   private mo?: MutationObserver;
-  private Prism: any;
 
-  constructor(
-    private host: ElementRef<HTMLElement>,
-    @Inject(PLATFORM_ID) private platformId: Object
-  ) {}
+  constructor(private host: ElementRef<HTMLElement>) {}
 
-  async ngAfterViewInit() {
-    if (!isPlatformBrowser(this.platformId)) return;
-    const Prism = (window as any).Prism;
+  private runHighlight = () => {
+    const hljs = (window as any).hljs;
+    if (!hljs) return;
+
     const root = this.host.nativeElement;
-    const highlight = () => Prism?.highlightAllUnder?.(root);
+    const blocks = root.querySelectorAll<HTMLElement>('pre code:not([data-hljs-done])');
 
-    highlight();
+    blocks.forEach((el) => {
+      try {
+        hljs.highlightElement(el);
+        el.dataset['hljsDone'] = '1';
+        el.parentElement?.classList.add('hljs');
+      } catch {
+        // ignore
+      }
+    });
+  };
+
+  ngAfterViewInit() {
+    this.runHighlight();
 
     let scheduled = false;
     this.mo = new MutationObserver(() => {
@@ -43,10 +50,10 @@ export class BaseDocComponent implements AfterViewInit, OnDestroy {
       scheduled = true;
       requestAnimationFrame(() => {
         scheduled = false;
-        highlight();
+        this.runHighlight();
       });
     });
-    this.mo.observe(root, { childList: true, subtree: true });
+    this.mo.observe(this.host.nativeElement, { childList: true, subtree: true });
   }
 
   ngOnDestroy() {

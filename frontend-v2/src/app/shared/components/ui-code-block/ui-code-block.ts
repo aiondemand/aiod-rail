@@ -9,7 +9,7 @@ import { Highlight } from 'ngx-highlightjs';
   styleUrls: ['./ui-code-block.scss'],
   template: `
     <div class="code-wrap">
-      <pre class="cb-pre" [attr.data-filename]="filename || null">
+      <pre class="cb-pre hljs" [attr.data-filename]="filename || null">
         <code
           class="cb-code"
           [highlight]="code || ''"

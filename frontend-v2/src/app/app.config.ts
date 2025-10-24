@@ -12,7 +12,7 @@ import { provideClientHydration, withEventReplay } from '@angular/platform-brows
 import { provideHttpClient, withFetch, withInterceptorsFromDi } from '@angular/common/http';
 
 import { MarkdownModule, MARKED_OPTIONS } from 'ngx-markdown';
-import { MarkedOptions } from 'marked';
+
 import { routes } from './app.routes';
 import { provideHighlightOptions } from 'ngx-highlightjs';
 
@@ -20,16 +20,12 @@ import { provideOAuthClient, OAuthStorage } from 'angular-oauth2-oidc';
 import { environment } from '../environments/environment';
 import { AuthService } from './core/auth/auth.service';
 
-async function prismLoader() {
-  if (typeof window === 'undefined') return;
-  const prismMod = await import('prismjs');
-  const Prism = (prismMod as any).default ?? prismMod;
-  await Promise.all([
-    import('prismjs/components/prism-python'),
-    import('prismjs/components/prism-properties'),
-    import('prismjs/components/prism-json'),
-  ]);
-  (window as any).Prism = Prism;
+function hljsLoader() {
+  return async () => {
+    if (typeof window === 'undefined') return;
+    const mod = await import('highlight.js');
+    (window as any).hljs = (mod as any).default ?? mod;
+  };
 }
 
 class MemoryStorage implements OAuthStorage {
@@ -70,18 +66,13 @@ export const appConfig: ApplicationConfig = {
           useValue: {
             gfm: true,
             breaks: true,
-            headerIds: true,
-            mangle: false,
-          } as MarkedOptions,
+          } as any,
         },
       })
     ),
 
     provideOAuthClient({
-      resourceServer: {
-        allowedUrls: [environment.BACKEND_API_URL],
-        sendAccessToken: true,
-      },
+      resourceServer: { allowedUrls: [environment.BACKEND_API_URL], sendAccessToken: true },
     }),
     { provide: OAuthStorage, useFactory: oauthStorageFactory, deps: [PLATFORM_ID] },
 
@@ -93,11 +84,6 @@ export const appConfig: ApplicationConfig = {
       deps: [AuthService],
     },
 
-    // Prism init
-    {
-      provide: APP_INITIALIZER,
-      multi: true,
-      useFactory: () => prismLoader,
-    },
+    { provide: APP_INITIALIZER, multi: true, useFactory: hljsLoader },
   ],
 };

@@ -103,7 +103,11 @@
     <mat-tab label="Python SDK (alternative)">
       <markdown src="assets/docs/markdown/codes/create-experiment-template-v2.md"></markdown>
     </mat-tab>
-    <mat-tab label="Web page"># Coming soon</mat-tab>
+
+    <mat-tab label="Web page">
+      <div class="gif-wrapper">
+        <img src="assets/docs/gifs/template_showcase.gif" alt="template showcase" /></div
+    ></mat-tab>
   </mat-tab-group>
 
   <h2>Properties of Experiment Template</h2>
@@ -167,11 +171,13 @@
     <a [routerLink]="['/docs', 'main-concepts-experiments']">Experiment</a> (see later sections),
     you’ll have access to the metrics in Web UI and through Python SDK.
   </p>
-  <img
-    src="assets/docs/images/et-metrics.png"
-    class="doc-illustration-figure"
-    alt="Experiment Template: metrics"
-  />
+  <div class="gif-wrapper">
+    <img
+      src="assets/docs/images/et-metrics.png"
+      class="doc-illustration-figure"
+      alt="Experiment Template: metrics"
+    />
+  </div>
 
   <h2>Accessing datasets and models (later defined in the Experiment)</h2>
   <p>
