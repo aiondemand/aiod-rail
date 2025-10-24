@@ -71,8 +71,18 @@ export class ExperimentRunListComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   private lastSnapshot = '';
 
+  private static readonly TERMINAL_STATES = [
+    'FINISHED',
+    'CRASHED',
+    'STOPPED',
+    'FAILED',
+    'CANCELLED',
+    'ARCHIVED',
+  ];
+
   ngOnInit(): void {
-    // auto-refresh every 10s
+    this.updateRuns();
+
     const visible$ =
       typeof document !== 'undefined'
         ? fromEvent(document, 'visibilitychange').pipe(
@@ -86,7 +96,17 @@ export class ExperimentRunListComponent implements OnInit, OnDestroy {
         switchMap((isVisible) => (isVisible ? interval(10000).pipe(startWith(0)) : EMPTY)),
         takeUntil(this.destroy$)
       )
-      .subscribe(() => this.updateRuns());
+      .subscribe(() => {
+        const list = this.runs();
+        if (list.length === 0) return;
+
+        const hasActive = list.some(
+          (r: any) => !ExperimentRunListComponent.TERMINAL_STATES.includes(r.state)
+        );
+        if (!hasActive) return;
+
+        this.updateRuns();
+      });
   }
 
   ngOnDestroy(): void {
