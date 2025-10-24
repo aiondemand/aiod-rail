@@ -1,8 +1,7 @@
-version: "3.9"
 services:
   nginx:
     image: nginx:latest
-    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+    command: '/bin/sh -c ''while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g "daemon off;"'''
     depends_on:
       - frontend-app
       - backend-app
@@ -17,10 +16,10 @@ services:
   # FRONTEND
   frontend-app:
     build:
-      context: ./frontend
+      context: ./frontend-v2
       args:
         # One of local/dev/prod
-        PROFILE: local
+        PROFILE: prod
     depends_on:
       - backend-app
     restart: always
