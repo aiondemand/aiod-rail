@@ -1,0 +1,17 @@
+{
+    "template": {
+        "name": "[DEMO] Classification Template",
+        "description": "A template for performing a classification task",
+        "base_image": "python:3.10"
+    },
+
+    "experiment": {
+        "name": "[DEMO] Sentiment Analysis Experiment",
+        "description": "An experiment for performing sentiment analysis task",
+        "env_vars": {
+            "TODO"
+        }
+
+    }
+
+}
