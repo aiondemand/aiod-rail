@@ -87,7 +87,7 @@ class DockerService(ContainerPlatformBase):
             )
             if out_pull is not None:
                 experiment_template.image_digest = out_pull.id
-                experiment_template.update_reana_yml_file_with_image_name()
+                experiment_template.update_image_name_in_reana_yaml(experiment_template.image_name)
 
             await asyncio.to_thread(self.docker_client.images.remove, image=image_name)
         except Exception as e:

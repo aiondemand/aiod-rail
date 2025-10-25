@@ -150,9 +150,9 @@ class ExperimentTemplate(Document):
         with base_path.joinpath("reana.yaml").open("w") as fp:
             yaml.safe_dump(reana_cfg, fp)
 
-    def update_reana_yml_file_with_image_name(self) -> None:
+    def update_image_name_in_reana_yaml(self, image_name: str) -> None:
         reana_cfg = yaml.safe_load(open(self.experiment_template_path.joinpath("reana.yaml")))
-        reana_cfg["workflow"]["specification"]["steps"][0]["environment"] = self.image_name
+        reana_cfg["workflow"]["specification"]["steps"][0]["environment"] = image_name
 
         with self.experiment_template_path.joinpath("reana.yaml").open("w") as fp:
             yaml.safe_dump(reana_cfg, fp)
