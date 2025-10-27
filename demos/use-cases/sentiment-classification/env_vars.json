@@ -3,17 +3,17 @@
         {
             "name": "SPLIT_NAME",
             "description": "A name of a subset we want to use. This name is used to index the dataset object created from load_dataset to retrieve a specific subset of its data",
-            "secret": false
+            "is_secret": false
         },
         {
             "name": "INPUT_FEATURE_NAME",
             "description": "A name of a feature/attribute we want to use as an input to the model. This name is used to index the subset of data to retrieve a specific feature obtained from each datapoint in the subset",
-            "secret": false
+            "is_secret": false
         },
         {
             "name": "LABEL_FEATURE_NAME",
             "description": "A name of a feature/attribute we want to use as an ground truth label to compare predictions to. This name is used to index the subset of data to retrieve a specific feature obtained from each datapoint in the subset ",
-            "secret": false
+            "is_secret": false
         }
 
     ],
@@ -21,12 +21,17 @@
         {
             "name": "NUM_DATAPOINTS_TO_CLASSIFY",
             "description": "Number of datapoints we want to apply the classification task to. If not specified, we classify the entire subset of data",
-            "secret": false
+            "is_secret": false
         },
         {
             "name": "BATCH_SIZE",
             "description": "Size of a batch that is used to compute classification in parallel. Default value: 8",
-            "secret": false
+            "is_secret": false
+        },
+        {
+            "name": "HF_MODEL",
+            "description": "A name of the HuggingFace model we wish to use instead of the one chosen via AIoD.",
+            "is_secret": false
         }
     ]
 }

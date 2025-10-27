@@ -90,12 +90,17 @@ if __name__ == "__main__":
     label_name = os.getenv("LABEL_FEATURE_NAME", default="label")
     split_name = os.getenv("SPLIT_NAME", default="train")
 
-    model, tokenizer, dataset = load_assets(model_name, dataset_name, split_name)
-
     # OPTIONAL ENV VARS
     batch_size = int(os.getenv("BATCH_SIZE", default=8))
-    num_datapoints_to_eval = int(os.getenv("NUM_DATAPOINTS_TO_CLASSIFY", default=len(dataset)))
+    num_datapoints_to_eval = int(os.getenv("NUM_DATAPOINTS_TO_CLASSIFY", default=-1))
+    hf_model = os.getenv("HF_MODEL", None)
 
+    if hf_model is not None:
+        model_name = hf_model
+    model, tokenizer, dataset = load_assets(model_name, dataset_name, split_name)
+
+    if num_datapoints_to_eval == -1:
+        num_datapoints_to_eval = len(dataset)
     unique_labels = np.unique(dataset[label_name]).tolist()
 
     all_texts = []

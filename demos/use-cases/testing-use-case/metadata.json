@@ -1,0 +1,20 @@
+{
+    "template": {
+        "name": "[DEMO] Test Template",
+        "description": "A template for testing",
+        "base_image": "python:3.10",
+        "is_public": false
+    },
+    "experiments": {
+        "experiment": {
+            "name": "[DEMO] Test Experiment",
+            "description": "An experiment for testing",
+            "model_name": "kinit/slovakbert-sentiment-twitter",
+            "dataset_name": "stanfordnlp/sst2",
+            "env_vars": {
+                "REQUIRED_ENV": "REQUIRED VALUE"
+            },
+            "is_public": false
+        }
+    }
+}
