@@ -828,9 +828,9 @@ class AssetsApi:
         _body_params: Optional[bytes] = None
 
         # process the path parameters
-        if query is not None:
-            _path_params["query"] = query
         # process the query parameters
+        if query is not None:
+            _query_params.append(("query", query))
         # process the header parameters
         # process the form parameters
         # process the body parameter
@@ -845,7 +845,7 @@ class AssetsApi:
 
         return self.api_client.param_serialize(
             method="GET",
-            resource_path="/v1/assets/counts/datasets/search/{query}",
+            resource_path="/v1/assets/counts/datasets/search",
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,
@@ -942,9 +942,9 @@ class AssetsApi:
         _body_params: Optional[bytes] = None
 
         # process the path parameters
-        if query is not None:
-            _path_params["query"] = query
         # process the query parameters
+        if query is not None:
+            _query_params.append(("query", query))
         # process the header parameters
         # process the form parameters
         # process the body parameter
@@ -959,7 +959,7 @@ class AssetsApi:
 
         return self.api_client.param_serialize(
             method="GET",
-            resource_path="/v1/assets/counts/models/search/{query}",
+            resource_path="/v1/assets/counts/models/search",
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,
@@ -1056,9 +1056,9 @@ class AssetsApi:
         _body_params: Optional[bytes] = None
 
         # process the path parameters
-        if query is not None:
-            _path_params["query"] = query
         # process the query parameters
+        if query is not None:
+            _query_params.append(("query", query))
         # process the header parameters
         # process the form parameters
         # process the body parameter
@@ -1073,7 +1073,7 @@ class AssetsApi:
 
         return self.api_client.param_serialize(
             method="GET",
-            resource_path="/v1/assets/counts/publications/search/{query}",
+            resource_path="/v1/assets/counts/publications/search",
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,
@@ -2452,9 +2452,10 @@ class AssetsApi:
         _body_params: Optional[bytes] = None
 
         # process the path parameters
-        if query is not None:
-            _path_params["query"] = query
         # process the query parameters
+        if query is not None:
+            _query_params.append(("query", query))
+
         if offset is not None:
             _query_params.append(("offset", offset))
 
@@ -2478,7 +2479,7 @@ class AssetsApi:
 
         return self.api_client.param_serialize(
             method="GET",
-            resource_path="/v1/assets/datasets/search/{query}",
+            resource_path="/v1/assets/datasets/search",
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,
@@ -2585,9 +2586,10 @@ class AssetsApi:
         _body_params: Optional[bytes] = None
 
         # process the path parameters
-        if query is not None:
-            _path_params["query"] = query
         # process the query parameters
+        if query is not None:
+            _query_params.append(("query", query))
+
         if offset is not None:
             _query_params.append(("offset", offset))
 
@@ -2608,7 +2610,7 @@ class AssetsApi:
 
         return self.api_client.param_serialize(
             method="GET",
-            resource_path="/v1/assets/models/search/{query}",
+            resource_path="/v1/assets/models/search",
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,
@@ -2861,9 +2863,10 @@ class AssetsApi:
         _body_params: Optional[bytes] = None
 
         # process the path parameters
-        if query is not None:
-            _path_params["query"] = query
         # process the query parameters
+        if query is not None:
+            _query_params.append(("query", query))
+
         if offset is not None:
             _query_params.append(("offset", offset))
 
@@ -2884,7 +2887,7 @@ class AssetsApi:
 
         return self.api_client.param_serialize(
             method="GET",
-            resource_path="/v1/assets/publications/search/{query}",
+            resource_path="/v1/assets/publications/search",
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,

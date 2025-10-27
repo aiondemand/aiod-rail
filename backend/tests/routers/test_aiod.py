@@ -71,10 +71,10 @@ async def test_api_get_my_assets(client, mocker, api_path, asset_type, asset_cla
 @pytest.mark.parametrize(
     "api_path, asset_type, asset_class",
     [
-        ("/v1/assets/datasets/search/asset_name", AssetType.DATASETS, Dataset),
-        ("/v1/assets/models/search/asset_name", AssetType.ML_MODELS, MLModel),
+        ("/v1/assets/datasets/search?query=asset_name", AssetType.DATASETS, Dataset),
+        ("/v1/assets/models/search/?query=asset_name", AssetType.ML_MODELS, MLModel),
         (
-            "/v1/assets/publications/search/asset_name",
+            "/v1/assets/publications/search?query=asset_name",
             AssetType.PUBLICATIONS,
             Publication,
         ),
@@ -148,9 +148,9 @@ async def test_api_get_assets_count(client, mocker, api_path, asset_type):
 @pytest.mark.parametrize(
     "api_path, asset_type",
     [
-        ("/v1/assets/counts/datasets/search/asset_name", AssetType.DATASETS),
-        ("/v1/assets/counts/models/search/asset_name", AssetType.ML_MODELS),
-        ("/v1/assets/counts/publications/search/asset_name", AssetType.PUBLICATIONS),
+        ("/v1/assets/counts/datasets/search?query=asset_name", AssetType.DATASETS),
+        ("/v1/assets/counts/models/search?query=asset_name", AssetType.ML_MODELS),
+        ("/v1/assets/counts/publications/search?query=asset_name", AssetType.PUBLICATIONS),
     ],
 )
 @pytest.mark.asyncio

@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] | DD-MM-YYYY
 
+## [1.2.4] | 27.10-2025
+### Updated
+* Updated some inner workings of the SDK to reflect changes made to RAIL API
+
 ## [1.2.3] | 08.10-2025
 
 ### Updated
