@@ -34,8 +34,12 @@ class FileDetail(BaseModel):
 
 
 def create_env_file(env_vars: dict[str, str], path: Path) -> None:
-    lines = [f"{k}={v}" for k, v in env_vars.items()]
-    path.write_text("\n".join(lines))
+    lines = []
+    for key, value in env_vars.items():
+        safe_value = value.replace("\\", "\\\\").replace('"', '\\"')
+        lines.append(f'{key}="{safe_value}"')
+
+    path.write_text("\n".join(lines) + "\n")
 
 
 def get_compare_operator_fn(eq: bool) -> Type[BaseFindComparisonOperator]:

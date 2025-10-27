@@ -304,7 +304,6 @@ async def test_get_assets_count_with_query_happy_path(asset_type, expected_url, 
         expected_url,
         params={
             "search_query": query,
-            "search_fields": "name",
             "limit": 1,
             "get_all": False,
         },
@@ -354,7 +353,6 @@ async def test_search_assets_happy_path(asset_type, expected_url, async_client_m
         expected_url,
         params={
             "search_query": query,
-            "search_fields": "name",
             "offset": pagination.offset,
             "limit": pagination.limit,
             "get_all": True,

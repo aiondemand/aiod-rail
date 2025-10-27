@@ -46,6 +46,7 @@ class ExperimentTemplate(Document):
     retry_count: int = 0
     state: TemplateState = TemplateState.CREATED
     image_version: int = 0
+    image_digest: str | None = None
     is_public: bool = True
     is_archived: bool = False
     is_approved: bool = False
@@ -101,8 +102,11 @@ class ExperimentTemplate(Document):
 
     @property
     def image_name(self) -> str:
-        image_tag = f"{EXPERIMENT_TEMPLATE_DIR_PREFIX}{self.id}-{self.image_version}"
-        return f"{settings.DOCKER_REGISTRY_URL}/{REPOSITORY_NAME}:{image_tag}"
+        if self.image_digest is not None:
+            return f"{settings.DOCKER_REGISTRY_URL}/{REPOSITORY_NAME}@{self.image_digest}"
+        else:
+            image_tag = f"{EXPERIMENT_TEMPLATE_DIR_PREFIX}{self.id}-{self.image_version}"
+            return f"{settings.DOCKER_REGISTRY_URL}/{REPOSITORY_NAME}:{image_tag}"
 
     @property
     def allows_experiment_creation(self) -> bool:
@@ -144,6 +148,13 @@ class ExperimentTemplate(Document):
         reana_cfg["outputs"]["directories"][0] = RUN_TEMP_OUTPUT_FOLDER
 
         with base_path.joinpath("reana.yaml").open("w") as fp:
+            yaml.safe_dump(reana_cfg, fp)
+
+    def update_image_name_in_reana_yaml(self, image_name: str) -> None:
+        reana_cfg = yaml.safe_load(open(self.experiment_template_path.joinpath("reana.yaml")))
+        reana_cfg["workflow"]["specification"]["steps"][0]["environment"] = image_name
+
+        with self.experiment_template_path.joinpath("reana.yaml").open("w") as fp:
             yaml.safe_dump(reana_cfg, fp)
 
     def map_to_response(self, user: dict | None = None) -> ExperimentTemplateResponse:
@@ -197,6 +208,7 @@ class ExperimentTemplate(Document):
                 ExperimentTemplate.state: self.state,
                 ExperimentTemplate.updated_at: self.updated_at,
                 ExperimentTemplate.retry_count: self.retry_count,
+                ExperimentTemplate.image_digest: self.image_digest,
             }
         )
 
