@@ -153,7 +153,6 @@ async def get_assets_count(asset_type: AssetType, filter_query: str | None = Non
             ).as_posix(),
             params={
                 "search_query": filter_query,
-                "search_fields": "name",
                 "limit": 1,
                 "get_all": False,
             },
@@ -176,7 +175,6 @@ async def search_assets(asset_type: AssetType, query: str, pagination: Paginatio
         Path(f"search/{asset_type.value}").as_posix(),
         params={
             "search_query": query,
-            "search_fields": "name",
             "offset": pagination.offset,
             "limit": pagination.limit,
             "get_all": True,

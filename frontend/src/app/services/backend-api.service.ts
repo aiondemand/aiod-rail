@@ -26,12 +26,15 @@ export class BackendApiService {
   getDatasets(query: string = "", pageQueries?: PageQueries, enhanced: boolean = false): Observable<Dataset[]> {
     // TODO: handle the "is_in_my_saved" property on backend
     let backend_route = `${environment.BACKEND_API_URL}/assets/datasets`;
-    if (query?.length > 0) {
-      backend_route += `/search/${query}`
-    }
-    backend_route += `?${this._buildPageQueries(pageQueries)}&enhanced=${enhanced}`;
+    let params = `?${this._buildPageQueries(pageQueries)}`;
 
-    return this.http.get<Dataset[]>(backend_route);
+    if (query?.length > 0) {
+      backend_route += "/search";
+      params += `&query=${query}&enhanced=${enhanced}`;
+    }
+
+    let full_url = backend_route + params;
+    return this.http.get<Dataset[]>(full_url);
   }
 
   getDatasetsCount(query: string = "", enhanced: boolean = false): Observable<number> {
@@ -42,7 +45,7 @@ export class BackendApiService {
 
     let backend_route = `${environment.BACKEND_API_URL}/assets/counts/datasets`;
     if (query?.length > 0) {
-      backend_route += `/search/${query}`
+      backend_route += `/search/?query=${query}`
     }
 
     return this.http.get<number>(backend_route);
@@ -139,12 +142,15 @@ export class BackendApiService {
    */
   getModels(query: string = "", pageQueries?: PageQueries): Observable<Model[]> {
     let backend_route = `${environment.BACKEND_API_URL}/assets/models`;
-    if (query?.length > 0) {
-      backend_route += `/search/${query}`
-    }
-    backend_route += `?${this._buildPageQueries(pageQueries)}`;
+    let params = `?${this._buildPageQueries(pageQueries)}`;
 
-    return this.http.get<Model[]>(backend_route);
+    if (query?.length > 0) {
+      backend_route += "/search";
+      params += `&query=${query}`;
+    }
+
+    let full_url = backend_route + params;
+    return this.http.get<Model[]>(full_url);
   }
 
   /**
@@ -158,7 +164,7 @@ export class BackendApiService {
   getModelsCount(query: string = ""): Observable<number> {
     let backend_route = `${environment.BACKEND_API_URL}/assets/counts/models`;
     if (query?.length > 0) {
-      backend_route += `/search/${query}`
+      backend_route += `/search?query=${query}`
     }
 
     return this.http.get<number>(backend_route);
@@ -186,12 +192,15 @@ export class BackendApiService {
    */
   getPublications(query: string = "", pageQueries?: PageQueries): Observable<Publication[]> {
     let backend_route = `${environment.BACKEND_API_URL}/assets/publications`;
-    if (query?.length > 0) {
-      backend_route += `/search/${query}`
-    }
-    backend_route += `?${this._buildPageQueries(pageQueries)}`;
+    let params = `?${this._buildPageQueries(pageQueries)}`;
 
-    return this.http.get<Publication[]>(backend_route);
+    if (query?.length > 0) {
+      backend_route += "/search";
+      params += `&query=${query}`;
+    }
+
+    let full_url = backend_route + params;
+    return this.http.get<Publication[]>(full_url);
   }
 
   /**
@@ -206,7 +215,7 @@ export class BackendApiService {
   getPublicationsCount(query: string = ""): Observable<number> {
     let backend_route = `${environment.BACKEND_API_URL}/assets/counts/publications`;
     if (query?.length > 0) {
-      backend_route += `/search/${query}`
+      backend_route += `/search?query=${query}`
     }
 
     return this.http.get<number>(backend_route);
