@@ -1,7 +1,4 @@
-```properties
-
-
-experiment\_template\_id (Experiment Template)
+experiment_template_id (Experiment Template)
 
 - Type: str
 
@@ -19,25 +16,25 @@ description
 
 - A detailed description of the Experiment. It should tell what the experiment does and what its purpose is. For example “Training and evaluation of our new Model X on dataset Y”.
 
-dataset\_ids
+dataset_ids
 
 - Type: List\[str]
 
 - AIoD IDs of dataset or datasets that will be used in the Experiment. The script (defined in Experiment Template) will have access to these IDs and the names of the datasets in the environment variables.
 
-model\_ids
+model_ids
 
 - Type: List\[str]
 
 - AIoD IDs of dataset or models that will be used in the Experiment. The script (defined in Experiment Template) will have access to these IDs and the names of the models in the environment variables.
 
-publication\_ids
+publication_ids
 
 - Type: List\[str]
 
 - AIoD IDs of publications. These do not influence the execution of the Experiment, but they express relation of the experiment to 0-n publications (e.g. the link to the Experiment can be shared with the publication as a reproducible reference).
 
-env\_vars
+env_vars
 
 - Type: List\[{key: str, value: str}]
 
@@ -48,5 +45,3 @@ public
 - Type: bool
 
 - Defines whether the Experiment should be available (and visible) to other users.
-
-```

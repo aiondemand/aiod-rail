@@ -87,7 +87,7 @@ export class CreateTemplatePage implements OnInit {
     name: ['', Validators.required],
     description: ['', Validators.required],
     baseImage: ['', Validators.required],
-    visibility: this.fb.nonNullable.control<'Public' | 'Private'>('Private', {
+    visibility: this.fb.nonNullable.control<'Public' | 'Private'>('Public', {
       validators: [Validators.required],
     }),
     pipRequirements: [''],

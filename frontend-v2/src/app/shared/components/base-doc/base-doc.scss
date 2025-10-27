@@ -158,3 +158,48 @@ app-base-doc pre[class*='language-properties'] {
   overflow-x: hidden;
   max-width: 100%;
 }
+
+//properties
+
+app-base-doc .props-card {
+  margin: $margin-default;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--card);
+  box-shadow: 0 1px 0 color-mix(in oklab, var(--border) 60%, transparent); /* jemný relief */
+}
+
+app-base-doc .props-card .props-scroll {
+  max-height: 520px;
+  overflow: auto;
+  padding: 16px 18px;
+}
+
+app-base-doc h2 + .props-card {
+  margin-top: 8px;
+}
+
+app-base-doc .props-card .md-props code[class*='language-properties'] {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+
+  color: var(--text) !important;
+  font-family: var(--font-sans, Inter, system-ui, -apple-system, 'Segoe UI', Arial) !important;
+
+  white-space: pre-wrap !important;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 900px) {
+  app-base-doc .props-card {
+    margin: 12px $margin-default $margin-default;
+  }
+  app-base-doc .props-card .props-scroll {
+    max-height: 420px;
+    padding: 14px;
+  }
+}

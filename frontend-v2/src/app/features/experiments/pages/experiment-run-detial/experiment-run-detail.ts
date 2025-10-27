@@ -16,8 +16,11 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
 import { BackendApiService } from '../../../../shared/services/backend-api.service';
 import { SnackBarService } from '../../../../shared/services/snack-bar.service';
 import { MatDialog } from '@angular/material/dialog';
-import { UiConfirmComponent } from '../../../../shared/components/ui-confirm/ui-confirm';
-import { ConfirmPopupInput, ConfirmPopupResponse } from '../../../../shared/models/popup';
+import {
+  UiConfirmComponent,
+  UiConfirmData,
+  UiConfirmResult,
+} from '../../../../shared/components/ui-confirm/ui-confirm';
 import { Experiment } from '../../../../shared/models/experiment';
 import { ExperimentRunDetails } from '../../../../shared/models/experiment-run';
 import { FileDetail } from '../../../../shared/models/file-detail';
@@ -187,25 +190,21 @@ export class ExperimentRunDetailComponent {
     const e = this.experiment();
     if (!r || !e) return;
 
-    const popup: ConfirmPopupInput = {
+    const data: UiConfirmData = {
       message: 'Do you wish to STOP this run?',
       acceptBtnMessage: 'Yes',
       declineBtnMessage: 'No',
     };
 
     this.dialog
-      .open(UiConfirmComponent, { maxWidth: '450px', width: '100%', autoFocus: false, data: popup })
+      .open(UiConfirmComponent, { maxWidth: '450px', width: '100%', autoFocus: false, data })
       .afterClosed()
-      .subscribe((res: ConfirmPopupResponse) => {
-        if (res === ConfirmPopupResponse.Yes) {
-          this.backend
-            .stopExperimentRun(r.id)
-            .pipe(takeUntilDestroyed(this.destroyRef))
-            .subscribe({
-              next: () => this.router.navigate(['/experiments', e.id]),
-              error: (err) => console.error(err),
-            });
-        }
+      .subscribe((res: UiConfirmResult) => {
+        if (res !== 'yes') return;
+        this.backend.stopExperimentRun(r.id).subscribe({
+          next: () => this.router.navigate(['/experiments', e.id]),
+          error: (err) => console.error(err),
+        });
       });
   }
 
@@ -214,25 +213,21 @@ export class ExperimentRunDetailComponent {
     const e = this.experiment();
     if (!r || !e) return;
 
-    const popup: ConfirmPopupInput = {
+    const data: UiConfirmData = {
       message: 'Do you wish to DELETE this run?',
       acceptBtnMessage: 'Yes',
       declineBtnMessage: 'No',
     };
 
     this.dialog
-      .open(UiConfirmComponent, { maxWidth: '450px', width: '100%', autoFocus: false, data: popup })
+      .open(UiConfirmComponent, { maxWidth: '450px', width: '100%', autoFocus: false, data })
       .afterClosed()
-      .subscribe((res: ConfirmPopupResponse) => {
-        if (res === ConfirmPopupResponse.Yes) {
-          this.backend
-            .deleteExperimentRun(r.id)
-            .pipe(takeUntilDestroyed(this.destroyRef))
-            .subscribe({
-              next: () => this.router.navigate(['/experiments', e.id]),
-              error: (err) => console.error(err),
-            });
-        }
+      .subscribe((res: UiConfirmResult) => {
+        if (res !== 'yes') return;
+        this.backend.deleteExperimentRun(r.id).subscribe({
+          next: () => this.router.navigate(['/experiments', e.id]),
+          error: (err) => console.error(err),
+        });
       });
   }
 

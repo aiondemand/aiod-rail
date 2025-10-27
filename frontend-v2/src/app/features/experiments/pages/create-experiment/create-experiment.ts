@@ -10,7 +10,7 @@ import {
 } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { debounceTime, startWith, switchMap, catchError, of, combineLatest } from 'rxjs';
+import { debounceTime, startWith, switchMap, catchError, of, combineLatest, map } from 'rxjs';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -110,7 +110,9 @@ export class CreateExperimentPage implements OnInit {
     return !t || ((t.envs_required?.length ?? 0) === 0 && (t.envs_optional?.length ?? 0) === 0);
   });
 
-  // --- autocomplet
+  // ===== Autocompletes =====
+
+  // Templates
   templates$ = this.tplFC.valueChanges.pipe(
     debounceTime(250),
     startWith(''),
@@ -128,6 +130,7 @@ export class CreateExperimentPage implements OnInit {
     takeUntilDestroyed(this.destroyRef)
   );
 
+  // Models
   modelsMine$ = this.modelFC.valueChanges.pipe(
     debounceTime(250),
     startWith(''),
@@ -150,6 +153,7 @@ export class CreateExperimentPage implements OnInit {
     takeUntilDestroyed(this.destroyRef)
   );
 
+  // Datasets
   datasetsMine$ = this.datasetFC.valueChanges.pipe(
     debounceTime(250),
     startWith(''),
@@ -172,15 +176,20 @@ export class CreateExperimentPage implements OnInit {
     takeUntilDestroyed(this.destroyRef)
   );
 
-  publications$ = this.api.getPublications().pipe(
-    catchError((err) => {
-      this.fail("Couldn't load publications", err);
-      return of([] as Publication[]);
-    }),
+  // Publications — searchable autocomplete
+  pubSearchFC = new FormControl<Publication | string>('');
+
+  // Preferred: if backend supports querying publications by term, swap in this block:
+  publicationsSearch$ = this.pubSearchFC.valueChanges.pipe(
+    debounceTime(250),
+    startWith(''),
+    switchMap((q) => (typeof q === 'string' ? this.api.getPublications(q) : of([]))),
+    catchError(() => of([])),
     takeUntilDestroyed(this.destroyRef)
   );
 
   ngOnInit(): void {
+    // When template changes, reset dependent fields and rebuild ENV controls
     this.tplFC.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((val) => {
       const tpl = typeof val === 'string' ? null : val;
       this.selectedTemplate.set(tpl);
@@ -204,7 +213,7 @@ export class CreateExperimentPage implements OnInit {
       );
     });
 
-    // --- UPDATE
+    // --- UPDATE MODE
     const expId = this.route.snapshot.paramMap.get('id');
     if (expId && /\/experiments\/[^/]+\/update$/.test(this.router.url)) {
       this.loading.set(true);
@@ -239,12 +248,13 @@ export class CreateExperimentPage implements OnInit {
             );
             this.selectedTemplate.set(tpl as any);
 
+            // prefill selected pubs into chips
             this.publicationsFA.clear();
             (pubs || []).forEach((p: Publication) =>
               this.publicationsFA.push(new FormControl(p, { nonNullable: true }))
             );
 
-            // ENVs
+            // ENVs prefill
             const envMap = new Map<string, string>(
               ((exp as any).env_vars || []).map((e: any) => [e.key, e.value])
             );
@@ -257,6 +267,7 @@ export class CreateExperimentPage implements OnInit {
               if (c) c.setValue(envMap.get(env.name) ?? '');
             });
 
+            // lock assets if there are runs
             const editableAssets = (runsCount as number) === 0;
             if (!editableAssets) {
               this.modelFC.disable();
@@ -275,15 +286,26 @@ export class CreateExperimentPage implements OnInit {
     }
   }
 
-  // UI
+  // UI display helpers
   displayTpl = (t?: ExperimentTemplate) => (t ? t.name : '');
   displayModel = (m?: Model) => (m ? m.name : '');
   displayDataset = (d?: Dataset) => (d ? d.name : '');
+  displayPub = (p?: Publication) => (p ? p.name : '');
 
-  addPublication(p: Publication) {
+  // Publications add/remove
+  onPublicationPicked(p: Publication) {
+    if (!p) return;
     if (this.publicationsFA.controls.some((c) => c.value.identifier === p.identifier)) return;
     this.publicationsFA.push(new FormControl(p, { nonNullable: true }));
+    // Clear input so the user can type another query immediately
+    this.pubSearchFC.setValue('');
   }
+
+  addPublication(p: Publication) {
+    // kept for backward compatibility; can be removed if not used anywhere else
+    this.onPublicationPicked(p);
+  }
+
   removePublication(ctrl: FormControl<Publication>) {
     const idx = this.publicationsFA.controls.indexOf(ctrl);
     if (idx >= 0) this.publicationsFA.removeAt(idx);

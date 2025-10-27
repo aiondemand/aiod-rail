@@ -295,8 +295,8 @@ export class ExperimentDetailPage implements OnInit {
             ? {
                 message:
                   'This Experiment is already associated with some experiment runs.\n' +
-                  'You can either DELETE this experiment with all its Experiment Runs\n' +
-                  'or ARCHIVE this experiment making execution of new runs not possible\n' +
+                  'You can either DELETE this experiment with all its Experiment Runs ' +
+                  'or ARCHIVE this experiment making execution of new runs not possible ' +
                   'whilst keeping the previously executed runs intact.\n\n' +
                   'What operation do you wish to perform?',
                 acceptBtnMessage: 'Delete experiment and all its runs',
@@ -312,7 +312,7 @@ export class ExperimentDetailPage implements OnInit {
           this.dialog
             .open(UiConfirmComponent, {
               width: '100%',
-              maxWidth: existRuns ? '600px' : '420px',
+              maxWidth: existRuns ? '700px' : '420px',
               data,
             })
             .afterClosed()

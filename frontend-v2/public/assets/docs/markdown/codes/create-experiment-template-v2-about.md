@@ -2,7 +2,7 @@
 from OuterRail import ExperimentTemplateManager
 
 # Login
-config = Configuration(host="http://localhost:8000")
+config = Configuration(host="https://rail.aiod.eu/api")
 config.login(username="username", password="password")
 
 # Define all properties, script, base image and requirements.txt in your dictionary

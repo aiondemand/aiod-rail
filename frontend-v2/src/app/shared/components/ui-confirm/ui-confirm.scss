@@ -1,20 +1,26 @@
 @use '../../../../styles/typography' as typo;
 @use '../../../../variables.scss' as *;
 
-/* MatDialog surface */
+/* ==================== MatDialog surface ==================== */
 :host ::ng-deep .mat-mdc-dialog-surface {
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   box-shadow: var(--shadow-1);
   overflow: hidden;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* ==================== COMPONENT ==================== */
 .ui-confirm {
   display: grid;
+  grid-template-columns: 1fr;
+  width: 100%;
+  min-width: 0;
   color: var(--text);
   padding: $margin-default;
+  box-sizing: border-box;
 
   /* ============ Header ============ */
   .head {
@@ -42,15 +48,23 @@
 
   /* ============ Message ============ */
   .msg {
+    width: 100%;
+    min-width: 0;
     border-radius: 14px;
     padding: 12px 14px;
-    min-width: 0;
+    box-sizing: border-box;
+
     pre {
-      white-space: pre-wrap;
+      display: block;
+      width: 100%;
+      margin: 0;
+      white-space: pre-line;
+      word-break: break-word;
       overflow-wrap: anywhere;
       font-family: var(--font-body);
       line-height: 1.55;
       color: var(--text);
+      box-sizing: border-box;
     }
   }
 
@@ -65,12 +79,13 @@
   /* ============ Actions ============ */
   .actions {
     display: flex;
-    flex-wrap: wrap;
     align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
     gap: 12px;
     padding: 2px 2px 0;
-    min-width: 0;
     width: 100%;
+    min-width: 0;
 
     /* --- Button base --- */
     ui-button {
@@ -89,30 +104,47 @@
       text-align: center;
     }
 
-    &:not(.has-third) {
-      ui-button.primary {
-        margin-left: auto;
-      }
-    }
-
+    /* Poradie pre 3 tlačidlá */
     &.has-third {
       ui-button:not(.primary):not(.third) {
-        order: 1;
+        order: 1; /* Dismiss */
       }
       ui-button.third {
-        order: 2;
-        margin-left: auto;
+        order: 2; /* Archive */
       }
-
       ui-button.primary {
-        order: 3;
-        flex-basis: 100%;
-        margin-left: 0;
-        align-self: center;
-        text-align: center;
-        justify-content: center;
+        order: 3; /* Delete */
       }
     }
+
+    /* 2 buttons */
+    &:not(.has-third) ui-button.primary {
+      margin-left: auto;
+    }
+
+    &.wrap-multi {
+      justify-content: center;
+    }
+  }
+}
+
+:host ::ng-deep .ui-confirm .actions {
+  &:has(ui-button:nth-child(3)) {
+    justify-content: space-between;
+  }
+}
+
+/* ==================== RESPONSIVE ==================== */
+@media (min-width: 700px) {
+  .ui-confirm .actions {
+    flex-wrap: nowrap;
+    justify-content: space-between;
+  }
+}
+
+@media (max-width: 699px) {
+  .ui-confirm .actions {
+    justify-content: center;
   }
 }
 
@@ -143,9 +175,10 @@
 /* ==================== MOBILE ==================== */
 @media (max-width: 480px) {
   .actions {
+    justify-content: center;
+
     ui-button {
       flex-basis: 100%;
-      margin-left: 0;
       text-align: center;
     }
   }

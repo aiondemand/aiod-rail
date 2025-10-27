@@ -1,13 +1,10 @@
-```properties
-
-
-experiment\_id
+experiment_id
 
 - Type: str
 
 - Reference to an Experiment from which this Experiment Run originates.
 
-retry\_count
+retry_count
 
 - Type: int
 
@@ -19,7 +16,7 @@ state
 
   - CREATED: The Run has been created.
 
-  - IN\_PROGRESS: The Run has been sent to REANA and is being executed or is waiting in the queue.
+  - IN_PROGRESS: The Run has been sent to REANA and is being executed or is waiting in the queue.
 
   - CRASHED: The Run crashed. There are currently 3 retry attempts.
 
@@ -56,5 +53,3 @@ logs
 - Type: str
 
 - Logs logged by the script during the execution of the Docker container and Python script running inside.
-
-```

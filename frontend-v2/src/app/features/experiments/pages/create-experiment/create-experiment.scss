@@ -293,3 +293,22 @@
 :root {
   --mat-option-label-text-color: var(--text);
 }
+
+/* === SELECTED AUTOCOMPLETE ITEM === */
+::ng-deep
+  .cdk-overlay-container
+  .app-autocomplete-panel
+  .mat-mdc-option.mdc-list-item--selected:not(.mat-mdc-option-multiple),
+::ng-deep
+  .cdk-overlay-container
+  .app-autocomplete-panel
+  .mat-mdc-option.mdc-list-item--selected.mdc-list-item--activated {
+  background: color-mix(in oklab, var(--text) 14%, transparent) !important;
+}
+
+::ng-deep
+  .cdk-overlay-container
+  .app-autocomplete-panel
+  .mat-pseudo-checkbox.mat-pseudo-checkbox-checked::after {
+  color: var(--text) !important;
+}

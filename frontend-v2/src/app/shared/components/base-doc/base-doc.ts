@@ -28,7 +28,9 @@ export class BaseDocComponent implements AfterViewInit, OnDestroy {
     if (!hljs) return;
 
     const root = this.host.nativeElement;
-    const blocks = root.querySelectorAll<HTMLElement>('pre code:not([data-hljs-done])');
+    const blocks = root.querySelectorAll<HTMLElement>(
+      'pre code:not([data-hljs-done]):not(.language-properties)'
+    ); //pre code:not([data-hljs-done])
 
     blocks.forEach((el) => {
       try {

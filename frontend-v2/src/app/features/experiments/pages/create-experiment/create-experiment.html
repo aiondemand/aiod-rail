@@ -48,19 +48,27 @@
       <h2>Related AI assets</h2>
       <h3>Publications</h3>
 
-      @let pubs = (publications$ | async);
       <mat-form-field appearance="outline">
-        <mat-label>Choose related publications</mat-label>
-        <mat-select
-          (selectionChange)="addPublication($event.value)"
-          [panelClass]="'app-select-panel'"
+        <mat-label>Search publications</mat-label>
+        <input
+          matInput
+          [matAutocomplete]="autoPub"
+          [formControl]="pubSearchFC"
+          placeholder="Type to search…"
+        />
+        <mat-autocomplete
+          #autoPub="matAutocomplete"
+          [displayWith]="displayPub"
+          class="app-autocomplete-panel"
+          (optionSelected)="onPublicationPicked($event.option.value)"
         >
-          @if (pubs?.length) { @for (p of pubs; track p.identifier) {
+          @let pubs = (publicationsSearch$ | async); @if (pubs?.length) { @for (p of pubs; track
+          p.identifier) {
           <mat-option [value]="p">{{ p.name }}</mat-option>
           } } @else {
           <mat-option disabled>No publications found</mat-option>
           }
-        </mat-select>
+        </mat-autocomplete>
       </mat-form-field>
 
       <mat-chip-listbox class="chips">
@@ -69,7 +77,6 @@
           {{ c.value.name }}
           <mat-icon matChipRemove>cancel</mat-icon>
         </mat-chip>
-
         }
       </mat-chip-listbox>
     </section>
@@ -194,11 +201,11 @@
           <mat-form-field appearance="outline">
             <mat-label>
               <span class="env-name">
-                {{ env.name }}*
-                <mat-icon *ngIf="env.is_secret" class="lock" matTooltip="Secret">lock</mat-icon>
+                {{ env.name }}
+                @if (env.is_secret){<mat-icon class="lock" matTooltip="Secret">lock</mat-icon>}
               </span>
             </mat-label>
-            <input matInput [formControlName]="env.name" />
+            <input matInput [formControlName]="env.name" required aria-required="true" />
           </mat-form-field>
           }
         </div>
@@ -210,7 +217,7 @@
             <mat-label>
               <span class="env-name">
                 {{ env.name }}
-                <mat-icon *ngIf="env.is_secret" class="lock" matTooltip="Secret">lock</mat-icon>
+                @if (env.is_secret){<mat-icon class="lock" matTooltip="Secret">lock</mat-icon>}
               </span>
             </mat-label>
             <input matInput [formControlName]="env.name" />

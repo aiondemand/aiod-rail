@@ -54,7 +54,6 @@ export class AuthService {
     this.oauth.configure(buildAuthConfig());
     this.oauth.setStorage(localStorage);
 
-    // Reaguj na token/profile udalosti (bez spamovania)
     this.oauth.events
       .pipe(
         filter((e: OAuthEvent) =>
@@ -87,8 +86,6 @@ export class AuthService {
     this.updateLoggedInFlag('post-try-login');
     this.oauth.setupAutomaticSilentRefresh();
     if (this._loggedIn()) await this.refreshClaims();
-
-    // 3) Microtask – stabilizácia + expose debug API
   }
 
   // ===== HELPERS =====

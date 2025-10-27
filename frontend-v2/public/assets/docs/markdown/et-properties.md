@@ -1,5 +1,3 @@
-```properties
-
 name
 
 - Type: str
@@ -18,25 +16,25 @@ script (Executable)
 
 - An arbitrary Python script. This script will be executed within the Docker image once an Experiment derived from an Experiment Template is executed.
 
-pip\_requirements (Dependencies)
+pip_requirements (Dependencies)
 
 - Type: str
 
 - A list of Python packages that will be installed in a selected Docker image. It’s basically a string representing the requirements.txt file.
 
-base\_image (Docker image)
+base_image (Docker image)
 
 - Type: str
 
 - The script will be executed within this base Docker image. All the requirements will be installed in this base image.
 
-envs\_required
+envs_required
 
 - Type: List\[{name: str, description: str}]
 
 - Mandatory environment variables that need to be defined when creating an Experiment from an Experiment Template. These variables are available in the script and can influence the execution of the script. The meaning of the variables is fully determined by script and its author. For example, if a script works with HuggingFace datasets and it needs to specify “split” of the data, an environment variable “split” should be defined and later used in the code.
 
-envs\_optional
+envs_optional
 
 - Type: List\[{name: str, description: str}]
 
@@ -54,7 +52,7 @@ state
 
   - CREATED: The Experiment Template has been created, but the Docker image representing it has been built yet.
 
-  - IN\_PROGRESS: The Docker image representing the Experiment Template is being built.
+  - IN_PROGRESS: The Docker image representing the Experiment Template is being built.
 
   - CRASHED: The build of the Docked image failed.
 
@@ -76,22 +74,20 @@ approved
 
 Besides these, there are variables that will be supported in the future:
 
-datasets\_schema
+datasets_schema
 
 - Type: { cardinality: Enum\[0-0, 1-1, 0-1, 1-n] }
 
-- Defines how many datasets an Experiment Template works with. For example, if you define a Machine translation Experiment Template that enables you to translate multiple datasets at once, you can define _dataset\_schema = { cardinality: “1-n” }_ and the users will be able to select multiple datasets when creating an Experiment from the Experiment Template.
+- Defines how many datasets an Experiment Template works with. For example, if you define a Machine translation Experiment Template that enables you to translate multiple datasets at once, you can define _dataset_schema = { cardinality: “1-n” }_ and the users will be able to select multiple datasets when creating an Experiment from the Experiment Template.
 
-models\_schema
+models_schema
 
 - Type: { cardinality: Enum\[0-0, 1-1, 0-1, 1-n] }
 
-- Defines how many models an Experiment Template works with. For example, if you define a Semantic segmentation evaluation Experiment Template that enables you to evaluate performance of multiple image segmentation models on the same dataset, you can define _dataset\_schema = { cardinality: “1-n” }_ and the users will be able to select multiple models when creating an Experiment from the Experiment Template.
+- Defines how many models an Experiment Template works with. For example, if you define a Semantic segmentation evaluation Experiment Template that enables you to evaluate performance of multiple image segmentation models on the same dataset, you can define _dataset_schema = { cardinality: “1-n” }_ and the users will be able to select multiple models when creating an Experiment from the Experiment Template.
 
 task
 
 - Type: Enum
 
 - In the future, this property will be used to restrict selection of models when creating an Experiment from an Experiment Template.
-
-```
