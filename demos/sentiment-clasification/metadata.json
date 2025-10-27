@@ -1,0 +1,37 @@
+{
+    "template": {
+        "name": "[DEMO] Classification Template",
+        "description": "A template for performing a classification task",
+        "base_image": "python:3.10",
+        "is_public": false
+    },
+
+    "experiment_1": {
+        "name": "[DEMO] Sentiment Analysis Experiment",
+        "description": "An experiment for performing sentiment analysis task",
+        "model_name": "TODO",
+        "dataset_name": "stanfordnlp/sst2",
+        "env_vars": {
+            "SPLIT_NAME": "train",
+            "INPUT_FEATURE_NAME": "sentence",
+            "LABEL_FEATURE_NAME": "label",
+            "NUM_DATAPOINTS_TO_CLASSIFY": "50",
+            "BATCH_SIZE": 4
+        },
+        "is_public": false
+    },
+    "experiment_2": {
+        "name": "[DEMO] Sentiment Analysis Experiment",
+        "description": "An experiment for performing sentiment analysis task",
+        "model_name": "TODO",
+        "dataset_name": "stanfordnlp/sst2",
+        "env_vars": {
+            "SPLIT_NAME": "train",
+            "INPUT_FEATURE_NAME": "sentence",
+            "LABEL_FEATURE_NAME": "label",
+            "NUM_DATAPOINTS_TO_CLASSIFY": "50",
+            "BATCH_SIZE": 4
+        },
+        "is_public": false
+    }
+}
