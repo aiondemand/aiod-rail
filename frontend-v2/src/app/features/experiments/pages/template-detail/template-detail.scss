@@ -2,7 +2,7 @@
 @use '../../../../../variables.scss' as *;
 
 /* ============ Helpers ============ */
-$pill-h: 40px;
+$pill-h: 36px;
 
 @mixin pill {
   height: $pill-h;

@@ -26,7 +26,11 @@
 
     <div class="actions">
       @if (isArchived()) {
-      <span class="pill pill--archived" title="This experiment is archived">Archived</span>
+      <span class="pill pill--archived" title="This experiment is archived">
+        <mat-icon class="material-symbols-rounded">archived</mat-icon>
+        Archived
+      </span>
+
       @if (isMine()) {
       <ui-button variant="outline" size="md" (click)="unarchive()">
         <mat-icon class="material-symbols-rounded">settings_backup_restore</mat-icon>
@@ -36,6 +40,7 @@
       <ui-button variant="ghost" size="md" (click)="goEdit()" title="Edit">
         <mat-icon class="material-symbols-rounded">edit</mat-icon>
       </ui-button>
+
       <ui-button variant="ghost" size="md" (click)="doDelete()" title="Delete">
         <mat-icon class="material-symbols-rounded">delete</mat-icon>
       </ui-button>

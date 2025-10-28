@@ -148,4 +148,7 @@ export class AllExperimentsPage implements OnInit {
   trackExp(exp: Experiment): string {
     return (exp as any).id ?? (exp as any).identifier ?? JSON.stringify(exp);
   }
+  archivedOf(exp: Experiment): boolean | null {
+    return exp?.is_archived ?? (exp as any).archived ?? null;
+  }
 }

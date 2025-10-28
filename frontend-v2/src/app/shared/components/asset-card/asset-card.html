@@ -6,25 +6,25 @@
     <mat-icon class="vis-icon" [matTooltip]="visibilityLabel" [attr.aria-label]="visibilityLabel">
       {{ visibilityIcon }}
     </mat-icon>
-    } @if (showWaitingApproval) {
+    }
+
+    <!-- waiting for approval  -->
+    @if (showWaitingApproval) {
     <mat-icon
-      class="flag-icon danger"
+      class="flag-icon warn"
       [matTooltip]="approvalTooltip"
       aria-label="Waiting for approval"
     >
       lock_clock
     </mat-icon>
-    } @if (showArchived) {
-    <mat-icon
-      class="flag-icon danger"
-      [matTooltip]="archivedTooltip"
-      aria-label="Archived template"
-    >
+    }
+
+    <!-- ARCHIVED -->
+    @if (showArchived) {
+    <mat-icon class="flag-icon accent" [matTooltip]="archivedTooltip" aria-label="Archived">
       inventory_2
     </mat-icon>
-    } @if (date) {
-    <span class="date">{{ date | date : 'MMM d, y' }}</span>
-    }
+    } @if (date) { <span class="date">{{ date | date : 'MMM d, y' }}</span> }
   </div>
 
   <h3 id="title" class="title">

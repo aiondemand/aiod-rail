@@ -55,7 +55,6 @@ export class AssetCardComponent implements OnChanges {
     const p: string | Platform = (this.resource?.platform as any) ?? this.source ?? '';
     return formatPlatformName(p);
   }
-
   get sourceClass(): string {
     const raw = (this.resource?.platform ?? this.source ?? '').toString();
     return `badge--${raw.toLowerCase()}`;
@@ -79,19 +78,17 @@ export class AssetCardComponent implements OnChanges {
 
   get showWaitingApproval(): boolean {
     if (this.archived === true) return false;
-    if (this.approved === false) return true;
-    return false;
+    return this.approved === false;
   }
 
   get approvalTooltip(): string {
-    return 'Waiting for approval — Experiment templates are manually reviewed before being approved for use';
+    return 'Waiting for approval';
   }
 
   get showArchived(): boolean {
     return this.archived === true;
   }
-
   get archivedTooltip(): string {
-    return 'This template is archived — New experiments cannot use it';
+    return 'This item is archived';
   }
 }
