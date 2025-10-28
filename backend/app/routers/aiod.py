@@ -54,7 +54,7 @@ async def get_my_datasets(
         )
 
 
-@router.get("/datasets/search/{query}", response_model=list[Dataset])
+@router.get("/datasets/search", response_model=list[Dataset])
 async def search_datasets(
     query: str, enhanced: bool = False, pagination: Pagination = Depends()
 ) -> Any:
@@ -82,7 +82,7 @@ async def get_datasets_count() -> Any:
     return await get_assets_count(asset_type=AssetType.DATASETS)
 
 
-@router.get("/counts/datasets/search/{query}", response_model=int)
+@router.get("/counts/datasets/search", response_model=int)
 async def get_filtered_datasets_count(query: str) -> Any:
     return await get_assets_count(asset_type=AssetType.DATASETS, filter_query=query)
 
@@ -215,7 +215,7 @@ async def get_my_models(
         )
 
 
-@router.get("/models/search/{query}", response_model=list[MLModel])
+@router.get("/models/search", response_model=list[MLModel])
 async def search_models(query: str, pagination: Pagination = Depends()) -> Any:
     return await search_assets(
         asset_type=AssetType.ML_MODELS,
@@ -255,7 +255,7 @@ async def get_my_models_count(
         )
 
 
-@router.get("/counts/models/search/{query}", response_model=int)
+@router.get("/counts/models/search", response_model=int)
 async def get_filtered_models_count(query: str) -> Any:
     return await get_assets_count(asset_type=AssetType.ML_MODELS, filter_query=query)
 
@@ -268,7 +268,7 @@ async def get_publications(pagination: Pagination = Depends()) -> Any:
     return await get_assets(asset_type=AssetType.PUBLICATIONS, pagination=pagination)
 
 
-@router.get("/publications/search/{query}", response_model=list[Publication])
+@router.get("/publications/search", response_model=list[Publication])
 async def search_publications(query: str, pagination: Pagination = Depends()) -> Any:
     return await search_assets(
         asset_type=AssetType.PUBLICATIONS,
@@ -287,7 +287,7 @@ async def get_publications_count() -> Any:
     return await get_assets_count(asset_type=AssetType.PUBLICATIONS)
 
 
-@router.get("/counts/publications/search/{query}", response_model=int)
+@router.get("/counts/publications/search", response_model=int)
 async def get_filtered_publications_count(query: str) -> Any:
     return await get_assets_count(asset_type=AssetType.PUBLICATIONS, filter_query=query)
 
