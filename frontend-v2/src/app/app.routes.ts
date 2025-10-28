@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { adminGuard, authGuard } from './core/auth/auth.guard';
+import { authGuard, authMatchGuard, adminGuard, adminMatchGuard } from './core/auth/auth.guard';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'docs/about' },
@@ -20,7 +20,7 @@ export const routes: Routes = [
 
       {
         path: 'my-experiments',
-        canMatch: [authGuard],
+        canMatch: [authMatchGuard],
         loadComponent: () =>
           import('./features/experiments/pages/my-experiments/my-experiments').then(
             (m) => m.MyExperimentsPage
@@ -28,7 +28,7 @@ export const routes: Routes = [
       },
       {
         path: 'create-experiment',
-        canMatch: [authGuard],
+        canMatch: [authMatchGuard],
         loadComponent: () =>
           import('./features/experiments/pages/create-experiment/create-experiment').then(
             (m) => m.CreateExperimentPage
@@ -55,7 +55,7 @@ export const routes: Routes = [
           },
           {
             path: ':id/update',
-            canMatch: [authGuard],
+            canMatch: [authMatchGuard],
             loadComponent: () =>
               import('./features/experiments/pages/create-template/create-template').then(
                 (m) => m.CreateTemplatePage
@@ -67,7 +67,7 @@ export const routes: Routes = [
       // create templates
       {
         path: 'my-templates',
-        canMatch: [authGuard],
+        canMatch: [authMatchGuard],
         loadComponent: () =>
           import('./features/experiments/pages/my-templates/my-templates').then(
             (m) => m.MyTemplatesPage
@@ -75,7 +75,7 @@ export const routes: Routes = [
       },
       {
         path: 'create-template',
-        canMatch: [authGuard],
+        canMatch: [authMatchGuard],
         loadComponent: () =>
           import('./features/experiments/pages/create-template/create-template').then(
             (m) => m.CreateTemplatePage
@@ -98,7 +98,7 @@ export const routes: Routes = [
       },
       {
         path: ':id/update',
-        canMatch: [authGuard],
+        canMatch: [authMatchGuard],
         loadComponent: () =>
           import('./features/experiments/pages/create-experiment/create-experiment').then(
             (m) => m.CreateExperimentPage
@@ -120,13 +120,12 @@ export const routes: Routes = [
       },
       {
         path: 'my-datasets',
-        canMatch: [authGuard],
+        canMatch: [authMatchGuard],
         loadComponent: () =>
           import('./features/datasets/pages/my-datasets/my-datasets').then(
             (m) => m.MyDatasetsComponent
           ),
       },
-
       {
         path: ':id',
         loadComponent: () =>
@@ -190,11 +189,10 @@ export const routes: Routes = [
     ],
   },
 
-  // ------------------- ADMIN ------------------------
-
+  // ===== ADMIN =====
   {
     path: 'admin',
-    canMatch: [adminGuard, authGuard],
+    canMatch: [authMatchGuard, adminMatchGuard],
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'experiments' },
       {
@@ -214,5 +212,6 @@ export const routes: Routes = [
     ],
   },
 
+  // ===== CATCH ALL =====
   { path: '**', redirectTo: 'docs/about' },
 ];

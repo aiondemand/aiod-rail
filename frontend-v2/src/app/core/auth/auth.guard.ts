@@ -9,7 +9,6 @@ function ensureLoginOrBlock(): boolean | UrlTree {
   const router = inject(Router);
 
   const logged = auth.isLoggedIn();
-
   if (logged) return true;
 
   if (isPlatformBrowser(platformId)) {
@@ -20,14 +19,17 @@ function ensureLoginOrBlock(): boolean | UrlTree {
   return router.createUrlTree(['/docs/about']);
 }
 
+/** CanActivate  */
 export const authGuard: CanActivateFn = () => ensureLoginOrBlock();
+/** CanMatch  ( lazy ) */
+export const authMatchGuard: CanMatchFn = () => ensureLoginOrBlock();
 
-function isAdmin(): boolean | UrlTree {
+function ensureAdmin(): boolean | UrlTree {
   const auth = inject(AuthService);
   const router = inject(Router);
-
   const ok = auth.isLoggedIn() && auth.hasAdminRole();
   return ok ? true : router.createUrlTree(['/docs/about']);
 }
 
-export const adminGuard: CanActivateFn = () => isAdmin();
+export const adminGuard: CanActivateFn = () => ensureAdmin();
+export const adminMatchGuard: CanMatchFn = () => ensureAdmin();

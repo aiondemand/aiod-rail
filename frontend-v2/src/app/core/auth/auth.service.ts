@@ -1,6 +1,7 @@
+// src/app/core/auth/auth.service.ts
 import { Injectable, PLATFORM_ID, computed, inject, signal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { OAuthService, UserInfo, OAuthEvent } from 'angular-oauth2-oidc';
+import { OAuthEvent, OAuthService, UserInfo } from 'angular-oauth2-oidc';
 import { filter } from 'rxjs';
 import { buildAuthConfig } from './auth.config';
 import { environment } from '../../../environments/environment';
@@ -19,16 +20,24 @@ export class AuthService {
   // ===== STATE =====
   private _claims = signal<Claims>(null);
   private _loggedIn = signal(false);
+  private _claimsReady = signal(false);
 
   // ===== PUBLIC COMPUTEDS =====
+
   isLoggedIn = computed(() => this._loggedIn());
+
+  /** Login for ui */
+  isLoggedInUI = computed(() => this._loggedIn() && this._claimsReady());
+
   userName = computed(() => {
     const c = this._claims();
     if (!c) return '';
     const gn = c['given_name'] ?? '';
     const fn = c['family_name'] ?? '';
+    const name = c['name'] ?? '';
     const pref = c['preferred_username'] ?? '';
-    return gn || fn ? `${gn} ${fn}`.trim() : pref;
+    const email = c['email'] ?? '';
+    return gn || fn ? `${gn} ${fn}`.trim() : name || pref || email || '';
   });
 
   userRoles = computed<string[]>(() => {
@@ -54,58 +63,124 @@ export class AuthService {
     this.oauth.configure(buildAuthConfig());
     this.oauth.setStorage(localStorage);
 
+    // Relevant events
     this.oauth.events
       .pipe(
         filter((e: OAuthEvent) =>
           [
             'token_received',
             'token_refreshed',
-            'user_profile_loaded',
+            'token_expires',
+            'token_refresh_error',
             'session_terminated',
             'session_error',
+            'logout',
           ].includes(e.type)
         )
       )
       .subscribe((e) => {
-        if (
-          e.type === 'token_received' ||
-          e.type === 'token_refreshed' ||
-          e.type === 'session_terminated'
-        ) {
-          this.updateLoggedInFlag('event');
+        switch (e.type) {
+          case 'token_refresh_error':
+          case 'session_terminated':
+          case 'logout': {
+            this.hardSignOut();
+            return;
+          }
+          case 'token_expires': {
+            if (!this.oauth.hasValidAccessToken()) this.softSignOut();
+            return;
+          }
+          case 'token_received':
+          case 'token_refreshed': {
+            this.updateLoggedInFlag();
+
+            this._claimsReady.set(false);
+
+            void this.ensureClaimsLoaded();
+            return;
+          }
         }
       });
 
-    // 1) Discovery & login code flow
+    // 1) Discovery + try login
     await this.oauth.loadDiscoveryDocument();
     const tryCodeFlow = (this.oauth as any).tryLoginCodeFlow?.bind(this.oauth);
     if (tryCodeFlow) await tryCodeFlow();
     else await this.oauth.loadDiscoveryDocumentAndTryLogin();
 
-    // 2) Flag + auto refresh + claims
-    this.updateLoggedInFlag('post-try-login');
+    this.updateLoggedInFlag();
+
+    if (this._loggedIn()) {
+      this._claimsReady.set(false);
+      await this.ensureClaimsLoaded();
+    } else {
+      this.clearLocalOnly();
+    }
+
+    // Silent refresh
     this.oauth.setupAutomaticSilentRefresh();
-    if (this._loggedIn()) await this.refreshClaims();
+
+    // Heartbeat – every 60s revalide access token
+    setInterval(() => this.updateLoggedInFlag(), 60000);
   }
 
   // ===== HELPERS =====
-  private updateLoggedInFlag(source: string) {
-    const flag = !!this.oauth.getAccessToken() || !!this.oauth.getIdToken();
-    this._loggedIn.set(flag);
-  }
 
-  private async refreshClaims() {
-    try {
-      const profile = (await this.oauth.loadUserProfile()) as UserInfo & Record<string, any>;
-      const idClaims = this.oauth.getIdentityClaims() as Record<string, any> | null;
-      this._claims.set({ ...(idClaims ?? {}), ...(profile ?? {}) });
-    } catch {
-      const idClaims = this.oauth.getIdentityClaims() as Record<string, any> | null;
-      this._claims.set(idClaims ?? null);
+  private updateLoggedInFlag() {
+    const valid = this.oauth.hasValidAccessToken();
+    this._loggedIn.set(valid);
+    if (!valid) {
+      this._claims.set(null);
+      this._claimsReady.set(false);
     }
   }
 
-  // ===== PUBLIC DEBUG HELPERS =====
+  private async ensureClaimsLoaded() {
+    try {
+      const idClaims = (this.oauth.getIdentityClaims() as Record<string, any> | null) ?? {};
+
+      const profile = (await this.oauth.loadUserProfile()) as UserInfo & Record<string, any>;
+
+      this._claims.set({ ...(idClaims ?? {}), ...(profile ?? {}) });
+    } catch {
+      const idClaims = (this.oauth.getIdentityClaims() as Record<string, any> | null) ?? null;
+      this._claims.set(idClaims);
+    } finally {
+      this._claimsReady.set(true);
+    }
+  }
+
+  private clearLocalOnly() {
+    try {
+      (this.oauth as any).clearStorage?.();
+    } catch {}
+    this._claims.set(null);
+    this._claimsReady.set(false);
+  }
+
+  private softSignOut() {
+    this._claims.set(null);
+    this._claimsReady.set(false);
+    this._loggedIn.set(false);
+  }
+
+  private hardSignOut() {
+    this.clearLocalOnly();
+    this._loggedIn.set(false);
+  }
+
+  // ===== PUBLIC HELPERS =====
+  async waitUntilClaimsReady(): Promise<void> {
+    if (this._claimsReady()) return;
+    await new Promise<void>((resolve) => {
+      const t = setInterval(() => {
+        if (this._claimsReady()) {
+          clearInterval(t);
+          resolve();
+        }
+      }, 50);
+    });
+  }
 
   getAccessToken(): string | null {
     try {
@@ -115,23 +190,14 @@ export class AuthService {
     }
   }
 
-  /**  Authorization header  */
   getAuthHeaders(): Record<string, string> | undefined {
     const t = this.getAccessToken();
     return t ? { Authorization: `Bearer ${t}` } : undefined;
   }
 
-  dump(): void {
-    const access = this.getAccessToken();
-    const id = this.oauth.getIdToken();
-    const expMs = this.oauth.getAccessTokenExpiration() || 0;
-    const secs = expMs ? Math.max(0, Math.floor((expMs - Date.now()) / 1000)) : 0;
-  }
-
   // ===== API =====
   login(): void {
     if (!isPlatformBrowser(this.platformId)) return;
-
     this.oauth.initLoginFlow();
   }
 
@@ -139,6 +205,7 @@ export class AuthService {
     if (!isPlatformBrowser(this.platformId)) return;
     this.oauth.logOut();
     this._claims.set(null);
+    this._claimsReady.set(false);
     this._loggedIn.set(false);
   }
 }

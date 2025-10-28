@@ -1,16 +1,9 @@
 <div class="login-container" [class.logged-in]="isLoggedIn()">
   @if (isLoggedIn()) {
-  <a
-    class="avatar"
-    [routerLink]="isLoggedIn() ? ['/profile'] : null"
-    (click)="!isLoggedIn() && login()"
-    matTooltip="{{ isLoggedIn() ? 'Open profile' : 'Sign in' }}"
-    aria-label="User profile"
-  >
+  <a class="avatar" [routerLink]="['/profile']" matTooltip="Open profile" aria-label="User profile">
     <ui-button class="icon" variant="ghost" size="lg" [icon]="true" ariaLabel="user">
       <mat-icon fontIcon="person"></mat-icon>
     </ui-button>
-
     <span class="username">{{ userName() }}</span>
   </a>
 
@@ -18,7 +11,6 @@
     Log out
   </ui-button>
   } @else {
-
   <ui-button size="lg" variant="ghost" (click)="login()" matTooltip="Log in"> Log in </ui-button>
   }
 </div>

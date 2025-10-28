@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -17,7 +17,7 @@ import { MatIcon } from '@angular/material/icon';
 export class LoginLogoutComponent {
   private auth = inject(AuthService);
 
-  isLoggedIn = computed(() => this.auth.isLoggedIn());
+  isLoggedIn = computed(() => this.auth.isLoggedInUI());
   userName = computed(() => this.auth.userName());
 
   login() {
