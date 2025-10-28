@@ -7,11 +7,12 @@ import {
   map,
   switchMap,
   catchError,
-  finalize,
   startWith,
   distinctUntilChanged,
+  tap,
+  retry,
 } from 'rxjs/operators';
-import { combineLatest, of } from 'rxjs';
+import { of, timer } from 'rxjs';
 
 import { AssetCardComponent } from '../../../../shared/components/asset-card/asset-card';
 import { MatSelectModule } from '@angular/material/select';
@@ -23,6 +24,13 @@ import { BackendApiService } from '../../../../shared/services/backend-api.servi
 import { SearchToolbarComponent } from '../../../../shared/components/search-toolbar/search-toolbar';
 import { UiLoadingComponent } from '../../../../shared/components/ui-loading/ui-loading';
 import { UiErrorComponent } from '../../../../shared/components/ui-error/ui-error';
+
+type ParamState = {
+  pageSize: number;
+  pageIndex: number;
+  q: string;
+  enhanced: boolean;
+};
 
 @Component({
   selector: 'app-datasets-all',
@@ -48,7 +56,8 @@ export class DatasetsAllComponent implements OnInit {
 
   // ---- UI state (signals)
   items = signal<Dataset[]>([]);
-  loading = signal<boolean>(true);
+  loading = signal<boolean>(true); // loading LISTU
+  countLoading = signal<boolean>(true); // loading COUNTA
   error = signal<string | null>(null);
 
   // Query/paging state (mirrors URL query params)
@@ -57,75 +66,124 @@ export class DatasetsAllComponent implements OnInit {
   query = signal<string>('');
   enhanced = signal<boolean>(false);
 
-  length = signal<number>(0); // total count
+  length = signal<number | undefined>(undefined);
 
   // ---- Derived values for pagination UI
   offset = computed(() => this.pageIndex() * this.pageSize());
   canPrev = computed(() => this.pageIndex() > 0);
-  canNext = computed(() => this.offset() + this.pageSize() < this.length());
-  from = computed(() => (this.length() === 0 ? 0 : this.offset() + 1));
-  to = computed(() => Math.min(this.offset() + this.pageSize(), this.length()));
+  canNext = computed(() => {
+    const len = this.length();
+    if (typeof len !== 'number') return false;
+    return this.offset() + this.pageSize() < len;
+  });
+  from = computed(() => {
+    const len = this.length();
+    if (typeof len !== 'number') return 0;
+    return len === 0 ? 0 : this.offset() + 1;
+  });
+  to = computed(() => {
+    const len = this.length();
+    if (typeof len !== 'number') return this.pageSize();
+    return Math.min(this.offset() + this.pageSize(), len);
+  });
+
+  private activeListKey = signal<string>('');
+  private activeCountKey = signal<string>('');
+
+  private makeListKey(p: ParamState) {
+    return `q=${p.q}|enh=${p.enhanced ? 1 : 0}|ps=${p.pageSize}|pi=${p.pageIndex}`;
+  }
+  private makeCountKey(p: Pick<ParamState, 'q' | 'enhanced'>) {
+    return `q=${p.q}|enh=${p.enhanced ? 1 : 0}`;
+  }
 
   ngOnInit(): void {
-    /**
-     * Stream of URL query params -> normalized state object.
-     * distinctUntilChanged prevents duplicate requests when params don't actually change.
-     */
-    this.route.queryParamMap
+    const params$ = this.route.queryParamMap.pipe(
+      takeUntilDestroyed(this.destroyRef),
+      startWith(this.route.snapshot.queryParamMap),
+      map((params) => {
+        const ps = this.toInt(params.get('pageSize'), this.pageSize());
+        const pi = this.toInt(params.get('pageIndex'), this.pageIndex());
+        const q = (params.get('q') ?? '').trim();
+        const en = (params.get('enhanced') ?? 'false') === 'true';
+        return { pageSize: ps, pageIndex: pi, q, enhanced: en } as ParamState;
+      }),
+      distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
+      tap((p) => {
+        // sync UI
+        if (p.pageSize !== this.pageSize()) this.pageSize.set(p.pageSize);
+        if (p.pageIndex !== this.pageIndex()) this.pageIndex.set(p.pageIndex);
+        if (p.q !== this.query()) this.query.set(p.q);
+        if (p.enhanced !== this.enhanced()) this.enhanced.set(p.enhanced);
+
+        // set list key
+        this.activeListKey.set(this.makeListKey(p));
+      })
+    );
+
+    // 2) LIST pipeline
+    params$
       .pipe(
-        takeUntilDestroyed(this.destroyRef),
-        startWith(this.route.snapshot.queryParamMap), // run immediately on init
-        map((params) => {
-          const ps = this.toInt(params.get('pageSize'), this.pageSize());
-          const pi = this.toInt(params.get('pageIndex'), this.pageIndex());
-          const q = (params.get('q') ?? '').trim();
-          const en = (params.get('enhanced') ?? 'false') === 'true';
-          return { pageSize: ps, pageIndex: pi, q, enhanced: en };
-        }),
-        distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
+        switchMap((p) => {
+          const offset = p.pageIndex * p.pageSize;
 
-        /**
-         * For every param set, update local signals for the UI,
-         * then request list + count in parallel. `switchMap` cancels older requests
-         * if params change while the backend is still responding.
-         */
-        switchMap(({ pageSize, pageIndex, q, enhanced }) => {
-          // keep UI signals in sync with URL
-          if (pageSize !== this.pageSize()) this.pageSize.set(pageSize);
-          if (pageIndex !== this.pageIndex()) this.pageIndex.set(pageIndex);
-          if (q !== this.query()) this.query.set(q);
-          if (enhanced !== this.enhanced()) this.enhanced.set(enhanced);
-
-          // prepare requests for the CURRENT param set
-          const offset = pageIndex * pageSize;
-          const list$ = this.api.getDatasets(q, { offset, limit: pageSize }, enhanced);
-          const count$ = this.api.getDatasetsCount(q, enhanced);
-
-          // set loading before the pair of requests
-          this.loading.set(true);
           this.error.set(null);
+          this.loading.set(true);
 
-          return combineLatest([list$, count$]).pipe(
-            // Map to a single object to consume in one subscriber
-            map(([list, count]) => ({
-              list: list ?? [],
-              count: count ?? 0,
-            })),
-            // On any error, surface message and fall back to empty results
+          return this.api.getDatasets(p.q, { offset, limit: p.pageSize }, p.enhanced).pipe(
+            map((list) => ({ list: list ?? [], key: this.makeListKey(p) })),
             catchError((err) => {
               console.error(err);
               this.error.set(err?.error?.message || err?.message || 'Failed to load datasets.');
-              return of({ list: [] as Dataset[], count: 0 });
+              return of({ list: [] as Dataset[], key: this.makeListKey(p) });
             }),
-            // Loading off regardless of success/failure
-            finalize(() => this.loading.set(false))
+            tap(() => this.loading.set(false))
           );
         })
       )
-      .subscribe(({ list, count }) => {
-        // Apply the latest (non-cancelled) results
+      .subscribe(({ list, key }) => {
+        if (key !== this.activeListKey()) return;
         this.items.set(list);
-        this.length.set(count);
+      });
+
+    // 3) COUNT pipeline
+    const countParams$ = params$.pipe(
+      map((p) => ({ q: p.q, enhanced: p.enhanced })),
+      distinctUntilChanged((a, b) => a.q === b.q && a.enhanced === b.enhanced),
+      tap((p) => {
+        // reset count state
+        this.activeCountKey.set(this.makeCountKey(p));
+        this.countLoading.set(true);
+        this.length.set(undefined);
+      })
+    );
+
+    countParams$
+      .pipe(
+        switchMap((p) => {
+          const key = this.makeCountKey(p);
+          return this.api.getDatasetsCount(p.q, p.enhanced).pipe(
+            retry({
+              delay: (error, retryIndex) => {
+                const ms = Math.min(30000, 1000 * Math.pow(2, retryIndex));
+                return timer(ms);
+              },
+            }),
+            map((count) => ({ count, key })),
+            catchError(() => of({ count: undefined as number | undefined, key }))
+          );
+        })
+      )
+      .subscribe(({ count, key }) => {
+        if (key !== this.activeCountKey()) return;
+
+        if (typeof count === 'number' && Number.isFinite(count) && count >= 0) {
+          this.length.set(count);
+          this.countLoading.set(false);
+        } else {
+          // count neznámy -> nechaj spinner
+          this.countLoading.set(true);
+        }
       });
   }
 

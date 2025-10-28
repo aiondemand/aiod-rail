@@ -2,12 +2,13 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { UiButton } from '../ui-button/ui-button';
 
 @Component({
   selector: 'ui-search-toolbar',
   standalone: true,
-  imports: [CommonModule, MatSelectModule, MatIconModule, UiButton],
+  imports: [CommonModule, MatSelectModule, MatIconModule, MatProgressSpinnerModule, UiButton],
   templateUrl: './search-toolbar.html',
   styleUrls: ['./search-toolbar.scss'],
 })
@@ -15,8 +16,6 @@ export class SearchToolbarComponent {
   /* ---- Inputs ---- */
   @Input() query = '';
   @Input() placeholder = 'Full-text search';
-
-  /** toggle visibility of search bar */
   @Input() showSearch = true;
 
   /** Enhanced checkbox */
@@ -25,8 +24,15 @@ export class SearchToolbarComponent {
 
   @Input() pageSize = 10;
   @Input() pageIndex = 0;
-  @Input() length = 0;
+
+  /** Count */
+  @Input() length: number | undefined = undefined;
+
+  /** Loading state of LIST */
   @Input() loading = false;
+
+  /** Loading state COUNT */
+  @Input() countLoading = false;
 
   /** pagesize options */
   @Input() pageSizeOptions: number[] = [10, 25, 50, 100];
@@ -45,12 +51,16 @@ export class SearchToolbarComponent {
     return this.pageIndex > 0;
   }
   get canNext(): boolean {
+    if (typeof this.length !== 'number') return false;
     return this.offset + this.pageSize < this.length;
   }
   get from(): number {
+    if (typeof this.length !== 'number') return 0;
     return this.length === 0 ? 0 : this.offset + 1;
   }
   get to(): number {
+    // pageSize
+    if (typeof this.length !== 'number') return this.pageSize;
     return Math.min(this.offset + this.pageSize, this.length);
   }
 

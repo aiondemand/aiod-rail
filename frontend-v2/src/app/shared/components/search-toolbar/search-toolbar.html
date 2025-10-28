@@ -65,7 +65,22 @@
       <mat-icon class="material-symbols-rounded">chevron_left</mat-icon>
     </ui-button>
 
-    <span class="info">{{ from | number }}–{{ to | number }} / {{ length | number }}</span>
+    <!-- info 0–pageSize / spinner -->
+    <span class="info">
+      {{ from | number }}–{{ to | number }}
+      <span class="sep">/</span>
+      @if (countLoading || length === undefined) {
+      <mat-progress-spinner
+        class="count-spinner"
+        mode="indeterminate"
+        diameter="14"
+        strokeWidth="3"
+        aria-label="Counting datasets"
+      ></mat-progress-spinner>
+      } @else {
+      <span>{{ length | number }}</span>
+      }
+    </span>
 
     <!-- next -->
     <ui-button

@@ -213,6 +213,19 @@
     border-radius: 10px;
     background: color-mix(in oklab, var(--text) 3%, transparent);
     flex: 0 1 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+
+    .sep {
+      opacity: 0.7;
+    }
+
+    .count-spinner {
+      display: inline-block;
+      vertical-align: middle;
+    }
   }
 }
 
