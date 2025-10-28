@@ -2,20 +2,22 @@
 from OuterRail import Configuration, ExperimentManager
 
 # Login
-config = Configuration(host="http://rail/backend/url")
-config.login(username="username", password="password")
+config = Configuration(host="https://rail.aiod.eu/api")
+config.login()
 
 # Specify experiment in a dictionary
 experiment = {
     "name": "My experiment",
     "description": "Super demo Experiment",
-    "publication_ids": [],
+    "publication_ids": [
+        "pub_J5WL8fuaDHl0hUMMiTEk45Do"
+    ],
     "experiment_template_id": "EX_TEMPLATE_ID",
     "dataset_ids": [
-        "1"
+        "data_14H9yMvYxB0UQg6UALE94q4o"
     ],
     "model_ids": [
-        "2"
+        "mdl_0JWgp63vVi5H8sw5ahkf4Mcx"
     ],
     "env_vars": [
         {

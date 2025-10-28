@@ -1,9 +1,9 @@
 ```python
-from OuterRail import ExperimentTemplateManager
+from OuterRail import Configuration, ExperimentTemplateManager
 
 # Login
 config = Configuration(host="https://rail.aiod.eu/api")
-config.login(username="username", password="password")
+config.login()
 
 
 # Use existing Python script as Experiment script
@@ -26,12 +26,16 @@ template_config = {
     "envs_required": [
         {
             "name": "SPLIT_NAME",
-            "description": "name of a subset"
+            "description": "name of a subset",
+            "is_secret": False
         }
     ],
-    "envs_optional": [],
-    "available_metrics": [
-        "accuracy"
+    "envs_optional": [
+        {
+            "name": "BATCH_SIZE",
+            "description": "Size of a batch",
+            "is_secret": False
+        }
     ],
     "is_public": True
 }

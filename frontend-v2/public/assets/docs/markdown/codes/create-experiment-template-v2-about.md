@@ -1,9 +1,9 @@
 ```python
-from OuterRail import ExperimentTemplateManager
+from OuterRail import Configuration, ExperimentTemplateManager
 
 # Login
 config = Configuration(host="https://rail.aiod.eu/api")
-config.login(username="username", password="password")
+config.login()
 
 # Define all properties, script, base image and requirements.txt in your dictionary
 template_config = {
@@ -19,12 +19,16 @@ template_config = {
     "envs_required": [
         {
             "name": "SPLIT_NAME",
-            "description": "name of a subset"
+            "description": "name of a subset",
+            "is_secret": False
         }
     ],
-    "envs_optional": [],
-    "available_metrics": [
-        "accuracy"
+    "envs_optional": [
+        {
+            "name": "BATCH_SIZE",
+            "description": "Size of a batch",
+            "is_secret": False
+        }
     ],
     "is_public": True,
     "pip_requirements": "numpy==1.25.0\nscikit-learn==1.2.2",
