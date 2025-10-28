@@ -53,7 +53,6 @@ async def is_admin(token: str | None = Security(oidc)) -> None:
 
 
 def has_admin_role(user_info: dict) -> bool:
-    return True
     user_client_roles = (
         user_info.get("resource_access", {})
         .get(settings.AIOD_KEYCLOAK.CLIENT_ID, {})
