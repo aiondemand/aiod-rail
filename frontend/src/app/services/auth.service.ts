@@ -36,7 +36,6 @@ export class AuthService {
     }
 
     get hasAdminRole(): boolean {
-        return true;
         return this.clientRoles.includes('admin_access');
     }
 
