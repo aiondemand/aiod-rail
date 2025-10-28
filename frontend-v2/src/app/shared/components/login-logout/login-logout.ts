@@ -17,7 +17,7 @@ import { MatIcon } from '@angular/material/icon';
 export class LoginLogoutComponent {
   private auth = inject(AuthService);
 
-  isLoggedIn = computed(() => this.auth.isLoggedInUI());
+  isLoggedIn = computed(() => this.auth.isLoggedIn());
   userName = computed(() => this.auth.userName());
 
   login() {
