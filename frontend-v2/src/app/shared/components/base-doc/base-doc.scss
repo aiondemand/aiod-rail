@@ -162,17 +162,16 @@ app-base-doc pre[class*='language-properties'] {
 //properties
 
 app-base-doc .props-card {
-  margin: $margin-default;
+  margin-bottom: $margin-double;
   border: 1px solid var(--border);
   border-radius: var(--radius);
   background: var(--card);
-  box-shadow: 0 1px 0 color-mix(in oklab, var(--border) 60%, transparent); /* jemný relief */
 }
 
 app-base-doc .props-card .props-scroll {
   max-height: 520px;
   overflow: auto;
-  padding: 16px 18px;
+  padding: $margin-default;
 }
 
 app-base-doc h2 + .props-card {
