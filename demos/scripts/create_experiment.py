@@ -1,5 +1,6 @@
 from OuterRail import Configuration, ExperimentManager, AssetManager
 import json
+from argparse import ArgumentParser
 
 
 def create_and_run_experiment(
@@ -62,10 +63,32 @@ def create_and_run_experiment(
         json.dump(ids, f)
 
 
-if __name__ == "__main__":
-    create_and_run_experiment(
-        experiment_name="experiment_sst2",
-        # demo_dir="demos/use-cases/testing-use-case",
-        demo_dir="demos/use-cases/sentiment-classification",
-        rail_host="http://localhost:8000"
+def parse_arguments() -> dict:
+    parser = ArgumentParser(description="Create an Experiment and subsequently run it as an Experiment Run.")
+
+    parser.add_argument(
+        "--experiment_name",
+        type=str,
+        default="experiment",
+        help="Name of the experiment you wish to create. The eligible names of the experiments are the key values within the 'experiments' object in the metadata.json file pertaining to the particular use case folder you use (default: experiment)"
     )
+    parser.add_argument(
+        "--demo_dir",
+        type=str,
+        default="demos/use-cases/testing-use-case",
+        help="Path to the demo directory containing all the demo setup. Path is relative to the root of the RAIL project (default: demos/use-cases/testing-use-case)"
+    )
+    parser.add_argument(
+        "--rail_host",
+        type=str,
+        default="https://rail.aiod.eu/api",
+        help="RAIL host URL (default: https://rail.aiod.eu/api)"
+    )
+
+    args = parser.parse_args()
+    return vars(args)
+
+
+if __name__ == "__main__":
+    args = parse_arguments()
+    create_and_run_experiment(**args)

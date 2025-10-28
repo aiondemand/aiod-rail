@@ -1,3 +1,4 @@
+from argparse import ArgumentParser
 from OuterRail import Configuration, ExperimentRunManager
 import json
 import os
@@ -35,10 +36,38 @@ def inspect_run(
         print(f"There was an error trying to download a file from the path: '{path_to_file_to_download}'")
 
 
-if __name__ == "__main__":
-    inspect_run(
-        experiment_name="experiment_sst2",
-        demo_dir="demos/use-cases/sentiment-classification",
-        path_to_file_to_download="output/predictions.csv",
-        rail_host="http://localhost:8000"
+def parse_arguments() -> dict:
+    parser = ArgumentParser(description="Inpsect an Experiment Run logs and download one of its files.")
+
+    parser.add_argument(
+        "--experiment_name",
+        type=str,
+        default="experiment",
+        help="Name of the experiment you wish to create. The eligible names of the experiments are the key values within the 'experiments' object in the metadata.json file pertaining to the particular use case folder you use (default: experiment)"
     )
+    parser.add_argument(
+        "--demo_dir",
+        type=str,
+        default="demos/use-cases/testing-use-case",
+        help="Path to the demo directory containing all the demo setup. Path is relative to the root of the RAIL project (default: demos/use-cases/testing-use-case)"
+    )
+    parser.add_argument(
+        "--path_to_file_to_download",
+        type=str,
+        default="output/metrics.json",
+        help="A filepath within the REANA workflow to a file we wish to download (default: output/metrics.json)"
+    )
+    parser.add_argument(
+        "--rail_host",
+        type=str,
+        default="https://rail.aiod.eu/api",
+        help="RAIL host URL (default: https://rail.aiod.eu/api)"
+    )
+
+    args = parser.parse_args()
+    return vars(args)
+
+
+if __name__ == "__main__":
+    args = parse_arguments()
+    inspect_run(**args)
