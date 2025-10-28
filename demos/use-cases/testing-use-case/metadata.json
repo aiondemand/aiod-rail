@@ -11,6 +11,8 @@
             "description": "An experiment for testing",
             "model_name": "kinit/slovakbert-sentiment-twitter",
             "dataset_name": "stanfordnlp/sst2",
+            "model_id": "mdl_0JWgp63vVi5H8sw5ahkf4Mcx",
+            "dataset_id": "data_14H9yMvYxB0UQg6UALE94q4o",
             "env_vars": {
                 "REQUIRED_ENV": "REQUIRED VALUE"
             },

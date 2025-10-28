@@ -1,4 +1,4 @@
-from OuterRail import Configuration, ExperimentManager, AssetManager
+from OuterRail import Configuration, ExperimentManager
 import json
 from argparse import ArgumentParser
 
@@ -17,12 +17,6 @@ def create_and_run_experiment(
         ids = json.load(f)
 
 
-    # Retrieve IDs of assets you wish to use
-    asset_manager = AssetManager(config)
-    dataset_id = asset_manager.get_datasets(query=metadata["dataset_name"], limit=10)[0].identifier
-    model_id = asset_manager.get_models(query=metadata["model_name"], limit=10)[0].identifier
-
-
     experiment_env_vars = [
         {"key": k, "value": v}
         for k, v in metadata["env_vars"].items()
@@ -35,10 +29,10 @@ def create_and_run_experiment(
         "publication_ids": [],
         "experiment_template_id": ids["template_id"],
         "dataset_ids": [
-            dataset_id
+            metadata["dataset_id"]
         ],
         "model_ids": [
-            model_id
+            metadata["model_id"]
         ],
         "env_vars": experiment_env_vars,
         "is_public": metadata["is_public"]

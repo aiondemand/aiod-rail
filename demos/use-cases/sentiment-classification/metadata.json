@@ -11,6 +11,8 @@
             "description": "An experiment for performing sentiment analysis task",
             "model_name": "kinit/slovakbert-sentiment-twitter",
             "dataset_name": "stanfordnlp/sst2",
+            "model_id": "mdl_0JWgp63vVi5H8sw5ahkf4Mcx",
+            "dataset_id": "data_14H9yMvYxB0UQg6UALE94q4o",
             "env_vars": {
                 "SPLIT_NAME": "train",
                 "INPUT_FEATURE_NAME": "sentence",
@@ -20,17 +22,19 @@
             },
             "is_public": false
         },
-        "experiment_twitter_finance": {
-            "name": "[DEMO] Sentiment Analysis Experiment - TWITTER FINANCE",
+        "experiment_imdb": {
+            "name": "[DEMO] Sentiment Analysis Experiment - IMDB",
             "description": "An experiment for performing sentiment analysis task",
             "model_name": "kinit/slovakbert-sentiment-twitter",
-            "dataset_name": "zeroshot/twitter-financial-news-sentiment",
+            "dataset_name": "stanfordnlp/imdb",
+            "model_id": "mdl_0JWgp63vVi5H8sw5ahkf4Mcx",
+            "dataset_id": "data_xLp76CfkhIMuTchc2IP9WAFm",
             "env_vars": {
                 "SPLIT_NAME": "train",
                 "INPUT_FEATURE_NAME": "text",
                 "LABEL_FEATURE_NAME": "label",
-                "NUM_DATAPOINTS_TO_CLASSIFY": "50",
-                "BATCH_SIZE": 4
+                "NUM_DATAPOINTS_TO_CLASSIFY": "5",
+                "BATCH_SIZE": 1
             },
             "is_public": false
         }

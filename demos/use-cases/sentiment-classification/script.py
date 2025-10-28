@@ -46,6 +46,9 @@ def load_assets(model_name, dataset_name, split_name):
     for attempt in range(5):
         try:
             tokenizer = AutoTokenizer.from_pretrained(model_name)
+            # When using Roberta model we need to limit the context size to 512 tokens
+            tokenizer.model_max_length = 512
+
             model = AutoModelForSequenceClassification.from_pretrained(model_name)
             model.to(get_device())
             model.eval()
