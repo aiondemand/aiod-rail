@@ -1,0 +1,25 @@
+{
+    "template": {
+        "name": "[DEMO] Summarization Template",
+        "description": "A template for performing a summarization task",
+        "base_image": "python:3.10",
+        "is_public": false
+    },
+    "experiments": {
+        "experiment_cnn_dailymail": {
+            "name": "[DEMO] Summarization Experiment - CNN DailyMail",
+            "description": "An experiment for performing summarization task",
+            "model_name": " sshleifer/distilbart-xsum-12-1",
+            "dataset_name": "stanfordnlp/sst2",
+            "model_id": "mdl_j6JGN5JIXoQjNhMfJYoOYaHe",
+            "dataset_id": "data_rrj35IDADZBFimlS2q3lewl2",
+            "env_vars": {
+                "SPLIT_NAME": "test",
+                "FEATURE_NAME": "input",
+                "NUM_DATAPOINTS_TO_SUMMARIZE": 10,
+                "BATCH_SIZE": 4
+            },
+            "is_public": false
+        }
+    }
+}

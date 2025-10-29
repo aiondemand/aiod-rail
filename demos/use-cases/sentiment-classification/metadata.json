@@ -17,7 +17,7 @@
                 "SPLIT_NAME": "train",
                 "INPUT_FEATURE_NAME": "sentence",
                 "LABEL_FEATURE_NAME": "label",
-                "NUM_DATAPOINTS_TO_CLASSIFY": "50",
+                "NUM_DATAPOINTS_TO_CLASSIFY": 50,
                 "BATCH_SIZE": 4
             },
             "is_public": false
@@ -33,7 +33,7 @@
                 "SPLIT_NAME": "train",
                 "INPUT_FEATURE_NAME": "text",
                 "LABEL_FEATURE_NAME": "label",
-                "NUM_DATAPOINTS_TO_CLASSIFY": "5",
+                "NUM_DATAPOINTS_TO_CLASSIFY": 5,
                 "BATCH_SIZE": 1
             },
             "is_public": false

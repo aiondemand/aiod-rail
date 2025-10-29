@@ -21,6 +21,8 @@ def create_and_run_experiment(
         {"key": k, "value": v}
         for k, v in metadata["env_vars"].items()
     ]
+    dataset_ids = [metadata["dataset_id"]] if metadata.get("dataset_id", None) is not None else []
+    model_ids = [metadata["model_id"]] if metadata.get("model_id", None) is not None else []
 
     # Specify experiment properties
     experiment = {
@@ -28,12 +30,8 @@ def create_and_run_experiment(
         "description": metadata["description"],
         "publication_ids": [],
         "experiment_template_id": ids["template_id"],
-        "dataset_ids": [
-            metadata["dataset_id"]
-        ],
-        "model_ids": [
-            metadata["model_id"]
-        ],
+        "dataset_ids": dataset_ids,
+        "model_ids": model_ids,
         "env_vars": experiment_env_vars,
         "is_public": metadata["is_public"]
     }

@@ -1,0 +1,40 @@
+{
+    "template": {
+        "name": "[DEMO] Machine Translation Opus Template",
+        "description": "A template for performing machine translation task using either an user-defined model or a transformer from the Opus family (https://huggingface.co/Helsinki-NLP)",
+        "base_image": "python:3.10",
+        "is_public": false
+    },
+    "experiments": {
+        "experiment_hf_model": {
+            "name": "[DEMO] Translation Experiment - Custom HuggingFace model",
+            "description": "An experiment for performing translation task",
+            "dataset_name": "stanfordnlp/sst2",
+            "dataset_id": "data_14H9yMvYxB0UQg6UALE94q4o",
+            "env_vars": {
+                "SPLIT_NAME": "train",
+                "FEATURE_NAME": "sentence",
+                "NUM_DATAPOINTS_TO_TRANSLATE": 10,
+                "BATCH_SIZE": 4,
+                "HF_MODEL": "BlackKakapo/opus-mt-en-ro"
+            },
+            "is_public": false
+        },
+        "experiment_opus_model": {
+            "name": "[DEMO] Translation Experiment - Opus family models",
+            "description": "An experiment for performing translation task",
+            "dataset_name": "stanfordnlp/sst2",
+            "dataset_id": "data_14H9yMvYxB0UQg6UALE94q4o",
+            "env_vars": {
+                "SPLIT_NAME": "train",
+                "FEATURE_NAME": "sentence",
+                "NUM_DATAPOINTS_TO_TRANSLATE": 10,
+                "BATCH_SIZE": 4,
+                "USE_OPUS_MODEL": true,
+                "OPUS_SRC_LANG": "en",
+                "OPUS_DST_LANG": "fr"
+            },
+            "is_public": false
+        }
+    }
+}

@@ -13,8 +13,6 @@ def create_template(demo_dir: str, rail_host: str = "https://rail.aiod.eu/api") 
 
     with open(f"{demo_dir}/metadata.json") as f:
         metadata = json.load(f)["template"]
-    with open(f"{demo_dir}/ids.json") as f:
-        ids = json.load(f)
     with open(f"{demo_dir}/env_vars.json") as f:
         env_vars = json.load(f)
 
@@ -25,10 +23,10 @@ def create_template(demo_dir: str, rail_host: str = "https://rail.aiod.eu/api") 
         "description": metadata["description"],
         "task": "TEXT_CLASSIFICATION",
         "datasets_schema": {
-            "cardinality": "1-1"
+            "cardinality": "0-N"
         },
         "models_schema": {
-            "cardinality": "1-1"
+            "cardinality": "0-N"
         },
         "envs_required": env_vars["required"],
         "envs_optional": env_vars["optional"],
