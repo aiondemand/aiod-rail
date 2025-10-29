@@ -246,9 +246,9 @@ def find_specific_experiments(
         else:
             # Authentication required to see your experiment templates
             raise_requires_auth()
-    if filters.archived:
+    if filters.archived is not None:
         filter_conditions.append(Experiment.is_archived == filters.archived)
-    if filters.public:
+    if filters.public is not None:
         filter_conditions.append(Experiment.is_public == filters.public)
 
     accessibility_condition = Experiment.get_query_readable_by_user(user)

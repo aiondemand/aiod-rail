@@ -79,16 +79,6 @@ class DockerService(ContainerPlatformBase):
                 + f"for ExperimentTemplate id={template_id}"
             )
             await asyncio.to_thread(self.docker_client.images.push, repository=image_name)
-
-            # Retrieve the digest of the image
-            # Should prevent REANA from contacting the registry for the image
-            out_pull = await asyncio.to_thread(
-                self.docker_client.images.pull, repository=image_name
-            )
-            if out_pull is not None:
-                experiment_template.image_digest = out_pull.id
-                experiment_template.update_image_name_in_reana_yaml(experiment_template.image_name)
-
             await asyncio.to_thread(self.docker_client.images.remove, image=image_name)
         except Exception as e:
             self.logger.error(
