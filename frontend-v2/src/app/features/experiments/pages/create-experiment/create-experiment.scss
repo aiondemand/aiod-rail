@@ -312,3 +312,10 @@
   .mat-pseudo-checkbox.mat-pseudo-checkbox-checked::after {
   color: var(--text) !important;
 }
+
+// none
+
+::ng-deep .cdk-overlay-container .app-autocomplete-panel .mat-mdc-option.none-option {
+  margin-top: -20px !important;
+  margin-bottom: -5px !important;
+}

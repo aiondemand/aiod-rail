@@ -249,10 +249,10 @@ export class CreateTemplatePage implements OnInit {
   async submit() {
     if (this.form.invalid || !this.scriptCode().trim()) return;
 
-    // fixed attributes (kept 1:1 with original)
+    // fixed attributes
     const fixedTask = TaskType.TextClassification;
-    const fixedDatasetSchema = { cardinality: AssetCardinality._11 };
-    const fixedModelSchema = { cardinality: AssetCardinality._11 };
+    const fixedDatasetSchema = { cardinality: AssetCardinality._0N }; //_11
+    const fixedModelSchema = { cardinality: AssetCardinality._0N }; //_11
 
     const payload: ExperimentTemplateCreate = {
       name: String(this.form.controls.name.value).trim(),

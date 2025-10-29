@@ -62,6 +62,11 @@ export class CreateExperimentPage implements OnInit {
   private destroyRef = inject(DestroyRef);
   private route = inject(ActivatedRoute);
 
+  readonly NO_MODEL_TOKEN = '__NO_MODEL__';
+  readonly NO_DATASET_TOKEN = '__NO_DATASET__';
+  readonly NO_MODEL_LABEL = ' ➖ No model needed for this experiment';
+  readonly NO_DATASET_LABEL = '➖ No dataset needed for this experiment';
+
   // ----- state
   loading = signal<boolean>(true);
   error = signal<string | null>(null);
@@ -134,7 +139,11 @@ export class CreateExperimentPage implements OnInit {
   modelsMine$ = this.modelFC.valueChanges.pipe(
     debounceTime(250),
     startWith(''),
-    switchMap((q) => (typeof q === 'string' ? this.api.getMyModels(q) : of([]))),
+    switchMap((q) => {
+      if (typeof q !== 'string') return of<Model[]>([]);
+      if (q === this.NO_MODEL_TOKEN) return of<Model[]>([]);
+      return this.api.getMyModels(q);
+    }),
     catchError((err) => {
       this.fail("Couldn't load my models", err);
       return of([]);
@@ -145,7 +154,11 @@ export class CreateExperimentPage implements OnInit {
   modelsPublic$ = this.modelFC.valueChanges.pipe(
     debounceTime(250),
     startWith(''),
-    switchMap((q) => (typeof q === 'string' ? this.api.getModels(q) : of([]))),
+    switchMap((q) => {
+      if (typeof q !== 'string') return of<Model[]>([]);
+      if (q === this.NO_MODEL_TOKEN) return of<Model[]>([]);
+      return this.api.getModels(q);
+    }),
     catchError((err) => {
       this.fail("Couldn't load models", err);
       return of([]);
@@ -157,7 +170,11 @@ export class CreateExperimentPage implements OnInit {
   datasetsMine$ = this.datasetFC.valueChanges.pipe(
     debounceTime(250),
     startWith(''),
-    switchMap((q) => (typeof q === 'string' ? this.api.getMyDatasets(q) : of([]))),
+    switchMap((q) => {
+      if (typeof q !== 'string') return of<Dataset[]>([]);
+      if (q === this.NO_DATASET_TOKEN) return of<Dataset[]>([]);
+      return this.api.getMyDatasets(q);
+    }),
     catchError((err) => {
       this.fail("Couldn't load my datasets", err);
       return of([]);
@@ -168,7 +185,11 @@ export class CreateExperimentPage implements OnInit {
   datasetsPublic$ = this.datasetFC.valueChanges.pipe(
     debounceTime(250),
     startWith(''),
-    switchMap((q) => (typeof q === 'string' ? this.api.getDatasets(q) : of([]))),
+    switchMap((q) => {
+      if (typeof q !== 'string') return of<Dataset[]>([]);
+      if (q === this.NO_DATASET_TOKEN) return of<Dataset[]>([]);
+      return this.api.getDatasets(q);
+    }),
     catchError((err) => {
       this.fail("Couldn't load datasets", err);
       return of([]);
@@ -241,8 +262,8 @@ export class CreateExperimentPage implements OnInit {
                 description: (exp as any).description,
                 visibility: (exp as any).is_public ? 'Public' : 'Private',
                 experimentTemplate: tpl as any,
-                model: mdl as any,
-                dataset: ds as any,
+                model: mdl ? (mdl as any) : this.NO_MODEL_TOKEN,
+                dataset: ds ? (ds as any) : this.NO_DATASET_TOKEN,
               },
               { emitEvent: true }
             );
@@ -288,9 +309,19 @@ export class CreateExperimentPage implements OnInit {
 
   // UI display helpers
   displayTpl = (t?: ExperimentTemplate) => (t ? t.name : '');
-  displayModel = (m?: Model) => (m ? m.name : '');
-  displayDataset = (d?: Dataset) => (d ? d.name : '');
   displayPub = (p?: Publication) => (p ? p.name : '');
+
+  displayModel = (m?: Model | string) =>
+    typeof m === 'string' ? (m === this.NO_MODEL_TOKEN ? this.NO_MODEL_LABEL : m) : m ? m.name : '';
+
+  displayDataset = (d?: Dataset | string) =>
+    typeof d === 'string'
+      ? d === this.NO_DATASET_TOKEN
+        ? this.NO_DATASET_LABEL
+        : d
+      : d
+      ? d.name
+      : '';
 
   // Publications add/remove
   onPublicationPicked(p: Publication) {
@@ -332,16 +363,26 @@ export class CreateExperimentPage implements OnInit {
 
     const pubIds = this.publicationsFA.value.map((p) => String(p.identifier));
 
-    const ds = this.datasetFC.value as Dataset;
-    const mdl = this.modelFC.value as Model;
+    const dsVal = this.datasetFC.value;
+    const mdlVal = this.modelFC.value;
+
+    const dataset_ids =
+      !dsVal || (typeof dsVal === 'string' && dsVal === this.NO_DATASET_TOKEN)
+        ? []
+        : [String((dsVal as Dataset).identifier)];
+
+    const model_ids =
+      !mdlVal || (typeof mdlVal === 'string' && mdlVal === this.NO_MODEL_TOKEN)
+        ? []
+        : [String((mdlVal as Model).identifier)];
 
     const payload: ExperimentCreate = {
       name: String(this.form.controls.name.value).trim(),
       description: String(this.form.controls.description.value).trim(),
       publication_ids: pubIds,
       experiment_template_id: tpl.id,
-      dataset_ids: [String(ds.identifier)],
-      model_ids: [String(mdl.identifier)],
+      dataset_ids,
+      model_ids,
       env_vars,
       is_public: vis,
     };

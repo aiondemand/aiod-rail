@@ -131,11 +131,13 @@
               [displayWith]="displayModel"
               class="app-autocomplete-panel"
             >
+              <mat-option [value]="NO_MODEL_TOKEN">{{ NO_MODEL_LABEL }}</mat-option>
+
               <mat-optgroup label="MY MODELS">
                 @if (myModels?.length) { @for (m of myModels; track m.identifier) {
                 <mat-option [value]="m">{{ m.name }}</mat-option>
                 } } @else {
-                <mat-option disabled>— none —</mat-option>
+                <mat-option class="none-option" disabled>— none —</mat-option>
                 }
               </mat-optgroup>
 
@@ -143,7 +145,7 @@
                 @if (pubModels?.length) { @for (m of pubModels; track m.identifier) {
                 <mat-option [value]="m">{{ m.name }}</mat-option>
                 } } @else {
-                <mat-option disabled>— none —</mat-option>
+                <mat-option class="none-option" disabled>— none —</mat-option>
                 }
               </mat-optgroup>
             </mat-autocomplete>
@@ -168,11 +170,13 @@
               [displayWith]="displayDataset"
               class="app-autocomplete-panel"
             >
+              <mat-option [value]="NO_DATASET_TOKEN">{{ NO_DATASET_LABEL }}</mat-option>
+
               <mat-optgroup label="MY DATASETS">
                 @if (myDatasets?.length) { @for (ds of myDatasets; track ds.identifier) {
                 <mat-option [value]="ds">{{ ds.name }}</mat-option>
                 } } @else {
-                <mat-option disabled>— none —</mat-option>
+                <mat-option class="none-option" disabled>— none —</mat-option>
                 }
               </mat-optgroup>
 
@@ -180,7 +184,7 @@
                 @if (pubDatasets?.length) { @for (ds of pubDatasets; track ds.identifier) {
                 <mat-option [value]="ds">{{ ds.name }}</mat-option>
                 } } @else {
-                <mat-option disabled>— none —</mat-option>
+                <mat-option class="none-option" disabled>— none —</mat-option>
                 }
               </mat-optgroup>
             </mat-autocomplete>

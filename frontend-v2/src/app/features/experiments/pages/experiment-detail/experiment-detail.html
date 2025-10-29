@@ -68,7 +68,7 @@
         @if (dataset(); as ds) {
         <a [routerLink]="['/datasets', ds.identifier]">{{ ds.name }}</a>
         } @else {
-        <span class="muted">—</span>
+        <span class="muted">No dataset selected</span>
         }
       </span>
     </div>
@@ -76,7 +76,8 @@
     <div class="row">
       <span class="k"> <span class="material-symbols-rounded">smart_toy</span>Model </span>
       <span class="v">
-        @if (model(); as mdl) { {{ mdl.name }} } @else { <span class="muted">—</span> }
+        @if (model(); as mdl) { {{ mdl.name }} } @else {
+        <span class="muted">No model selected</span> }
       </span>
     </div>
 
