@@ -128,7 +128,7 @@
   .select.mat-mdc-select {
     height: 36px;
     min-width: 64px;
-    width: 75px;
+    width: 76px;
     padding: 0 8px;
     border-radius: 10px;
     border: 1px solid var(--border);
@@ -150,8 +150,8 @@
       justify-content: center;
     }
     .mat-mdc-select-value {
-      width: 100%;
       text-align: center;
+      white-space: nowrap;
       font: var(--font-ui, 600 14px/1.2 system-ui, sans-serif);
     }
 
