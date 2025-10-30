@@ -1,0 +1,17 @@
+<button
+  type="button"
+  class="switch"
+  [class.switch--sm]="size==='sm'"
+  [class.switch--md]="size==='md'"
+  [class.switch--lg]="size==='lg'"
+  (click)="toggle()"
+  [attr.aria-pressed]="isDark()"
+  [attr.aria-label]="isDark() ? 'Switch to light mode' : 'Switch to dark mode'">
+  <span class="track">
+    <span class="icons" aria-hidden="true">
+      <span class="material-symbols-rounded">light_mode</span>
+      <span class="material-symbols-rounded">dark_mode</span>
+    </span>
+    <span class="knob"></span>
+  </span>
+</button>

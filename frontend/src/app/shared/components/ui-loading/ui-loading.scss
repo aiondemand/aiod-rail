@@ -1,0 +1,25 @@
+@use '../../../../styles/themes';
+@use '../../../../styles/typography' as typo;
+@use '../../../../variables.scss' as *;
+
+.ui-loading {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: color-mix(in oklab, var(--background) 92%, transparent);
+  margin: $margin-double;
+  width: auto;
+
+  &.is-visible {
+    display: flex;
+  }
+
+  .msg {
+    font: var(--font-ui, 600 14px/1.35 system-ui, sans-serif);
+    color: color-mix(in oklab, var(--text) 90%, transparent);
+  }
+}

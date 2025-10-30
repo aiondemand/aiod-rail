@@ -1,0 +1,41 @@
+<ui-search-toolbar
+  [query]="query()"
+  [showEnhanced]="false"
+  [pageSize]="pageSize()"
+  [pageIndex]="pageIndex()"
+  [length]="length()"
+  [loading]="loading()"
+  [pageSizeOptions]="[10, 25, 50, 100]"
+  placeholder="Full-text search"
+  (search)="onSearch($event)"
+  (pageSizeChange)="onPageSize($event)"
+  (pageIndexChange)="onPageIndex($event)"
+></ui-search-toolbar>
+
+<!-- Error panel -->
+<ui-error
+  [show]="!!error()"
+  [message]="error() || 'There are no experiments.'"
+  [retryable]="true"
+  retryLabel="Try again"
+  [closable]="true"
+  (retry)="onRetryError()"
+  (close)="onDismissError()"
+></ui-error>
+
+<!-- card list -->
+<section class="grid" aria-live="polite">
+  @for (exp of items(); track trackExp(exp)) {
+  <ui-asset-card
+    [source]="trackExp(exp)"
+    [title]="titleOf(exp)"
+    [date]="dateOf(exp)"
+    [description]="descOf(exp)"
+    [link]="linkOf(exp)"
+    [visibility]="visibilityOf(exp)"
+    [archived]="archivedOf(exp)"
+  />
+  } @empty { @if (!loading() && !error()) {
+  <p class="empty">There are no experiments.</p>
+  } }
+</section>

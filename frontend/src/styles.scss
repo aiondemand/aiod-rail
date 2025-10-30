@@ -1,173 +1,117 @@
-// Custom Theming for Angular Material
-// For more information: https://material.angular.io/guide/theming
+// Include theming for Angular Material with `mat.theme()`.
+// This Sass mixin will define CSS variables that are used for styling Angular Material
+// components according to the Material 3 design spec.
+// Learn more about theming and how to use it for your application's
+// custom components at https://material.angular.dev/guide/theming
 @use '@angular/material' as mat;
-// Plus imports for other components in your app.
+@use './styles/_themes';
+@use './styles/_fonts';
+@use './styles/_typography';
 
-// Include the common styles for Angular Material. We include this here so that you only
-// have to load a single css file for Angular Material in your app.
-// Be sure that you only ever include this mixin once!
-@include mat.core();
+@import 'highlight.js/styles/vs2015.css';
 
-// Define the palettes for your theme using the Material Design palettes available in palette.scss
-// (imported above). For each palette, you can optionally specify a default, lighter, and darker
-// hue. Available color palettes: https://material.io/design/color/
-$aiod-rail-frontend-primary: mat.define-palette(mat.$indigo-palette);
-$aiod-rail-frontend-accent: mat.define-palette(mat.$pink-palette, A200, A100, A400);
+:root {
+  --mdc-typography-body1-font-family: var(--font-body);
+  --mdc-typography-body2-font-family: var(--font-body);
+  --mdc-typography-button-font-family: var(--font-body);
+  --mdc-typography-subtitle1-font-family: var(--font-body);
+  --mdc-typography-subtitle2-font-family: var(--font-body);
+  --mdc-typography-headline6-font-family: var(--font-title);
+}
 
-// The warn palette is optional (defaults to red).
-$aiod-rail-frontend-warn: mat.define-palette(mat.$red-palette);
+html {
+  @include mat.theme(
+    (
+      color: (
+        primary: mat.$azure-palette,
+        tertiary: mat.$blue-palette,
+      ),
+      typography: Roboto,
+      density: 0,
+    )
+  );
+}
 
-// Create the theme object. A theme consists of configurations for individual
-// theming systems such as "color" or "typography".
-$aiod-rail-frontend-theme: mat.define-light-theme((color: (primary: $aiod-rail-frontend-primary,
-        accent: $aiod-rail-frontend-accent,
-        warn: $aiod-rail-frontend-warn,
-      )));
+body {
+  // Default the application to a light color theme. This can be changed to
+  // `dark` to enable the dark color theme, or to `light dark` to defer to the
+  // user's system settings.
+  color-scheme: light;
 
-// Include theme styles for core and each component used in your app.
-// Alternatively, you can import and @include the theme mixins for each component
-// that you are using.
-@include mat.all-component-themes($aiod-rail-frontend-theme);
+  // Set a default background, font and text colors for the application using
+  // Angular Material's system-level CSS variables. Learn more about these
+  // variables at https://material.angular.dev/guide/system-variables
+  background-color: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+  font: var(--mat-sys-body-medium);
 
-/* You can add global styles to this file, and also import other style files */
+  // Reset the user agent margin.
+  margin: 0;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Montserrat', system-ui, -apple-system, Segoe UI, Roboto, 'Helvetica Neue', Arial,
+    sans-serif;
+  line-height: 1.5;
+}
+
+/* hyperlinks */
+a {
+  color: var(--text);
+}
+a:hover {
+  color: var(--primary);
+}
+
+/* focus ring (a11y) */
+:where(button, [role='button'], a, input, textarea, select):focus-visible {
+  outline: none;
+  box-shadow: var(--focus);
+  border-radius: 8px;
+}
 
 html,
 body {
   height: 100%;
+  margin: 0;
 }
-
 body {
   margin: 0;
-  font-family: "Jura", Roboto, "Helvetica Neue", sans-serif;
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
 }
 
-*:not(code *) {
-  font-family: "Jura", Roboto, "Helvetica Neue", sans-serif;
+/* ----- Global scrollbar styling ----- */
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in oklab, var(--text) 28%, transparent) transparent;
 }
 
-
-/* ================== */
-/* ====== APP ======= */
-/* ================== */
-@import './variables.scss';
-// @import '~highlight.js/style/a11y-dark.css';
-
-/* Container used for layout of sections like Experiments, Datasets or Publications */
-.section-container {
-  display: flex;
-  flex-direction: row;
-
-  .left-panel {
-    width: 200px;
-    flex-shrink: 0;
-    padding-top: $margin-default;
-
-    a {
-      width: 100%;
-      justify-content: left;
-    }
-
-    a.side-menu-subitem {
-      padding-left: $margin-double;
-    }
-  }
-
-  .left-panel-minimized {
-    width: $margin-default;
-    flex-shrink: 0;
-  }
-
-  .left-panel,
-  .left-panel-minimized {
-    .toggle-left-sidebar {
-      position: absolute;
-      bottom: 50vh;
-      border: 1px solid black;
-      border-radius: 50%;
-      background-color: white;
-      cursor: pointer;
-    }
-
-    padding-right: $margin-default;
-  }
-
-  .content-panel {
-    flex: 1;
-    flex-shrink: 1;
-    padding-right: $margin-default;
-    padding-left: $margin-default;
-  }
-
-  .active {
-    background-color: lightgray;
-  }
+/* WebKit (Chrome, Edge, Safari) */
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background-clip: padding-box;
+  border: 3px solid transparent;
+  border-radius: 12px;
+  background: color-mix(in oklab, var(--text) 28%, transparent);
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in oklab, var(--text) 45%, transparent);
 }
 
-mat-divider {
-  margin-top: $margin-default !important;
-  margin-bottom: $margin-default !important;
-}
-
-.form-error-message {
-  color: $color-error;
-  font-size: 1em;
-  margin-top: 5px;
-}
-
-.loading-screen {
-  position: relative;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-td.hljs-ln-numbers {
-  color: #ccc;
-  border-right: 1px solid #CCC;
-  padding-right: 10px !important;
-}
-
-td.hljs-ln-code {
-  padding-left: 10px !important;
-}
-
-/* ================== */
-/* ====== DOCS ===== */
-/* ================== */
-.toc {
-  margin-left: $margin-default;
-
-  ul {
-    padding-left: 0;
-  }
-
-  li {
-    list-style-type: none;
-    margin-left: none;
-    cursor: pointer;
-  }
-
-  .toc-h2 {
-    margin-left: $margin-default;
-  }
-
-  .toc-h3 {
-    margin-left: calc(2 * $margin-default);
-  }
-
-  .toc-h4 {
-    margin-left: calc(3 * $margin-default);
-  }
-}
-
-markdown.fixed-height-scrollable {
-  height: 300px;
-  overflow-y: auto;
-  display: block;
-}
-
-.doc-illustration-figure {
-  width: 100%;
-  max-width: 800px;
-  justify-self: center;
+:root[data-theme='dark'] * {
+  scrollbar-color: color-mix(in oklab, var(--text) 40%, transparent) transparent;
 }

@@ -1,0 +1,79 @@
+<!-- error -->
+<ui-error
+  [show]="!!error()"
+  [message]="error() || 'Failed to load :/'"
+  [retryable]="true"
+  retryLabel="Try Again"
+  (retry)="onRetryError()"
+></ui-error>
+
+<!-- loading -->
+<ui-loading [show]="loading()" [diameter]="32" ariaLabel="Loading"></ui-loading>
+
+<!-- content -->
+<section *ngIf="!loading() && !error() && dataset()" class="detail card">
+  <header class="head">
+    <div class="left">
+      <h1 class="title">
+        {{ title() }}
+        <span *ngIf="version()" class="ver">v{{ version() }}</span>
+      </h1>
+
+      <div class="meta">
+        <span class="badge platform" *ngIf="platform()" [matTooltip]="'Platform'">
+          {{ platform() }}
+        </span>
+
+        <span class="kv" [matTooltip]="'Identifier'">
+          <mat-icon class="msr">badge</mat-icon>
+          <span class="k">ID:</span>
+          <span class="v monospace">{{ identifier() }}</span>
+        </span>
+
+        <span class="kv" *ngIf="datePublished()" [matTooltip]="'Published date'">
+          <mat-icon class="msr">schedule</mat-icon>
+          <span class="v">{{ datePublished() | date : 'MMM d, y' }}</span>
+        </span>
+
+        <span class="kv" [matTooltip]="'License'">
+          <mat-icon class="msr">description</mat-icon>
+          <span class="v">{{ license() }}</span>
+        </span>
+
+        <a
+          *ngIf="sameAs()"
+          class="ext"
+          [href]="sameAs()"
+          target="_blank"
+          rel="noopener"
+          [attr.aria-label]="'Open source page'"
+          [matTooltip]="'Open source page'"
+        >
+          <mat-icon class="msr">open_in_new</mat-icon>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- keywords -->
+  <section class="keywords" *ngIf="keywords()?.length">
+    <span class="label" [matTooltip]="'Keywords'">
+      <mat-icon class="msr">label</mat-icon>
+    </span>
+
+    <mat-chip-listbox class="chips" aria-label="Keywords">
+      <mat-chip *ngFor="let kw of keywords()" [disabled]="true">{{ kw }}</mat-chip>
+    </mat-chip-listbox>
+  </section>
+
+  <mat-divider></mat-divider>
+
+  <!-- description -->
+  <section class="desc">
+    <div class="desc-head">Description</div>
+
+    <div class="desc-body">
+      <markdown [data]="descriptionMd()"></markdown>
+    </div>
+  </section>
+</section>

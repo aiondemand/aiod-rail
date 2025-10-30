@@ -3,7 +3,8 @@ from datetime import datetime
 from beanie import PydanticObjectId
 from pydantic import BaseModel
 
-from app.schemas.env_vars import EnvironmentVar
+from app.schemas.asset_id import AssetId
+from app.schemas.env_vars import EnvironmentVar, EnvironmentVarCreate
 
 
 class ExperimentBase(BaseModel):
@@ -12,14 +13,14 @@ class ExperimentBase(BaseModel):
     is_public: bool
 
     experiment_template_id: PydanticObjectId
-    dataset_ids: list[str]
-    model_ids: list[str]
-    publication_ids: list[str] = []
-    env_vars: list[EnvironmentVar]
+
+    dataset_ids: list[AssetId]
+    model_ids: list[AssetId]
+    publication_ids: list[AssetId] = []
 
 
 class ExperimentCreate(ExperimentBase):
-    pass
+    env_vars: list[EnvironmentVarCreate]
 
 
 class ExperimentResponse(ExperimentBase):
@@ -28,3 +29,4 @@ class ExperimentResponse(ExperimentBase):
     updated_at: datetime
     is_archived: bool
     is_mine: bool
+    env_vars: list[EnvironmentVar]

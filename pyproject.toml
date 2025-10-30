@@ -1,6 +1,59 @@
-[tool.black]
-target-version = ["py310"]
+[project]
+name = "rail"
+description = "Research and Innovation AI Lab (AI on Demand)"
+version = "1.0"
+requires-python = ">=3.10"
+authors = [
+    { name = "Martin Tamajka", email = "martin.tamajka@kinit.sk" },
+    { name = "Andrej Ridzik", email = "andrej.ridzik@kinit.sk" },
+    { name = "Marcel Veselý", email = "marcel.vesely@kinit.sk" }
+]
+dependencies = [
+    "beanie==1.19.2",
+    "docker==6.1.3",
+    "fastapi==0.97.0",
+    "httpx==0.24.0",
+    "python-dateutil==2.8.2",
+    "python-dotenv==1.0.0",
+    "python-keycloak==3.0.0",
+    "python-multipart==0.0.6",
+    "reana-client==0.9.1",
+    "uvicorn==0.22.0",
+    "PyYAML==6.0.1",
+    "motor==3.6.0",
+    "pydantic==1.10.13",
+    "requests==2.31.0",
+    "aiofiles==23.2.1",
+    "deepdiff==7.0.1",
+    "pymongo==4.9"
+]
+readme = "README.md"
 
-[tool.isort]
-profile = "black"
-known_local_folder = ["app"]
+[project.optional-dependencies]
+dev = [
+    "black==23.7.0",
+    "datamodel-code-generator==0.23.0",
+    "flake8===6.1.0",
+    "isort==5.12.0",
+    "mongomock_motor==0.0.29",
+    "pre-commit==3.3.3",
+    "pytest==8.1.1",
+    "pytest-asyncio==0.23.6",
+    "pytest-cov==5.0.0",
+    "pytest-env==1.1.3",
+    "pytest-mock==3.14.0",
+    "requests==2.31.0"
+]
+
+[tool.ruff]
+line-length = 100
+exclude = []
+
+[tool.ruff.lint]
+select = [
+    "S",
+    "I",
+]
+
+[tool.ruff.lint.isort]
+known-local-folder = ["backend/app"]

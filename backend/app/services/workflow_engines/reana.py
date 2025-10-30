@@ -106,14 +106,10 @@ class ReanaService(WorkflowEngineBase):
         return len(re.findall(pattern, stderr)) > 0
 
     async def stop_workflow(self, experiment_run: ExperimentRun) -> bool:
-        return await self._stop_and_delete_workflow(
-            experiment_run, delete_workflow=False
-        )
+        return await self._stop_and_delete_workflow(experiment_run, delete_workflow=False)
 
     async def delete_workflow(self, experiment_run: ExperimentRun) -> bool:
-        return await self._stop_and_delete_workflow(
-            experiment_run, delete_workflow=True
-        )
+        return await self._stop_and_delete_workflow(experiment_run, delete_workflow=True)
 
     async def _stop_and_delete_workflow(
         self, experiment_run: ExperimentRun, delete_workflow: bool = False
@@ -179,11 +175,9 @@ class ReanaService(WorkflowEngineBase):
 
         # retrieve logs
         try:
-            logs = (
-                await self._async_reana_call(
-                    "get_workflow_logs", workflow=workflow_name
-                )
-            )["logs"]
+            logs = (await self._async_reana_call("get_workflow_logs", workflow=workflow_name))[
+                "logs"
+            ]
 
             if workflow_state.success is False:
                 logs = f"{workflow_state.error_message}{logs}"
@@ -199,9 +193,7 @@ class ReanaService(WorkflowEngineBase):
         # save metrics.json
         metrics_filepath = f"{RUN_OUTPUT_FOLDER}/{METRICS_FILENAME}"
         if await self._exists_file(experiment_run, metrics_filepath):
-            await self.download_file(
-                experiment_run, metrics_filepath, exp_output_dirpath
-            )
+            await self.download_file(experiment_run, metrics_filepath, exp_output_dirpath)
 
     async def download_file(
         self, experiment_run: ExperimentRun, filepath: str, savedir: Path
@@ -231,9 +223,7 @@ class ReanaService(WorkflowEngineBase):
         return savedir / filename
 
     async def list_files(self, experiment_run: ExperimentRun) -> list[FileDetail]:
-        files = await self._async_reana_call(
-            "list_files", workflow=experiment_run.workflow_name
-        )
+        files = await self._async_reana_call("list_files", workflow=experiment_run.workflow_name)
         return [
             FileDetail(
                 filepath=file["name"],

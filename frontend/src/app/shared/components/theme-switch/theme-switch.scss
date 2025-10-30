@@ -1,0 +1,100 @@
+@use '../../../../variables' as *;
+
+@use 'sass:math';
+
+:host {
+  display: inline-flex;
+  align-items: center;
+}
+
+/*  btn (pill) */
+.switch--sm {
+  --h: 30px;
+  --w: 52px;
+  --k: 18px;
+}
+.switch--md {
+  --h: 36px;
+  --w: 60px;
+  --k: 20px;
+}
+.switch--lg {
+  --h: 44px;
+  --w: 68px;
+  --k: 22px;
+}
+.switch:not(.switch--sm):not(.switch--lg) {
+  --h: 36px;
+  --w: 60px;
+  --k: 20px;
+}
+
+.switch {
+  appearance: none;
+  border: 1.5px solid var(--text); /* ghost border */
+  background: transparent;
+  border-radius: var(--radius-pill);
+  width: calc(var(--w));
+  height: calc(var(--h));
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+.switch:hover {
+  border-color: color-mix(in oklab, var(--text) 55%, transparent);
+}
+
+/* rail */
+.track {
+  position: relative;
+  width: var(--w);
+  height: var(--h);
+  border-radius: var(--radius-pill);
+}
+
+/* icons */
+.icons {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  pointer-events: none;
+  padding-inline: 12px;
+  color: color-mix(in oklab, var(--text) 90%, transparent);
+  z-index: 2;
+
+  .material-symbols-rounded {
+    font-size: 18px;
+    line-height: 1;
+  }
+}
+
+:host-context([data-theme='light']) .icons .material-symbols-rounded:first-child {
+  color: $aiod-white;
+}
+
+:host-context([data-theme='dark']) .icons .material-symbols-rounded:last-child {
+  color: $aiod-white;
+}
+
+/* knob */
+.knob {
+  position: absolute;
+  top: calc((var(--h) - var(--k)) / 2);
+  left: calc((var(--h) - var(--k)) / 2);
+  width: var(--k);
+  height: var(--k);
+  border-radius: 50%;
+  background: $aiod-blue;
+  transition: transform 160ms ease, background-color 160ms ease;
+}
+
+/* dark: var(--primary) */
+:host-context([data-theme='dark']) .knob {
+  transform: translateX(calc(var(--w) - var(--h)));
+  background: $aiod-blue;
+}

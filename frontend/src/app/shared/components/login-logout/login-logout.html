@@ -1,0 +1,16 @@
+<div class="login-container" [class.logged-in]="isLoggedIn()">
+  @if (isLoggedIn()) {
+  <a class="avatar" [routerLink]="['/profile']" matTooltip="Open profile" aria-label="User profile">
+    <ui-button class="icon" variant="ghost" size="lg" [icon]="true" ariaLabel="user">
+      <mat-icon fontIcon="person"></mat-icon>
+    </ui-button>
+    <span class="username">{{ userName() }}</span>
+  </a>
+
+  <ui-button size="lg" variant="ghost" (click)="logout()" matTooltip="Sign out">
+    Log out
+  </ui-button>
+  } @else {
+  <ui-button size="lg" variant="ghost" (click)="login()" matTooltip="Log in"> Log in </ui-button>
+  }
+</div>

@@ -1,4 +1,4 @@
-# See http://help.github.com/ignore-files/ for more about ignoring files.
+# See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
 
 # Compiled output
 /dist
@@ -21,14 +21,12 @@ yarn-error.log
 *.sublime-workspace
 
 # Visual Studio Code
-.vscode/
-.vs/
-
-# Local History for Visual Studio Code
-.history/
-
-# Built Visual Studio Code Extensions
-*.vsix
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.history/*
 
 # Miscellaneous
 /.angular/cache
@@ -42,5 +40,3 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
-
-src/keycloak.secrets.ts

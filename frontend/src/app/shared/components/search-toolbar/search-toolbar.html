@@ -1,0 +1,98 @@
+<section class="toolbar">
+  @if (showSearch) {
+  <div class="search">
+    <input
+      #q
+      type="search"
+      class="input"
+      [value]="query"
+      [placeholder]="placeholder"
+      (keyup.enter)="onSearch(q.value)"
+      (blur)="onSearch(q.value)"
+      aria-label="Search"
+    />
+
+    <ui-button
+      variant="primary"
+      [icon]="true"
+      size="md"
+      [ariaLabel]="'Search'"
+      (click)="onSearch(q.value)"
+    >
+      <mat-icon class="material-symbols-rounded">search</mat-icon>
+    </ui-button>
+
+    @if (showEnhanced) {
+    <label class="chk">
+      <input
+        type="checkbox"
+        [checked]="enhanced"
+        (change)="toggleEnhanced($any($event.target).checked)"
+      />
+      <span>Enhanced</span>
+    </label>
+    }
+  </div>
+  }
+
+  <div class="pager">
+    <label class="psize">
+      <span class="psize-label">Page size</span>
+
+      <mat-select
+        class="select select--slim"
+        [value]="pageSize"
+        (selectionChange)="changePageSize($event.value)"
+        [panelClass]="'pager-select-panel'"
+        aria-label="Page size"
+      >
+        @for (opt of pageSizeOptions; track opt) {
+        <mat-option [value]="opt">{{ opt }}</mat-option>
+        }
+      </mat-select>
+    </label>
+
+    <!-- prev -->
+    <ui-button
+      variant="ghost"
+      size="md"
+      [disabled]="!canPrev || loading"
+      [ariaLabel]="'Previous page'"
+      [icon]="true"
+      title="Previous page"
+      (click)="prevPage()"
+    >
+      <mat-icon class="material-symbols-rounded">chevron_left</mat-icon>
+    </ui-button>
+
+    <!-- info 0–pageSize / spinner -->
+    <span class="info">
+      {{ from | number }}–{{ to | number }}
+      <span class="sep">/</span>
+      @if (countLoading || length === undefined) {
+      <mat-progress-spinner
+        class="count-spinner"
+        mode="indeterminate"
+        diameter="14"
+        strokeWidth="3"
+        aria-label="Counting datasets"
+      ></mat-progress-spinner>
+      } @else {
+      <span>{{ length | number }}</span>
+      }
+    </span>
+
+    <!-- next -->
+    <ui-button
+      variant="ghost"
+      size="md"
+      [disabled]="!canNext || loading"
+      [ariaLabel]="'Next page'"
+      title="Next page"
+      [icon]="true"
+      (click)="nextPage()"
+    >
+      <mat-icon class="material-symbols-rounded">chevron_right</mat-icon>
+    </ui-button>
+  </div>
+</section>

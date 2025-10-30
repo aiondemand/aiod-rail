@@ -3,9 +3,9 @@ from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Response, UploadFile, status
 
-from app.auth import get_current_user, get_current_user_token
-from app.config import settings
+from app.auth import get_current_user_or_raise, get_current_user_token
 from app.helpers import Pagination
+from app.schemas.asset_id import AssetIdPathArg
 from app.schemas.dataset import Dataset
 from app.schemas.ml_model import MLModel
 from app.schemas.platform import Platform
@@ -13,10 +13,10 @@ from app.schemas.publication import Publication
 from app.services.aiod import (
     AssetType,
     aiod_client_wrapper,
+    enhanced_search,
     get_asset,
     get_assets,
     get_assets_count,
-    get_assets_version,
     get_my_asset_ids,
     get_my_assets,
     search_assets,
@@ -54,17 +54,26 @@ async def get_my_datasets(
         )
 
 
-@router.get("/datasets/search/{query}", response_model=list[Dataset])
-async def search_datasets(query: str, pagination: Pagination = Depends()) -> Any:
-    return await search_assets(
-        asset_type=AssetType.DATASETS,
-        query=query,
-        pagination=pagination,
-    )
+@router.get("/datasets/search", response_model=list[Dataset])
+async def search_datasets(
+    query: str, enhanced: bool = False, pagination: Pagination = Depends()
+) -> Any:
+    if not enhanced:
+        return await search_assets(
+            asset_type=AssetType.DATASETS,
+            query=query,
+            pagination=pagination,
+        )
+    else:
+        return await enhanced_search(
+            asset_type=AssetType.DATASETS,
+            query=query,
+            pagination=pagination,
+        )
 
 
 @router.get("/datasets/{id}", response_model=Dataset)
-async def get_dataset(id: int) -> Any:
+async def get_dataset(id: AssetIdPathArg) -> Any:
     return await get_asset(asset_type=AssetType.DATASETS, asset_id=id)
 
 
@@ -73,7 +82,7 @@ async def get_datasets_count() -> Any:
     return await get_assets_count(asset_type=AssetType.DATASETS)
 
 
-@router.get("/counts/datasets/search/{query}", response_model=int)
+@router.get("/counts/datasets/search", response_model=int)
 async def get_filtered_datasets_count(query: str) -> Any:
     return await get_assets_count(asset_type=AssetType.DATASETS, filter_query=query)
 
@@ -101,7 +110,7 @@ async def get_my_datasets_count(
 
 @router.post(
     "/datasets",
-    dependencies=[Depends(get_current_user(required=True, from_api_key=False))],
+    dependencies=[Depends(get_current_user_or_raise)],
     response_model=Dataset,
 )
 async def create_dataset(
@@ -110,7 +119,7 @@ async def create_dataset(
 ) -> Any:
     # Create a new dataset in AIoD (just metadata)
     res = await aiod_client_wrapper.client.post(
-        Path(AssetType.DATASETS.value, get_assets_version(AssetType.DATASETS)),
+        str(Path(AssetType.DATASETS.value)),
         headers={"Authorization": f"{token}"},
         json=dataset.dict(exclude_unset=True),
     )
@@ -130,9 +139,9 @@ async def create_dataset(
 
 
 @router.delete("/datasets/{id}", response_model=bool)
-async def delete_dataset(id: int, token: str = Depends(get_current_user_token)) -> Any:
+async def delete_dataset(id: AssetIdPathArg, token: str = Depends(get_current_user_token)) -> Any:
     res = await aiod_client_wrapper.client.delete(
-        Path("datasets", settings.AIOD_API.DATASETS_VERSION, str(id)),
+        Path("datasets", id),
         headers={"Authorization": f"{token}"},
     )
 
@@ -148,14 +157,14 @@ async def delete_dataset(id: int, token: str = Depends(get_current_user_token)) 
 
 @router.post("/datasets/{id}/upload-file-to-huggingface", response_model=Dataset)
 async def dataset_upload_file_to_huggingface(
-    id: int,
+    id: AssetIdPathArg,
     file: UploadFile,
     huggingface_name: str,
     huggingface_token: str,
     token: str = Depends(get_current_user_token),
 ) -> Any:
     res = await aiod_client_wrapper.client.post(
-        Path("upload/datasets", str(id), "huggingface"),
+        Path("upload/datasets", id, "huggingface"),
         params={"token": huggingface_token, "username": huggingface_name},
         headers={"Authorization": f"{token}"},
         files={"file": (file.filename, file.file, file.content_type)},
@@ -206,7 +215,7 @@ async def get_my_models(
         )
 
 
-@router.get("/models/search/{query}", response_model=list[MLModel])
+@router.get("/models/search", response_model=list[MLModel])
 async def search_models(query: str, pagination: Pagination = Depends()) -> Any:
     return await search_assets(
         asset_type=AssetType.ML_MODELS,
@@ -216,7 +225,7 @@ async def search_models(query: str, pagination: Pagination = Depends()) -> Any:
 
 
 @router.get("/models/{id}", response_model=MLModel)
-async def get_model(id: int) -> Any:
+async def get_model(id: AssetIdPathArg) -> Any:
     return await get_asset(asset_type=AssetType.ML_MODELS, asset_id=id)
 
 
@@ -246,7 +255,7 @@ async def get_my_models_count(
         )
 
 
-@router.get("/counts/models/search/{query}", response_model=int)
+@router.get("/counts/models/search", response_model=int)
 async def get_filtered_models_count(query: str) -> Any:
     return await get_assets_count(asset_type=AssetType.ML_MODELS, filter_query=query)
 
@@ -259,7 +268,7 @@ async def get_publications(pagination: Pagination = Depends()) -> Any:
     return await get_assets(asset_type=AssetType.PUBLICATIONS, pagination=pagination)
 
 
-@router.get("/publications/search/{query}", response_model=list[Publication])
+@router.get("/publications/search", response_model=list[Publication])
 async def search_publications(query: str, pagination: Pagination = Depends()) -> Any:
     return await search_assets(
         asset_type=AssetType.PUBLICATIONS,
@@ -269,7 +278,7 @@ async def search_publications(query: str, pagination: Pagination = Depends()) ->
 
 
 @router.get("/publications/{id}", response_model=Publication)
-async def get_publication(id: int) -> Any:
+async def get_publication(id: AssetIdPathArg) -> Any:
     return await get_asset(asset_type=AssetType.PUBLICATIONS, asset_id=id)
 
 
@@ -278,7 +287,7 @@ async def get_publications_count() -> Any:
     return await get_assets_count(asset_type=AssetType.PUBLICATIONS)
 
 
-@router.get("/counts/publications/search/{query}", response_model=int)
+@router.get("/counts/publications/search", response_model=int)
 async def get_filtered_publications_count(query: str) -> Any:
     return await get_assets_count(asset_type=AssetType.PUBLICATIONS, filter_query=query)
 

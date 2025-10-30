@@ -38,8 +38,8 @@ class ExperimentScheduler:
         self.experiment_semaphore = asyncio.Semaphore(settings.MAX_PARALLEL_CONTAINERS)
         self.image_semaphore = asyncio.Semaphore(settings.MAX_PARALLEL_IMAGE_BUILDS)
 
-        self.experiment_run_queue = asyncio.Queue()
-        self.image_building_queue = asyncio.Queue()
+        self.experiment_run_queue: asyncio.Queue[PydanticObjectId] = asyncio.Queue()
+        self.image_building_queue: asyncio.Queue[PydanticObjectId] = asyncio.Queue()
 
     async def init_run_queue(self) -> None:
         run_ids = (
@@ -47,7 +47,7 @@ class ExperimentScheduler:
                 ExperimentRun.state != RunState.FINISHED,
                 ExperimentRun.state != RunState.CRASHED,
             )
-            .sort(+ExperimentRun.updated_at)
+            .sort(+ExperimentRun.updated_at)  # type: ignore
             .project(ExperimentRunId)
             .to_list()
         )
@@ -57,8 +57,7 @@ class ExperimentScheduler:
         count = self.experiment_run_queue.qsize()
         if count > 0:
             self.logger.info(
-                "Workflow queue has been initialized with "
-                + f"{count} workflows to execute"
+                "Workflow queue has been initialized with " + f"{count} workflows to execute"
             )
 
     async def init_image_build_queue(self) -> None:
@@ -69,7 +68,7 @@ class ExperimentScheduler:
                 ExperimentTemplate.state != TemplateState.CRASHED,
                 ExperimentTemplate.retry_count < settings.MAX_IMAGE_BUILDS_ATTEMPTS,
             )
-            .sort(+ExperimentTemplate.updated_at)
+            .sort(+ExperimentTemplate.updated_at)  # type: ignore
             .project(ExperimentTemplateId)
             .to_list()
         )
@@ -118,9 +117,7 @@ class ExperimentScheduler:
         async with self.experiment_semaphore:
             experiment_run = await ExperimentRun.get(exp_run_id)
             experiment = await Experiment.get(experiment_run.experiment_id)
-            experiment_template = await ExperimentTemplate.get(
-                experiment.experiment_template_id
-            )
+            experiment_template = await ExperimentTemplate.get(experiment.experiment_template_id)
 
             image_exists = await self._rebuild_image_if_necessary(
                 experiment_run, experiment_template
@@ -128,7 +125,7 @@ class ExperimentScheduler:
             if image_exists is False:
                 return
 
-            await experiment_run.update_state_in_db(RunState.IN_PROGRESS)
+            await experiment_run.update_state_in_db(RunState.PREPROCESSING)
             self.logger.info(
                 f"=== ExperimentRun id={experiment_run.id} "
                 + f"(retry_count={experiment_run.retry_count}) "
@@ -168,18 +165,18 @@ class ExperimentScheduler:
     async def _exec_experiment(
         self, experiment_run: ExperimentRun, experiment: Experiment
     ) -> WorkflowState:
-        environment_variables = await self._general_workflow_preparation(
-            experiment_run, experiment
-        )
+        environment_variables = await self._general_workflow_preparation(experiment_run, experiment)
         await self.workflow_engine.preprocess_workflow(
             experiment_run, experiment, environment_variables
         )
+
+        await experiment_run.update_state_in_db(RunState.RUNNING)
         workflow_state = await self.workflow_engine.run_workflow(experiment_run)
 
         if workflow_state.manually_deleted is False:
-            await self.workflow_engine.postprocess_workflow(
-                experiment_run, workflow_state
-            )
+            await experiment_run.update_state_in_db(RunState.POSTPROCESSING)
+            await self.workflow_engine.postprocess_workflow(experiment_run, workflow_state)
+
         return workflow_state
 
     async def _rebuild_image_if_necessary(
@@ -190,12 +187,8 @@ class ExperimentScheduler:
             return True
 
         # image rebuilding
-        await experiment_template.update_state_in_db(
-            TemplateState.CREATED, retry_count=0
-        )
-        successful_image_rebuild = await self._build_image_multiple_attempts(
-            experiment_template
-        )
+        await experiment_template.update_state_in_db(TemplateState.CREATED, retry_count=0)
+        successful_image_rebuild = await self._build_image_multiple_attempts(experiment_template)
         if successful_image_rebuild is False:
             self.logger.error(
                 f"ExperimentRun id={experiment_run.id} has not started "
@@ -208,14 +201,10 @@ class ExperimentScheduler:
     async def _general_workflow_preparation(
         self, experiment_run: ExperimentRun, experiment: Experiment
     ) -> dict[str, str]:
-        model_names_env = ",".join(
-            [await get_model_name(x) for x in experiment.model_ids]
-        )
-        dataset_names_env = ",".join(
-            [await get_dataset_name(x) for x in experiment.dataset_ids]
-        )
-        model_ids_env = ",".join([str(id) for id in experiment.model_ids])
-        dataset_ids_env = ",".join([str(id) for id in experiment.dataset_ids])
+        model_names_env = ",".join([await get_model_name(x) for x in experiment.model_ids])
+        dataset_names_env = ",".join([await get_dataset_name(x) for x in experiment.dataset_ids])
+        model_ids_env = ",".join([id for id in experiment.model_ids])
+        dataset_ids_env = ",".join([id for id in experiment.dataset_ids])
         reserved_env_values = [
             model_names_env,
             dataset_names_env,
@@ -225,8 +214,7 @@ class ExperimentScheduler:
 
         environment_variables = {env.key: env.value for env in experiment.env_vars}
         reserved_vars = {
-            name.value: val
-            for name, val in zip(list(ReservedEnvVars), reserved_env_values)
+            name.value: val for name, val in zip(list(ReservedEnvVars), reserved_env_values)
         }
         environment_variables.update(reserved_vars)
 
@@ -246,9 +234,7 @@ class ExperimentScheduler:
                 + f"ExperimentTemplate id={template_id} "
                 + "INITIALIZED ==="
             )
-            image_build_state = await self._build_image_multiple_attempts(
-                experiment_template
-            )
+            image_build_state = await self._build_image_multiple_attempts(experiment_template)
             self.logger.info(
                 "=== Creation of an environment "
                 + f"for ExperimentTemplate id={template_id} "
@@ -256,47 +242,35 @@ class ExperimentScheduler:
             )
             return image_build_state
 
-    async def _build_image_multiple_attempts(
-        self, experiment_template: ExperimentTemplate
-    ) -> bool:
+    async def _build_image_multiple_attempts(self, experiment_template: ExperimentTemplate) -> bool:
         while True:
-            await experiment_template.update_state_in_db(TemplateState.IN_PROGRESS)
-
-            image_build_state = await self.container_platform.build_image(
-                experiment_template
-            )
-            should_retry = (
-                experiment_template.retry_count < settings.MAX_IMAGE_BUILDS_ATTEMPTS - 1
-                and image_build_state is False
-            )
-
-            if image_build_state:
-                new_state = TemplateState.FINISHED
-            elif should_retry:
-                new_state = TemplateState.IN_PROGRESS
-            else:
-                new_state = TemplateState.CRASHED
-
             await experiment_template.update_state_in_db(
-                new_state,
-                retry_count=experiment_template.retry_count + int(should_retry),
+                state=TemplateState.IN_PROGRESS, retry_count=experiment_template.retry_count + 1
+            )
+
+            image_build_state = await self.container_platform.build_image(experiment_template)
+            should_retry = (
+                experiment_template.retry_count < settings.MAX_IMAGE_BUILDS_ATTEMPTS
+                and image_build_state is False
             )
             if should_retry:
                 continue
+
+            await experiment_template.update_state_in_db(
+                state=TemplateState.FINISHED if image_build_state else TemplateState.CRASHED
+            )
             return image_build_state
 
     @staticmethod
     async def init(
         container_platform: ContainerPlatformBase, workflow_engine: WorkflowEngineBase
     ) -> ExperimentScheduler:
-        ExperimentScheduler.SERVICE = ExperimentScheduler(
-            container_platform, workflow_engine
-        )
+        ExperimentScheduler.SERVICE = ExperimentScheduler(container_platform, workflow_engine)
         await ExperimentScheduler.SERVICE.init_image_build_queue()
         await ExperimentScheduler.SERVICE.init_run_queue()
 
         return ExperimentScheduler.SERVICE
 
     @staticmethod
-    def get_service() -> ExperimentScheduler:
+    def get_service() -> ExperimentScheduler | None:
         return ExperimentScheduler.SERVICE

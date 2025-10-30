@@ -1,15 +1,13 @@
 import logging
-from typing import Awaitable, Callable
 
 from fastapi import HTTPException, Security, status
-from fastapi.security import APIKeyHeader, OpenIdConnect
+from fastapi.security import OpenIdConnect
 from keycloak import KeycloakError, KeycloakOpenID
 
 from app.config import settings
-from app.models.rail_user import RailUser
 
 oidc = OpenIdConnect(
-    openIdConnectUrl=settings.AIOD_KEYCLOAK.OIDC_URL,
+    openIdConnectUrl=str(settings.AIOD_KEYCLOAK.OIDC_URL),
     auto_error=False,
 )
 
@@ -21,77 +19,37 @@ keycloak_openid = KeycloakOpenID(
     verify=True,
 )
 
-api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False)
-
 
 async def get_current_user_token(token=Security(oidc)):
     return token
 
 
-def get_current_user(
-    required: bool,
-    from_token: bool = True,
-    from_api_key: bool = False,  # By default, only for users authenticated through OIDC
-) -> Callable[[str | None, str | None], Awaitable[dict | None]]:
-    """
-    Get the current user based on the provided token or API key (returns an async function).
-    If both token and api_key are defined, the token will be used.
+async def get_current_user_if_exists(token: str | None = Security(oidc)) -> dict | None:
+    if token is None:
+        return None
 
-    Args:
-        required (bool): Whether the user is required to be authenticated.
-        from_token (bool): Whether the user can be authenticated through OIDC.
-        from_api_key (bool): Whether the user can be authenticated through an API key.
-    """
+    token = token.replace("Bearer ", "")
+    try:
+        return keycloak_openid.userinfo(token)
+    except KeycloakError as e:
+        _raise_invalid_token(e)
 
-    async def _get_user(
-        token: str = Security(oidc), api_key: str = Security(api_key_header)
-    ) -> dict | None:
-        """
-        Get the current user based on the provided token or API key.
-        If both token and api_key are defined, the token will be used.
-
-        Args:
-            token (str): The token provided by the user.
-            api_key (str): The API key provided by the user.
-        """
-        if not from_token and not from_api_key:
-            raise ValueError("Either from_token or from_api_key must be set to True")
-        elif not required and not token and not api_key:
-            return None
-        elif from_token and token:
-            return await _get_userinfo(token)
-        elif from_api_key and api_key:
-            # TODO: Fetch userinfo based on user email from Keycloak
-            # needs special role/rights in Keycloak for the client
-            # In this way, this will return the same user info.
-            user_obj = await RailUser.find_one(RailUser.api_key == api_key)
-            if user_obj is not None:
-                return user_obj.to_dict()
-            else:
-                raise HTTPException(
-                    status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail="Invalid API key",
-                    headers={"WWW-Authenticate": "Bearer"},
-                )
-        else:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="This endpoint requires authorization. You need to be logged in or provide an API key.",
-                headers={"WWW-Authenticate": "Bearer"},
-            )
-
-    return _get_user
+    return None
 
 
-async def is_admin(token: str = Security(oidc)):
-    user_info = await _get_userinfo(token)
-
-    if not has_admin_role(user_info):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="You don't have enough privileges",
-            headers={"WWW-Authenticate": "Bearer"},
+async def get_current_user_or_raise(token: str | None = Security(oidc)) -> dict:
+    user = await get_current_user_if_exists(token)
+    if user is None:
+        raise_requires_auth(
+            "This endpoint requires authorization. You need to be logged in or provide an API key."
         )
+    return user  # type: ignore[return-value]
+
+
+async def is_admin(token: str | None = Security(oidc)) -> None:
+    user_info = await get_current_user_or_raise(token)
+    if not has_admin_role(user_info):
+        raise_requires_auth("You don't have enough privileges")
 
 
 def has_admin_role(user_info: dict) -> bool:
@@ -103,27 +61,17 @@ def has_admin_role(user_info: dict) -> bool:
     return "admin_access" in user_client_roles
 
 
-async def _get_userinfo(token: str) -> dict:
-    if token is None:
-        raise_requires_auth()
-
-    token = token.replace("Bearer ", "")
-
-    try:
-        return keycloak_openid.userinfo(token)
-    except KeycloakError as e:
-        _raise_invalid_token(e)
-
-
-def raise_requires_auth():
+def raise_requires_auth(detail: str | None = None) -> None:
+    if detail is None:
+        detail = "This endpoint requires authorization. You need to be logged in."
     raise HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="This endpoint requires authorization. You need to be logged in.",
+        detail=detail,
         headers={"WWW-Authenticate": "Bearer"},
     )
 
 
-def _raise_invalid_token(ex: KeycloakError):
+def _raise_invalid_token(ex: KeycloakError) -> None:
     error_msg = ex.error_message
     error_detail = "Invalid authentication token"
 

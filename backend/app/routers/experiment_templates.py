@@ -7,7 +7,7 @@ from beanie.odm.queries.find import FindMany
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 
-from app.auth import get_current_user, raise_requires_auth
+from app.auth import get_current_user_if_exists, get_current_user_or_raise, raise_requires_auth
 from app.config import settings
 from app.helpers import Pagination, QueryOperator, get_compare_operator_fn
 from app.models.experiment import Experiment
@@ -31,7 +31,7 @@ class ExperimentTemplateFilter(BaseModel):
 
 @router.get("/experiment-templates", response_model=list[ExperimentTemplateResponse])
 async def get_experiment_templates(
-    user: dict = Depends(get_current_user(required=False, from_api_key=True)),
+    user: dict | None = Depends(get_current_user_if_exists),
     query: str = "",
     pagination: Pagination = Depends(),
     filters: ExperimentTemplateFilter = Depends(),
@@ -45,15 +45,14 @@ async def get_experiment_templates(
     experiment_templates = await result_set.to_list()
 
     return [
-        experiment_template.map_to_response(user)
-        for experiment_template in experiment_templates
+        experiment_template.map_to_response(user) for experiment_template in experiment_templates
     ]
 
 
 @router.get("/experiment-templates/{id}", response_model=ExperimentTemplateResponse)
 async def get_experiment_template(
     id: PydanticObjectId,
-    user: dict = Depends(get_current_user(required=False, from_api_key=True)),
+    user: dict | None = Depends(get_current_user_if_exists),
 ) -> Any:
     experiment_template = await get_experiment_template_if_accessible_or_raise(id, user)
     return experiment_template.map_to_response(user)
@@ -61,7 +60,7 @@ async def get_experiment_template(
 
 @router.get("/count/experiment-templates", response_model=int)
 async def get_experiment_templates_count(
-    user: dict = Depends(get_current_user(required=False, from_api_key=True)),
+    user: dict | None = Depends(get_current_user_if_exists),
     query: str = "",
     filters: ExperimentTemplateFilter = Depends(),
 ) -> Any:
@@ -80,38 +79,37 @@ async def get_experiment_templates_count(
 )
 async def create_experiment_template(
     experiment_template: ExperimentTemplateCreate,
-    user: dict = Depends(get_current_user(required=True, from_api_key=True)),
+    user: dict = Depends(get_current_user_or_raise),
 ) -> Any:
-    experiment_template_obj = ExperimentTemplate(
-        **experiment_template.dict(), created_by=user["email"]
+    experiment_template_obj = await ExperimentTemplate.create_template(
+        experiment_template, user["email"]
     )
-    if experiment_template_obj.is_valid() is False:
+    if experiment_template_obj is None:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid Experiment Template",
         )
 
-    experiment_template_obj = await experiment_template_obj.create()
-    experiment_template_obj.initialize_files(
+    created_experiment_template = await experiment_template_obj.create()
+
+    created_experiment_template.initialize_files(
         base_image=experiment_template.base_image,
         pip_requirements=experiment_template.pip_requirements,
         script=experiment_template.script,
     )
-    return experiment_template_obj.map_to_response(user)
+    return created_experiment_template.map_to_response(user)
 
 
 @router.put("/experiment-templates/{id}", response_model=ExperimentTemplateResponse)
 async def update_experiment_template(
     id: PydanticObjectId,
     experiment_template: ExperimentTemplateCreate,
-    user: dict = Depends(get_current_user(required=True, from_api_key=True)),
+    user: dict = Depends(get_current_user_or_raise),
 ) -> Any:
     original_template = await get_experiment_template_if_accessible_or_raise(
         id, user, write_access=True
     )
-    has_experiments = (
-        await Experiment.find(Experiment.experiment_template_id == id).count() > 0
-    )
+    has_experiments = await Experiment.find(Experiment.experiment_template_id == id).count() > 0
     has_experiments_of_others = (
         await Experiment.find(
             Experiment.experiment_template_id == id,
@@ -139,12 +137,10 @@ async def update_experiment_template(
 @router.delete("/experiment-templates/{id}", response_model=None)
 async def remove_experiment_template(
     id: PydanticObjectId,
-    user: dict = Depends(get_current_user(required=True, from_api_key=True)),
+    user: dict = Depends(get_current_user_or_raise),
 ) -> Any:
     await get_experiment_template_if_accessible_or_raise(id, user, write_access=True)
-    exist_experiments = (
-        await Experiment.find(Experiment.experiment_template_id == id).count() > 0
-    )
+    exist_experiments = await Experiment.find(Experiment.experiment_template_id == id).count() > 0
     if exist_experiments:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -158,7 +154,7 @@ async def remove_experiment_template(
 @router.patch("/experiment-templates/{id}/archive", response_model=None)
 async def archive_experiment_template(
     id: PydanticObjectId,
-    user: dict = Depends(get_current_user(required=True, from_api_key=True)),
+    user: dict = Depends(get_current_user_or_raise),
     archive: bool = False,
 ) -> Any:
     experiment_template = await get_experiment_template_if_accessible_or_raise(
@@ -176,12 +172,15 @@ async def archive_experiment_template(
 async def get_experiments_of_template_count(
     id: PydanticObjectId,
     only_mine: bool = False,
-    user: dict = Depends(get_current_user(required=True, from_api_key=True)),
+    user: dict | None = Depends(get_current_user_if_exists),
 ) -> Any:
     await get_experiment_template_if_accessible_or_raise(id, user)
 
-    search_conditions = [Experiment.created_by == user["email"]] if only_mine else []
-    search_conditions.append(Experiment.experiment_template_id == id)
+    search_conditions = [Experiment.experiment_template_id == id]
+    if user is not None and only_mine:
+        search_conditions.append(Experiment.created_by == user["email"])
+    elif only_mine:
+        raise_requires_auth()
 
     return await Experiment.find(*search_conditions).count()
 
@@ -191,12 +190,10 @@ def find_specific_experiment_templates(
     filters: ExperimentTemplateFilter,
     user: dict | None,
     query_operator: QueryOperator = QueryOperator.AND,
-    pagination: Pagination = None,
+    pagination: Pagination | None = None,
 ) -> FindMany[ExperimentTemplate]:
     page_kwargs = (
-        {"skip": pagination.offset, "limit": pagination.limit}
-        if pagination is not None
-        else {}
+        {"skip": pagination.offset, "limit": pagination.limit} if pagination is not None else {}
     )
 
     # applying filters
@@ -206,9 +203,7 @@ def find_specific_experiment_templates(
     if filters.mine is not None:
         if user is not None:
             filter_conditions.append(
-                get_compare_operator_fn(filters.mine)(
-                    Experiment.created_by, user["email"]
-                )
+                get_compare_operator_fn(filters.mine)(Experiment.created_by, user["email"])
             )
         else:
             # Authentication required to see your experiment templates

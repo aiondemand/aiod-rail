@@ -1,0 +1,243 @@
+<ui-loading [show]="loading()" label="Preparing form…"></ui-loading>
+
+<ui-error
+  [show]="!!error()"
+  [message]="error() || 'Failed to load data.'"
+  [retryable]="false"
+  [closable]="true"
+  (close)="error.set(null)"
+></ui-error>
+
+@if (!loading()) {
+<div class="detail card">
+  <form class="create-experiment-form" [formGroup]="form" (ngSubmit)="submit()">
+    <section class="head">
+      <h1 class="title">Create experiment</h1>
+    </section>
+
+    <!-- ===== BASIC ===== -->
+    <section class="block">
+      <h2>Basic information</h2>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Name</mat-label>
+        <input matInput formControlName="name" placeholder="Name of your experiment" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Description</mat-label>
+        <textarea
+          matInput
+          rows="8"
+          formControlName="description"
+          placeholder="Describe purpose, setup, etc."
+        ></textarea>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Experiment visibility</mat-label>
+        <mat-select formControlName="visibility" [panelClass]="'app-select-panel'">
+          <mat-option [value]="'Public'">Public</mat-option>
+          <mat-option [value]="'Private'">Private</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </section>
+
+    <!-- ===== PUBLICATIONS ===== -->
+    <section class="block">
+      <h2>Related AI assets</h2>
+      <h3>Publications</h3>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Search publications</mat-label>
+        <input
+          matInput
+          [matAutocomplete]="autoPub"
+          [formControl]="pubSearchFC"
+          placeholder="Type to search…"
+        />
+        <mat-autocomplete
+          #autoPub="matAutocomplete"
+          [displayWith]="displayPub"
+          class="app-autocomplete-panel"
+          (optionSelected)="onPublicationPicked($event.option.value)"
+        >
+          @let pubs = (publicationsSearch$ | async); @if (pubs?.length) { @for (p of pubs; track
+          p.identifier) {
+          <mat-option [value]="p">{{ p.name }}</mat-option>
+          } } @else {
+          <mat-option disabled>No publications found</mat-option>
+          }
+        </mat-autocomplete>
+      </mat-form-field>
+
+      <mat-chip-listbox class="chips">
+        @for (c of publicationsFA.controls; track c.value?.identifier) {
+        <mat-chip (removed)="removePublication(c)">
+          {{ c.value.name }}
+          <mat-icon matChipRemove>cancel</mat-icon>
+        </mat-chip>
+        }
+      </mat-chip-listbox>
+    </section>
+
+    <!-- ===== TEMPLATE PICKER ===== -->
+    <section class="block">
+      <h2>Experiment Template specific information</h2>
+      <i>Only approved templates are visible</i>
+
+      @let tpls = (templates$ | async);
+      <mat-form-field appearance="outline">
+        <mat-label>Experiment template</mat-label>
+        <input
+          matInput
+          [matAutocomplete]="autoTpl"
+          formControlName="experimentTemplate"
+          placeholder="Search template"
+        />
+        <mat-autocomplete
+          #autoTpl="matAutocomplete"
+          [displayWith]="displayTpl"
+          class="app-autocomplete-panel"
+        >
+          @if (tpls?.length) { @for (t of tpls; track t.id) {
+          <mat-option [value]="t">{{ t.name }}</mat-option>
+          } } @else {
+          <mat-option disabled>No templates found</mat-option>
+          }
+        </mat-autocomplete>
+      </mat-form-field>
+    </section>
+
+    <!-- ===== RUNTIME (MODEL/DATASET + ENVs) ===== -->
+    @if (selectedTemplate(); as t) {
+    <section class="block">
+      <div class="cols">
+        <div class="col">
+          <h3>Select a model</h3>
+
+          @let myModels = (modelsMine$ | async); @let pubModels = (modelsPublic$ | async);
+
+          <mat-form-field appearance="outline">
+            <mat-label>Model</mat-label>
+            <input
+              matInput
+              [matAutocomplete]="autoModel"
+              formControlName="model"
+              placeholder="Search model"
+            />
+            <mat-autocomplete
+              #autoModel="matAutocomplete"
+              [displayWith]="displayModel"
+              class="app-autocomplete-panel"
+            >
+              <mat-option [value]="NO_MODEL_TOKEN">{{ NO_MODEL_LABEL }}</mat-option>
+
+              <mat-optgroup label="MY MODELS">
+                @if (myModels?.length) { @for (m of myModels; track m.identifier) {
+                <mat-option [value]="m">{{ m.name }}</mat-option>
+                } } @else {
+                <mat-option class="none-option" disabled>— none —</mat-option>
+                }
+              </mat-optgroup>
+
+              <mat-optgroup label="PUBLIC MODELS">
+                @if (pubModels?.length) { @for (m of pubModels; track m.identifier) {
+                <mat-option [value]="m">{{ m.name }}</mat-option>
+                } } @else {
+                <mat-option class="none-option" disabled>— none —</mat-option>
+                }
+              </mat-optgroup>
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+
+        <div class="col">
+          <h3>Select a dataset</h3>
+
+          @let myDatasets = (datasetsMine$ | async); @let pubDatasets = (datasetsPublic$ | async);
+
+          <mat-form-field appearance="outline">
+            <mat-label>Dataset</mat-label>
+            <input
+              matInput
+              [matAutocomplete]="autoDs"
+              formControlName="dataset"
+              placeholder="Search dataset"
+            />
+            <mat-autocomplete
+              #autoDs="matAutocomplete"
+              [displayWith]="displayDataset"
+              class="app-autocomplete-panel"
+            >
+              <mat-option [value]="NO_DATASET_TOKEN">{{ NO_DATASET_LABEL }}</mat-option>
+
+              <mat-optgroup label="MY DATASETS">
+                @if (myDatasets?.length) { @for (ds of myDatasets; track ds.identifier) {
+                <mat-option [value]="ds">{{ ds.name }}</mat-option>
+                } } @else {
+                <mat-option class="none-option" disabled>— none —</mat-option>
+                }
+              </mat-optgroup>
+
+              <mat-optgroup label="PUBLIC DATASETS">
+                @if (pubDatasets?.length) { @for (ds of pubDatasets; track ds.identifier) {
+                <mat-option [value]="ds">{{ ds.name }}</mat-option>
+                } } @else {
+                <mat-option class="none-option" disabled>— none —</mat-option>
+                }
+              </mat-optgroup>
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <!-- ENVs -->
+      <div class="envs">
+        <h3>Specify environment variables</h3>
+
+        @if (hasNoEnvs()) {
+        <div class="muted">No environment variables were set in this Experiment Template.</div>
+        } @if (t.envs_required.length) {
+        <b>Required environment variables</b>
+        <div class="env-grid" formGroupName="envsRequired">
+          @for (env of t.envs_required; track env.name) {
+          <mat-form-field appearance="outline">
+            <mat-label>
+              <span class="env-name">
+                {{ env.name }}
+                @if (env.is_secret){<mat-icon class="lock" matTooltip="Secret">lock</mat-icon>}
+              </span>
+            </mat-label>
+            <input matInput [formControlName]="env.name" required aria-required="true" />
+          </mat-form-field>
+          }
+        </div>
+        } @if (t.envs_optional.length) {
+        <b class="opt-sep">Optional environment variables</b>
+        <div class="env-grid" formGroupName="envsOptional">
+          @for (env of t.envs_optional; track env.name) {
+          <mat-form-field appearance="outline">
+            <mat-label>
+              <span class="env-name">
+                {{ env.name }}
+                @if (env.is_secret){<mat-icon class="lock" matTooltip="Secret">lock</mat-icon>}
+              </span>
+            </mat-label>
+            <input matInput [formControlName]="env.name" />
+          </mat-form-field>
+          }
+        </div>
+        }
+      </div>
+    </section>
+    }
+
+    <div class="actions">
+      <ui-button variant="primary" size="md" type="submit" [disabled]="form.invalid">
+        Create experiment
+      </ui-button>
+    </div>
+  </form>
+</div>
+}

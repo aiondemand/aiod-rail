@@ -33,10 +33,12 @@ class DockerService(ContainerPlatformBase):
 
         return False
 
-    async def terminate(self) -> None:
+    async def terminate(self) -> bool:
         if self.docker_client:
             self.docker_client.close()
             self.docker_client = None
+
+        return True
 
     async def check_image(self, experiment_template: ExperimentTemplate) -> bool:
         try:
@@ -76,9 +78,7 @@ class DockerService(ContainerPlatformBase):
                 "\tPushing docker image to a remote repository "
                 + f"for ExperimentTemplate id={template_id}"
             )
-            await asyncio.to_thread(
-                self.docker_client.images.push, repository=image_name
-            )
+            await asyncio.to_thread(self.docker_client.images.push, repository=image_name)
             await asyncio.to_thread(self.docker_client.images.remove, image=image_name)
         except Exception as e:
             self.logger.error(

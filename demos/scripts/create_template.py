@@ -1,0 +1,83 @@
+from OuterRail import Configuration, ExperimentTemplateManager
+import json
+from argparse import ArgumentParser
+
+
+def create_template(demo_dir: str, rail_host: str = "https://rail.aiod.eu/api") -> None:
+    # Login
+    config = Configuration(host=rail_host)
+    config.login(persist=True)
+
+    script_path = f"{demo_dir}/script.py"
+    requirements_path = f"{demo_dir}/requirements.txt"
+
+    with open(f"{demo_dir}/metadata.json") as f:
+        metadata = json.load(f)["template"]
+    with open(f"{demo_dir}/env_vars.json") as f:
+        env_vars = json.load(f)
+
+
+    # Specify template properties
+    template_config = {
+        "name": metadata["name"],
+        "description": metadata["description"],
+        "task": "TEXT_CLASSIFICATION",
+        "datasets_schema": {
+            "cardinality": "0-N"
+        },
+        "models_schema": {
+            "cardinality": "0-N"
+        },
+        "envs_required": env_vars["required"],
+        "envs_optional": env_vars["optional"],
+        "is_public": metadata["is_public"]
+    }
+
+
+    # Create template
+    template_manager = ExperimentTemplateManager(config)
+    template = template_manager.create(
+        template=(
+            script_path,
+            requirements_path,
+            metadata["base_image"],
+            template_config
+        )
+    )
+
+    # Save template ID
+    ids = {
+        "template_id": template.id,
+        "experiment_ids": {},
+        "run_ids": {}
+    }
+    with open(f"{demo_dir}/ids.json", "w") as f:
+        json.dump(ids, f, ensure_ascii=False)
+
+    print(f"Experiment Template (ID={template.id}) has been successfully created.")
+    print("Now you need to wait for RAIL maintainers to approve your template to be usable.")
+
+
+def parse_arguments() -> dict:
+    parser = ArgumentParser(description="Create an Experiment Template with specified parameters.")
+
+    parser.add_argument(
+        "--demo_dir",
+        type=str,
+        default="demos/use-cases/testing-use-case",
+        help="Path to the demo directory containing all the demo setup. Path is relative to the root of the RAIL project (default: demos/use-cases/testing-use-case)"
+    )
+    parser.add_argument(
+        "--rail_host",
+        type=str,
+        default="https://rail.aiod.eu/api",
+        help="RAIL host URL (default: https://rail.aiod.eu/api)"
+    )
+
+    args = parser.parse_args()
+    return vars(args)
+
+
+if __name__ == "__main__":
+    args = parse_arguments()
+    create_template(**args)

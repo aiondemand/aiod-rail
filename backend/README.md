@@ -41,7 +41,7 @@ in [docker-compose.yml](docker-compose.yml) file.
     1. files corresponding to individual experiments (*throughout this documentation we tend to call this
        folder `eee-data`, however you can name this directory however you would like*)
 1. Create MongoDB container using following
-   command: `docker run --name eee-mongo -p 27017:27017 -d -v <PATH_TO_DB_FOLDER>:/data/db mongo`
+   command: `docker run --name eee-mongo -p 27017:27017 -d -v <PATH_TO_DB_FOLDER>:/data/db mongo:6.0.6`
 1. [IF YOU'RE ON WINDOWS] Open specific port for Docker to listen to, so that you can communicate with it. Specifically
    use Docker Desktop application and:
     - Go to "settings"
@@ -59,9 +59,12 @@ in [docker-compose.yml](docker-compose.yml) file.
       use `unix:///var/run/docker.sock`
     - `EEE_DATA_PATH`: Not necessarily an absolute path of the so called `eee-data` folder you have created beforehand
       in the step 1.2.
+1. Manually export REANA env variables in the terminal you shall use for running the application: `export REANA_SERVER_URL=<URL_PLACEHOLDER> && export REANA_ACCESS_TOKEN=<TOKEN_PLACEHOLDER>`
 1. Start the FastAPI server using the following command: `uvicorn app.main:app --reload`
 
 ### Fill some toy data into the database
+
+*Note: These scripts doesn't currently work as they haven't been updated to the current RAIL version.*
 
 Execute Python script found on the path: `dev-scripts/experiments/create_experiment_template.py` that creates one
 ExperimentTemplate that will be stored in MongoDB database.
@@ -122,4 +125,3 @@ pytest
 #### Code coverage
 The configuration makes sure that code coverage is computed by `pytest-cov` as well.
 You can browse the generated coverage report in HTML format found in directory `htmlcov`.
-   

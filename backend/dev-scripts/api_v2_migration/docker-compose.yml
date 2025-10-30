@@ -1,0 +1,18 @@
+services:
+  migrate-ids:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - TSV_DIRPATH=/data/id_tsv_files
+      - MONGO_URI=mongodb://backend-db:27017
+      - MONGO_DBNAME=aiod
+    depends_on:
+      - backend-db
+    volumes:
+      - ${TSV_DIRPATH}:/data/id_tsv_files
+
+  backend-db:
+    image: mongo:6.0.6
+    volumes:
+      - ${DATA_PATH}:/data/db

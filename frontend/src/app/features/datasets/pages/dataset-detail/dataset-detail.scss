@@ -1,0 +1,313 @@
+@use '../../../../../styles/themes';
+@use '../../../../../styles/typography' as typo;
+@use '../../../../../variables.scss' as *;
+
+/* ================== Helpers ================== */
+$pill-h: 32px;
+
+/* description links  */
+:host .detail.card .desc .desc-body a {
+  color: var(--text-active);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+:host .detail.card .desc .desc-body a:hover {
+  text-decoration: underline;
+  filter: brightness(1.08);
+}
+
+@mixin pill {
+  height: $pill-h;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border);
+  background: color-mix(in oklab, var(--text) 10%, transparent);
+  color: var(--text);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
+  letter-spacing: 0.01em;
+  font-feature-settings: 'tnum' 1;
+}
+
+.pill-icon,
+.msr,
+.meta .kv mat-icon,
+.meta .badge mat-icon {
+  width: 18px;
+  height: 18px;
+  font-size: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  color: var(--text-muted);
+}
+
+/* ===== Card/Layout ===== */
+.detail.card {
+  margin: $margin-double;
+  background: var(--card);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: $margin-double;
+
+  @media (max-width: 760px) {
+    margin: $margin-default;
+    padding: $margin-default;
+  }
+}
+
+/* ===== Header ===== */
+.head {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 14px 18px;
+  align-items: start;
+  margin-bottom: $margin-default;
+
+  @media (max-width: 760px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.title {
+  @include typo.title(--h2-d, --h2-m, --h2-lh-d, --h2-lh-m, --h2-mb-d, --h2-mb-m, --w-bold);
+  margin: 0;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 12px;
+  letter-spacing: -0.01em;
+  color: var(--text);
+  font-family: var(--font-title);
+
+  .ver {
+    font-family: var(--font-body);
+    font-weight: var(--w-medium);
+    font-size: 0.6em;
+    color: var(--text-muted);
+    padding: 2px 10px;
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--border);
+    background: color-mix(in oklab, var(--text) 5%, transparent);
+  }
+}
+
+/* ===== Meta ===== */
+.meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px 12px;
+  margin-top: 6px;
+  margin-bottom: $margin-default;
+
+  .badge.platform {
+    @include pill;
+    background: color-mix(in oklab, var(--primary) 22%, transparent);
+    border-color: color-mix(in oklab, var(--primary) 45%, var(--border));
+    color: var(--text);
+    flex-basis: auto;
+    order: 0;
+    margin-bottom: 0;
+  }
+
+  /* key-value pill (ID, date, license) */
+  .kv {
+    @include pill;
+
+    .k {
+      color: var(--text-muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .v {
+      color: var(--text);
+    }
+
+    .monospace {
+      @extend .mono;
+    }
+  }
+}
+
+.actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  .hide-sm {
+    @media (max-width: 760px) {
+      display: none;
+    }
+  }
+}
+
+/* ===== Keywords ===== */
+.keywords {
+  display: grid;
+  grid-template-columns: $pill-h 1fr;
+  column-gap: 12px;
+  align-items: start;
+  padding-bottom: $margin-default;
+
+  /* ico/label */
+  .label {
+    @include pill;
+    width: $pill-h;
+    height: $pill-h;
+    padding: 0;
+    justify-content: center;
+    border-radius: 12px;
+    background: color-mix(in oklab, var(--text) 6%, transparent);
+  }
+
+  /* tags on right */
+  .chips {
+    min-width: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+
+    --mdc-chip-outline-color: transparent;
+    --mdc-chip-elevated-container-color: transparent;
+    --mdc-chip-disabled-state-layer-color: transparent;
+    --mdc-chip-disabled-state-layer-opacity: 0;
+
+    .mat-mdc-chip,
+    .mdc-evolution-chip {
+      @include pill;
+      height: 28px;
+      padding: 0 12px;
+      box-shadow: none !important;
+      outline: none !important;
+      background: color-mix(in oklab, var(--text) 10%, transparent) !important;
+      border-color: var(--border) !important;
+      color: var(--text) !important;
+
+      user-select: text;
+      -webkit-user-select: text;
+      cursor: text;
+    }
+
+    .mdc-evolution-chip__container {
+      border: 0 !important;
+    }
+
+    .mdc-evolution-chip__text-label {
+      color: var(--text) !important;
+      opacity: 1 !important;
+      font-family: var(--font-body);
+      font-weight: var(--w-medium);
+      font-size: 12.5px;
+      line-height: 1;
+      letter-spacing: 0.01em;
+
+      user-select: text;
+      -webkit-user-select: text;
+    }
+
+    /* disabled */
+    .mdc-evolution-chip--disabled,
+    .mat-mdc-chip-disabled,
+    [aria-disabled='true'] {
+      opacity: 1 !important;
+      pointer-events: auto;
+    }
+
+    .mat-ripple,
+    .mat-ripple-element {
+      display: none !important;
+    }
+  }
+}
+
+/* ===== Description ===== */
+.desc {
+  margin-top: $margin-default;
+
+  .desc-head {
+    margin-bottom: $margin-default;
+  }
+  .desc-actions {
+    margin-top: $margin-default;
+  }
+
+  .desc-body {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: $margin-default;
+    background: var(--surface-2);
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      font-family: var(--font-title);
+      color: var(--text);
+    }
+
+    a {
+      color: var(--text-active);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+    pre {
+      border: 1px solid color-mix(in oklab, var(--text) 18%, transparent);
+      background: color-mix(in oklab, var(--text) 12%, transparent);
+      overflow: auto;
+      color: var(--text);
+    }
+
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
+        monospace;
+      font-size: 0.9em;
+      color: var(--text);
+    }
+
+    &.is-clamped {
+      display: block;
+    }
+  }
+
+  .desc-actions {
+    margin-top: 10px;
+  }
+}
+
+/* ===== Loading / Error ===== */
+.error {
+  margin: $margin-double;
+  padding: 12px 14px;
+  border: 1px solid color-mix(in oklab, var(--primary) 40%, var(--border));
+  background: color-mix(in oklab, var(--primary) 12%, transparent);
+  color: color-mix(in oklab, var(--primary) 85%, var(--text));
+  border-radius: 12px;
+  font: var(--font-ui, 600 14px/1.35 system-ui, sans-serif);
+}
+
+/* ===== Keyword chip colors fix (keeps tokens) ===== */
+:host ::ng-deep .keywords .chips .mdc-evolution-chip.mdc-evolution-chip--disabled,
+:host ::ng-deep .keywords .chips .mat-mdc-chip.mat-mdc-chip-disabled {
+  opacity: 1 !important;
+  background: color-mix(in oklab, var(--text) 14%, transparent) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text) !important;
+}
+:host ::ng-deep .keywords .chips .mdc-evolution-chip__text-label {
+  color: var(--text) !important;
+  opacity: 1 !important;
+}

@@ -1,0 +1,92 @@
+<ui-loading [show]="loading()" label="Loading runs…"></ui-loading>
+
+<ui-error
+  [show]="!!error()"
+  [message]="error() || 'Failed to load runs.'"
+  [retryable]="true"
+  retryLabel="Try again"
+  [closable]="true"
+  (retry)="updateRuns()"
+  (close)="error.set(null)"
+></ui-error>
+
+@if (!loading() && !error()) {
+<div class="runs-table-container" [class.scrollable]="runs().length > 10">
+  @if (runs().length > 0) {
+  <table class="runs-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Created</th>
+        <th>Updated</th>
+        <th>Metrics</th>
+        <th>State</th>
+        <th class="center">Actions</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      @for (run of runs(); track $any(run).id) {
+      <tr>
+        <td class="mono">
+          <a [routerLink]="['/experiments', 'runs', $any(run).id]">
+            {{ $any(run).id }}
+          </a>
+        </td>
+
+        <td>{{ $any(run).created_at | date : 'medium' }}</td>
+        <td>{{ $any(run).updated_at | date : 'medium' }}</td>
+
+        <td>
+          <div class="metrics">
+            @for (m of ($any(run).metrics || {}) | keyvalue; track m.key) {
+            <div>{{ m.key }}: {{ m.value }}</div>
+            }
+          </div>
+        </td>
+
+        <td class="state">{{ $any(run).state }}</td>
+
+        <td class="actions">
+          <button
+            class="icon-btn ghost"
+            type="button"
+            [routerLink]="['/experiments', 'runs', $any(run).id]"
+            matTooltip="View run"
+          >
+            <mat-icon class="material-symbols-rounded">visibility</mat-icon>
+          </button>
+
+          @if ($any(run).is_mine && !$any(run).is_archived && $any(run).state === 'RUNNING') {
+          <button
+            class="icon-btn warn"
+            type="button"
+            (click)="stopRun($any(run).id)"
+            matTooltip="Stop run"
+          >
+            <mat-icon class="material-symbols-rounded">stop</mat-icon>
+          </button>
+          } @if ($any(run).is_mine && !$any(run).is_archived && ($any(run).state === 'FINISHED' ||
+          $any(run).state === 'CRASHED')) {
+          <button
+            class="icon-btn danger"
+            type="button"
+            (click)="deleteRun($any(run).id)"
+            matTooltip="Delete run"
+          >
+            <mat-icon class="material-symbols-rounded">delete</mat-icon>
+          </button>
+          }
+        </td>
+      </tr>
+      }
+    </tbody>
+  </table>
+  } @else {
+  <p>
+    No runs found for experiment: <em>{{ $any(experiment).name }}</em
+    >.
+  </p>
+  }
+</div>
+}

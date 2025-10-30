@@ -1,0 +1,22 @@
+@use '../../../../../styles/themes';
+@use '../../../../../styles/typography' as typo;
+@use '../../../../../variables.scss' as *;
+
+/* ===== Root / host ===== */
+:host {
+  display: block;
+  color: var(--text);
+  background: transparent;
+}
+
+/* ===== list of cards ===== */
+.grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: $margin-double;
+
+  & > ui-asset-card {
+    width: 100%;
+  }
+}

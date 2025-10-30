@@ -19,6 +19,7 @@ from app.config import (
     RUN_TEMP_OUTPUT_FOLDER,
     settings,
 )
+from app.schemas.asset_id import AssetId
 from app.schemas.env_vars import EnvironmentVar, EnvironmentVarDef
 from app.schemas.experiment_template import (
     AssetSchema,
@@ -44,6 +45,8 @@ class ExperimentTemplate(Document):
     updated_at: datetime = Field(default_factory=partial(datetime.now, tz=timezone.utc))
     retry_count: int = 0
     state: TemplateState = TemplateState.CREATED
+    image_version: int = 0
+    image_digest: str | None = None  # not used
     is_public: bool = True
     is_archived: bool = False
     is_approved: bool = False
@@ -99,7 +102,7 @@ class ExperimentTemplate(Document):
 
     @property
     def image_name(self) -> str:
-        image_tag = f"{EXPERIMENT_TEMPLATE_DIR_PREFIX}{self.id}"
+        image_tag = f"{EXPERIMENT_TEMPLATE_DIR_PREFIX}{self.id}-{self.image_version}"
         return f"{settings.DOCKER_REGISTRY_URL}/{REPOSITORY_NAME}:{image_tag}"
 
     @property
@@ -109,16 +112,20 @@ class ExperimentTemplate(Document):
     class Settings:
         name = "experimentTemplates"
 
+    @classmethod
+    async def create_template(
+        self, template_req: ExperimentTemplateCreate, created_by: str
+    ) -> ExperimentTemplate | None:
+        experiment_template = ExperimentTemplate(**template_req.dict(), created_by=created_by)
+        if experiment_template.is_valid() is False:
+            return None
+        return experiment_template
+
     def is_valid(self) -> bool:
         reserved_vars = list(ReservedEnvVars)
-        return all(
-            [
-                e.name not in reserved_vars
-                for e in self.envs_required + self.envs_optional
-            ]
-        )
+        return all([e.name not in reserved_vars for e in self.envs_required + self.envs_optional])
 
-    def initialize_files(self, base_image, pip_requirements, script):
+    def initialize_files(self, base_image: str, pip_requirements: str, script: str) -> None:
         base_path = self.experiment_template_path
         base_path.mkdir(exist_ok=True, parents=True)
 
@@ -134,9 +141,7 @@ class ExperimentTemplate(Document):
         base_path.joinpath("script.py").write_text(script)
 
         reana_cfg = yaml.safe_load(open("app/data/template-reana.yaml"))
-        reana_cfg["workflow"]["specification"]["steps"][0][
-            "environment"
-        ] = self.image_name
+        reana_cfg["workflow"]["specification"]["steps"][0]["environment"] = self.image_name
         reana_cfg["outputs"]["directories"][0] = RUN_TEMP_OUTPUT_FOLDER
 
         with base_path.joinpath("reana.yaml").open("w") as fp:
@@ -179,7 +184,9 @@ class ExperimentTemplate(Document):
             return False
 
     async def update_state_in_db(
-        self, state: TemplateState, retry_count: int | None = None
+        self,
+        state: TemplateState,
+        retry_count: int | None = None,
     ) -> None:
         self.state = state
         self.updated_at = datetime.now(tz=timezone.utc)
@@ -194,7 +201,7 @@ class ExperimentTemplate(Document):
             }
         )
 
-    async def validate_models(self, model_ids: list[int]) -> bool:
+    async def validate_models(self, model_ids: list[AssetId]) -> bool:
         model_names = [await get_model_name(x) for x in model_ids]
 
         checks = [
@@ -204,7 +211,7 @@ class ExperimentTemplate(Document):
 
         return all(checks)
 
-    async def validate_datasets(self, dataset_ids: list[int]) -> bool:
+    async def validate_datasets(self, dataset_ids: list[AssetId]) -> bool:
         dataset_names = [await get_dataset_name(x) for x in dataset_ids]
 
         checks = [
@@ -220,9 +227,7 @@ class ExperimentTemplate(Document):
 
         return required_environment_var_names.issubset(experiment_environment_var_names)
 
-    def is_same_environment(
-        self, experiment_template_req: ExperimentTemplateCreate
-    ) -> bool:
+    def is_same_environment(self, experiment_template_req: ExperimentTemplateCreate) -> bool:
         return all(
             [
                 bool(
@@ -245,18 +250,14 @@ class ExperimentTemplate(Document):
         editable_environment: bool,
         editable_visibility: bool,
     ) -> ExperimentTemplate | None:
-        new_template = ExperimentTemplate(
-            **experiment_template_req.dict(), created_by=original_template.created_by
+        new_template = await ExperimentTemplate.create_template(
+            experiment_template_req, original_template.created_by
         )
-        if new_template.is_valid() is False:
+        if new_template is None:
             return None
 
-        same_environment = original_template.is_same_environment(
-            experiment_template_req
-        )
-        same_visibility = (
-            original_template.is_public == experiment_template_req.is_public
-        )
+        same_environment = original_template.is_same_environment(experiment_template_req)
+        same_visibility = original_template.is_public == experiment_template_req.is_public
 
         template_to_return = None
         if same_environment and (same_visibility or editable_visibility):
@@ -273,6 +274,7 @@ class ExperimentTemplate(Document):
             # we can modify everything
             new_template.created_at = original_template.created_at
             new_template.id = original_template.id
+            new_template.image_version = original_template.image_version + 1
 
             new_template.initialize_files(
                 base_image=experiment_template_req.base_image,

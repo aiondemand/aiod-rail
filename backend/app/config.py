@@ -19,13 +19,13 @@ TEMP_DIRNAME = "temp"
 
 class AIoDApiConfig(BaseModel):
     BASE_URL: AnyHttpUrl
-    DATASETS_VERSION: str = "v1"
-    ML_MODELS_VERSION: str = "v1"
-    PUBLICATIONS_VERSION: str = "v1"
-    PLATFORMS_VERSION: str = "v1"
 
 
 class AIoDLibraryApiConfig(BaseModel):
+    BASE_URL: AnyHttpUrl
+
+
+class AIoDEnhancedSearchApiConfig(BaseModel):
     BASE_URL: AnyHttpUrl
 
 
@@ -37,12 +37,13 @@ class AIODKeycloakConfig(BaseModel):
     OIDC_URL: AnyHttpUrl
 
 
-class Settings(BaseSettings):
+class Settings(BaseSettings):  # type: ignore
     MONGODB_URI: str
     MONGODB_DBNAME: str
 
     AIOD_API: AIoDApiConfig
     AIOD_LIBRARY_API: AIoDLibraryApiConfig
+    AIOD_ENHANCED_SEARCH_API: AIoDEnhancedSearchApiConfig
     AIOD_KEYCLOAK: AIODKeycloakConfig
     DEFAULT_RESPONSE_LIMIT: int = 100
 
@@ -78,10 +79,7 @@ class Settings(BaseSettings):
         return self.userdata_path / f"{EXPERIMENT_RUN_DIR_PREFIX}{run_id}"
 
     def get_experiment_template_path(self, template_id: str) -> Path:
-        return (
-            self.experiment_templates_path
-            / f"{EXPERIMENT_TEMPLATE_DIR_PREFIX}{template_id}"
-        )
+        return self.experiment_templates_path / f"{EXPERIMENT_TEMPLATE_DIR_PREFIX}{template_id}"
 
     def get_experiment_run_output_path(self, run_id: str) -> Path:
         return self.get_experiment_run_path(run_id) / RUN_OUTPUT_FOLDER

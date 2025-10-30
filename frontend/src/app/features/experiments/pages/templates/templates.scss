@@ -1,0 +1,26 @@
+@use '../../../../../styles/themes';
+@use '../../../../../styles/typography' as typo;
+@use '../../../../../variables.scss' as *;
+
+:host {
+  display: block;
+  color: var(--text);
+  background: transparent;
+}
+
+.grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: $margin-double;
+
+  & > ui-asset-card {
+    width: 100%;
+  }
+}
+
+.empty {
+  margin: $margin-double;
+  color: color-mix(in oklab, var(--text) 75%, transparent);
+  font: var(--font-ui, 500 14px/1.45 system-ui, sans-serif);
+}

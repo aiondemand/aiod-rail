@@ -1,0 +1,19 @@
+<div
+  class="ui-loading"
+  [class.is-visible]="show"
+  role="status"
+  [attr.aria-busy]="show"
+  aria-live="polite"
+>
+  <mat-progress-spinner
+    mode="indeterminate"
+    [diameter]="diameter"
+    [strokeWidth]="3"
+    color="primary"
+    [attr.aria-label]="ariaLabel"
+  ></mat-progress-spinner>
+
+  @if (message) {
+  <div class="msg">{{ message }}</div>
+  }
+</div>

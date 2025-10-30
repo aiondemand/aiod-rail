@@ -1,0 +1,82 @@
+/* font family */
+:root {
+  --font-title: 'Jura', ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, 'Helvetica Neue',
+    Arial, sans-serif;
+  --font-body: 'Montserrat', ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto,
+    'Helvetica Neue', Arial, sans-serif;
+
+  --w-light: 300; /* Jura Light */
+  --w-regular: 400;
+  --w-medium: 500;
+  --w-bold: 700;
+
+  /* Desktop sizes (px)*/
+  --h1-d: 80;
+  --h1-lh-d: 1;
+  --h1-mb-d: 1rem; /* paragraph spacing ~4 -> 16px ~ 1rem */
+  --h2-d: 54;
+  --h2-lh-d: 1;
+  --h2-mb-d: 0.75rem;
+  --h3-d: 44;
+  --h3-lh-d: 1.2;
+  --h3-mb-d: 0.75rem;
+  --h4-d: 32;
+  --h4-lh-d: 1.2;
+  --h4-mb-d: 0.75rem;
+  --h5-d: 24;
+  --h5-lh-d: 1.3;
+  --h5-mb-d: 0.5rem;
+  --p-d: 18;
+  --p-lh-d: 1.6;
+  --p-mb-d: 1rem;
+
+  /* Mobile sizes (px) – */
+  --h1-m: 50;
+  --h1-lh-m: 1;
+  --h1-mb-m: 1rem;
+  --h2-m: 38;
+  --h2-lh-m: 1;
+  --h2-mb-m: 0.75rem;
+  --h3-m: 24;
+  --h3-lh-m: 1.4;
+  --h3-mb-m: 0.75rem;
+  --h4-m: 24;
+  --h4-lh-m: 1.4;
+  --h4-mb-m: 0.75rem;
+  --h5-m: 20;
+  --h5-lh-m: 1.4;
+  --h5-mb-m: 0.5rem;
+  --p-m: 16;
+  --p-lh-m: 1.6;
+  --p-mb-m: 1rem;
+
+  /* (desktop/mobile)  */
+  --btn-sm-d: 10;
+  --btn-sm-m: 10;
+  --btn-md-d: var(--p-d);
+  --btn-md-m: var(--p-m);
+  --btn-lg-d: 13;
+  --btn-lg-m: 12;
+}
+
+@mixin fluid-type($var-d, $var-m) {
+  /* clamp(min, vw-based, max) */
+  font-size: clamp(var(#{$var-m}) * 1px, 2vw + (var(#{$var-m}) * 1px), var(#{$var-d}) * 1px);
+}
+
+@mixin title($size-d, $size-m, $lh-d, $lh-m, $mb-d, $mb-m, $weight) {
+  font-family: var(--font-title);
+  font-weight: var(#{$weight});
+  letter-spacing: 0;
+  @include fluid-type($size-d, $size-m);
+  line-height: clamp(var(#{$lh-m}), 2vw, var(#{$lh-d}));
+  margin: 0 0 clamp(var(#{$mb-m}), 1.2vw, var(#{$mb-d})) 0;
+}
+
+@mixin body-text($size-d, $size-m, $lh-d, $lh-m, $mb-d, $mb-m, $weight: --w-regular) {
+  font-family: var(--font-body);
+  font-weight: var(#{$weight});
+  @include fluid-type($size-d, $size-m);
+  line-height: clamp(var(#{$lh-m}), 1.2vw, var(#{$lh-d}));
+  margin: 0 0 clamp(var(#{$mb-m}), 1.2vw, var(#{$mb-d})) 0;
+}

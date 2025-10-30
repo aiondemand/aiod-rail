@@ -1,0 +1,47 @@
+{
+    "required": [
+        {
+            "name": "SPLIT_NAME",
+            "description": "A name of a subset we want to use. This name is used to index the dataset object created from load_dataset to retrieve a specific subset of its data",
+            "is_secret": false
+        },
+        {
+            "name": "FEATURE_NAME",
+            "description": "A name of a feature/attribute we want to use. This name is used to index the subset of data to retrieve a specific feature obtained from each datapoint in the subset",
+            "is_secret": false
+        }
+
+    ],
+    "optional": [
+        {
+            "name": "USE_OPUS_MODEL",
+            "description": "A flag that defines whether we want to use additional env vars (OPUS_SRC_LANG, OPUS_DST_LANG) to build a new model name that is further used to retrieve the model from HuggingFace. Default value: false",
+            "is_secret": false
+        },
+        {
+            "name": "OPUS_SRC_LANG",
+            "description": "Two letter code for a source language that we want to translate text from. This variable is only read when USE_OPUS_MODEL is set to true",
+            "is_secret": false
+        },
+        {
+            "name": "OPUS_DST_LANG",
+            "description": "Two letter code for a destination language that we want to translate text to. This variable is only read when USE_OPUS_MODEL is set to true",
+            "is_secret": false
+        },
+        {
+            "name": "NUM_DATAPOINTS_TO_TRANSLATE",
+            "description": "Number of datapoints we want to apply the translation task to. If not specified, we translate the entire subset of data",
+            "is_secret": false
+        },
+        {
+            "name": "BATCH_SIZE",
+            "description": "Size of a batch that is used to compute translations in parallel. Default value: 8.",
+            "is_secret": false
+        },
+        {
+            "name": "HF_MODEL",
+            "description": "A name of the HuggingFace model we wish to use instead using either the one chosen via AIoD or the models from Opus model family (USE_OPUS_MODEL). This environment variable is overwritten with the Opus model if you specify all the environment variables necessary for choosing the specific Opus model (USE_OPUS_MODEL, OPUS_SRC_LANG, OPUS_DST_LANG)",
+            "is_secret": false
+        }
+    ]
+}
