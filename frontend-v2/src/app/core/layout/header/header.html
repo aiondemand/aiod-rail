@@ -1,0 +1,26 @@
+<header class="app-header">
+  <div class="header-wrap">
+    <!-- logo -->
+    <a class="logo" routerLink="/" aria-label="AiodRail Home">
+      <img class="logo-light" src="/assets/logo-color.svg" alt="AiodRail logo" />
+      <img class="logo-dark" src="/assets/logo-white.svg" alt="AiodRail logo dark" />
+    </a>
+
+    <!-- menu -->
+    <nav class="menu">
+      <ui-button variant="menu" routerLink="/experiments" routerLinkActive="active"
+        >Experiments</ui-button
+      >
+      <ui-button variant="menu" routerLink="/datasets" routerLinkActive="active"
+        >Datasets</ui-button
+      >
+      <ui-button variant="menu" routerLink="/docs" routerLinkActive="active">Docs</ui-button>
+    </nav>
+
+    <!-- right -->
+    <div class="actions">
+      <app-login-logout></app-login-logout>
+      <theme-switch size="md"></theme-switch>
+    </div>
+  </div>
+</header>

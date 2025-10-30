@@ -1,0 +1,190 @@
+@use '../../../../styles/themes';
+@use '../../../../variables' as *;
+
+.sidenav {
+  position: sticky;
+  top: var(--sticky-top, 72px);
+  background: var(--background);
+  color: var(--text);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  width: 280px;
+  padding-top: $margin-double;
+
+  /* var header footer slots */
+  .sn-header,
+  .sn-footer {
+    padding: 0 $margin-default;
+  }
+  .sn-scroll {
+    overflow: auto;
+    padding: 0 $margin-default $margin-default;
+  }
+
+  .sn-section + .sn-section {
+    margin-top: $margin-default;
+  }
+
+  /* --- tiles --- */
+  .sn-title {
+    width: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.75rem 0.75rem;
+    border-radius: 0.5rem;
+    background: color-mix(in oklab, var(--text) 8%, transparent);
+    color: var(--text);
+  }
+  .sn-title:hover {
+    background: color-mix(in oklab, var(--text) 12%, transparent);
+  }
+
+  /* left side */
+  .title-left {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+  }
+  .t {
+    color: var(--text);
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .t.as-btn {
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    color: var(--text);
+  }
+
+  /* right toggle */
+  .caret-btn {
+    border: 0;
+    background: transparent;
+    padding: 0.25rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+  }
+  .sn-title.no-collapse .caret-btn {
+    display: none;
+  } /* if section is not collapsible */
+  .caret {
+    transition: transform 0.18s ease;
+  }
+  .caret.rot {
+    transform: rotate(180deg);
+  }
+
+  /* --- list of imputs --- */
+  .sn-list {
+    list-style: none;
+    padding: 0.25rem;
+    margin: 0.25rem 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  .sn-list.is-collapsed .lbl {
+    display: none;
+  }
+
+  .sn-item .sn-link {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.65rem 0.75rem;
+    border-radius: 0.5rem;
+    color: color-mix(in oklab, var(--text) 85%, transparent);
+    background: transparent;
+    border: 0;
+    text-decoration: none;
+    text-align: left;
+    cursor: pointer;
+  }
+  .sn-item .sn-link:hover {
+    background: color-mix(in oklab, var(--text) 10%, transparent);
+    color: var(--text);
+    width: auto;
+  }
+  .sn-item .sn-link.active {
+    background: color-mix(in oklab, var(--text) 16%, transparent);
+    color: var(--text);
+    width: auto;
+  }
+  .sn-item.disabled .sn-link {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  .ico {
+    font-size: 20px;
+    opacity: 0.9;
+    inline-size: 20px;
+  }
+  .ext {
+    margin-left: auto;
+    font-size: 18px;
+    opacity: 0.85;
+    color: var(--text);
+  }
+
+  .suf {
+    margin-left: auto;
+    width: 28px;
+    height: 28px;
+    border-radius: var(--radius-pill);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: 1px solid color-mix(in oklab, var(--text) 24%, transparent);
+    color: var(--text);
+  }
+  .suf:hover {
+    border-color: color-mix(in oklab, var(--text) 55%, transparent);
+  }
+
+  /* --- sub-items --- */
+  .sn-sublist {
+    list-style: none;
+    margin: 0.25rem 0 0.25rem 2rem;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+  .sn-subitem .sn-sublink {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.45rem 0.5rem;
+    border-radius: 0.4rem;
+    color: color-mix(in oklab, var(--text) 85%, transparent);
+    text-decoration: none;
+    background: transparent;
+    border: 0;
+  }
+  .sn-subitem .sn-sublink:hover {
+    background: color-mix(in oklab, var(--text) 10%, transparent);
+    color: var(--text);
+  }
+  .sn-subitem .sn-sublink.active {
+    background: color-mix(in oklab, var(--text) 16%, transparent);
+    color: var(--text);
+  }
+}
+
+/* mobile */
+@media (max-width: 360px) {
+  .sidenav {
+    position: static;
+    width: 100%;
+    max-height: none;
+    border-right: 0;
+  }
+}

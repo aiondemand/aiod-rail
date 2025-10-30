@@ -1,0 +1,143 @@
+@use '../../../styles/typography' as typo;
+@use '../../../variables.scss' as *;
+
+:host {
+  display: block;
+}
+
+.profile.card {
+  margin: $margin-double;
+  background: var(--card);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: $margin-double;
+
+  @media (max-width: 760px) {
+    margin: $margin-default;
+    padding: $margin-default;
+  }
+}
+
+/* ===== HEADER ===== */
+.head {
+  margin-bottom: $margin-double;
+
+  .title {
+    @include typo.title(--h2-d, --h2-m, --h2-lh-d, --h2-lh-m, --h2-mb-d, --h2-mb-m, --w-bold);
+    margin: 0;
+    color: var(--text);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    overflow: visible;
+
+    .title-icon {
+      font-size: 1em;
+      width: 1em;
+      height: 1em;
+      line-height: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text);
+      overflow: visible;
+    }
+  }
+}
+
+/* ===== SECTIONS ===== */
+.section {
+  display: grid;
+
+  h3 {
+    @include typo.title(--h4-d, --h4-m, --h4-lh-d, --h4-lh-m, --h4-mb-d, --h4-mb-m, --w-semibold);
+    margin: 0;
+    color: var(--text);
+  }
+
+  .value {
+    margin-top: 0;
+    font-family: var(--font-body);
+    color: var(--text);
+  }
+
+  .header-with-info {
+    display: inline-flex;
+    align-items: center;
+
+    h3 {
+      margin: 0;
+    }
+  }
+}
+
+/* ===== API KEY ===== */
+.key-row {
+  margin-top: $margin-half;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: center;
+
+  @media (max-width: 760px) {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+
+  .key-field {
+    width: 100%;
+
+    ::ng-deep .mdc-notched-outline__leading,
+    ::ng-deep .mdc-notched-outline__notch,
+    ::ng-deep .mdc-notched-outline__trailing {
+      border-color: var(--border);
+    }
+
+    ::ng-deep .mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
+    ::ng-deep .mat-mdc-form-field.mat-focused .mdc-notched-outline__notch,
+    ::ng-deep .mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing {
+      border-color: var(--border) !important;
+      box-shadow: none !important;
+    }
+
+    ::ng-deep
+      .mdc-text-field--outlined:not(.mdc-text-field--disabled).mdc-text-field--focused
+      .mdc-notched-outline {
+      border-color: var(--border) !important;
+    }
+
+    ::ng-deep input.mat-mdc-input-element:focus {
+      outline: none !important;
+      box-shadow: none !important;
+      border-color: var(--border) !important;
+    }
+
+    ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+      display: none;
+    }
+
+    ::ng-deep input.mat-mdc-input-element {
+      color: var(--text);
+      background: transparent;
+    }
+  }
+
+  .actions {
+    display: inline-flex;
+    gap: 8px;
+    align-items: center;
+    justify-self: end;
+
+    @media (max-width: 760px) {
+      justify-self: start;
+      flex-wrap: wrap;
+    }
+  }
+
+  /* Show/Hide */
+  .toggle-btn .txt {
+    display: inline-block;
+    width: 5ch;
+  }
+}

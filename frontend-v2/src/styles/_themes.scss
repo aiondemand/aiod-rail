@@ -1,0 +1,66 @@
+@use 'sass:color';
+@use '../variables' as *;
+
+/* ===== LIGHT (default) ===== */
+:root {
+  --bg: #{$background-light}; /* #FFFFFF */
+  --surface: #{$aiod-white};
+  --surface-2: #{color.mix($aiod-black, $aiod-white, 5%)};
+  --surface-3: #dbddde;
+  --border: #{color.mix($aiod-black, $aiod-white, 12%)};
+
+  --text: #{color.mix($aiod-black, $aiod-white, 92%)};
+  --text-muted: #{color.mix($aiod-black, $aiod-white, 60%)};
+  --text-active: #{$aiod-blue};
+
+  --primary: #{$aiod-blue}; /* #0047BB */
+  --primary-2: #{color.mix($aiod-light-blue, $aiod-blue, 40%)};
+  --accent: #{$aiod-yellow}; /* #FFED00 */
+  --info: #{$aiod-light-blue}; /* #41B6E6 */
+
+  --shadow-1: 0 6px 16px rgba(0, 71, 187, 0.16);
+  --focus: 0 0 0 3px rgba(0, 71, 187, 0.25);
+
+  --radius: 16px;
+  --radius-pill: 9999px;
+
+  --grad-blue: linear-gradient(
+    135deg,
+    #{color.mix($aiod-blue, $aiod-light-blue, 10%)} 0%,
+    #{$aiod-light-blue} 100%
+  );
+
+  --card: #{$default-card};
+}
+
+/* ===== DARK ===== */
+[data-theme='dark'] {
+  --bg: #{$background-dark}; /* #010714 */
+  --surface: #0b1220;
+  --surface-2: #0d1425;
+  --surface-3: #232938;
+  --border: #1c2740;
+
+  --card: #{$dark-card};
+
+  --text: #{color.mix($aiod-white, $aiod-black, 90%)};
+  --text-muted: #{color.mix($aiod-white, $aiod-black, 65%)};
+  --text-active: #{$aiod-yellow};
+
+  --primary: #{$aiod-light-blue};
+  --primary-2: #{color.mix($aiod-blue, black, 20%)};
+  --accent: #d6ff64;
+  --info: #{color.mix($aiod-light-blue, $aiod-white, 30%)};
+
+  --shadow-1: 0 6px 16px rgba(0, 71, 187, 0.35);
+  --focus: 0 0 0 3px rgba(65, 182, 230, 0.35);
+
+  --radius: 16px;
+  --radius-pill: 9999px;
+
+  --grad-blue: linear-gradient(
+    135deg,
+    #{color.mix($aiod-blue, #0d5bd7, 50%)} 0%,
+    #{$aiod-light-blue} 100%
+  );
+}

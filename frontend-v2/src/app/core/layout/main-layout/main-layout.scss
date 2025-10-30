@@ -1,0 +1,305 @@
+@use '../../../../styles/themes';
+@use '../../../../styles/typography' as typography;
+@use '../../../../variables' as *;
+
+/* host fills <main> */
+:host {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  width: 100%;
+}
+.container {
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  background: var(--background);
+  position: relative;
+}
+
+/* ===== Sidebar ===== */
+.sidebar {
+  background: var(--background);
+  color: var(--text);
+  border-right: 1px solid var(--border);
+  overflow: hidden;
+  transition: width 0.18s ease;
+  border-radius: 0;
+}
+
+/* inner */
+.sn-inner {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+.sn-scroll {
+  margin-top: $margin-double;
+  overflow: auto;
+}
+
+.sn-gap {
+  height: 16px;
+}
+
+.sn-bottom {
+  margin-top: $margin-default;
+  position: sticky;
+  bottom: 0;
+  border-top: 1px solid var(--border);
+  padding: $margin-default;
+  display: flex;
+  justify-content: center;
+  background: var(--background);
+}
+
+/* collapse button */
+.collapse-btn {
+  width: 40px;
+  height: 40px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+.collapse-btn:hover {
+  background: var(--card);
+}
+
+/* ===== Section header ===== */
+.sn-section {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: none;
+  padding: $margin-default $margin-double;
+  cursor: default;
+  color: var(--primary);
+}
+.sn-section.home {
+  cursor: pointer;
+  border-color: var(--background);
+}
+.sn-section-sep {
+  padding-top: 1px;
+  border-color: transparent;
+}
+
+.sn-section .left {
+  display: flex;
+  align-items: center;
+  gap: $margin-default;
+}
+.sec-icon {
+  color: var(--primary);
+  font-size: 24px;
+  vertical-align: middle;
+}
+.sec-title {
+  font-family: var(--font-title);
+  font-size: 20px;
+}
+.sn-section.collapsible {
+  cursor: pointer;
+}
+.sn-section .chevron {
+  transition: transform 0.18s ease;
+  color: var(--primary);
+}
+.sn-section.expanded .chevron {
+  transform: rotate(180deg);
+}
+
+/* ===== Accordion panel ===== */
+.sn-panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.28s ease, opacity 0.28s ease;
+  opacity: 0;
+}
+.sn-panel.open {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+.sn-panel > .sn-list {
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* ===== Item list ===== */
+.sn-list {
+  padding: 0;
+  padding-bottom: 2px;
+}
+.sn-item.mat-mdc-list-item {
+  padding-inline: $margin-double;
+  border-radius: 0;
+}
+.sn-icon {
+  font-size: 20px;
+  padding-right: $margin-default;
+  vertical-align: middle;
+  color: var(--primary);
+}
+.sn-label {
+  font-family: var(--font-title);
+  color: var(--text);
+}
+
+.sn-item:hover {
+  background: color-mix(in oklab, var(--card) 75%, var(--primary) 8%);
+}
+.sn-item.active {
+  background: color-mix(in oklab, var(--card) 65%, var(--primary) 14%);
+}
+.sn-item.active::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  background: var(--primary);
+}
+.sn-inner-divider {
+  margin: $margin-half $margin-double;
+  border-color: var(--border);
+}
+
+/* ===== Collapsed  ===== */
+.sidebar.collapsed {
+  .sn-section {
+    padding: $margin-default;
+    justify-content: center;
+  }
+  .sn-section .left {
+    justify-content: center;
+  }
+  .sn-section .sec-title,
+  .sn-section .chevron {
+    display: none;
+  }
+
+  .sn-list {
+    display: none;
+  }
+  .sn-panel {
+    display: none;
+  }
+  .sn-item .sn-label {
+    display: none;
+  }
+}
+
+/* ===== Content ===== */
+.mat-drawer-container,
+.content {
+  overflow: visible;
+  transform: none;
+  contain: none;
+  min-height: 0;
+  min-width: 0;
+  background: var(--background);
+  color: var(--text);
+}
+
+/* ====== (<560 px) ======
+
+*/
+@media (max-width: 560px) {
+  .content.content-hidden {
+    display: none !important;
+  }
+}
+
+/* Prefer-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .sn-panel,
+  .sidebar,
+  .sn-section .chevron {
+    transition: none !important;
+  }
+}
+
+/* Dark++ */
+:host-context([data-theme='dark']) {
+  .sn-section {
+    background: var(--surface-2);
+  }
+  .sn-item:hover {
+    background: color-mix(in oklab, var(--card) 70%, var(--primary) 12%);
+  }
+  .sn-item.active {
+    background: color-mix(in oklab, var(--card) 55%, var(--primary) 18%);
+  }
+}
+
+.sidebar .sn-scroll::-webkit-scrollbar-track {
+  border-left: none;
+  box-shadow: inset 1px 0 0 color-mix(in oklab, var(--border) 60%, transparent);
+}
+
+/* =========================
+   FEEDBACK BUTTON (floating)
+   ========================= */
+.aiod-feedback-button {
+  position: fixed;
+  top: 50%;
+  right: -160px;
+  transform: translateY(-50%);
+  z-index: 2000;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+
+  padding: 18px 22px;
+  border-radius: 100px;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+
+  font-weight: 700;
+  font-size: 13px;
+  line-height: 1.1;
+  text-decoration: none;
+  color: #fff;
+
+  background: radial-gradient(43.6% 43.6% at 49.98% 100.45%, #41b6e6 0%, #0047bb 55%, #003399 100%);
+
+  box-shadow: none;
+  transition: right 220ms ease, opacity 220ms ease, transform 220ms ease;
+
+  pointer-events: auto;
+}
+
+.aiod-feedback-button:hover,
+.aiod-feedback-button:focus {
+  right: -10px;
+  text-decoration: none;
+}
+
+.aiod-feedback-icon {
+  font-size: 22px;
+
+  /* color: #fff; */
+}
+
+.aiod-feedback-text {
+  position: relative;
+  bottom: 1px;
+  white-space: nowrap;
+}
+
+@media (max-width: 520px) {
+  .aiod-feedback-button {
+    top: auto;
+    bottom: 16px;
+    right: 12px;
+    transform: none;
+
+    padding: 10px 12px;
+    border-radius: 10px;
+  }
+  .aiod-feedback-text {
+    display: none;
+  }
+}

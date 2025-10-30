@@ -1,0 +1,86 @@
+<app-base-doc>
+  <!-- ==================================================== -->
+  <h1>Main concepts of RAIL</h1>
+  <p>
+    RAIL allows AI practitioners to compose AI assets available in AIoD into executable experiments
+    that are reproducible and reusable by introducing three main concepts: Experiment Template,
+    Experiment and Experiment Run.
+  </p>
+
+  <img
+    src="assets/docs/images/rail-template-experiment-run.png"
+    alt="RAIL concepts"
+    class="doc-illustration-figure"
+  />
+
+  <!-- ================================================== -->
+  <h2>Experiment Template</h2>
+  <p>
+    <a [routerLink]="['/docs', 'main-concepts-template']">Experiment template</a> is a combination
+    of <i>runtime environment</i>, <i>software dependencies</i> and <i>code</i>.
+  </p>
+  <ul>
+    <li>
+      <b>Runtime environment</b> is a specification of the environment in which the experiment is
+      executed. In RAIL, it is a specific Docker image.
+    </li>
+    <li>
+      <b>Software dependencies</b> are the software packages that are required to execute the
+      experiment. Currently, <code>requirements.txt</code> file with Python dependencies is
+      supported.
+    </li>
+    <li><b>Code</b> is the code that is executed in the experiment.</li>
+  </ul>
+  <p>
+    See "<a [routerLink]="['/docs', 'main-concepts-template']">Experiment Template</a>" section for
+    more details.
+  </p>
+  <p>
+    Experiment template on its own is not executable. You need to create an
+    <a [routerLink]="['/docs', 'main-concepts-experiments']">Experiment</a> based on a specific
+    template to be able to execute it. The Experiment defines particular parameters that are
+    injected into the Template through Environment variables to make it executable. These include AI
+    model, dataset (their name and AIoD ID) and environment variables supported by the template
+    (they are defined by the author).
+  </p>
+
+  <!-- ================================================== -->
+  <h2>Experiment</h2>
+  <p>
+    <a [routerLink]="['/docs', 'main-concepts-experiments']">Experiment</a> is a particular
+    executable instance of an Experiment template. Experiments are composed of AI assets and are
+    executed in the AIoD platform. Experiments are reproducible and reusable.
+  </p>
+  <p>
+    When you create an experiment, you select an Experiment template that you want to use as a basis
+    for your experiment. Then, you select particular AI assets and values of environment variables
+    that you want to use in your experiment.
+  </p>
+
+  <!-- ================================================== -->
+  <h2>Experiment Run</h2>
+  <p>
+    <a [routerLink]="['/docs', 'main-concepts-run']">Experiment Run</a> is created when you execute
+    an Experiment. When you execute an experiment, the following happens under the hood:
+  </p>
+  <ol>
+    <li>
+      An instance of Experiment Run is created (it is available in the
+      <a [routerLink]="['/experiments']">Experiment page</a>).
+    </li>
+    <li>
+      The definition of an Experiment is transformed into a
+      <a href="https://www.commonwl.org" target="_blank">CWL (Common Workflow Language)</a> file.
+    </li>
+    <li>The CWL file is sent to AIoD REANA instance and executed in the AIoD platform.</li>
+    <li>
+      A Docker container is started. AI Assets and environment variables are available globally in
+      the container.
+    </li>
+    <li>A file called <code>script.py</code> is executed.</li>
+    <li>
+      After the Experiment Run finishes, the Docker logs, metrics and output files (if any) are
+      available on the detail of the Run.
+    </li>
+  </ol>
+</app-base-doc>

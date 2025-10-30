@@ -1,0 +1,25 @@
+@use '../../../../styles/typography' as typo;
+@use '../../../../variables' as *;
+
+.login-container {
+  margin-inline: $margin-default;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* profile */
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+
+  transition: color 0.2s ease;
+}
+
+.username {
+  font-family: var(--font-body);
+  font-weight: var(--w-medium);
+  color: var(--text);
+}

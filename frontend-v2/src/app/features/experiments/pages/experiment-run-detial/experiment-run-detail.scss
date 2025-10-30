@@ -1,0 +1,223 @@
+@use '../../../../../styles/themes';
+@use '../../../../../styles/typography' as typo;
+@use '../../../../../variables.scss' as *;
+
+.detail.card {
+  margin: $margin-double;
+  background: var(--card);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: $margin-double;
+
+  @media (max-width: 760px) {
+    margin: $margin-default;
+    padding: $margin-default;
+  }
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .header-menu {
+    display: flex;
+    gap: 0.25rem;
+    color: var(--muted);
+
+    button:hover {
+      color: var(--text);
+    }
+  }
+}
+
+.card {
+  background: var(--background);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px 18px;
+}
+
+.experiment-run-details {
+  table {
+    width: 100%;
+    border-collapse: collapse;
+
+    th,
+    td {
+      text-align: left;
+      padding: 0.5rem 1rem 0.5rem 0;
+      vertical-align: top;
+    }
+
+    th {
+      width: 180px;
+      color: var(--text);
+      font-weight: 600;
+    }
+  }
+
+  .state {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    line-height: 1;
+  }
+}
+
+.logs {
+  border: 1px solid var(--border);
+  display: block;
+  max-width: 100%;
+  max-height: 500px;
+  white-space: pre-wrap;
+  overflow-y: auto;
+  border-radius: 12px;
+  padding: 0.75rem;
+  background: color-mix(in oklab, var(--text) 3%, transparent);
+}
+
+/* Virtual scroll logs */
+.logs-viewport {
+  height: 500px;
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: color-mix(in oklab, var(--text) 3%, transparent);
+  overflow: auto;
+}
+
+.log-line {
+  display: grid;
+  grid-template-columns: 3rem 1fr;
+  gap: 0.5rem;
+  padding: 2px 8px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
+    'Courier New', monospace;
+  white-space: pre;
+}
+
+.log-line:nth-child(2n) {
+  background: color-mix(in oklab, var(--text) 5%, transparent);
+}
+
+.ln {
+  color: var(--muted);
+  text-align: right;
+  padding-right: 0.5rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.txt {
+  overflow-wrap: anywhere;
+}
+
+/* ====== MATERIAL  ====== */
+:host ::ng-deep {
+  .mat-icon {
+    color: var(--text) !important;
+  }
+
+  .mat-divider {
+    border-top-color: color-mix(in oklab, var(--text) 14%, transparent) !important;
+    opacity: 1 !important;
+  }
+
+  .mat-mdc-button-ripple .mat-ripple-element,
+  .mdc-icon-button .mat-ripple-element {
+    background-color: color-mix(in oklab, var(--background) 22%, transparent) !important;
+  }
+
+  /* Spinner  */
+  .mat-mdc-progress-spinner circle,
+  .mat-mdc-progress-spinner .mdc-circular-progress__indeterminate-circle-graphic {
+    stroke: var(--text) !important;
+  }
+
+  /* ===== MatTree (tree-view) ===== */
+  .tree-view {
+    --tree-row-h: 30px;
+
+    /*  background */
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    opacity: 1;
+
+    .cdk-tree-node,
+    .cdk-nested-tree-node {
+      color: var(--text) !important;
+    }
+
+    .row {
+      display: flex;
+      align-items: center;
+      min-height: var(--tree-row-h);
+      gap: 8px;
+      padding: 4px 8px;
+      border-radius: 10px;
+
+      &:hover {
+        background: color-mix(in oklab, var(--background) 8%, transparent) !important;
+      }
+
+      .growing-space {
+        display: none;
+      }
+
+      .dir-name,
+      .file-name {
+        flex-shrink: 0;
+        font-weight: 600;
+      }
+
+      .tree-node-directory .dir-name {
+        font-weight: 400;
+      }
+
+      .download-btn {
+        margin-left: 4px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+
+        .file-size {
+          color: var(--muted) !important;
+          font-variant-numeric: tabular-nums;
+        }
+
+        .mat-icon {
+          margin-top: 6px;
+          font-size: 20px;
+          color: var(--text);
+        }
+      }
+    }
+
+    .mat-tree-node[matTreeNodePadding],
+    .mat-nested-tree-node .row[matTreeNodePadding] {
+      --mat-tree-node-level-padding: 20px;
+    }
+
+    .mat-nested-tree-node:not(.expanded) > .children {
+      display: none !important;
+    }
+
+    .mdc-icon-button.mat-mdc-icon-button {
+      color: var(--text) !important;
+    }
+  }
+
+  .logs,
+  .tree-view {
+    scrollbar-color: color-mix(in oklab, var(--text) 35%, transparent)
+      color-mix(in oklab, var(--surface-2) 100%, transparent);
+  }
+
+  .mat-mdc-form-field-focus-overlay {
+    background: transparent !important;
+  }
+}

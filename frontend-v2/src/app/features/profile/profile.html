@@ -1,0 +1,87 @@
+<div class="profile card">
+  <!-- ===== HEADER ===== -->
+  <header class="head">
+    <h1 class="title">
+      <mat-icon class="material-symbols-rounded title-icon" aria-hidden="true"
+        >account_circle</mat-icon
+      >
+      User profile
+    </h1>
+  </header>
+
+  <!-- ===== LOADING / CONTENT ===== -->
+  @if (loading()) {
+  <ui-loading [show]="true" label="Loading profile…"></ui-loading>
+  } @else if (profile(); as p) {
+
+  <!-- ===== NAME === -->
+  <section class="section">
+    <h3>Name</h3>
+    <p class="value">{{ userName() || '—' }}</p>
+  </section>
+
+  <!-- ===== EMAIL ===== -->
+  <section class="section">
+    <h3>Email</h3>
+    @if (p.email) {
+    <p class="value">{{ p.email }}</p>
+    } @else {
+    <p class="muted">No email available.</p>
+    }
+  </section>
+
+  <!--
+  <section class="section">
+    <div class="header-with-info">
+      <h3>API Key</h3>
+      <mat-icon matTooltip="The generated key authorizes your API requests.">info</mat-icon>
+    </div>
+
+    @if (p.api_key) {
+    <div class="key-row">
+      <mat-form-field class="key-field" appearance="outline">
+        @if (!showKey()) {
+        <input matInput type="password" [value]="p.api_key" readonly />
+        } @else {
+        <input matInput type="text" [value]="p.api_key" readonly />
+        }
+      </mat-form-field>
+
+      <div class="actions">
+        <ui-button size="md" variant="ghost" class="toggle-btn" (click)="showKey.set(!showKey())">
+          <mat-icon class="material-symbols-rounded">
+            {{ showKey() ? 'visibility_off' : 'visibility' }}
+          </mat-icon>
+          <span class="txt">{{ showKey() ? 'Hide' : 'Show' }}</span>
+        </ui-button>
+
+        <ui-button size="md" variant="outline" (click)="copyApiKeyToClipboard()">
+          <mat-icon class="material-symbols-rounded">content_copy</mat-icon>
+          Copy
+        </ui-button>
+
+        <ui-button
+          size="md"
+          variant="primary"
+          (click)="createOrUpdateApiKey()"
+          matTooltip="Generate new API Key (current key will replace the current one)"
+        >
+          <mat-icon class="material-symbols-rounded">autorenew</mat-icon>
+          Generate new
+        </ui-button>
+      </div>
+    </div>
+    } @else {
+    <ui-button size="sm" variant="primary" (click)="createOrUpdateApiKey()">
+      <mat-icon class="material-symbols-rounded">key</mat-icon>
+      Create API Key
+    </ui-button>
+    }
+  </section>
+
+  -->
+
+  } @else {
+  <ui-error [show]="true" [message]="'No profile loaded.'"></ui-error>
+  }
+</div>

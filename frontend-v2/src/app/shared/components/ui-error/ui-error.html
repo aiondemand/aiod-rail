@@ -1,0 +1,25 @@
+<div class="ui-error" [class.is-visible]="show" [attr.role]="ariaRole" [attr.aria-live]="ariaLive">
+  <mat-icon class="material-symbols-rounded icon">{{ icon }}</mat-icon>
+
+  <div class="content">
+    <div class="msg">{{ message }}</div>
+
+    @if (details) {
+    <ul class="details">
+      @for (line of asArray(details); track $index) {
+      <li>{{ line }}</li>
+      }
+    </ul>
+    }
+
+    <div class="actions">
+      @if (retryable) {
+      <ui-button variant="primary" size="md" (click)="onRetry()">
+        {{ retryLabel }}
+      </ui-button>
+      } @if (closable) {
+      <ui-button variant="ghost" size="md" (click)="onClose()"> Dismiss </ui-button>
+      }
+    </div>
+  </div>
+</div>

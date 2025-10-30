@@ -1,0 +1,174 @@
+<ui-loading [show]="loading()" label="Loading experiment…"></ui-loading>
+
+<ui-error
+  [show]="!!error()"
+  [message]="error() || 'Failed to load experiment.'"
+  [retryable]="true"
+  retryLabel="Try again"
+  [closable]="true"
+  (retry)="ngOnInit()"
+  (close)="error.set(null)"
+></ui-error>
+
+@if (!loading() && !error() && experiment(); as exp) {
+
+<div class="detail card">
+  <section class="head">
+    <div class="title-wrap">
+      <h1 class="title">{{ title() }}</h1>
+
+      <mat-icon
+        class="vis"
+        [matTooltip]="isPublic() ? 'Public experiment' : 'Private experiment'"
+        >{{ isPublic() ? 'public' : 'lock' }}</mat-icon
+      >
+    </div>
+
+    <div class="actions">
+      @if (isArchived()) {
+      <span class="pill pill--archived" title="This experiment is archived">
+        <mat-icon class="material-symbols-rounded">archived</mat-icon>
+        Archived
+      </span>
+
+      @if (isMine()) {
+      <ui-button variant="outline" size="md" (click)="unarchive()">
+        <mat-icon class="material-symbols-rounded">settings_backup_restore</mat-icon>
+        Unarchive
+      </ui-button>
+      } } @else { @if (isMine()) {
+      <ui-button variant="ghost" size="md" (click)="goEdit()" title="Edit">
+        <mat-icon class="material-symbols-rounded">edit</mat-icon>
+      </ui-button>
+
+      <ui-button variant="ghost" size="md" (click)="doDelete()" title="Delete">
+        <mat-icon class="material-symbols-rounded">delete</mat-icon>
+      </ui-button>
+      } }
+    </div>
+  </section>
+
+  <section class="meta">
+    <div class="row">
+      <span class="k"><mat-icon class="ic">badge</mat-icon>ID</span>
+      <span class="v mono">{{ id() || 'Unknown' }}</span>
+    </div>
+    <div class="row">
+      <span class="k"><mat-icon class="ic">schedule</mat-icon>Created</span>
+      <span class="v">{{ createdAt() | date }}</span>
+    </div>
+    <div class="row">
+      <span class="k"><mat-icon class="ic">update</mat-icon>Updated</span>
+      <span class="v">{{ updatedAt() | date }}</span>
+    </div>
+
+    <div class="row">
+      <span class="k"> <span class="material-symbols-rounded">database</span>Dataset </span>
+      <span class="v">
+        @if (dataset(); as ds) {
+        <a [routerLink]="['/datasets', ds.identifier]">{{ ds.name }}</a>
+        } @else {
+        <span class="muted">No dataset selected</span>
+        }
+      </span>
+    </div>
+
+    <div class="row">
+      <span class="k"> <span class="material-symbols-rounded">smart_toy</span>Model </span>
+      <span class="v">
+        @if (model(); as mdl) { {{ mdl.name }} } @else {
+        <span class="muted">No model selected</span> }
+      </span>
+    </div>
+
+    <div class="row">
+      <span class="k"><mat-icon class="ic">science</mat-icon>Template</span>
+      <span class="v">
+        @if (tpl(); as t) {
+        <a [routerLink]="['/experiments', 'templates', $any(t).id]">
+          {{ $any(t).name }}
+        </a>
+        } @else {
+        <span class="muted">—</span>
+        }
+      </span>
+    </div>
+  </section>
+
+  @if (envRows().length) {
+  <section class="envs">
+    <h3>Environment variables</h3>
+    <div class="env-table" role="table" aria-label="Environment variables">
+      <div class="env-row env-row--head" role="row">
+        <div class="c k" role="columnheader">Name</div>
+        <div class="c v" role="columnheader">Value</div>
+      </div>
+
+      @for (e of envRows(); track e.key) {
+      <div class="env-row" role="row">
+        <div class="c k" role="cell">
+          <span class="env-name">
+            {{ e.key }}
+            <mat-icon
+              *ngIf="e.is_secret"
+              class="material-symbols-rounded secret"
+              matTooltip="Secret"
+              >lock</mat-icon
+            >
+          </span>
+        </div>
+        <div class="c v mono" role="cell">{{ e.value }}</div>
+      </div>
+      }
+    </div>
+    <div class="note">* required</div>
+  </section>
+  }
+
+  <section class="desc">
+    <h3>Description</h3>
+    <pre class="pre">{{ $any(exp).description }}</pre>
+  </section>
+
+  @if (publications().length) {
+  <section class="pubs">
+    <h3>Related AI Assets</h3>
+    <h4>Publications</h4>
+    <div class="pub-list">
+      @for (p of publications(); track ($any(p).id ?? $any(p).same_as ?? p.name); let i = $index) {
+      <div class="pub-item">
+        <span class="idx">[{{ i + 1 }}] </span>
+        @if ($any(p).same_as) {
+        <a [href]="$any(p).same_as" target="_blank" rel="noopener">{{ p.name }}</a>
+        } @else {
+        <span>{{ p.name }}</span>
+        }
+      </div>
+      }
+    </div>
+  </section>
+  }
+
+  <section class="runs">
+    <div class="runs-head">
+      <h2>Runs</h2>
+
+      <ui-button
+        variant="primary"
+        size="md"
+        (click)="createRun()"
+        [disabled]="!canCreateRun()"
+        [title]="
+          !canCreateRun() ? 'You must be the owner and the experiment must not be archived' : ''
+        "
+      >
+        <mat-icon class="material-symbols-rounded">add_circle</mat-icon>
+        Create new experiment run
+      </ui-button>
+    </div>
+
+    <app-experiment-run-list #runList [experiment]="exp" (changed)="onRunsChanged()">
+    </app-experiment-run-list>
+  </section>
+</div>
+}

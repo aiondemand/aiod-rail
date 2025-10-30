@@ -1,0 +1,37 @@
+<ui-search-toolbar
+  [query]="query()"
+  [showEnhanced]="true"
+  [enhanced]="enhanced()"
+  [pageSize]="pageSize()"
+  [pageIndex]="pageIndex()"
+  [length]="length()"
+  [countLoading]="countLoading()"
+  [loading]="loading()"
+  [pageSizeOptions]="[10, 25, 50, 100]"
+  placeholder="Full-text search"
+  (search)="onSearch($event)"
+  (enhancedChange)="toggleEnhanced($event)"
+  (pageSizeChange)="changePageSize($event)"
+  (pageIndexChange)="onPageIndexChange($event)"
+></ui-search-toolbar>
+
+<!-- error -->
+<ui-error
+  [show]="!!error()"
+  [message]="error() || 'Failed to load :/'"
+  [retryable]="true"
+  retryLabel="Try Again"
+  (retry)="onRetryError()"
+></ui-error>
+
+<!-- loading -->
+<ui-loading [show]="loading()" [diameter]="32" ariaLabel="Loading"></ui-loading>
+
+<!-- content -->
+<section class="grid" *ngIf="!loading() && !error()">
+  @for (item of items(); track item.identifier) {
+  <ui-asset-card [resource]="item"></ui-asset-card>
+  } @empty {
+  <p>There are no datasets.</p>
+  }
+</section>

@@ -45,7 +45,7 @@ export class BackendApiService {
 
     let backend_route = `${environment.BACKEND_API_URL}/assets/counts/datasets`;
     if (query?.length > 0) {
-      backend_route += `/search/?query=${query}`
+      backend_route += `/search?query=${query}`
     }
 
     return this.http.get<number>(backend_route);

@@ -1,0 +1,157 @@
+@use '../../../../styles/typography' as typo;
+@use '../../../../variables.scss' as *;
+
+/* ===== container  ===== */
+.runs-table-container {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface-2);
+  overflow: hidden;
+  overflow-x: auto;
+
+  /* Sticky head */
+  .runs-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: var(--surface-3);
+    color: var(--text);
+    font-weight: var(--w-semibold);
+    box-shadow: inset 0 -2px 0 var(--border);
+  }
+
+  &.scrollable {
+    max-height: 580px;
+    overflow: auto;
+  }
+}
+
+/* ===== table ===== */
+.runs-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+
+  th,
+  td {
+    padding: 12px 14px;
+    text-align: left;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    white-space: nowrap;
+  }
+
+  th {
+    font-weight: var(--w-semibold);
+    color: var(--text);
+  }
+
+  th.center {
+    text-align: center;
+  }
+
+  tbody tr:last-child td {
+    border-bottom: 0;
+  }
+
+  tbody tr:nth-child(even) {
+    background: color-mix(in oklab, var(--text) 4%, transparent);
+  }
+
+  tbody tr:hover {
+    background: color-mix(in oklab, var(--text) 6%, transparent);
+  }
+
+  /* ID – monospace */
+  td.mono,
+  td:first-child {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
+    letter-spacing: 0.01em;
+    max-width: 280px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    a {
+      color: var(--text);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+  }
+
+  /* dates */
+  td:nth-child(2),
+  td:nth-child(3) {
+    min-width: 180px;
+  }
+
+  /* metrics chips */
+  td:nth-child(4) .metrics {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 10px;
+
+    > div {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 8px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: color-mix(in oklab, var(--text) 10%, transparent);
+      color: var(--text);
+      line-height: 1;
+      font-size: 12.5px;
+    }
+  }
+
+  /* state */
+  td.state {
+    font-weight: var(--w-medium);
+    color: var(--text);
+  }
+
+  /* actions */
+  td.actions {
+    min-width: 140px;
+    text-align: center;
+  }
+}
+
+/* ===== icon buttons ===== */
+.icon-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-pill);
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid var(--border);
+  background: color-mix(in oklab, var(--text) 6%, transparent);
+  color: var(--text);
+  cursor: pointer;
+  margin-left: 7px;
+
+  &:hover {
+    background: color-mix(in oklab, var(--text) 12%, transparent);
+  }
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    line-height: 1;
+    color: var(--text);
+  }
+}
+
+@media (max-width: 760px) {
+  .runs-table th,
+  .runs-table td {
+    padding: 10px 12px;
+  }
+}
+
+p {
+  padding-left: $margin-default;
+}
