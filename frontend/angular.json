@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "aiod-rail-frontend": {
+    "AiodRail-frontend-v2": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -15,56 +15,32 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular/build:application",
           "options": {
-            "outputPath": "dist/aiod-rail-frontend",
-            "index": "src/index.html",
-            "main": "src/main.ts",
-            "polyfills": [
-              "zone.js"
-            ],
+            "browser": "src/main.ts",
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
-              "src/favicon.ico",
+              { "glob": "**/*", "input": "public" },
               "src/assets",
-              "src/app/docs/markdown/*.md",
-              "src/app/docs/images/*.*"
+              {
+                "glob": "**/*",
+                "input": "node_modules/monaco-editor/min",
+                "output": "assets/monaco"
+              }
             ],
             "styles": [
               "src/styles.scss",
-              "node_modules/highlight.js/styles/vs.css",
-              "node_modules/prismjs/themes/prism-okaidia.css",
-              "node_modules/prismjs/plugins/line-numbers/prism-line-numbers.css",
-              "node_modules/prismjs/plugins/line-highlight/prism-line-highlight.css",
-              "node_modules/prismjs/plugins/command-line/prism-command-line.css"
+              "node_modules/prismjs/themes/prism-tomorrow.css",
+              "node_modules/prismjs/themes/prism-okaidia.css"
             ],
-            "scripts": [
-              "node_modules/marked/marked.min.js",
-              "node_modules/prismjs/prism.js",
-              "node_modules/prismjs/components/prism-csharp.min.js",
-              "node_modules/prismjs/components/prism-css.min.js",
-              "node_modules/prismjs/plugins/line-numbers/prism-line-numbers.js",
-              "node_modules/prismjs/plugins/line-highlight/prism-line-highlight.js",
-              "node_modules/prismjs/plugins/command-line/prism-command-line.js",
-              "node_modules/clipboard/dist/clipboard.min.js",
-              "node_modules/prismjs/components/prism-python.min.js",
-              "node_modules/prismjs/components/prism-json.min.js"
-            ]
+            "outputMode": "static"
           },
           "configurations": {
             "production": {
               "budgets": [
-                {
-                  "type": "initial",
-                  "maximumWarning": "1mb",
-                  "maximumError": "2mb"
-                },
-                {
-                  "type": "anyComponentStyle",
-                  "maximumWarning": "2kb",
-                  "maximumError": "4kb"
-                }
+                { "type": "initial", "maximumWarning": "1MB", "maximumError": "2MB" },
+                { "type": "anyComponentStyle", "maximumWarning": "12kB", "maximumError": "16kB" }
               ],
               "outputHashing": "all",
               "fileReplacements": [
@@ -72,33 +48,23 @@
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.production.ts"
                 }
-              ]
+              ],
+              "outputMode": "static"
             },
             "development": {
-              "budgets": [
-                {
-                  "type": "initial",
-                  "maximumWarning": "1mb",
-                  "maximumError": "2mb"
-                },
-                {
-                  "type": "anyComponentStyle",
-                  "maximumWarning": "2kb",
-                  "maximumError": "4kb"
-                }
-              ],
-              "outputHashing": "all",
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.development.ts"
                 }
-              ]
+              ],
+              "outputMode": "static"
             },
             "local": {
-              "buildOptimizer": false,
               "optimization": false,
-              "vendorChunk": true,
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true,
@@ -107,12 +73,11 @@
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.local.ts"
                 }
-              ]
+              ],
+              "outputMode": "static"
             },
             "local-docker": {
-              "buildOptimizer": false,
               "optimization": false,
-              "vendorChunk": true,
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true,
@@ -121,62 +86,62 @@
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.local-docker.ts"
                 }
-              ]
+              ],
+              "outputMode": "static"
             }
           },
           "defaultConfiguration": "production"
         },
         "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
+          "builder": "@angular/build:dev-server",
+          "options": {
+            "port": 4200,
+            "host": "localhost"
+          },
           "configurations": {
             "production": {
-              "browserTarget": "aiod-rail-frontend:build:production"
+              "buildTarget": "AiodRail-frontend-v2:build:production"
             },
             "development": {
-              "browserTarget": "aiod-rail-frontend:build:development"
+              "buildTarget": "AiodRail-frontend-v2:build:development"
             },
             "local": {
-              "browserTarget": "aiod-rail-frontend:build:local"
+              "buildTarget": "AiodRail-frontend-v2:build:local",
+              "port": 4200,
+              "host": "localhost",
+              "poll": 2000
             },
             "local-docker": {
-              "browserTarget": "aiod-rail-frontend:build:local-docker"
+              "buildTarget": "AiodRail-frontend-v2:build:local-docker",
+              "port": 80,
+              "host": "0.0.0.0",
+              "poll": 2000
             }
           },
           "defaultConfiguration": "development"
         },
         "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n",
-          "options": {
-            "browserTarget": "aiod-rail-frontend:build"
-          }
+          "builder": "@angular/build:extract-i18n"
         },
         "test": {
-          "builder": "@angular-devkit/build-angular:karma",
+          "builder": "@angular/build:karma",
           "options": {
-            "polyfills": [
-              "zone.js",
-              "zone.js/testing"
-            ],
             "tsConfig": "tsconfig.spec.json",
             "inlineStyleLanguage": "scss",
             "assets": [
-              "src/favicon.ico",
+              { "glob": "**/*", "input": "public" },
               "src/assets",
-              "src/app/docs/markdown"
+              {
+                "glob": "**/*",
+                "input": "node_modules/monaco-editor/min",
+                "output": "assets/monaco"
+              }
             ],
-            "styles": [
-              "src/styles.scss",
-              "node_modules/highlight.js/styles/vs.css"
-            ],
-            "scripts": [
-              "node_modules/marked/marked.min.js"
-            ]
+            "styles": ["src/styles.scss", "node_modules/prismjs/themes/prism-tomorrow.css"]
           }
         }
       }
     }
   },
-  "cli": {
-    "analytics": false
-  }
+  "cli": { "analytics": false }
 }

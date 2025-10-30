@@ -1,54 +1,68 @@
 {
-  "name": "aiod-rail-frontend",
+  "name": "aiod-rail-frontend-v2",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
     "start-local": "ng serve --watch --configuration local",
     "build-prod": "ng build --configuration production --output-path=dist",
     "build-dev": "ng build --configuration development --output-path=dist",
     "build-local": "ng build --configuration local --output-path=dist",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test",
-    "start-inside-dev-container": "ng serve -c local-docker --watch --port 80 --host 0.0.0.0 --poll 2000 --disable-host-check"
+    "test": "ng test"
+  },
+  "prettier": {
+    "printWidth": 100,
+    "singleQuote": true,
+    "overrides": [
+      {
+        "files": "*.html",
+        "options": {
+          "parser": "angular"
+        }
+      }
+    ]
   },
   "private": true,
   "dependencies": {
-    "@angular/animations": "^16.0.0",
-    "@angular/cdk": "^16.0.1",
-    "@angular/common": "^16.0.0",
-    "@angular/compiler": "^16.0.0",
-    "@angular/core": "^16.0.0",
-    "@angular/forms": "^16.0.0",
-    "@angular/material": "^16.0.1",
-    "@angular/platform-browser": "^16.0.0",
-    "@angular/platform-browser-dynamic": "^16.0.0",
-    "@angular/router": "^16.0.0",
-    "@ngstack/code-editor": "^5.1.0",
-    "angular-oauth2-oidc": "^15.0.1",
-    "clipboard": "^2.0.11",
-    "marked": "^4.3.0",
-    "ngx-highlightjs": "^10.0.0",
-    "ngx-markdown": "^16.0.0",
-    "prismjs": "^1.29.0",
+    "@angular/cdk": "^20.2.2",
+    "@angular/common": "^20.2.0",
+    "@angular/compiler": "^20.2.0",
+    "@angular/core": "^20.2.0",
+    "@angular/forms": "^20.2.0",
+    "@angular/material": "^20.2.2",
+    "@angular/platform-browser": "^20.2.0",
+    "@angular/platform-server": "^20.2.0",
+    "@angular/router": "^20.2.0",
+    "@angular/ssr": "^20.3.5",
+    "@fontsource/jura": "^5.2.6",
+    "@fontsource/montserrat": "^5.2.7",
+    "@ngstack/code-editor": "^9.0.0",
+    "angular-oauth2-oidc": "^20.0.2",
+    "express": "^5.1.0",
+    "highlight.js": "^11.11.1",
+    "highlightjs-line-numbers.js": "^2.9.0",
+    "marked": "^16.3.0",
+    "monaco-editor": "^0.54.0",
+    "ngx-highlightjs": "^14.0.1",
+    "ngx-markdown": "^20.1.0",
+    "prismjs": "^1.30.0",
     "rxjs": "~7.8.0",
-    "tslib": "^2.3.0",
-    "zone.js": "~0.13.0"
+    "tslib": "^2.3.0"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^16.2.12",
-    "@angular/cli": "^16.0.6",
-    "@angular/compiler-cli": "^16.0.0",
-    "@types/jasmine": "~4.3.0",
-    "@types/marked": "^4.3.1",
-    "@types/mocha": "^10.0.1",
-    "jasmine-core": "~4.6.0",
+    "@angular/build": "^20.2.2",
+    "@angular/cli": "^20.2.2",
+    "@angular/compiler-cli": "^20.2.0",
+    "@types/express": "^5.0.1",
+    "@types/jasmine": "~5.1.0",
+    "@types/node": "^20.17.19",
+    "@types/prismjs": "^1.26.5",
+    "jasmine-core": "~5.9.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
-    "karma-jasmine-html-reporter": "~2.0.0",
-    "mocha": "^10.2.0",
-    "typescript": "~5.0.2"
+    "karma-jasmine-html-reporter": "~2.1.0",
+    "typescript": "~5.9.2"
   }
 }
