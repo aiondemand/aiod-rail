@@ -21,11 +21,11 @@ services:
   # FRONTEND
   frontend-app:
     build:
-      context: ./frontend-v2
+      context: ./frontend
       dockerfile: ./Dockerfile-dev
       args:
         # One of local/dev/prod
         PROFILE: local-docker
     volumes:
-      - ./frontend-v2/src:/app/src
+      - ./frontend/src:/app/src
     command: ["sh", "-c", "npm run start-inside-dev-container"]

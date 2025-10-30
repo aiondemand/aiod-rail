@@ -16,7 +16,7 @@ services:
   # FRONTEND
   frontend-app:
     build:
-      context: ./frontend-v2
+      context: ./frontend
       args:
         # One of local/dev/prod
         PROFILE: prod
