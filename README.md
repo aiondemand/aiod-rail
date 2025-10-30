@@ -29,7 +29,7 @@ and the frontend web application (Angular).
 Note: Some additional changes to file [docker-compose.yml](docker-compose.yml) might be needed
 in order to change the default ports, etc.
 
-### Configurationgit
+### Configuration
 * **Backend** - It is _mandatory_ to configure environment variables in file `backend/.env`.
   See the section "_Setup->Using docker compose_" in the corresponding [README](backend/README.md) file for more details.
 * **Frontend** - There are some environments created and can be selected in the [docker-compose.yml](docker-compose.yml) file
