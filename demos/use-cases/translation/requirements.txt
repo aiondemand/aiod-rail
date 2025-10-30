@@ -1,0 +1,5 @@
+transformers==4.41.1
+datasets==2.19.1
+sentencepiece==0.2.0
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch==2.3.0+cpu

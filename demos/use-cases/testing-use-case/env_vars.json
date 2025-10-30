@@ -1,0 +1,17 @@
+{
+    "required": [
+        {
+            "name": "REQUIRED_ENV",
+            "description": "A required env var",
+            "is_secret": false
+        }
+    ],
+    "optional": [
+        {
+            "name": "OPTIONAL_ENV",
+            "description": "An optional env var",
+            "is_secret": false
+        }
+
+    ]
+}

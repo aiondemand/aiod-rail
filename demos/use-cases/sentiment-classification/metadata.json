@@ -1,0 +1,42 @@
+{
+    "template": {
+        "name": "[DEMO] Classification Template",
+        "description": "A template for performing a classification task",
+        "base_image": "python:3.10",
+        "is_public": false
+    },
+    "experiments": {
+        "experiment_sst2": {
+            "name": "[DEMO] Sentiment Analysis Experiment - SST2",
+            "description": "An experiment for performing sentiment analysis task",
+            "model_name": "kinit/slovakbert-sentiment-twitter",
+            "dataset_name": "stanfordnlp/sst2",
+            "model_id": "mdl_0JWgp63vVi5H8sw5ahkf4Mcx",
+            "dataset_id": "data_14H9yMvYxB0UQg6UALE94q4o",
+            "env_vars": {
+                "SPLIT_NAME": "train",
+                "INPUT_FEATURE_NAME": "sentence",
+                "LABEL_FEATURE_NAME": "label",
+                "NUM_DATAPOINTS_TO_CLASSIFY": 50,
+                "BATCH_SIZE": 4
+            },
+            "is_public": false
+        },
+        "experiment_imdb": {
+            "name": "[DEMO] Sentiment Analysis Experiment - IMDB",
+            "description": "An experiment for performing sentiment analysis task",
+            "model_name": "kinit/slovakbert-sentiment-twitter",
+            "dataset_name": "stanfordnlp/imdb",
+            "model_id": "mdl_0JWgp63vVi5H8sw5ahkf4Mcx",
+            "dataset_id": "data_xLp76CfkhIMuTchc2IP9WAFm",
+            "env_vars": {
+                "SPLIT_NAME": "train",
+                "INPUT_FEATURE_NAME": "text",
+                "LABEL_FEATURE_NAME": "label",
+                "NUM_DATAPOINTS_TO_CLASSIFY": 5,
+                "BATCH_SIZE": 1
+            },
+            "is_public": false
+        }
+    }
+}
