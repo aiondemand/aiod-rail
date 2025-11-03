@@ -15,6 +15,7 @@ import { ThemeSwitch } from '../../../shared/components/theme-switch/theme-switc
 import { LoginLogoutComponent } from '../../../shared/components/login-logout/login-logout';
 import { UiButton } from '../../../shared/components/ui-button/ui-button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 type NavItem = {
   id: number;
@@ -31,12 +32,20 @@ const EXTERNAL = {
   GET_STARTED: 'https://aiod.eu/get-started',
   MY_LIBRARY: 'https://mylibrary.aiod.eu',
   TECH_SUPPORT: 'https://aiod.eu/technical-support/',
+  EDITOR: 'https://editor.aiod.eu/',
 };
 
 @Component({
   selector: 'app-top-navbar',
   standalone: true,
-  imports: [CommonModule, ThemeSwitch, LoginLogoutComponent, UiButton, MatIconModule],
+  imports: [
+    CommonModule,
+    ThemeSwitch,
+    LoginLogoutComponent,
+    UiButton,
+    MatIconModule,
+    MatTooltipModule,
+  ],
   templateUrl: './top-navbar.html',
   styleUrls: ['./top-navbar.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

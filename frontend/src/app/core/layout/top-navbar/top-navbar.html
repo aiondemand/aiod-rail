@@ -104,10 +104,10 @@
           variant="primary"
           size="lg"
           [icon]="true"
-          ariaLabel="Search"
-          (click)="openExternal(external.MY_LIBRARY)"
+          ariaLabel="EDITOR"
+          (click)="openExternal(external.EDITOR)"
         >
-          <mat-icon fontIcon="search"></mat-icon>
+          <mat-icon fontIcon="add"></mat-icon>
         </ui-button>
 
         <ui-button
@@ -129,17 +129,6 @@
     <!-- RIGHT: actions (desktop only) -->
     <div class="actions">
       <ui-button
-        class="search"
-        variant="primary"
-        size="lg"
-        [icon]="true"
-        ariaLabel="Search"
-        (click)="openExternal(external.MY_LIBRARY)"
-      >
-        <mat-icon fontIcon="search"></mat-icon>
-      </ui-button>
-
-      <ui-button
         class="get-started"
         size="lg"
         ariaLabel="Get Started"
@@ -149,6 +138,18 @@
       </ui-button>
 
       <app-login-logout></app-login-logout>
+
+      <ui-button
+        class="search"
+        variant="primary"
+        size="lg"
+        [icon]="true"
+        ariaLabel="EDITOR"
+        (click)="openExternal(external.EDITOR)"
+        matTooltip="Editor"
+      >
+        <mat-icon fontIcon="add"></mat-icon>
+      </ui-button>
 
       <theme-switch size="lg" (click)="toggleTheme()"></theme-switch>
     </div>
