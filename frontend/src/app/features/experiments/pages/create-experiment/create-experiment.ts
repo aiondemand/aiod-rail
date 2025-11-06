@@ -70,6 +70,11 @@ export class CreateExperimentPage implements OnInit {
   // ----- state
   loading = signal<boolean>(true);
   error = signal<string | null>(null);
+  action = signal<'create' | 'update'>('create');
+
+  // --- malé doplnenie pre update mód
+  private isUpdate = false;
+  private currentExpId: string | null = null;
 
   // form
   form = this.fb.group({
@@ -237,6 +242,10 @@ export class CreateExperimentPage implements OnInit {
     // --- UPDATE MODE
     const expId = this.route.snapshot.paramMap.get('id');
     if (expId && /\/experiments\/[^/]+\/update$/.test(this.router.url)) {
+      this.isUpdate = true;
+      this.currentExpId = expId;
+      this.action.set('update');
+
       this.loading.set(true);
       this.api
         .getExperiment(expId)
@@ -353,8 +362,19 @@ export class CreateExperimentPage implements OnInit {
 
     const vis = this.form.controls.visibility.value === 'Public';
 
-    const envReq = this.envsReqFG.value as Record<string, string>;
-    const envOpt = this.envsOptFG.value as Record<string, string>;
+    // --- read raw data
+    const envReqRaw =
+      (this.envsReqFG as any)?.getRawValue?.() ?? (this.envsReqFG.value as Record<string, unknown>);
+    const envOptRaw =
+      (this.envsOptFG as any)?.getRawValue?.() ?? (this.envsOptFG.value as Record<string, unknown>);
+
+    const toStringRecord = (obj: Record<string, unknown>): Record<string, string> =>
+      Object.fromEntries(
+        Object.entries(obj || {}).map(([k, v]) => [k, v == null ? '' : String(v)])
+      ) as Record<string, string>;
+
+    const envReq = toStringRecord(envReqRaw);
+    const envOpt = toStringRecord(envOptRaw);
     const all = { ...envReq, ...envOpt };
 
     const env_vars = Object.entries(all)
@@ -388,18 +408,22 @@ export class CreateExperimentPage implements OnInit {
     };
 
     this.loading.set(true);
-    this.api
-      .createExperiment(payload)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (exp: Experiment) => {
-          this.snack.show('Experiment created');
-          this.router.navigate(['/experiments', exp.id]);
-        },
-        error: (err) => {
-          this.fail(`Couldn't create experiment`, err);
-        },
-      });
+
+    // --- added update api
+    const req$ =
+      this.isUpdate && this.currentExpId
+        ? this.api.updateExperiment(this.currentExpId, payload)
+        : this.api.createExperiment(payload);
+
+    req$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (exp: Experiment) => {
+        this.snack.show(this.isUpdate ? 'Experiment updated' : 'Experiment created');
+        this.router.navigate(['/experiments', exp.id]);
+      },
+      error: (err) => {
+        this.fail(`Couldn't ${this.isUpdate ? 'update' : 'create'} experiment`, err);
+      },
+    });
   }
 
   private fail(msg: string, err?: any) {
