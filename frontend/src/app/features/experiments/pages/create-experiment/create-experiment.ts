@@ -72,7 +72,7 @@ export class CreateExperimentPage implements OnInit {
   error = signal<string | null>(null);
   action = signal<'create' | 'update'>('create');
 
-  // --- malé doplnenie pre update mód
+  // --- mode
   private isUpdate = false;
   private currentExpId: string | null = null;
 
