@@ -10,7 +10,7 @@ import {
 } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { debounceTime, startWith, switchMap, catchError, of, combineLatest, map } from 'rxjs';
+import { debounceTime, startWith, switchMap, catchError, of, combineLatest } from 'rxjs';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -70,6 +70,16 @@ export class CreateExperimentPage implements OnInit {
   // ----- state
   loading = signal<boolean>(true);
   error = signal<string | null>(null);
+  action = signal<'create' | 'update'>('create');
+
+  // --- mode
+  private isUpdate = false;
+  private currentExpId: string | null = null;
+  private hydrating = false;
+  private originalExp: Experiment | null = null;
+
+  // lock when runs exist
+  assetsLocked = signal<boolean>(false);
 
   // form
   form = this.fb.group({
@@ -139,11 +149,9 @@ export class CreateExperimentPage implements OnInit {
   modelsMine$ = this.modelFC.valueChanges.pipe(
     debounceTime(250),
     startWith(''),
-    switchMap((q) => {
-      if (typeof q !== 'string') return of<Model[]>([]);
-      if (q === this.NO_MODEL_TOKEN) return of<Model[]>([]);
-      return this.api.getMyModels(q);
-    }),
+    switchMap((q) =>
+      typeof q !== 'string' || q === this.NO_MODEL_TOKEN ? of<Model[]>([]) : this.api.getMyModels(q)
+    ),
     catchError((err) => {
       this.fail("Couldn't load my models", err);
       return of([]);
@@ -154,11 +162,9 @@ export class CreateExperimentPage implements OnInit {
   modelsPublic$ = this.modelFC.valueChanges.pipe(
     debounceTime(250),
     startWith(''),
-    switchMap((q) => {
-      if (typeof q !== 'string') return of<Model[]>([]);
-      if (q === this.NO_MODEL_TOKEN) return of<Model[]>([]);
-      return this.api.getModels(q);
-    }),
+    switchMap((q) =>
+      typeof q !== 'string' || q === this.NO_MODEL_TOKEN ? of<Model[]>([]) : this.api.getModels(q)
+    ),
     catchError((err) => {
       this.fail("Couldn't load models", err);
       return of([]);
@@ -170,11 +176,11 @@ export class CreateExperimentPage implements OnInit {
   datasetsMine$ = this.datasetFC.valueChanges.pipe(
     debounceTime(250),
     startWith(''),
-    switchMap((q) => {
-      if (typeof q !== 'string') return of<Dataset[]>([]);
-      if (q === this.NO_DATASET_TOKEN) return of<Dataset[]>([]);
-      return this.api.getMyDatasets(q);
-    }),
+    switchMap((q) =>
+      typeof q !== 'string' || q === this.NO_DATASET_TOKEN
+        ? of<Dataset[]>([])
+        : this.api.getMyDatasets(q)
+    ),
     catchError((err) => {
       this.fail("Couldn't load my datasets", err);
       return of([]);
@@ -185,11 +191,11 @@ export class CreateExperimentPage implements OnInit {
   datasetsPublic$ = this.datasetFC.valueChanges.pipe(
     debounceTime(250),
     startWith(''),
-    switchMap((q) => {
-      if (typeof q !== 'string') return of<Dataset[]>([]);
-      if (q === this.NO_DATASET_TOKEN) return of<Dataset[]>([]);
-      return this.api.getDatasets(q);
-    }),
+    switchMap((q) =>
+      typeof q !== 'string' || q === this.NO_DATASET_TOKEN
+        ? of<Dataset[]>([])
+        : this.api.getDatasets(q)
+    ),
     catchError((err) => {
       this.fail("Couldn't load datasets", err);
       return of([]);
@@ -209,34 +215,74 @@ export class CreateExperimentPage implements OnInit {
     takeUntilDestroyed(this.destroyRef)
   );
 
+  // ===== helpers =====
+
+  /** Build fresh FormGroup for required envs from a template. */
+  private buildEnvsRequiredGroup(tpl: ExperimentTemplate | null): FormGroup {
+    const group = this.fb.group({});
+    if (tpl) {
+      (tpl.envs_required ?? []).forEach((env) => {
+        group.addControl(
+          env.name,
+          new FormControl<string>('', { nonNullable: true, validators: [Validators.required] })
+        );
+      });
+    }
+    return group;
+  }
+
+  /** Build fresh FormGroup for optional envs from a template. */
+  private buildEnvsOptionalGroup(tpl: ExperimentTemplate | null): FormGroup {
+    const group = this.fb.group({});
+    if (tpl) {
+      (tpl.envs_optional ?? []).forEach((env) => {
+        group.addControl(env.name, new FormControl<string>('', { nonNullable: true }));
+      });
+    }
+    return group;
+  }
+
+  /** Replace env groups in the form with brand-new instances and recompute validity. */
+  private replaceEnvGroups(tpl: ExperimentTemplate | null) {
+    const newReq = this.buildEnvsRequiredGroup(tpl);
+    const newOpt = this.buildEnvsOptionalGroup(tpl);
+
+    this.form.setControl('envsRequired', newReq);
+    this.form.setControl('envsOptional', newOpt);
+
+    // recompute validity top-level
+    this.form.updateValueAndValidity({ emitEvent: false });
+  }
+
   ngOnInit(): void {
-    // When template changes, reset dependent fields and rebuild ENV controls
+    // on template change -> reset dependent fields, replace env groups, mark dirty/touched, recompute validity
     this.tplFC.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((val) => {
+      if (this.hydrating) return;
       const tpl = typeof val === 'string' ? null : val;
       this.selectedTemplate.set(tpl);
 
-      this.modelFC.setValue('');
-      this.datasetFC.setValue('');
+      // reset dependent assets
+      this.modelFC.setValue('', { emitEvent: false });
+      this.datasetFC.setValue('', { emitEvent: false });
 
-      Object.keys(this.envsReqFG.controls).forEach((k) => this.envsReqFG.removeControl(k));
-      Object.keys(this.envsOptFG.controls).forEach((k) => this.envsOptFG.removeControl(k));
+      // **the fix**: swap whole FormGroups to avoid stale errors/validators
+      this.replaceEnvGroups(tpl);
 
-      if (!tpl) return;
-
-      (tpl.envs_required ?? []).forEach((env) =>
-        this.envsReqFG.addControl(
-          env.name,
-          new FormControl<string>('', { nonNullable: true, validators: [Validators.required] })
-        )
-      );
-      (tpl.envs_optional ?? []).forEach((env) =>
-        this.envsOptFG.addControl(env.name, new FormControl<string>('', { nonNullable: true }))
-      );
+      // make Angular aware of the change
+      this.tplFC.markAsDirty();
+      this.tplFC.markAsTouched();
+      this.form.markAsDirty();
+      this.form.markAsTouched();
+      this.form.updateValueAndValidity({ emitEvent: true });
     });
 
     // --- UPDATE MODE
     const expId = this.route.snapshot.paramMap.get('id');
     if (expId && /\/experiments\/[^/]+\/update$/.test(this.router.url)) {
+      this.isUpdate = true;
+      this.currentExpId = expId;
+      this.action.set('update');
+
       this.loading.set(true);
       this.api
         .getExperiment(expId)
@@ -256,6 +302,12 @@ export class CreateExperimentPage implements OnInit {
         )
         .subscribe({
           next: ([exp, ds, mdl, pubs, tpl, runsCount]) => {
+            this.hydrating = true;
+            this.originalExp = exp;
+
+            //  build brand new env groups for loaded template
+            this.replaceEnvGroups(tpl);
+
             this.form.patchValue(
               {
                 name: (exp as any).name,
@@ -265,8 +317,9 @@ export class CreateExperimentPage implements OnInit {
                 model: mdl ? (mdl as any) : this.NO_MODEL_TOKEN,
                 dataset: ds ? (ds as any) : this.NO_DATASET_TOKEN,
               },
-              { emitEvent: true }
+              { emitEvent: false }
             );
+
             this.selectedTemplate.set(tpl as any);
 
             // prefill selected pubs into chips
@@ -280,24 +333,34 @@ export class CreateExperimentPage implements OnInit {
               ((exp as any).env_vars || []).map((e: any) => [e.key, e.value])
             );
             (tpl?.envs_required ?? []).forEach((env: any) => {
-              const c = this.envsReqFG.get(env.name) as FormControl<string>;
-              if (c) c.setValue(envMap.get(env.name) ?? '');
+              const c = (this.form.get('envsRequired') as FormGroup).get(
+                env.name
+              ) as FormControl<string>;
+              if (c) c.setValue(envMap.get(env.name) ?? '', { emitEvent: false });
             });
             (tpl?.envs_optional ?? []).forEach((env: any) => {
-              const c = this.envsOptFG.get(env.name) as FormControl<string>;
-              if (c) c.setValue(envMap.get(env.name) ?? '');
+              const c = (this.form.get('envsOptional') as FormGroup).get(
+                env.name
+              ) as FormControl<string>;
+              if (c) c.setValue(envMap.get(env.name) ?? '', { emitEvent: false });
             });
 
             // lock assets if there are runs
             const editableAssets = (runsCount as number) === 0;
+            this.assetsLocked.set(!editableAssets);
             if (!editableAssets) {
-              this.modelFC.disable();
-              this.datasetFC.disable();
-              this.tplFC.disable();
-              this.envsOptFG.disable();
-              this.envsReqFG.disable();
+              this.modelFC.disable({ emitEvent: false });
+              this.datasetFC.disable({ emitEvent: false });
+              this.tplFC.disable({ emitEvent: false });
+              (this.form.get('envsRequired') as FormGroup).disable({ emitEvent: false });
+              (this.form.get('envsOptional') as FormGroup).disable({ emitEvent: false });
+              this.pubSearchFC.disable({ emitEvent: false });
             }
 
+            // flush validity after hydration
+            this.form.updateValueAndValidity({ emitEvent: false });
+
+            this.hydrating = false;
             this.loading.set(false);
           },
           error: (err) => this.fail("Couldn't load experiment for update", err),
@@ -325,7 +388,7 @@ export class CreateExperimentPage implements OnInit {
 
   // Publications add/remove
   onPublicationPicked(p: Publication) {
-    if (!p) return;
+    if (!p || this.assetsLocked()) return;
     if (this.publicationsFA.controls.some((c) => c.value.identifier === p.identifier)) return;
     this.publicationsFA.push(new FormControl(p, { nonNullable: true }));
     // Clear input so the user can type another query immediately
@@ -338,6 +401,7 @@ export class CreateExperimentPage implements OnInit {
   }
 
   removePublication(ctrl: FormControl<Publication>) {
+    if (this.assetsLocked()) return;
     const idx = this.publicationsFA.controls.indexOf(ctrl);
     if (idx >= 0) this.publicationsFA.removeAt(idx);
   }
@@ -351,35 +415,62 @@ export class CreateExperimentPage implements OnInit {
       return;
     }
 
-    const vis = this.form.controls.visibility.value === 'Public';
+    const raw = this.form.getRawValue();
+    const vis = raw.visibility === 'Public';
 
-    const envReq = this.envsReqFG.value as Record<string, string>;
-    const envOpt = this.envsOptFG.value as Record<string, string>;
+    const readGroup = (fg: FormGroup) =>
+      (typeof (fg as any)?.getRawValue === 'function'
+        ? (fg as any).getRawValue()
+        : fg.value) as Record<string, unknown>;
+    const toStringRecord = (obj: Record<string, unknown>): Record<string, string> => {
+      const entries = Object.entries(obj || {}).map(([k, v]) => [k, v == null ? '' : String(v)]);
+      return Object.fromEntries(entries) as Record<string, string>;
+    };
+
+    const envReq = toStringRecord(readGroup(this.form.get('envsRequired') as FormGroup));
+    const envOpt = toStringRecord(readGroup(this.form.get('envsOptional') as FormGroup));
     const all = { ...envReq, ...envOpt };
 
-    const env_vars = Object.entries(all)
-      .filter(([, v]) => !!v && String(v).length > 0)
+    let env_vars = Object.entries(all)
+      .filter(([, v]) => v.length > 0)
       .map(([key, value]) => ({ key, value }));
 
     const pubIds = this.publicationsFA.value.map((p) => String(p.identifier));
 
-    const dsVal = this.datasetFC.value;
-    const mdlVal = this.modelFC.value;
+    const dsVal = raw.dataset;
+    const mdlVal = raw.model;
 
-    const dataset_ids =
+    let dataset_ids =
       !dsVal || (typeof dsVal === 'string' && dsVal === this.NO_DATASET_TOKEN)
         ? []
         : [String((dsVal as Dataset).identifier)];
 
-    const model_ids =
+    let model_ids =
       !mdlVal || (typeof mdlVal === 'string' && mdlVal === this.NO_MODEL_TOKEN)
         ? []
         : [String((mdlVal as Model).identifier)];
 
+    if (this.assetsLocked()) {
+      if (!dataset_ids.length && (this.originalExp?.dataset_ids?.length ?? 0) > 0) {
+        dataset_ids = [...(this.originalExp!.dataset_ids || [])];
+      }
+      if (!model_ids.length && (this.originalExp?.model_ids?.length ?? 0) > 0) {
+        model_ids = [...(this.originalExp!.model_ids || [])];
+      }
+      if (!env_vars.length && (this.originalExp?.env_vars?.length ?? 0) > 0) {
+        env_vars = (this.originalExp!.env_vars as any[]).map((ev) => ({
+          key: ev.key,
+          value: String(ev.value),
+        }));
+      }
+    }
+
     const payload: ExperimentCreate = {
-      name: String(this.form.controls.name.value).trim(),
-      description: String(this.form.controls.description.value).trim(),
-      publication_ids: pubIds,
+      name: String(raw.name).trim(),
+      description: String(raw.description).trim(),
+      publication_ids: pubIds.length
+        ? pubIds
+        : (this.originalExp?.publication_ids || []).map(String),
       experiment_template_id: tpl.id,
       dataset_ids,
       model_ids,
@@ -388,18 +479,22 @@ export class CreateExperimentPage implements OnInit {
     };
 
     this.loading.set(true);
-    this.api
-      .createExperiment(payload)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (exp: Experiment) => {
-          this.snack.show('Experiment created');
-          this.router.navigate(['/experiments', exp.id]);
-        },
-        error: (err) => {
-          this.fail(`Couldn't create experiment`, err);
-        },
-      });
+
+    // --- added update api
+    const req$ =
+      this.isUpdate && this.currentExpId
+        ? this.api.updateExperiment(this.currentExpId, payload)
+        : this.api.createExperiment(payload);
+
+    req$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (exp: Experiment) => {
+        this.snack.show(this.isUpdate ? 'Experiment updated' : 'Experiment created');
+        this.router.navigate(['/experiments', exp.id]);
+      },
+      error: (err) => {
+        this.fail(`Couldn't ${this.isUpdate ? 'update' : 'create'} experiment`, err);
+      },
+    });
   }
 
   private fail(msg: string, err?: any) {

@@ -12,7 +12,9 @@
 <div class="detail card">
   <form class="create-experiment-form" [formGroup]="form" (ngSubmit)="submit()">
     <section class="head">
-      <h1 class="title">Create experiment</h1>
+      <h1 class="title">
+        {{ action() === 'create' ? 'Create experiment' : 'Edit experiment' }}
+      </h1>
     </section>
 
     <!-- ===== BASIC ===== -->
@@ -73,9 +75,9 @@
 
       <mat-chip-listbox class="chips">
         @for (c of publicationsFA.controls; track c.value?.identifier) {
-        <mat-chip (removed)="removePublication(c)">
+        <mat-chip [disabled]="assetsLocked()" (removed)="removePublication(c)">
           {{ c.value.name }}
-          <mat-icon matChipRemove>cancel</mat-icon>
+          <mat-icon *ngIf="!assetsLocked()" matChipRemove>cancel</mat-icon>
         </mat-chip>
         }
       </mat-chip-listbox>
@@ -235,7 +237,7 @@
 
     <div class="actions">
       <ui-button variant="primary" size="md" type="submit" [disabled]="form.invalid">
-        Create experiment
+        {{ action() === 'create' ? 'Create experiment' : 'Update experiment' }}
       </ui-button>
     </div>
   </form>

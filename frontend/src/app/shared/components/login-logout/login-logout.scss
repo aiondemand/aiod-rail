@@ -2,7 +2,7 @@
 @use '../../../../variables' as *;
 
 .login-container {
-  margin-inline: $margin-default;
+  margin-inline: $margin-half;
   display: flex;
   align-items: center;
   gap: 12px;
