@@ -6,8 +6,10 @@
    LOGO (swap image by theme)
    ========================================================== */
 .logo img {
-  height: 56px;
-  margin-inline: $margin-default;
+  height: 50px;
+
+  margin-left: $margin-double;
+  margin-right: $margin-default;
 }
 .logo-dark {
   display: none;
@@ -442,11 +444,12 @@
   margin-left: auto;
   display: flex;
   align-items: center;
-  gap: $margin-default;
+  gap: $margin-half;
 
   .mat-icon {
-    color: yellow;
-  } /* search icon v btn-e */
+    color: $aiod-yellow;
+    font-size: 22px;
+  }
   ui-button:hover .mat-icon {
     color: $aiod-blue;
   }
@@ -487,6 +490,14 @@
 /* ===== MOBILE ACTIONS LAYOUT ===== */
 .mobile-actions {
   display: none;
+
+  .mat-icon {
+    color: $aiod-yellow;
+    font-size: 22px;
+  }
+  ui-button:hover .mat-icon {
+    color: $aiod-blue;
+  }
 
   @media (max-width: 992px) {
     display: flex;
