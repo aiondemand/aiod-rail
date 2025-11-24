@@ -3,32 +3,46 @@
 _RAIL Backend_ serves as a backend application for [RAIL service](../README.md).
 This backend consists of a REST API service (FastAPI) and a non-relational database (MongoDB).
 
-## Setup
+## Deployment
+
+1. Create `.env` file containing relevant ENV variables required for the service defined in `.env.sample`.
+    - Mongo setup:
+      - `MONGODB_DBNAME`: Name of the database
+    - Connection to other AIoD services:
+      - `AIOD_API__BASE_URL`: URL of the running AIoD API (Metadata Catalogue)
+      - `AIOD_LIBRARY_API__BASE_URL`: URL of the running AIoD MyLibrary
+      - `AIOD_ENHANCED_SEARCH_API__BASE_URL`: URL of the running AIoD Enhanced Interaction
+    - AIoD Keycloack authentication service:
+      - `AIOD_KEYCLOAK__*`: Env variables related to authentication using Keycloak
+    - REANA setup:
+      - `REANA_SERVER_URL`: Define the URL used for connecting to REANA server
+      - `REANA_ACCESS_TOKEN`: Define the access token used for connecting to REANA server
+    - Docker registry setup (create your own Docker registry where you store images to):
+      - `DOCKER_REGISTRY_URL`: Define a path to a repository that we want to use for storing docker images of individual
+        ExperimentTemplates
+      - `DOCKER_REGISTRY_USERNAME`: Define a username for a Docker Hub profile that has push permissions to a repository
+        defined in variable `DOCKER_REGISTRY_URL`
+      - `DOCKER_REGISTRY_PASSWORD`: Define a password for a Docker Hub profile that has push permissions to a repository
+        defined in variable `DOCKER_REGISTRY_URL`
+    - RAIL experiment setup:
+      - `MAX_PARALLEL_IMAGE_BUILDS`: Define a maximum number of Python (asyncio) tasks that build and push docker images
+        in parallel
+      - `MAX_PARALLEL_CONTAINERS`: Define a maximum number of Python (asyncio) tasks that run REANA workflows in parallel
+      - `MAX_IMAGE_BUILDS_ATTEMPTS`: Define a maximum number of ATTEMPTS that are executed for each failing process of
+        building a docker image
+      - `MAX_EXPERIMENT_RUN_ATTEMPTS`: Define a maximum number of ATTEMPTS that are executed for each failing experiment
+        run
+
+
+## Development
 
 This repository contains two systems; the database and the REST API.
 As a database we use a containerized MongoDB server (through Docker), the REST API can be run locally or containerized.
 
 ### Using docker compose [RECOMMENDED]
 
-1. Create `.env` file containing relevant ENV variables required for the service defined in `.env.sample`.
-    - `MONGODB_DBNAME`: Name of the database - do not change it unless you need to
-    - `AIOD_API__BASE_URL`: URL of the running AIoD API
-    - `MAX_PARALLEL_IMAGE_BUILDS`: Define a maximum number of Python (asyncio) tasks that build and push docker images
-      in parallel
-    - `MAX_PARALLEL_CONTAINERS`: Define a maximum number of Python (asyncio) tasks that run REANA workflows in parallel
-    - `MAX_IMAGE_BUILDS_ATTEMPTS`: Define a maximum number of ATTEMPTS that are executed for each failing process of
-      building a docker image
-    - `MAX_EXPERIMENT_RUN_ATTEMPTS`: Define a maximum number of ATTEMPTS that are executed for each failing experiment
-      run
-    - `REANA_SERVER_URL`: Define the URL used for connecting to REANA server
-    - `REANA_ACCESS_TOKEN`: Define the access token used for connecting to REANA server
-    - `DOCKER_REGISTRY_URL`: Define a path to a repository that we want to use for storing docker images of individual
-      ExperimentTemplates
-    - `DOCKER_REGISTRY_USERNAME`: Define a username for a Docker Hub profile that has push permissions to a repository
-      defined in variable `DOCKER_REGISTRY_URL`
-    - `DOCKER_REGISTRY_PASSWORD`: Define a password for a Docker Hub profile that has push permissions to a repository
-      defined in variable `DOCKER_REGISTRY_URL`
-    - `AIOD_KEYCLOAK__*`: Variables related to authentication using Keycloak
+1. Create `.env` file containing relevant ENV variables required for the service defined in `.env.sample`. The required
+   variables are described in greater detail in the Deployment section.
 1. Start the service using the following command: `docker compose up -d --build`
 
 **IMPORTANT**: Make sure you check and potentially modify the host port mappings for specific components
@@ -48,7 +62,7 @@ in [docker-compose.yml](docker-compose.yml) file.
     - Go to "general"
     - Check "Expose daemon on tcp://localhost:2375 without TLS" if its unchecked
 1. Create `.env` file containing relevant ENV variables required for the service defined in `.env.sample`. The required
-   variables are described in greater detail in the previous section.
+   variables are described in greater detail in the Deployment section.
 1. Install Python >= 3.10 if you haven't done so already. We recommend using Python version 3.10 as this particular
    version has been tested and used for the development of this project.
 1. Install dependencies by executing following command: `pip install -r requirements.txt`.
