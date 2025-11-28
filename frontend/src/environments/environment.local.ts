@@ -5,4 +5,5 @@ export const environment = {
   AIOD_KEYCLOAK_REALM: 'aiod',
   AIOD_KEYCLOAK_CLIENT_ID: 'rail-public',
   AIOD_KEYCLOAK_CLIENT_ID_BACKEND: 'rail',
+  AIOD_BASE_URL: 'https://aiod.eu',
 };

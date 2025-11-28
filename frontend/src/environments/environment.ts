@@ -5,4 +5,5 @@ export const environment = {
   AIOD_KEYCLOAK_REALM: '',
   AIOD_KEYCLOAK_CLIENT_ID: '',
   AIOD_KEYCLOAK_CLIENT_ID_BACKEND: '',
+  AIOD_BASE_URL: '',
 };

@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { UiButton } from '../../../shared/components/ui-button/ui-button';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-footer',
@@ -9,4 +10,6 @@ import { UiButton } from '../../../shared/components/ui-button/ui-button';
   templateUrl: './footer.html',
   styleUrls: ['./footer.scss'],
 })
-export class Footer {}
+export class Footer {
+  protected base = environment.AIOD_BASE_URL;
+}
