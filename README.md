@@ -13,7 +13,7 @@ More extensively, RAIL:
 IMPORTANT: RAIL is a service built on top of [AIoD API](https://github.com/aiondemand/AIOD-rest-api)
 and relies heavily on its contents and functionalities.
 
-## Installation
+## Deployment
 This repository consists of two main components - **frontend** and **backend** applications,
 served by `nginx` configured as a reverse proxy (for more details see [nginx/default.conf](nginx/default.conf)).
 Each of these components can be built and deployed individually (see the corresponding sub-folders [frontend](frontend) and [backend](backend)).
@@ -29,20 +29,33 @@ and the frontend web application (Angular).
 Note: Some additional changes to file [docker-compose.yml](docker-compose.yml) might be needed
 in order to change the default ports, etc.
 
+### Dependencies
+In order for RAIL to work properly, you may need to deploy additional AIoD services or other misc services RAIL depends on, especially when you wish to build the entire AIoD ecosystem from scratch.
+Unless you utilize and point RAIL to already existing official AIoD services, you need to deploy the following dependencies first for RAIL to work:
+- [AIoD Metadata Catalogue](https://github.com/aiondemand/AIOD-rest-api) for accessing AIoD assets
+  - *Keycloak auth service is a part of this service*
+- [AIoD MyLibrary](https://github.com/aiondemand/AIOD-mylibrary-backend) for accessing your bookmarked AIoD assets
+- [AIoD Enhanced Interaction](https://github.com/aiondemand/aiod-enhanced-interaction) for performing Enhanced Search and Chatbot functionality
+- [REANA](https://docs.reana.io/) for executing experiments
+
+If you decide to utilize official AIoD services, you need to contact AIoD team to create credentials for most of these services. More specifically you would need the following credentials for your own RAIL instance to work with official AIoD platform:
+- AIoD Keycloak credentials (new clients setup for RAIL frontend and backend)
+- REANA credentials
+
+
+
 ### Configuration
 * **Backend** - It is _mandatory_ to configure environment variables in file `backend/.env`.
-  See the section "_Setup->Using docker compose_" in the corresponding [README](backend/README.md) file for more details.
-* **Frontend** - There are some environments created and can be selected in the [docker-compose.yml](docker-compose.yml) file
-  by a build argument `PROFILE` of the `frontend-app`. Update one of the existing ones to suit your specific needs.
+  See the section "_Deployment_" in the corresponding [README](backend/README.md) file for more details.
+* **Frontend** - It is _mandatory_ to configure frontend in `frontend/src/app/environments/environment.production.ts` granted you use the `prod` value for `PROFILE` Docker argument (that you can change in `docker-compose.yml`). See the section "_Deployment_" in the corresponding [README](frontend/README.md) file for more details.
 
-## Authentication
-Some of the functionality is accessible only for authenticated users.
-Authentication server needs to be correctly setup and referenced in the _frontend_ and _backend_ configuration files.
-The current setup relies on Keycloak deployed as part of [AIoD API](https://github.com/aiondemand/AIOD-rest-api).
 
-## Usage
-Following the installation instructions above, the web application may be reached at `127.0.0.1:80`.
-Documentation of the underlying backend REST API is automatically generated and can be viewed at `127.0.0.1:80/api/docs`.
+### Deployment checklist
+- Unless you use official AIoD services, deploy additional dependencies and services RAIL relies on specified above
+- Configure backend and frontend components accordingly. For more information, check their respective README files
+- Perform any additional changes to the main `docker-compose.yml` file you deem necessary for your setup
+- Execute the command: `docker compose up -d --build`
+
 
 ## Development and debugging
 For development purposes, we recommend running RAIL's development docker containers (docker compose) and then attach to the applications running inside. This helps to ensure that all developers develop in the same environment.
