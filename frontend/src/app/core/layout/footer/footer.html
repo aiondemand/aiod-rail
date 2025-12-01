@@ -26,10 +26,10 @@
     <!-- COL 3: subscribe -->
     <section class="col-right">
       <h4>Provide Feedback</h4>
-      <a [href]="base + '/feedback/'" target="_blank">
+      <a [href]="env.AIOD_BASE_URL + '/feedback/'" target="_blank">
         <ui-button variant="primary" size="md"> Feedback </ui-button>
       </a>
-      <a target="_blank" [href]="base">
+      <a target="_blank" [href]="env.AIOD_BASE_URL">
         <ui-button variant="ghost" size="md"> AIoD.eu </ui-button>
       </a>
     </section>
@@ -39,8 +39,8 @@
     <div class="container">
       <span>© AiodRail</span>
       <nav class="lower-links">
-        <a [href]="base + '/privacy-policy/'">Privacy</a>
-        <a [href]="base + '/terms-conditions/'">Terms</a>
+        <a [href]="env.AIOD_BASE_URL + '/privacy-policy/'">Privacy</a>
+        <a [href]="env.AIOD_BASE_URL + '/terms-conditions/'">Terms</a>
       </nav>
     </div>
   </div>

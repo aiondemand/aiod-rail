@@ -58,13 +58,13 @@ export class TopNavbar implements OnInit, OnDestroy {
     return isPlatformBrowser(this.platformId);
   }
 
-  protected readonly base = environment.AIOD_BASE_URL;
+  protected env = environment;
 
   protected external = {
-    GET_STARTED: `${this.base}/get-started`,
-    MY_LIBRARY: 'https://mylibrary.aiod.eu',
-    TECH_SUPPORT: `${this.base}/technical-support/`,
-    EDITOR: 'https://editor.aiod.eu/',
+    GET_STARTED: `${environment.AIOD_BASE_URL}/get-started`,
+    MY_LIBRARY: environment.AIOD_MYLIBRARY_URL,
+    TECH_SUPPORT: `${environment.AIOD_BASE_URL}/technical-support/`,
+    EDITOR: environment.AIOD_EDITOR_URL,
   };
 
   ngOnInit(): void {
@@ -84,7 +84,7 @@ export class TopNavbar implements OnInit, OnDestroy {
   ngOnDestroy(): void {}
 
   private fetchNavigation(): void {
-    this.http.get<NavItem[]>('https://aiod.eu/wp-json/aiod/v1/navigation').subscribe({
+    this.http.get<NavItem[]>(environment.AIOD_NAVIGATION_API).subscribe({
       next: (items) => this.menu.set(this.normalize(items ?? [])),
       error: () => this.menu.set([]),
     });

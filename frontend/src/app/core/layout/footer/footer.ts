@@ -11,5 +11,5 @@ import { environment } from '../../../../environments/environment';
   styleUrls: ['./footer.scss'],
 })
 export class Footer {
-  protected base = environment.AIOD_BASE_URL;
+  protected env = environment;
 }

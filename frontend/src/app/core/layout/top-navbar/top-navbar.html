@@ -13,7 +13,7 @@
         <mat-icon [fontIcon]="mobileOpened() ? 'close' : 'menu'" aria-hidden="true"></mat-icon>
       </button>
 
-      <a class="logo" [href]="base" aria-label="AiodRail Home">
+      <a class="logo" [href]="env.AIOD_BASE_URL" aria-label="AiodRail Home">
         <img class="logo-light" src="/assets/logo-color.svg" alt="AiodRail logo" />
         <img class="logo-dark" src="/assets/logo-white.svg" alt="AiodRail logo dark" />
       </a>
