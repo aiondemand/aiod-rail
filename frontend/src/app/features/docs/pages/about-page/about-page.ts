@@ -5,6 +5,8 @@ import { BaseDocComponent } from '../../../../shared/components/base-doc/base-do
 import { MatTabsModule } from '@angular/material/tabs';
 import { MarkdownComponent } from 'ngx-markdown';
 
+import { environment } from '../../../../../environments/environment';
+
 @Component({
   selector: 'app-about-page',
   standalone: true,
@@ -13,4 +15,6 @@ import { MarkdownComponent } from 'ngx-markdown';
   styleUrls: ['./about-page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AboutPage {}
+export class AboutPage {
+  protected base = environment.AIOD_BASE_URL;
+}

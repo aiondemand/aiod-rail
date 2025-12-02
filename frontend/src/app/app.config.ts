@@ -19,6 +19,7 @@ import { provideHighlightOptions } from 'ngx-highlightjs';
 import { provideOAuthClient, OAuthStorage } from 'angular-oauth2-oidc';
 import { environment } from '../environments/environment';
 import { AuthService } from './core/auth/auth.service';
+import { ChatbotLoaderService } from './shared/services/chatbot-loader.service';
 
 function hljsLoader() {
   return async () => {
@@ -91,5 +92,12 @@ export const appConfig: ApplicationConfig = {
     },
 
     { provide: APP_INITIALIZER, multi: true, useFactory: hljsLoader },
+
+    {
+      provide: APP_INITIALIZER,
+      useFactory: (loader: ChatbotLoaderService) => () => loader.load(),
+      deps: [ChatbotLoaderService],
+      multi: true,
+    },
   ],
 };

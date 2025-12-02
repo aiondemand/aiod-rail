@@ -1,16 +1,61 @@
 <div class="login-container" [class.logged-in]="isLoggedIn()">
   @if (isLoggedIn()) {
-  <a class="avatar" [routerLink]="['/profile']" matTooltip="Open profile" aria-label="User profile">
-    <ui-button class="icon" variant="ghost" size="lg" [icon]="true" ariaLabel="user">
-      <mat-icon fontIcon="person"></mat-icon>
-    </ui-button>
-    <span class="username">{{ userName() }}</span>
-  </a>
+  <!-- Avatar button  -->
+  <button
+    type="button"
+    class="avatar"
+    (click)="toggleSidebar()"
+    matTooltip="User"
+    aria-label="User menu"
+  >
+    <img src="/assets/user.jpg" alt="User avatar" class="avatar-img" />
+  </button>
 
-  <ui-button size="lg" variant="ghost" (click)="logout()" matTooltip="Sign out">
-    Log out
+  <!-- INLINE SIGN OUT only mobile -->
+  <ui-button
+    class="inline-signout"
+    size="lg"
+    variant="ghost"
+    (click)="logout()"
+    ariaLabel="Sign out"
+  >
+    Sign Out
   </ui-button>
+
+  <!-- Backdrop (desktop only) -->
+  @if (sidebarOpen) {
+  <div class="user-sidebar-backdrop desktop-only" (click)="closeSidebar()" aria-hidden="true"></div>
+  }
+
+  <!-- Sidebar (desktop only) -->
+  <aside
+    class="user-sidebar desktop-only"
+    [class.open]="sidebarOpen"
+    [class.closed]="!sidebarOpen"
+    [ngStyle]="{ top: sidebarTop + 'px' }"
+    role="dialog"
+    aria-label="User menu"
+  >
+    <div class="user-spacer"></div>
+
+    <div class="user-bottom">
+      <div class="user-name">{{ userName() || 'User' }}</div>
+
+      <ui-button
+        class="sidebar-signout"
+        size="lg"
+        variant="ghost"
+        (click)="logout()"
+        ariaLabel="Sign out"
+      >
+        Sign Out
+      </ui-button>
+      <div class="divider"></div>
+    </div>
+  </aside>
   } @else {
-  <ui-button size="lg" variant="ghost" (click)="login()" matTooltip="Log in"> Log in </ui-button>
+  <ui-button size="lg" variant="ghost" (click)="login()" matTooltip="Log in">
+    Login / Sign Up
+  </ui-button>
   }
 </div>

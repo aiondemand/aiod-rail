@@ -17,22 +17,17 @@ import { UiButton } from '../../../shared/components/ui-button/ui-button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
+import { environment } from '../../../../environments/environment';
+
 type NavItem = {
   id: number;
   title: string;
   url?: string;
   description?: string;
   parent: string | number;
-  isHighlighted?: boolean; // používame pre žltú šípku + špec. hover
+  isHighlighted?: boolean; // for yellow arrow
   children?: NavItem[];
   open?: boolean;
-};
-
-const EXTERNAL = {
-  GET_STARTED: 'https://aiod.eu/get-started',
-  MY_LIBRARY: 'https://mylibrary.aiod.eu',
-  TECH_SUPPORT: 'https://aiod.eu/technical-support/',
-  EDITOR: 'https://editor.aiod.eu/',
 };
 
 @Component({
@@ -55,7 +50,6 @@ export class TopNavbar implements OnInit, OnDestroy {
   private renderer = inject(Renderer2);
   private platformId = inject(PLATFORM_ID);
 
-  protected external = EXTERNAL;
   protected menu = signal<NavItem[]>([]);
   protected mobileOpened = signal(false);
   protected isDesktop = signal<boolean>(true);
@@ -63,6 +57,15 @@ export class TopNavbar implements OnInit, OnDestroy {
   private get isBrowser() {
     return isPlatformBrowser(this.platformId);
   }
+
+  protected env = environment;
+
+  protected external = {
+    GET_STARTED: `${environment.AIOD_BASE_URL}/get-started`,
+    MY_LIBRARY: environment.AIOD_MYLIBRARY_URL,
+    TECH_SUPPORT: `${environment.AIOD_BASE_URL}/technical-support/`,
+    EDITOR: environment.AIOD_EDITOR_URL,
+  };
 
   ngOnInit(): void {
     if (this.isBrowser) {
@@ -81,7 +84,7 @@ export class TopNavbar implements OnInit, OnDestroy {
   ngOnDestroy(): void {}
 
   private fetchNavigation(): void {
-    this.http.get<NavItem[]>('https://aiod.eu/wp-json/aiod/v1/navigation').subscribe({
+    this.http.get<NavItem[]>(environment.AIOD_NAVIGATION_API).subscribe({
       next: (items) => this.menu.set(this.normalize(items ?? [])),
       error: () => this.menu.set([]),
     });

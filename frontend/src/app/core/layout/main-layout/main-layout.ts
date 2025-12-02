@@ -13,6 +13,8 @@ import { NavSection } from '../../../shared/nav/nav.types';
 import { APP_NAV, ADMIN_NAV } from '../../../shared/nav/app.nav';
 import { AuthService } from '../../auth/auth.service';
 
+import { environment } from '../../../../environments/environment';
+
 @Component({
   selector: 'app-main-layout',
   standalone: true,
@@ -33,6 +35,8 @@ export class MainLayout {
   private router = inject(Router);
   private bp = inject(BreakpointObserver);
   private auth = inject(AuthService);
+
+  protected base = environment.AIOD_BASE_URL;
 
   /** ===== URL  ===== */
   url = toSignal(
