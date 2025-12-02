@@ -2,16 +2,22 @@
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.2.2.
 
-
 ## Deployment
 
 Assuming the PROFILE argument you specify in the `docker-compose.yml` file in the root of the project repository is set to `prod`:
+
 - Change the frontend config (`src/app/environments/environment.production.ts`) to match the AIoD Keycloak service you use
-    - `AIOD_KEYCLOAK_*`: Setup AIoD Keycloak connection
-    - `BACKEND_API_URL`: Points to RAIL backend; **keep it as it is**
-    - `DEFAULT_PAGE_SIZE`: Defines the default page size on frontend
-
-
+  - `AIOD_KEYCLOAK_*`: Setup AIoD Keycloak connection
+  - `BACKEND_API_URL`: Points to RAIL backend; **keep it as it is**
+  - `DEFAULT_PAGE_SIZE`: Defines the default page size on frontend
+- Configure AIoD platform URLs in `environment.production.ts`
+  - `AIOD_BASE_URL`: Base URL of the AIoD platform
+  - `AIOD_EDITOR_URL`: URL of the AIoD Editor service
+  - `AIOD_MYLIBRARY_URL`: URL of the AIoD MyLibrary service
+  - `AIOD_NAVIGATION_API`: URL of the AIoD navigation API used to build the top menu
+- Configure AIoD chatbot integration in `environment.production.ts`
+  - `CHATBOT_SCRIPT_SRC`: URL of the chatbot standalone script loaded on the frontend
+  - `CHATBOT_ENDPOINT`: Backend endpoint used by the chatbot (RAIL instance)
 
 ## Development
 
